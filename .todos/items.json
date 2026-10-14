@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 442,
+  "nextId": 443,
   "items": [
     {
       "id": "T-2",
@@ -15831,7 +15831,7 @@
             "    /*",
             "    **\tLoop through all cells; remove any reference to this trigger"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/editor/mapedsel.cc",
@@ -15896,26 +15896,79 @@
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T15:39:28Z",
-      "updated": "2026-10-14T15:39:28Z",
+      "updated": "2026-10-14T15:49:26Z",
       "source": "2268c0c21",
+      "resolution": "It was a bug: the destructor ran after `Detach_This_From_All()` had removed the trigger, so `IndexOf` was always -1 and the cursor was always stepped back, re-running an earlier trigger when a later one was destroyed. `LogicClass::Detach()`/`MapClass::Detach()` now go through the new `EraseTrigger()`, which steps the cursor back only for a removal at or before it; the destructor no longer touches the cursors. Covered by `TriggerActionGameTest.DestroyTriggerKeepsTheListCursorsInPlace`.",
       "anchors": [
         {
           "path": "src/ra/ai/trigger.cc",
-          "startLine": 113,
-          "endLine": 135,
-          "text": "TriggerClass::~TriggerClass() {\n  if ((TheGameState().active() && Class != nullptr &&\n       base::Any(Class->AttachesTo() & ATTACH_GENERAL)) &&\n      (TheWorld().logic_trigger_id() >=\n       base::IndexOf(TheWorld().logic_triggers(), this))) {\n    TheWorld().logic_trigger_id()--;\n    if (TheWorld().logic_trigger_id() < 0 &&\n        std::ssize(TheWorld().logic_triggers()) == 0) {\n      TheWorld().logic_trigger_id() = 0;\n    }\n  }\n\n  if ((TheGameState().active() && Class != nullptr &&\n       base::Any(Class->AttachesTo() & ATTACH_MAP)) &&\n      (TheWorld().map_trigger_id() >=\n       base::IndexOf(TheWorld().map_triggers(), this))) {\n    TheWorld().map_trigger_id()--;\n    if (TheWorld().map_trigger_id() < 0 &&\n        std::ssize(TheWorld().map_triggers()) == 0) {\n      TheWorld().map_trigger_id() = 0;\n    }\n  }\n",
+          "startLine": 394,
+          "endLine": 408,
+          "text": "void EraseTrigger(std::vector<TriggerClass*>& triggers, int& cursor,\n                  const TriggerClass* trigger) {\n  const base::ssize index = base::IndexOf(triggers, trigger);\n  if (index < 0) {\n    return;\n  }\n  triggers.erase(triggers.begin() + index);\n  // The trigger being sprung may be the one removed (a volatile trigger\n  // deletes itself) or another one (TriggerActionType::kDestroyTrigger); only\n  // a removal at or before the cursor shifts what it points at.\n  if (index <= cursor) {\n    cursor--;\n  }\n}\n",
           "before": [
-            " *                                                                                             *",
-            " * HISTORY: * 07/29/1995 JLB : Created. *",
-            " *=============================================================================================*/"
+            "  return trig;",
+            "}",
+            ""
           ],
           "after": [
-            "  if (TheGameState().active() && Class != nullptr &&",
-            "      Class->house != HOUSE_NONE &&",
-            "      Class->action1->type() == TriggerActionType::kAllowWin) {"
+            "/***********************************************************************************************",
+            " * TriggerClass::Detach -- Detach specified target from this trigger. *",
+            " *                                                                                             *"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-442",
+      "title": "Check whether triggers deleted without detaching stay in the trigger lists",
+      "details": "Two places delete a `TriggerClass` without calling `Detach_This_From_All()` first, so nothing takes it out of `logic_triggers()` / `map_triggers()` or the cells' `Trigger` fields, and the AI loops in `LogicClass::AI()` and `FootClass` would then read a freed pool slot:\n\n- `HouseClass::Clobber_All()` (`src/ra/objects/house.cc`), called from scenario setup for surplus multiplayer AI houses (`src/ra/ai/scenario.cc`). Check whether it runs before the lists are filled (`scenario.cc` pushes into them while reading the INI); if it runs after, detach each trigger before deleting it.\n- `TeamClass` (`src/ra/ai/team.cc`) deletes its `Trigger` when `AttachCount == 0`. A team's trigger is normally attached to objects only, but check whether it can also be general or map-attached.\n\nThe destructor used to step the list cursors back when it still found the trigger in a list; since T-441 it no longer touches them, which is right only if every deletion detaches first.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T15:49:26Z",
+      "updated": "2026-10-14T15:49:26Z",
+      "source": "14e8a70bc",
+      "anchors": [
+        {
+          "path": "src/ra/objects/house.cc",
+          "startLine": 2996,
+          "endLine": 3001,
+          "text": "  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {\n    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->house == Class->House) {\n      base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(i));\n      i--;\n    }\n  }",
+          "before": [
+            "      i--;",
+            "    }",
+            "  }"
+          ],
+          "after": [
+            "  for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {",
+            "    if (TheObjectHeaps().trigger_type().ActiveAt(i)->house == Class->House) {",
+            "      base::DeletePooled(TheObjectHeaps().trigger_type().ActiveAt(i));"
+          ],
+          "lost": true
+        },
+        {
+          "path": "src/ra/ai/team.cc",
+          "startLine": 303,
+          "endLine": 307,
+          "text": "    if (Trigger != nullptr) {\n      if (Trigger->AttachCount == 0) {\n        base::DeletePooled(Trigger);\n      }\n      Trigger = nullptr;",
+          "before": [
+            "    *Only player reinforcement *\tmembers that broke off of the team",
+            "    *earlier will have this occur.",
+            "    */"
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "}"
           ],
           "lost": false
         }

@@ -544,6 +544,21 @@ TEST_F(TriggerActionGameTest, DestroyTriggerKeepsTheListCursorsInPlace) {
   EXPECT_EQ(TheWorld().map_trigger_id(), 0);
 }
 
+// Removing a surplus AI house while the scenario is read deletes its trigger
+// types and their triggers; a cell must not keep pointing at one.
+TEST_F(TriggerActionGameTest, ClobberingAHouseDetachesItsTriggers) {
+  trigger_type_->house = HOUSE_USSR;
+  const Cell cell = Cell::FromXY(10, 10);
+  TheMap().at(cell).Trigger = Find_Or_Make(trigger_type_);
+
+  house_->Clobber_All();
+  ThePlayer() = nullptr;
+
+  EXPECT_EQ(TheMap().at(cell).Trigger, nullptr);
+  EXPECT_EQ(TheObjectHeaps().trigger().Count(), 0);
+  EXPECT_EQ(TheObjectHeaps().trigger_type().Count(), 0);
+}
+
 TEST_F(TriggerActionGameTest, DestroyTriggerWithNoTypeDeletesNothing) {
   base::NewPooled<TriggerClass>(trigger_type_);
   EXPECT_TRUE(Perform(Record(TriggerActionType::kDestroyTrigger)));

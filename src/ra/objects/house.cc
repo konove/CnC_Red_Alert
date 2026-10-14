@@ -2987,21 +2987,23 @@ void HouseClass::Clobber_All() {
       i--;
     }
   }
+  // Cells, other houses' objects and the other triggers and team types may
+  // point at this house's team and trigger types, so each is detached before
+  // it goes. Detaching a trigger type also detaches and deletes the triggers
+  // made from it.
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    if (TheObjectHeaps().team_type().ActiveAt(i)->house() == Class->House) {
-      base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(i));
-      i--;
-    }
-  }
-  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->house == Class->House) {
-      base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(i));
+    TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(i);
+    if (team_type->house() == Class->House) {
+      Detach_This_From_All(team_type->As_Target());
+      base::DeletePooled(team_type);
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
-    if (TheObjectHeaps().trigger_type().ActiveAt(i)->house == Class->House) {
-      base::DeletePooled(TheObjectHeaps().trigger_type().ActiveAt(i));
+    TriggerType* trigger_type = TheObjectHeaps().trigger_type().ActiveAt(i);
+    if (trigger_type->house == Class->House) {
+      Detach_This_From_All(trigger_type->As_Target());
+      base::DeletePooled(trigger_type);
       i--;
     }
   }
