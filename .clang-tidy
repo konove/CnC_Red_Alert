@@ -57,9 +57,6 @@ Checks: '*,
          -cert-pos47-c,
          -cert-sig30-c,
          -clang-analyzer-core.FixedAddressDereference,
-         -clang-diagnostic-exit-time-destructors,
-         -clang-diagnostic-global-constructors,
-         -clang-diagnostic-nested-anon-types,
          -clang-diagnostic-pre-c++17-compat,
          -clang-diagnostic-pre-c++20-compat,
          -clang-diagnostic-pre-c++23-compat,
@@ -135,6 +132,18 @@ Checks: '*,
          -readability-trailing-comma,
          '
 WarningsAsErrors: '*'
+# The strict compile flags turn these off (CMakeLists.txt) so that the compiler
+# does not print every site a NOLINT here accepts; this pass turns them back on
+# and stays the check. Keep the two lists equal.
+ExtraArgs:
+  - -Wlifetime-safety-intra-tu-constructor-suggestions
+  - -Wlifetime-safety-invalidation
+  - -Wlifetime-safety-lifetimebound-violation
+  - -Woverloaded-virtual
+  - -Wswitch-default
+  - -Wunsafe-buffer-usage
+  - -Wunsafe-buffer-usage-in-container
+  - -Wunsafe-buffer-usage-in-libc-call
 HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|engine|game|ra|td)/.*'
 FormatStyle: file
 CheckOptions:

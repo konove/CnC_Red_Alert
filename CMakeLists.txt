@@ -226,10 +226,31 @@ else ()
                     # -Wswitch-default wants a default label. Clang flags that
                     # combination as redundant; the GCC requirement wins.
                     -Wno-covered-switch-default
-                    # Abseil's CHECK_EQ-style macros expand to absl_nullable
-                    # (_Nullable), a Clang extension; .clang-tidy drops the same
-                    # diagnostic.
+                    # clang-tidy reports a clang-diagnostic-* only when the
+                    # compile command enables it, so these are off for its pass
+                    # too. Abseil's CHECK_EQ-style macros expand to
+                    # absl_nullable (_Nullable), a Clang extension. Static
+                    # tables and function-local statics are how both games hold
+                    # their data, and GlobalPacketType nests anonymous structs
+                    # (docs/CLANG_TIDY_PRIORITIES.md, P4 policy decisions).
                     -Wno-nullability-extension
+                    -Wno-exit-time-destructors
+                    -Wno-global-constructors
+                    -Wno-nested-anon-types
+                    # clang-tidy reports these as errors, and a NOLINT accepts
+                    # a site, but the compiler would still print every accepted
+                    # site again: the base::At overloads alone once per element
+                    # access in every translation unit, about 8,800 lines over
+                    # a strict build. .clang-tidy turns them back on for its
+                    # own pass through ExtraArgs; keep the two lists equal.
+                    -Wno-lifetime-safety-intra-tu-constructor-suggestions
+                    -Wno-lifetime-safety-invalidation
+                    -Wno-lifetime-safety-lifetimebound-violation
+                    -Wno-overloaded-virtual
+                    -Wno-switch-default
+                    -Wno-unsafe-buffer-usage
+                    -Wno-unsafe-buffer-usage-in-container
+                    -Wno-unsafe-buffer-usage-in-libc-call
             )
         endif ()
     else ()
