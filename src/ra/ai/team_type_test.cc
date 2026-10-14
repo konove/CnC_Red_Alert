@@ -560,6 +560,15 @@ TEST_F(TeamTypeTest, TheTeamCountFollowsTheTeamsInTheField) {
   EXPECT_EQ(other->CountTeams(), 1);
 }
 
+// A scenario entry whose members were all dropped makes no team, even while
+// the scenario is set up.
+TEST_F(TeamTypeTest, ATeamTypeWithNoMembersCreatesNoTeam) {
+  TheWorld().scenario_init()++;
+  EXPECT_EQ(team_type_->CreateTeam(), nullptr);
+  TheWorld().scenario_init()--;
+  EXPECT_EQ(TheObjectHeaps().team().Count(), 0);
+}
+
 TEST_F(TeamTypeTest, ATeamTypeAtItsLimitCreatesNoTeam) {
   team_type_->ReadIniEntry("tanks", SovietEntry(0, 1));
   ASSERT_NE(team_type_->CreateTeam(), nullptr);

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 443,
+  "nextId": 452,
   "items": [
     {
       "id": "T-2",
@@ -1221,13 +1221,20 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-14T21:39:01Z",
       "parent": "T-234",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-14T21:39:01Z",
+          "text": "Since b95dabe31, RA's and TD's PLACE events have two payload arms: EventClass::SpecificData (the sidebar's (type, RTTIType, int) constructor) and PlaceData (the map's). Both list PLACE in Carries(). Sending PLACE through its own constructor would let SpecificData drop PLACE again."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 3139,
-          "endLine": 3139,
+          "startLine": 3142,
+          "endLine": 3142,
           "text": "void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,",
           "before": [
             " * HISTORY: * 02/24/1995 JLB : Created. * 03/27/1995 JLB : Handles sell and",
@@ -7193,15 +7200,16 @@
         "ra",
         "base"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T05:42:27Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-14T21:54:58Z",
+      "resolution": "The block test's `Block()` helper itself converted the negative skip count, so it now pads none; `DifficultyForLevel()` throws for a negative level before converting it; `TeamType::CreateTeam()` returns nullptr for a type with no members (a scenario entry can leave one), and the two trigger-action tests give their team type a member. Whole ctest passes with DCHECKs on (RelWithDebInfo without NDEBUG, and Debug); a CI job for that is T-451.",
       "anchors": [
         {
           "path": "src/base/numeric.h",
-          "startLine": 30,
-          "endLine": 30,
+          "startLine": 28,
+          "endLine": 28,
           "text": "  DCHECK(std::in_range<std::size_t>(value));",
           "before": [
             "// Example:",
@@ -12372,9 +12380,16 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T07:25:39Z",
-      "updated": "2026-10-10T07:25:39Z",
+      "updated": "2026-10-14T21:39:01Z",
       "source": "d3623d18..f8694ec5",
-      "toDecide": "When has the migration settled enough to drop the references? They cost build time and strict-check time on every full build, and they are the only thing that would show a regression against the original C++ if a Rust kernel is changed. Say when (for example after the branch `rust-migration` is merged and the real-device sound check is done) and an agent can do the deletion."
+      "toDecide": "When has the migration settled enough to drop the references? They cost build time and strict-check time on every full build, and they are the only thing that would show a regression against the original C++ if a Rust kernel is changed. Say when (for example after the branch `rust-migration` is merged and the real-device sound check is done) and an agent can do the deletion.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-14T21:39:01Z",
+          "text": "In a Debug build PkDifferentialTest.ReferenceKeyPairsWorkInRust and ArbitraryModuliMatchReferenceOrLongDivision exceed ctest's 300 s timeout (seen 2026-10-14, build-debug); the C++ reference bignum is that slow unoptimized. Deleting the reference kernels removes them."
+        }
+      ]
     },
     {
       "id": "T-361",
@@ -13768,8 +13783,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/trigger_type.cc",
-          "startLine": 238,
-          "endLine": 251,
+          "startLine": 232,
+          "endLine": 245,
           "text": "void TriggerType::WriteIni(engine::file::IniFile& ini) {\n  // [Triggers] is where older formats kept them; a file with both would\n  // describe the triggers twice.\n  ini.Clear(\"Triggers\");\n  ini.Clear(kIniSection);\n\n  for (int index = 0; index < TheObjectHeaps().trigger_type().Count();\n       index++) {\n    const TriggerType* trigger_type =\n        TheObjectHeaps().trigger_type().ActiveAt(index);\n    ini.PutString(kIniSection, trigger_type->IniName,\n                  trigger_type->ToIniEntry());\n  }\n}",
           "before": [
             "  action2 = MakeTriggerAction(ReadTriggerActionRecord(tokens));",
@@ -13785,8 +13800,8 @@
         },
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 379,
-          "endLine": 386,
+          "startLine": 349,
+          "endLine": 356,
           "text": "void TeamType::WriteIni(engine::file::IniFile& ini) {\n  ini.Clear(kIniSection);\n\n  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {\n    const TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(index);\n    ini.PutString(kIniSection, team_type->IniName, team_type->ToIniEntry());\n  }\n}",
           "before": [
             "  return true;",
@@ -13796,7 +13811,7 @@
           "after": [
             "",
             "TeamClass* TeamType::CreateTeam() {",
-            "  if (TheWorld().scenario_init() || CountTeams() < max_teams_) {"
+            "  // A scenario's entry can leave a type with no members (none listed, or"
           ],
           "lost": false
         }
@@ -15845,6 +15860,404 @@
             "}",
             ""
           ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-443",
+      "title": "Drive both games' lobbies through a scripted run in a Debug build",
+      "details": "The packet payloads are base::Payload arms whose Carries() lists the commands that carry them, and data<T>()/UpdateData<T>() DCHECK the packet's Command. Carries() was derived by tracing every access in the lobby code (RA netdlg.cc, nulldlg.cc, chat.cc, sendfile.cc; TD netdlg.cc, nulldlg.cc, conquer.cc), but no test runs that code: net_check starts with -NETGAME and skips the lobby. A command missing from a Carries() would only show as a DCHECK abort in a Debug build, in a lobby. A scripted two-instance lobby run (join, reject, options, chat, start) against build-debug would cover it.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "testing",
+        "ra",
+        "td",
+        "net-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "parent": "T-12",
+      "source": "98a04cbc8..f54d2a2fe",
+      "anchors": [
+        {
+          "path": "src/ra/net/session.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/core/defines.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-444",
+      "title": "Share Tiberian Dawn's chat message splitter",
+      "details": "The code that cuts a typed message into COMPAT_MESSAGE_LENGTH chunks on a word boundary, fills the tail with 0xff, and stamps the magic number and CRC is copied into each sender (network: netdlg twice, conquer; modem: nulldlg). One function taking the chunk buffer and returning the chunk length would replace them. The modem copy scanned the network packet's buffer until f54d2a2fe, which is the kind of drift the copies invite.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "td",
+        "net",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "f54d2a2fe",
+      "anchors": [
+        {
+          "path": "src/td/net/netdlg.cc",
+          "startLine": 1607,
+          "endLine": 1607,
+          "text": "                          ** Steve I's stuff for splitting message on word",
+          "before": [
+            "                                  .substr(base::ToSize(sent_so_far)));",
+            "",
+            "                          /*"
+          ],
+          "after": [
+            "                          * boundries",
+            "                          */",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/netdlg.cc",
+          "startLine": 3763,
+          "endLine": 3763,
+          "text": "                      ** Steve I's stuff for splitting message on word boundries",
+          "before": [
+            "                              .substr(base::ToSize(sent_so_far)));",
+            "",
+            "                      /*"
+          ],
+          "after": [
+            "                      */",
+            "",
+            "                      /* Start at the end of the message and find a space with"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/conquer.cc",
+          "startLine": 1042,
+          "endLine": 1042,
+          "text": "        ** Steve I's stuff for splitting message on word boundries",
+          "before": [
+            "                .substr(base::ToSize(sent_so_far)));",
+            "",
+            "        /*"
+          ],
+          "after": [
+            "        */",
+            "        actual_message_size = COMPAT_MESSAGE_LENGTH - 5;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/conquer.cc",
+          "startLine": 1110,
+          "endLine": 1110,
+          "text": "                    ** Steve I's stuff for splitting message on word boundries",
+          "before": [
+            "                            .substr(base::ToSize(sent_so_far)));",
+            "",
+            "                    /*"
+          ],
+          "after": [
+            "                    */",
+            "                    actual_message_size = COMPAT_MESSAGE_LENGTH - 5;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "startLine": 4048,
+          "endLine": 4048,
+          "text": "            ** Steve I's stuff for splitting message on word boundries",
+          "before": [
+            "                    .substr(base::ToSize(sent_so_far)));",
+            "",
+            "            /*"
+          ],
+          "after": [
+            "            */",
+            "            int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "startLine": 5236,
+          "endLine": 5236,
+          "text": "                  ** Steve I's stuff for splitting message on word boundries",
+          "before": [
+            "                          .substr(base::ToSize(sent_so_far)));",
+            "",
+            "                  /*"
+          ],
+          "after": [
+            "                  */",
+            "                  int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-445",
+      "title": "Decide whether to keep the sync-bug trap object",
+      "details": "",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "debugging",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "1e4e02862..5877f6df4",
+      "toDecide": "Trap_Object() finds the object the [SyncBug] settings name and stores it in RA's Session::TrapObject / TD's file-static trap_object, which nothing reads: it was there to be watched in a debugger (TD's needs [[maybe_unused]]). Options: (a) log what it finds with DLOG so the trap is useful without a debugger, (b) delete the trap object and the search that fills it, (c) keep it as is.",
+      "anchors": [
+        {
+          "path": "src/ra/net/session.h",
+          "startLine": 800,
+          "endLine": 800,
+          "text": "  ObjectClass* TrapObject = nullptr;",
+          "before": [
+            "  int32_t TrapFrame{0x7fffffff};    // frame # to start trapping 'TrapObject'",
+            "  RTTIType TrapObjType{RTTI_NONE};  // type of object to trap",
+            "  // The object being trapped, for examining in the debugger; nullptr if none."
+          ],
+          "after": [
+            "  Coordinate TrapCoord{};       // coord of object, 0 = ignore",
+            "  Target TrapTarget{Target{}};  // Target # of object, 0 = ignore",
+            "  CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/conquer.cc",
+          "startLine": 210,
+          "endLine": 210,
+          "text": "[[maybe_unused]] static ObjectClass* trap_object = nullptr;",
+          "before": [
+            "",
+            "// The object Trap_Object() found for the [SyncBug] trap, for watching in a",
+            "// debugger; nullptr if none."
+          ],
+          "after": [
+            "",
+            "/****************************************",
+            "**\tFunction prototypes for this module **"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-446",
+      "title": "Restructure TEventClass now that it has private data",
+      "details": "TEventClass became a class with a private data_ word and accessors, but Event and Team are still public members. /restructure-class would make them private with accessors and put the declarations in Google order.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "e3910eae2",
+      "anchors": [
+        {
+          "path": "src/ra/ai/tevent.h",
+          "startLine": 145,
+          "endLine": 145,
+          "text": "class TEventClass {",
+          "before": [
+            "**\tThis elaborates the information necessary to trigger",
+            "**\tan event.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis is the event that will controls how this event gets triggered."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-447",
+      "title": "Delete the unused size_of macro and Debug_GlobalPacketType declaration",
+      "details": "TD's size_of(typ, id) macro lost its last users when the event payload moved to base::Payload. wol_gsup.cc declares Debug_GlobalPacketType() but its definition and both calls are commented out.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "ra",
+        "cleanup",
+        "dead-code"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "f54d2a2fe",
+      "anchors": [
+        {
+          "path": "src/td/core/defines.h",
+          "startLine": 2520,
+          "endLine": 2520,
+          "text": "#define size_of(typ, id) sizeof(std::declval<typ>().id)",
+          "before": [
+            "",
+            "#define TOTAL_CRATE_TYPES 15",
+            ""
+          ],
+          "after": [
+            "",
+            "}  // namespace td",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/wol/wol_gsup.cc",
+          "startLine": 120,
+          "endLine": 120,
+          "text": "void Debug_GlobalPacketType(const GlobalPacketType& gp1);",
+          "before": [
+            "                       const GlobalPacketType::ScenarioInfoData& gp2);",
+            "static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);",
+            ""
+          ],
+          "after": [
+            "",
+            "//***********************************************************************************************",
+            "/*\tGame startup logic:"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-448",
+      "title": "Give ra_save_fixture_test room to finish in a busy Debug run",
+      "details": "In build-debug under ctest -j 22 the test failed after 60 s (its load has an internal limit); alone it passes in 4.35 s. Either raise the limit for unoptimized builds or mark the test RUN_SERIAL.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "fe5ac844e",
+      "anchors": [
+        {
+          "path": "src/ra/CMakeLists.txt",
+          "startLine": 91,
+          "endLine": 91,
+          "text": "    add_test(NAME ra_save_fixture_test",
+          "before": [
+            "# save holds without a new kSaveGameVersion fails here. The script exits with",
+            "# 77 where there is no game data (CI), which ctest reports as skipped.",
+            "if (UNIX)"
+          ],
+          "after": [
+            "            COMMAND \"${CMAKE_SOURCE_DIR}/tools/ra_saveload_smoke.sh\"",
+            "            --load-fixture $<TARGET_FILE:rasdl>)",
+            "    set_tests_properties(ra_save_fixture_test"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-449",
+      "title": "Make tools/strict_tu.py check a source that is new since the last configure",
+      "details": "Adding src/base/payload_test.cc and running strict_tu.py on it skipped the file, because build-strict had not regenerated and its ninja graph had no object for it. cmake --build build-strict --target base_test worked. The tool could notice the missing target and say so, or let cmake --build re-run the glob check first.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "tools",
+        "bugs"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "ef9634cc4",
+      "anchors": [
+        {
+          "path": "tools/strict_tu.py",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-450",
+      "title": "Export compile_commands.json from the strict build dir",
+      "details": "build-strict has CMAKE_EXPORT_COMPILE_COMMANDS empty, so a tree-wide clang-tidy or -W sweep has to take `ninja -t compdb` and unwrap the `cmake -E __run_co_compile ... --` wrapper from 834 of the entries (Task 11 of UNION_ACCESS_PLAN.md). Setting it in the strict configuration would give a ready compile db.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "tools"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-14T21:39:01Z",
+      "source": "fe5ac844e",
+      "anchors": [
+        {
+          "path": "CMakeLists.txt",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-451",
+      "title": "Run the tests in CI with DCHECKs on",
+      "details": "No CI job runs ctest with DCHECKs compiled in: the build jobs are `Release` (NDEBUG), and the lint job builds `Debug` but only runs clang-tidy. T-229 found four tests that aborted on a DCHECK and passed everywhere CI looked.\n\nCheapest option: a `Test` step after `Build with clang-tidy` in the lint job, which already has every test binary built in `Debug`. Measured 2026-10-14 in `build-debug` (`ctest -j4`): all 2183 pass in 539 s wall, of which `PkDifferentialTest.ArbitraryModuliMatchReferenceOrLongDivision` alone takes 489 s (the C++ reference bignum at -O0; it goes away with T-360). Exclude it with `-E` or compile its reference at -O2 via `optimize_in_debug()`, and the rest is about a minute.\n\nAlternative: a `RelWithDebInfo` job with `-DCMAKE_CXX_FLAGS_RELWITHDEBINFO=\"-O2 -g\"` (DCHECKs on, optimized: the whole ctest took 64 s at -j22), at the cost of a second full build.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "ci",
+        "base"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T21:54:47Z",
+      "updated": "2026-10-14T21:54:47Z",
+      "source": "T-229",
+      "anchors": [
+        {
+          "path": ".github/workflows/cmake-multi-platform.yml",
           "lost": false
         }
       ]

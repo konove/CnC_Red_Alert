@@ -20,6 +20,7 @@
 
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <string>
 
 #include "base/numeric.h"
@@ -62,6 +63,9 @@ DifficultyChoice DifficultyForLevel(const int level) {
       {.player = DifficultyLevel::kNormal, .computer = DifficultyLevel::kEasy},
       {.player = DifficultyLevel::kHard, .computer = DifficultyLevel::kEasy},
   }};
+  if (level < 0) {
+    throw std::out_of_range("negative difficulty level");
+  }
   return kChoices.at(base::ToSize(level));
 }
 

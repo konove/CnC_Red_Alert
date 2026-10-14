@@ -205,9 +205,9 @@ class TeamType : public AbstractTypeClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Creates a team of this type for its house. Returns nullptr when
-  // MaxAllowed teams of the type already exist (a limit scenario setup
-  // ignores) or the team heap is full.
+  // Creates a team of this type for its house. Returns nullptr when the type
+  // has no members, when MaxAllowed teams of the type already exist (a limit
+  // scenario setup ignores) or when the team heap is full.
   // The heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* CreateTeam();

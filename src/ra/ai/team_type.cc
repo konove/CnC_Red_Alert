@@ -356,6 +356,11 @@ void TeamType::WriteIni(engine::file::IniFile& ini) {
 }
 
 TeamClass* TeamType::CreateTeam() {
+  // A scenario's entry can leave a type with no members (none listed, or
+  // only types this build does not have); a team needs one.
+  if (member_count_ == 0) {
+    return nullptr;
+  }
   if (TheWorld().scenario_init() || CountTeams() < max_teams_) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }

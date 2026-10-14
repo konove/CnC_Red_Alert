@@ -2,6 +2,7 @@
 
 #include "engine/codec/compressed_block.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -14,7 +15,7 @@
 namespace {
 
 // Builds a block: a header with the method byte `method`, `skip_bytes`
-// reserved bytes, then `data`.
+// reserved bytes (none for a negative count), then `data`.
 std::vector<unsigned char> Block(char method, uint32_t uncompressed_bytes,
                                  int16_t skip_bytes,
                                  const std::vector<unsigned char>& data) {
@@ -24,7 +25,8 @@ std::vector<unsigned char> Block(char method, uint32_t uncompressed_bytes,
                                      .skip_bytes = skip_bytes};
   std::vector<unsigned char> block(sizeof(header));
   base::WriteUnaligned(std::as_writable_bytes(std::span(block)), header);
-  block.resize(block.size() + base::ToSize(skip_bytes), 0xee);
+  block.resize(block.size() + base::ToSize(std::max<int16_t>(skip_bytes, 0)),
+               0xee);
   block.insert(block.end(), data.begin(), data.end());
   return block;
 }

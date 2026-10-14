@@ -577,6 +577,8 @@ TEST_F(TriggerActionGameTest, ForceTriggerMakesATriggerOfTheType) {
 }
 
 TEST_F(TriggerActionGameTest, DestroyTeamRemovesTheTeamsOfTheType) {
+  team_type_->AddMember(
+      {.quantity = 1, .type = &UnitTypeClass::As_Reference(UNIT_JEEP)});
   base::NewPooled<TeamClass>(team_type_, house_);
   ASSERT_EQ(TheObjectHeaps().team().Count(), 1);
 
@@ -587,6 +589,8 @@ TEST_F(TriggerActionGameTest, DestroyTeamRemovesTheTeamsOfTheType) {
 }
 
 TEST_F(TriggerActionGameTest, CreateTeamMakesOneAsScenarioSetup) {
+  team_type_->AddMember(
+      {.quantity = 1, .type = &UnitTypeClass::As_Reference(UNIT_JEEP)});
   EXPECT_TRUE(Perform(
       {.type = TriggerActionType::kCreateTeam, .team_type = team_type_}));
 
