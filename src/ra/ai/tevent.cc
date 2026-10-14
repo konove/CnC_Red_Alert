@@ -195,7 +195,7 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
 void TEventClass::Reset(TDEventClass& td) const {
   td.IsTripped = false;
   if (Event == TEVENT_TIME) {
-    td.EventTimer.Set(Data.Value * (kTicksPerMinute / 10));
+    td.EventTimer.Set(value() * (kTicksPerMinute / 10));
   }
 }
 
@@ -250,10 +250,10 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   switch (Event) {
     case TEVENT_GLOBAL_SET:
-      return base::At(TheScenario().GlobalFlags, Data.Value);
+      return base::At(TheScenario().GlobalFlags, value());
 
     case TEVENT_GLOBAL_CLEAR:
-      return !base::At(TheScenario().GlobalFlags, Data.Value);
+      return !base::At(TheScenario().GlobalFlags, value());
 
     case TEVENT_MISSION_TIMER_EXPIRED:
       return TheScenario().MissionTimer.IsRunning() &&
@@ -325,7 +325,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
-    if (!object || object->Owner() != Data.House) {
+    if (!object || object->Owner() != this->house()) {
       return false;
     }
     td.IsTripped = true;
@@ -375,7 +375,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Credits must be equal or greater to the value specified.
       */
       case TEVENT_CREDITS:
-        if (hptr->Available_Money() < Data.Value) {
+        if (hptr->Available_Money() < value()) {
           return false;
         }
         break;
@@ -413,11 +413,10 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILDING_EXISTS:
-        if ((hptr->ActiveBScan & ScanBit(static_cast<int>(Data.Structure))) ==
-            0) {
+        if ((hptr->ActiveBScan & ScanBit(static_cast<int>(structure()))) == 0) {
           return false;
         }
-        //				if (hptr->Get_Quantity(Data.Structure)
+        //				if (hptr->Get_Quantity(structure())
         //== 0) return(false);
         break;
 
@@ -425,7 +424,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILD:
-        if (hptr->JustBuiltStructure != Data.Structure) {
+        if (hptr->JustBuiltStructure != structure()) {
           return false;
         }
         td.IsTripped = true;
@@ -435,7 +434,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the unit has been built.
       */
       case TEVENT_BUILD_UNIT:
-        if (hptr->JustBuiltUnit != Data.Unit) {
+        if (hptr->JustBuiltUnit != unit()) {
           return false;
         }
         td.IsTripped = true;
@@ -445,7 +444,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the infantry has been built.
       */
       case TEVENT_BUILD_INFANTRY:
-        if (hptr->JustBuiltInfantry != Data.Infantry) {
+        if (hptr->JustBuiltInfantry != infantry()) {
           return false;
         }
         td.IsTripped = true;
@@ -455,7 +454,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the aircraft has been built.
       */
       case TEVENT_BUILD_AIRCRAFT:
-        if (hptr->JustBuiltAircraft != Data.Aircraft) {
+        if (hptr->JustBuiltAircraft != aircraft()) {
           return false;
         }
         td.IsTripped = true;
@@ -466,7 +465,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       *destroyed.
       */
       case TEVENT_NBUILDINGS_DESTROYED:
-        if (std::cmp_less(hptr->BuildingsLost, Data.Value)) {
+        if (std::cmp_less(hptr->BuildingsLost, value())) {
           return false;
         }
         break;
@@ -475,7 +474,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the specified number of units have been destroyed.
       */
       case TEVENT_NUNITS_DESTROYED:
-        if (std::cmp_less(hptr->UnitsLost, Data.Value)) {
+        if (std::cmp_less(hptr->UnitsLost, value())) {
           return false;
         }
         break;
@@ -507,7 +506,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     }
   }
 
-  hptr = HouseClass::As_Pointer(Data.House);
+  hptr = HouseClass::As_Pointer(this->house());
   if (hptr) {
     switch (Event) {
       case TEVENT_LOW_POWER:
@@ -618,9 +617,8 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 void TEventClass::Build_INI_Entry(std::string& buffer) const {
-  buffer +=
-      std::format("{},{},{}", std::to_underlying(Event),
-                  TheObjectHeaps().team_type().PositionOf(Team), Data.Value);
+  buffer += std::format("{},{},{}", std::to_underlying(Event),
+                        TheObjectHeaps().team_type().PositionOf(Team), value());
 }
 
 /***********************************************************************************************
@@ -645,7 +643,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
           static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
       Team = TheObjectHeaps().team_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      set_value(base::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
 
     case 1:
@@ -657,13 +655,13 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
 
       token = tokens.Next();
       Team = nullptr;
-      Data.Value = -1;
+      set_value(-1);
       if (!token.empty()) {
         if (Event_Needs(Event) == NeedType::kTeam) {
           Team = TheObjectHeaps().team_type().Slot(
               base::ParseIntegerOr<int>(token, 0));
         } else {
-          Data.Value = base::ParseIntegerOr<int>(token, 0);
+          set_value(base::ParseIntegerOr<int>(token, 0));
         }
       }
       break;
@@ -676,7 +674,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       tokens.Next();  // Old-format field, unused.
 
       Team = TeamType::FromName(tokens.Next());
-      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      set_value(base::ParseIntegerOr<int>(tokens.Next(), 0));
       tokens.Next();  // Old-format field, unused.
       break;
   }

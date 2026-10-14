@@ -336,12 +336,12 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
         TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(index);
         if ((tp->Class->event1.Event == TEVENT_GLOBAL_SET ||
              tp->Class->event1.Event == TEVENT_GLOBAL_CLEAR) &&
-            tp->Class->event1.Data.Value == global) {
+            tp->Class->event1.value() == global) {
           tp->Class->event2.Reset(tp->Event1);
         }
         if ((tp->Class->event2.Event == TEVENT_GLOBAL_SET ||
              tp->Class->event2.Event == TEVENT_GLOBAL_CLEAR) &&
-            tp->Class->event2.Data.Value == global) {
+            tp->Class->event2.value() == global) {
           tp->Class->event1.Reset(tp->Event1);
         }
       }

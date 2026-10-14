@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -200,7 +201,7 @@ TEST_F(TriggerTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(type->action_control, MULTI_AND);
   EXPECT_EQ(type->event1.Event, TEVENT_TIME);
   EXPECT_EQ(type->event1.Team, nullptr);
-  EXPECT_EQ(type->event1.Data.Value, 50);
+  EXPECT_EQ(type->event1.value(), 50);
   EXPECT_EQ(type->event2.Event, TEVENT_LEAVES_MAP);
   EXPECT_EQ(type->event2.Team, team_type_);
   EXPECT_EQ(type->action1->type(), TriggerActionType::kCreateTeam);
@@ -249,11 +250,11 @@ TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
   const TriggerType* const dawn = TriggerType::FromName("dawn");
   ASSERT_NE(wave, nullptr);
   ASSERT_NE(dawn, nullptr);
-  EXPECT_EQ(wave->event1.Data.Value, 50);
+  EXPECT_EQ(wave->event1.value(), 50);
   // The trigger in slot 0, which is the first entry: itself.
   EXPECT_EQ(wave->action2->ToRecord().trigger_type, wave);
   EXPECT_EQ(dawn->action1->type(), TriggerActionType::kWin);
-  EXPECT_EQ(dawn->event1.Data.Value, 5);
+  EXPECT_EQ(dawn->event1.value(), 5);
 }
 
 // From format 2 an action gives its trigger type's heap slot, which may be a
@@ -459,7 +460,7 @@ TEST_F(TriggerTypeTest, TheDescriptionAddsTheNumberAnEventTakes) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   trigger_type_->event1.Event = TEVENT_CREDITS;
-  trigger_type_->event1.Data.Value = 50;
+  trigger_type_->event1.set_value(50);
   EXPECT_EQ(
       trigger_type_->Description(),
       DescriptionPrefix(*trigger_type_, "V..") + "Credits exceed (x100)...50");
@@ -491,7 +492,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheUnitAnEventTakes) {
   }
   SetText(UnitTypeClass::As_Reference(UNIT_JEEP).Full_Name(), "Ranger");
   trigger_type_->event1.Event = TEVENT_BUILD_UNIT;
-  trigger_type_->event1.Data.Unit = UNIT_JEEP;
+  trigger_type_->event1.set_unit(UNIT_JEEP);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Ranger")) << DescriptionEnding();
 }
@@ -502,7 +503,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheAircraftAnEventTakes) {
   }
   SetText(AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Full_Name(), "Hind");
   trigger_type_->event1.Event = TEVENT_BUILD_AIRCRAFT;
-  trigger_type_->event1.Data.Aircraft = AIRCRAFT_HIND;
+  trigger_type_->event1.set_aircraft(AIRCRAFT_HIND);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Hind")) << DescriptionEnding();
 }
@@ -514,7 +515,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheBuildingAnEventTakes) {
   SetText(BuildingTypeClass::As_Reference(STRUCT_POWER).Full_Name(),
           "Power Plant");
   trigger_type_->event1.Event = TEVENT_BUILD;
-  trigger_type_->event1.Data.Structure = STRUCT_POWER;
+  trigger_type_->event1.set_structure(STRUCT_POWER);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Power Plant"))
       << DescriptionEnding();
@@ -527,7 +528,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheInfantryAnEventTakes) {
   SetText(InfantryTypeClass::As_Reference(INFANTRY_E1).Full_Name(),
           "Rifle Infantry");
   trigger_type_->event1.Event = TEVENT_BUILD_INFANTRY;
-  trigger_type_->event1.Data.Infantry = INFANTRY_E1;
+  trigger_type_->event1.set_infantry(INFANTRY_E1);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Rifle Infantry"))
       << DescriptionEnding();
@@ -547,7 +548,7 @@ TEST_F(TriggerTypeTest, ASavedHeapLoadsEveryTriggerTypeIntoItsOldSlot) {
   trigger_type_->event_control = MULTI_AND;
   trigger_type_->action_control = MULTI_AND;
   trigger_type_->event1.Event = TEVENT_CREDITS;
-  trigger_type_->event1.Data.Value = 50;
+  trigger_type_->event1.set_value(50);
   trigger_type_->event2.Event = TEVENT_LEAVES_MAP;
   trigger_type_->event2.Team = team_type_;
   trigger_type_->action1 = MakeTriggerAction(
@@ -683,6 +684,24 @@ TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
   Draw(true, FontType::k6PointGradient);
 
   EXPECT_EQ(CountOf(game::kTransparentBlack), kWidth * kHeight);
+}
+
+// HousesType is one byte: storing a house keeps the other three bytes of the
+// event's argument, as the store into the union it replaced did.
+TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
+  TEventClass event(TEVENT_PLAYER_ENTERED);
+  event.set_value(0x12345600);
+  event.set_house(HOUSE_USSR);
+  EXPECT_EQ(event.value(), 0x12345600 | static_cast<uint8_t>(HOUSE_USSR));
+  EXPECT_EQ(event.house(), HOUSE_USSR);
+}
+
+TEST(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
+  TEventClass event(TEVENT_PLAYER_ENTERED);
+  event.set_value(0x12345600);
+  event.set_house(HOUSE_NONE);
+  EXPECT_EQ(event.value(), 0x123456FF);
+  EXPECT_EQ(event.house(), HOUSE_NONE);
 }
 
 }  // namespace

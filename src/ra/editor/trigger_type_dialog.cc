@@ -324,7 +324,7 @@ bool TriggerType::Edit() {
   if (const NeedType need = Event_Needs(event1.Event);
       need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
-                   static_cast<int>(event1.Data.Value));
+                   static_cast<int>(event1.value()));
   }
 
   char event2_number_text[kNumberSize] = "";
@@ -335,7 +335,7 @@ bool TriggerType::Edit() {
   if (const NeedType need = Event_Needs(event2.Event);
       need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
-                   static_cast<int>(event2.Data.Value));
+                   static_cast<int>(event2.value()));
   }
 
   char action1_number_text[kNumberSize] = "";
@@ -625,13 +625,13 @@ bool TriggerType::Edit() {
 
   if (Event_Needs(event1.Event) == NeedType::kStructure) {
     event1_building_list.Set_Selected_Index(
-        static_cast<int>(event1.Data.Structure));
+        static_cast<int>(event1.structure()));
   } else {
     event1_building_list.Set_Selected_Index(0);
   }
   if (Event_Needs(event2.Event) == NeedType::kStructure) {
     event2_building_list.Set_Selected_Index(
-        static_cast<int>(event2.Data.Structure));
+        static_cast<int>(event2.structure()));
   } else {
     event2_building_list.Set_Selected_Index(0);
   }
@@ -659,13 +659,13 @@ bool TriggerType::Edit() {
 
   if (Event_Needs(event1.Event) == NeedType::kInfantry) {
     event1_infantry_list.Set_Selected_Index(
-        static_cast<int>(event1.Data.Infantry));
+        static_cast<int>(event1.infantry()));
   } else {
     event1_infantry_list.Set_Selected_Index(0);
   }
   if (Event_Needs(event2.Event) == NeedType::kInfantry) {
     event2_infantry_list.Set_Selected_Index(
-        static_cast<int>(event2.Data.Infantry));
+        static_cast<int>(event2.infantry()));
   } else {
     event2_infantry_list.Set_Selected_Index(0);
   }
@@ -693,13 +693,13 @@ bool TriggerType::Edit() {
 
   if (Event_Needs(event1.Event) == NeedType::kAircraft) {
     event1_aircraft_list.Set_Selected_Index(
-        static_cast<int>(event1.Data.Aircraft));
+        static_cast<int>(event1.aircraft()));
   } else {
     event1_aircraft_list.Set_Selected_Index(0);
   }
   if (Event_Needs(event2.Event) == NeedType::kAircraft) {
     event2_aircraft_list.Set_Selected_Index(
-        static_cast<int>(event2.Data.Aircraft));
+        static_cast<int>(event2.aircraft()));
   } else {
     event2_aircraft_list.Set_Selected_Index(0);
   }
@@ -726,12 +726,12 @@ bool TriggerType::Edit() {
   }
 
   if (Event_Needs(event1.Event) == NeedType::kUnit) {
-    event1_unit_list.Set_Selected_Index(static_cast<int>(event1.Data.Unit));
+    event1_unit_list.Set_Selected_Index(static_cast<int>(event1.unit()));
   } else {
     event1_unit_list.Set_Selected_Index(0);
   }
   if (Event_Needs(event2.Event) == NeedType::kUnit) {
-    event2_unit_list.Set_Selected_Index(static_cast<int>(event2.Data.Unit));
+    event2_unit_list.Set_Selected_Index(static_cast<int>(event2.unit()));
   } else {
     event2_unit_list.Set_Selected_Index(0);
   }
@@ -774,12 +774,12 @@ bool TriggerType::Edit() {
   }
 
   if (Event_Needs(event1.Event) == NeedType::kHouse) {
-    event1_house_list.Set_Selected_Index(static_cast<int>(event1.Data.House));
+    event1_house_list.Set_Selected_Index(static_cast<int>(event1.house()));
   } else {
     event1_house_list.Set_Selected_Index(0);
   }
   if (Event_Needs(event2.Event) == NeedType::kHouse) {
-    event2_house_list.Set_Selected_Index(static_cast<int>(event2.Data.House));
+    event2_house_list.Set_Selected_Index(static_cast<int>(event2.house()));
   } else {
     event2_house_list.Set_Selected_Index(0);
   }
@@ -1377,31 +1377,31 @@ bool TriggerType::Edit() {
         event1.Event = *event1_list.Current_Item();
         switch (Event_Needs(event1.Event)) {
           case NeedType::kHouse:
-            event1.Data.House = HousesType(event1_house_list.Current_Index());
+            event1.set_house(HousesType(event1_house_list.Current_Index()));
             break;
 
           case NeedType::kNumber:
-            event1.Data.Value =
-                base::ParseIntegerOr<int>(event1_number_edit.Get_Text(), 0);
+            event1.set_value(
+                base::ParseIntegerOr<int>(event1_number_edit.Get_Text(), 0));
             break;
 
           case NeedType::kStructure:
-            event1.Data.Structure =
-                StructType(event1_building_list.Current_Index());
+            event1.set_structure(
+                StructType(event1_building_list.Current_Index()));
             break;
 
           case NeedType::kUnit:
-            event1.Data.Unit = UnitType(event1_unit_list.Current_Index());
+            event1.set_unit(UnitType(event1_unit_list.Current_Index()));
             break;
 
           case NeedType::kInfantry:
-            event1.Data.Infantry =
-                InfantryType(event1_infantry_list.Current_Index());
+            event1.set_infantry(
+                InfantryType(event1_infantry_list.Current_Index()));
             break;
 
           case NeedType::kAircraft:
-            event1.Data.Aircraft =
-                AircraftType(event1_aircraft_list.Current_Index());
+            event1.set_aircraft(
+                AircraftType(event1_aircraft_list.Current_Index()));
             break;
 
           case NeedType::kTeam:
@@ -1430,31 +1430,31 @@ bool TriggerType::Edit() {
         event2.Event = *event2_list.Current_Item();
         switch (Event_Needs(event2.Event)) {
           case NeedType::kHouse:
-            event2.Data.House = HousesType(event2_house_list.Current_Index());
+            event2.set_house(HousesType(event2_house_list.Current_Index()));
             break;
 
           case NeedType::kNumber:
-            event2.Data.Value =
-                base::ParseIntegerOr<int>(event2_number_edit.Get_Text(), 0);
+            event2.set_value(
+                base::ParseIntegerOr<int>(event2_number_edit.Get_Text(), 0));
             break;
 
           case NeedType::kStructure:
-            event2.Data.Structure =
-                StructType(event2_building_list.Current_Index());
+            event2.set_structure(
+                StructType(event2_building_list.Current_Index()));
             break;
 
           case NeedType::kUnit:
-            event2.Data.Unit = UnitType(event2_unit_list.Current_Index());
+            event2.set_unit(UnitType(event2_unit_list.Current_Index()));
             break;
 
           case NeedType::kInfantry:
-            event2.Data.Infantry =
-                InfantryType(event2_infantry_list.Current_Index());
+            event2.set_infantry(
+                InfantryType(event2_infantry_list.Current_Index()));
             break;
 
           case NeedType::kAircraft:
-            event2.Data.Aircraft =
-                AircraftType(event2_aircraft_list.Current_Index());
+            event2.set_aircraft(
+                AircraftType(event2_aircraft_list.Current_Index()));
             break;
 
           case NeedType::kTeam:

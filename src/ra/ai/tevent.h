@@ -142,7 +142,8 @@ struct TDEventClass {
 **	This elaborates the information necessary to trigger
 **	an event.
 */
-struct TEventClass {
+class TEventClass {
+ public:
   /*
   **	This is the event that will controls how this event gets triggered.
   */
@@ -150,26 +151,14 @@ struct TEventClass {
 
   /*
   **	If this event needs to reference a team type, then this is the pointer
-  **	to the team type object. This must be separated from the following
-  **	union because Watcom compiler won't allow a class that has a
-  **	constructor to be declared in a union.
+  **	to the team type object.
   */
   TeamType* Team = nullptr;
 
-  union {
-    StructType Structure;   // Used for structure type checking.
-    UnitType Unit;          // Used for unit type checking.
-    InfantryType Infantry;  //	Used for infantry type checking.
-    AircraftType Aircraft;  // Used for aircraft type checking.
-    HousesType House;       // Used for house specific events.
-    int32_t Value;          // Used for other events that need data.
-  } Data{};
+  TEventClass() : Event(TEVENT_NONE) {}
+  explicit TEventClass(TEventType event) : Event(event) {}
 
-  TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
-  explicit TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
-
-  // Saved-game support; defined in ioobj.cc. The union travels through its
-  // widest member.
+  // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
@@ -179,6 +168,46 @@ struct TEventClass {
   // Reads the event fields from the trigger entry `tokens` is parsing.
   void Read_INI(base::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
+
+  // The event's argument. Which accessor applies depends on Event: a building,
+  // unit, infantry or aircraft type for the "built" events, a house for the
+  // house events, and otherwise a number (credits, minutes, a global, a
+  // count). All of them share one saved word.
+  [[nodiscard]] StructType structure() const {
+    return static_cast<StructType>(data_);
+  }
+  void set_structure(const StructType structure) {
+    data_ = static_cast<int32_t>(structure);
+  }
+  [[nodiscard]] UnitType unit() const { return static_cast<UnitType>(data_); }
+  void set_unit(const UnitType unit) { data_ = static_cast<int32_t>(unit); }
+  [[nodiscard]] InfantryType infantry() const {
+    return static_cast<InfantryType>(data_);
+  }
+  void set_infantry(const InfantryType infantry) {
+    data_ = static_cast<int32_t>(infantry);
+  }
+  [[nodiscard]] AircraftType aircraft() const {
+    return static_cast<AircraftType>(data_);
+  }
+  void set_aircraft(const AircraftType aircraft) {
+    data_ = static_cast<int32_t>(aircraft);
+  }
+  // HousesType is one byte, the word's lowest. Storing one keeps the other
+  // three, as the store into the union this replaced did, so the value a
+  // [Trigs] entry saves does not change.
+  [[nodiscard]] HousesType house() const {
+    return static_cast<HousesType>(static_cast<int8_t>(data_));
+  }
+  void set_house(const HousesType house) {
+    data_ = static_cast<int32_t>((static_cast<uint32_t>(data_) & ~0xFFU) |
+                                 static_cast<uint8_t>(house));
+  }
+  [[nodiscard]] int32_t value() const { return data_; }
+  void set_value(const int32_t value) { data_ = value; }
+
+ private:
+  int32_t data_ = 0;
 };
 
 enum class CNC_FLAG_ENUM AttachType {

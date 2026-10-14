@@ -200,23 +200,23 @@ struct Contents {
 int EventValue(const TEventClass& event) {
   const NeedType need = Event_Needs(event.Event);
   if (need == NeedType::kHouse) {
-    return static_cast<int>(event.Data.House);
+    return static_cast<int>(event.house());
   }
   if (need == NeedType::kStructure) {
-    return static_cast<int>(event.Data.Structure);
+    return static_cast<int>(event.structure());
   }
   if (need == NeedType::kInfantry) {
-    return static_cast<int>(event.Data.Infantry);
+    return static_cast<int>(event.infantry());
   }
   if (need == NeedType::kAircraft) {
-    return static_cast<int>(event.Data.Aircraft);
+    return static_cast<int>(event.aircraft());
   }
   if (need == NeedType::kUnit) {
-    return static_cast<int>(event.Data.Unit);
+    return static_cast<int>(event.unit());
   }
   if (need == NeedType::kWaypoint || need == NeedType::kTime ||
       need == NeedType::kNumber) {
-    return event.Data.Value;
+    return event.value();
   }
   return 0;
 }
@@ -258,21 +258,21 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
     event.Event = type;
     const NeedType need = Event_Needs(type);
     if (need == NeedType::kHouse) {
-      event.Data.House = HOUSE_UKRAINE;
+      event.set_house(HOUSE_UKRAINE);
     } else if (need == NeedType::kTeam) {
       event.Team = team_type_;
     } else if (need == NeedType::kStructure) {
-      event.Data.Structure = STRUCT_POWER;
+      event.set_structure(STRUCT_POWER);
     } else if (need == NeedType::kInfantry) {
-      event.Data.Infantry = INFANTRY_E2;
+      event.set_infantry(INFANTRY_E2);
     } else if (need == NeedType::kAircraft) {
-      event.Data.Aircraft = AIRCRAFT_HIND;
+      event.set_aircraft(AIRCRAFT_HIND);
     } else if (need == NeedType::kUnit) {
-      event.Data.Unit = UNIT_JEEP;
+      event.set_unit(UNIT_JEEP);
     } else if (need == NeedType::kWaypoint) {
-      event.Data.Value = 5;
+      event.set_value(5);
     } else if (need == NeedType::kTime || need == NeedType::kNumber) {
-      event.Data.Value = 7;
+      event.set_value(7);
     }
   }
 

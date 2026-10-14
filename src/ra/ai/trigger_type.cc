@@ -115,27 +115,27 @@ std::string TriggerType::Description() const {
   std::string value_text;
   switch (Event_Needs(event1.Event)) {
     case NeedType::kNumber:
-      value_text = absl::StrCat(event1.Data.Value);
+      value_text = absl::StrCat(event1.value());
       break;
 
     case NeedType::kUnit:
       value_text =
-          TextString(UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
+          TextString(UnitTypeClass::As_Reference(event1.unit()).Full_Name());
       break;
 
     case NeedType::kAircraft:
       value_text = TextString(
-          AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
+          AircraftTypeClass::As_Reference(event1.aircraft()).Full_Name());
       break;
 
     case NeedType::kStructure:
       value_text = TextString(
-          BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
+          BuildingTypeClass::As_Reference(event1.structure()).Full_Name());
       break;
 
     case NeedType::kInfantry:
       value_text = TextString(
-          InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
+          InfantryTypeClass::As_Reference(event1.infantry()).Full_Name());
       break;
 
     case NeedType::kNone:
