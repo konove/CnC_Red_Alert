@@ -113,8 +113,8 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #define PING_AND_DISPLAY_WAIT 5000
 
 static bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2);
-static bool operator==(const GlobalPacketType& gp1,
-                       const GlobalPacketType& gp2);
+static bool operator==(const GlobalPacketType::ScenarioInfoData& gp1,
+                       const GlobalPacketType::ScenarioInfoData& gp2);
 static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);
 
 void Debug_GlobalPacketType(const GlobalPacketType& gp1);
@@ -2546,35 +2546,30 @@ void WOL_GameSetupDialog::SendParams() {
       "%i ",
       WOL_GAMEOPT_INFPARAMS, nHostLastParamID,
       static_cast<int>(
-          std::string_view(GParamsLastSent.GPacket.ScenarioInfo.Scenario)
-              .size()),
-      GParamsLastSent.GPacket.ScenarioInfo.Scenario,
-      static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.FileLength),
-      GParamsLastSent.GPacket.ScenarioInfo.ShortFileName,
+          std::string_view(GParamsLastSent.Scenario.Scenario).size()),
+      GParamsLastSent.Scenario.Scenario,
+      static_cast<int>(GParamsLastSent.Scenario.FileLength),
+      GParamsLastSent.Scenario.ShortFileName,
       //		strlen(
-      //(char*)GParamsLastSent.GPacket.ScenarioInfo.FileDigest ),
+      //(char*)GParamsLastSent.Scenario.FileDigest ),
       // not null-terminated!
-      base::At(GParamsLastSent.GPacket.ScenarioInfo.FileDigest, 0) ? 1 : 0,
-      GParamsLastSent.GPacket.ScenarioInfo.FileDigest,
-      GParamsLastSent.GPacket.ScenarioInfo.OfficialScenario,
-      GParamsLastSent.GPacket.ScenarioInfo.Credits,
-      GParamsLastSent.GPacket.ScenarioInfo.IsBases,
-      GParamsLastSent.GPacket.ScenarioInfo.IsTiberium,
-      GParamsLastSent.GPacket.ScenarioInfo.IsGoodies,
-      GParamsLastSent.GPacket.ScenarioInfo.BuildLevel,
-      GParamsLastSent.GPacket.ScenarioInfo.UnitCount,
-      GParamsLastSent.GPacket.ScenarioInfo.AIPlayers,
-      GParamsLastSent.GPacket.ScenarioInfo.Seed,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.shadow_grows,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.speed_build,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.from_install,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.capture_the_flag,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.inert_weapons,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.three_point_turns,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.ore_grows,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.ore_spreads,
-      static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.GameSpeed),
-      static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.Version),
+      base::At(GParamsLastSent.Scenario.FileDigest, 0) ? 1 : 0,
+      GParamsLastSent.Scenario.FileDigest,
+      GParamsLastSent.Scenario.OfficialScenario,
+      GParamsLastSent.Scenario.Credits, GParamsLastSent.Scenario.IsBases,
+      GParamsLastSent.Scenario.IsTiberium, GParamsLastSent.Scenario.IsGoodies,
+      GParamsLastSent.Scenario.BuildLevel, GParamsLastSent.Scenario.UnitCount,
+      GParamsLastSent.Scenario.AIPlayers, GParamsLastSent.Scenario.Seed,
+      GParamsLastSent.Scenario.Special.shadow_grows,
+      GParamsLastSent.Scenario.Special.speed_build,
+      GParamsLastSent.Scenario.Special.from_install,
+      GParamsLastSent.Scenario.Special.capture_the_flag,
+      GParamsLastSent.Scenario.Special.inert_weapons,
+      GParamsLastSent.Scenario.Special.three_point_turns,
+      GParamsLastSent.Scenario.Special.ore_grows,
+      GParamsLastSent.Scenario.Special.ore_spreads,
+      static_cast<int>(GParamsLastSent.Scenario.GameSpeed),
+      static_cast<int>(GParamsLastSent.Scenario.Version),
       GParamsLastSent.bAftermathUnits ? 1 : 0,  //	Not currently used.
       GParamsLastSent.bSlowUnitBuildRate ? 1 : 0,
       TheRules()
@@ -2826,15 +2821,15 @@ bool WOL_GameSetupDialog::AcceptParams(const char* szParams) {
 void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   //	Sets values in a GAMEPARAMS to the current game settings.
 
-  base::SafeCopy(GParams.GPacket.ScenarioInfo.Scenario,
+  base::SafeCopy(GParams.Scenario.Scenario,
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                      ->Description());
-  GParams.GPacket.ScenarioInfo.FileLength = static_cast<unsigned int>(
+  GParams.Scenario.FileLength = static_cast<unsigned int>(
       GameFileSize(TheSession()
                        .Scenarios.at(TheSession().Options.ScenarioIndex)
                        ->Get_Filename()));
-  base::SafeCopy(GParams.GPacket.ScenarioInfo.ShortFileName,
+  base::SafeCopy(GParams.Scenario.ShortFileName,
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                      ->Get_Filename());
@@ -2842,28 +2837,27 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   std::ranges::copy(TheSession()
                         .Scenarios.at(TheSession().Options.ScenarioIndex)
                         ->Get_Digest_Bytes(),
-                    std::begin(GParams.GPacket.ScenarioInfo.FileDigest));
-  GParams.GPacket.ScenarioInfo.OfficialScenario =
+                    std::begin(GParams.Scenario.FileDigest));
+  GParams.Scenario.OfficialScenario =
       TheSession()
           .Scenarios.at(TheSession().Options.ScenarioIndex)
           ->Get_Official();
-  GParams.GPacket.ScenarioInfo.Credits = TheSession().Options.Credits;
-  GParams.GPacket.ScenarioInfo.IsBases =
-      static_cast<uint8_t>(TheSession().Options.Bases);
-  GParams.GPacket.ScenarioInfo.IsTiberium =
+  GParams.Scenario.Credits = TheSession().Options.Credits;
+  GParams.Scenario.IsBases = static_cast<uint8_t>(TheSession().Options.Bases);
+  GParams.Scenario.IsTiberium =
       static_cast<uint8_t>(TheSession().Options.Tiberium);
-  GParams.GPacket.ScenarioInfo.IsGoodies =
+  GParams.Scenario.IsGoodies =
       static_cast<uint8_t>(TheSession().Options.Goodies);
-  GParams.GPacket.ScenarioInfo.BuildLevel =
+  GParams.Scenario.BuildLevel =
       static_cast<unsigned char>(TheWorld().build_level());
-  GParams.GPacket.ScenarioInfo.UnitCount =
+  GParams.Scenario.UnitCount =
       static_cast<unsigned char>(TheSession().Options.UnitCount);
-  GParams.GPacket.ScenarioInfo.AIPlayers =
+  GParams.Scenario.AIPlayers =
       static_cast<unsigned char>(TheSession().Options.AIPlayers);
-  GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
-  GParams.GPacket.ScenarioInfo.Special = TheSpecialFlags();
-  GParams.GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
-  GParams.GPacket.ScenarioInfo.Version = TheVersion().Get_Clipped_Version();
+  GParams.Scenario.Seed = TheWorld().seed();
+  GParams.Scenario.Special = TheSpecialFlags();
+  GParams.Scenario.GameSpeed = TheOptions().GameSpeed;
+  GParams.Scenario.Version = TheVersion().Get_Clipped_Version();
 
   GParams.bAftermathUnits = bAftermathUnits;
   GParams.bSlowUnitBuildRate = bSlowUnitBuildRate;
@@ -2871,59 +2865,43 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
 
 //***********************************************************************************************
 bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2) {
-  return gp1.GPacket == gp2.GPacket &&
+  return gp1.Scenario == gp2.Scenario &&
          gp1.bAftermathUnits == gp2.bAftermathUnits &&
          gp1.bSlowUnitBuildRate == gp2.bSlowUnitBuildRate;
 }
 
 //***********************************************************************************************
-bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
-  if (std::string_view(gp1.ScenarioInfo.Scenario) !=
-      gp2.ScenarioInfo.Scenario) {
+bool operator==(const GlobalPacketType::ScenarioInfoData& gp1,
+                const GlobalPacketType::ScenarioInfoData& gp2) {
+  if (std::string_view(gp1.Scenario) != gp2.Scenario) {
     return false;
   }
-  if (std::string_view(gp1.ScenarioInfo.ShortFileName) !=
-      gp2.ScenarioInfo.ShortFileName) {
+  if (std::string_view(gp1.ShortFileName) != gp2.ShortFileName) {
     return false;
   }
   //	Digest is not null-terminated...
-  const std::string_view digest1(gp1.ScenarioInfo.FileDigest,
-                                 sizeof(gp1.ScenarioInfo.FileDigest));
-  const std::string_view digest2(gp2.ScenarioInfo.FileDigest,
-                                 sizeof(gp2.ScenarioInfo.FileDigest));
+  const std::string_view digest1(gp1.FileDigest, sizeof(gp1.FileDigest));
+  const std::string_view digest2(gp2.FileDigest, sizeof(gp2.FileDigest));
   if (digest1.substr(0, digest1.find('\0')) !=
       digest2.substr(0, digest2.find('\0'))) {
     return false;
   }
 
-  if (gp1.ScenarioInfo.FileLength == gp2.ScenarioInfo.FileLength &&
-      gp1.ScenarioInfo.OfficialScenario == gp2.ScenarioInfo.OfficialScenario &&
-      gp1.ScenarioInfo.Credits == gp2.ScenarioInfo.Credits &&
-      gp1.ScenarioInfo.IsBases == gp2.ScenarioInfo.IsBases &&
-      gp1.ScenarioInfo.IsTiberium == gp2.ScenarioInfo.IsTiberium &&
-      gp1.ScenarioInfo.IsGoodies == gp2.ScenarioInfo.IsGoodies &&
-      gp1.ScenarioInfo.BuildLevel == gp2.ScenarioInfo.BuildLevel &&
-      gp1.ScenarioInfo.UnitCount == gp2.ScenarioInfo.UnitCount &&
-      gp1.ScenarioInfo.AIPlayers == gp2.ScenarioInfo.AIPlayers &&
-      gp1.ScenarioInfo.Seed == gp2.ScenarioInfo.Seed &&
-      gp1.ScenarioInfo.Special.shadow_grows ==
-          gp2.ScenarioInfo.Special.shadow_grows &&
-      gp1.ScenarioInfo.Special.speed_build ==
-          gp2.ScenarioInfo.Special.speed_build &&
-      gp1.ScenarioInfo.Special.from_install ==
-          gp2.ScenarioInfo.Special.from_install &&
-      gp1.ScenarioInfo.Special.capture_the_flag ==
-          gp2.ScenarioInfo.Special.capture_the_flag &&
-      gp1.ScenarioInfo.Special.inert_weapons ==
-          gp2.ScenarioInfo.Special.inert_weapons &&
-      gp1.ScenarioInfo.Special.three_point_turns ==
-          gp2.ScenarioInfo.Special.three_point_turns &&
-      gp1.ScenarioInfo.Special.ore_grows ==
-          gp2.ScenarioInfo.Special.ore_grows &&
-      gp1.ScenarioInfo.Special.ore_spreads ==
-          gp2.ScenarioInfo.Special.ore_spreads &&
-      gp1.ScenarioInfo.GameSpeed == gp2.ScenarioInfo.GameSpeed &&
-      gp1.ScenarioInfo.Version == gp2.ScenarioInfo.Version) {
+  if (gp1.FileLength == gp2.FileLength &&
+      gp1.OfficialScenario == gp2.OfficialScenario &&
+      gp1.Credits == gp2.Credits && gp1.IsBases == gp2.IsBases &&
+      gp1.IsTiberium == gp2.IsTiberium && gp1.IsGoodies == gp2.IsGoodies &&
+      gp1.BuildLevel == gp2.BuildLevel && gp1.UnitCount == gp2.UnitCount &&
+      gp1.AIPlayers == gp2.AIPlayers && gp1.Seed == gp2.Seed &&
+      gp1.Special.shadow_grows == gp2.Special.shadow_grows &&
+      gp1.Special.speed_build == gp2.Special.speed_build &&
+      gp1.Special.from_install == gp2.Special.from_install &&
+      gp1.Special.capture_the_flag == gp2.Special.capture_the_flag &&
+      gp1.Special.inert_weapons == gp2.Special.inert_weapons &&
+      gp1.Special.three_point_turns == gp2.Special.three_point_turns &&
+      gp1.Special.ore_grows == gp2.Special.ore_grows &&
+      gp1.Special.ore_spreads == gp2.Special.ore_spreads &&
+      gp1.GameSpeed == gp2.GameSpeed && gp1.Version == gp2.Version) {
     return true;
   }
 
@@ -2935,18 +2913,18 @@ bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
 void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 //	ajw  debugging
 {
-        if( *gp1.ScenarioInfo.Scenario )
-//		debugprint( "Scenario = %s\n", (char*)gp1.ScenarioInfo.Scenario
+        if( *gp1.Scenario )
+//		debugprint( "Scenario = %s\n", (char*)gp1.Scenario
 ); else
 //		debugprint( "!Scenario string is null\n" );
-        if( *gp1.ScenarioInfo.ShortFileName )
+        if( *gp1.ShortFileName )
 //		debugprint( "ShortFileName = %s\n",
-(char*)gp1.ScenarioInfo.ShortFileName ); else
+(char*)gp1.ShortFileName ); else
 //		debugprint( "!ShortFileName string is null\n" );
         //	Remember ShortFileName is not null-terminated...
-        if( *gp1.ScenarioInfo.FileDigest )
+        if( *gp1.FileDigest )
 //		debugprint( "FileDigest = %.32s\n",
-(char*)gp1.ScenarioInfo.FileDigest ); else
+(char*)gp1.FileDigest ); else
 //		debugprint( "!FileDigest string is null\n" );
 
 //	debugprint(	"FileLength = %i\n"
@@ -2969,26 +2947,26 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
                                 "Special.IsTSpread = %i\n"
                                 "GameSpeed = %i\n"
                                 "Version = %i\n",
-                                gp1.ScenarioInfo.FileLength,
-                                gp1.ScenarioInfo.OfficialScenario,
-                                gp1.ScenarioInfo.Credits,
-                                gp1.ScenarioInfo.IsBases,
-                                gp1.ScenarioInfo.IsTiberium,
-                                gp1.ScenarioInfo.IsGoodies,
-                                gp1.ScenarioInfo.BuildLevel,
-                                gp1.ScenarioInfo.UnitCount,
-                                gp1.ScenarioInfo.AIPlayers,
-                                gp1.ScenarioInfo.Seed,
-                                gp1.ScenarioInfo.Special.shadow_grows,
-                                gp1.ScenarioInfo.Special.speed_build,
-                                gp1.ScenarioInfo.Special.from_install,
-                                gp1.ScenarioInfo.Special.capture_the_flag,
-                                gp1.ScenarioInfo.Special.inert_weapons,
-                                gp1.ScenarioInfo.Special.three_point_turns,
-                                gp1.ScenarioInfo.Special.ore_grows,
-                                gp1.ScenarioInfo.Special.ore_spreads,
-                                gp1.ScenarioInfo.GameSpeed,
-                                gp1.ScenarioInfo.Version );
+                                gp1.FileLength,
+                                gp1.OfficialScenario,
+                                gp1.Credits,
+                                gp1.IsBases,
+                                gp1.IsTiberium,
+                                gp1.IsGoodies,
+                                gp1.BuildLevel,
+                                gp1.UnitCount,
+                                gp1.AIPlayers,
+                                gp1.Seed,
+                                gp1.Special.shadow_grows,
+                                gp1.Special.speed_build,
+                                gp1.Special.from_install,
+                                gp1.Special.capture_the_flag,
+                                gp1.Special.inert_weapons,
+                                gp1.Special.three_point_turns,
+                                gp1.Special.ore_grows,
+                                gp1.Special.ore_spreads,
+                                gp1.GameSpeed,
+                                gp1.Version );
 }
 */
 

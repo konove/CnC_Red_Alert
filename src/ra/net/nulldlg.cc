@@ -410,8 +410,10 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.ScenarioInfo.Seed =
-        static_cast<int>(engine::platform::SystemTicks());
+    SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+        [&](SerialPacketType::ScenarioInfoData& d) {
+          d.Seed = static_cast<int>(engine::platform::SystemTicks());
+        });
     SendPacket.ID = static_cast<unsigned char>(std::bit_cast<uintptr_t>(
         &buffer[0]));  // address of buffer for more uniqueness.
 
@@ -432,11 +434,13 @@ int Test_Null_Modem() {
         //
         // whoever has the highest time is the host
         //
-        if (ReceivePacket.ScenarioInfo.Seed > SendPacket.ScenarioInfo.Seed) {
+        if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>().Seed >
+            SendPacket.data<SerialPacketType::ScenarioInfoData>().Seed) {
           process = false;
           retval = 2;
-        } else if (ReceivePacket.ScenarioInfo.Seed ==
-                   SendPacket.ScenarioInfo.Seed) {
+        } else if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                       .Seed ==
+                   SendPacket.data<SerialPacketType::ScenarioInfoData>().Seed) {
           if (ReceivePacket.ID > SendPacket.ID) {
             process = false;
             retval = 2;
@@ -499,12 +503,15 @@ int Test_Null_Modem() {
           //
           // whoever has the highest time is the host
           //
-          if (ReceivePacket.ScenarioInfo.Seed > SendPacket.ScenarioInfo.Seed) {
+          if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>().Seed >
+              SendPacket.data<SerialPacketType::ScenarioInfoData>().Seed) {
             process = false;
             retval = 2;
 
-          } else if (ReceivePacket.ScenarioInfo.Seed ==
-                     SendPacket.ScenarioInfo.Seed) {
+          } else if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                         .Seed ==
+                     SendPacket.data<SerialPacketType::ScenarioInfoData>()
+                         .Seed) {
             if (ReceivePacket.ID > SendPacket.ID) {
               process = false;
               retval = 2;
@@ -3598,11 +3605,17 @@ int Com_Scenario_Dialog(bool skirmish) {
               base::SafeCopy(SendPacket.Name, namebuf);
               SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
               if (i == 3) {
-                base::SafeCopy(SendPacket.Message.Message,
-                               TheSession().Messages.Get_Edit_Buf());
+                SendPacket.UpdateData<SerialPacketType::MessageData>(
+                    [&](SerialPacketType::MessageData& d) {
+                      base::SafeCopy(d.Message,
+                                     TheSession().Messages.Get_Edit_Buf());
+                    });
               } else {
-                base::SafeCopy(SendPacket.Message.Message,
-                               TheSession().Messages.Get_Overflow_Buf());
+                SendPacket.UpdateData<SerialPacketType::MessageData>(
+                    [&](SerialPacketType::MessageData& d) {
+                      base::SafeCopy(d.Message,
+                                     TheSession().Messages.Get_Overflow_Buf());
+                    });
                 TheSession().Messages.Clear_Overflow_Buf();
               }
 
@@ -3618,7 +3631,8 @@ int Com_Scenario_Dialog(bool skirmish) {
               Add the message to our own screen
               ..................................................................*/
               TheSession().Messages.Add_Message(
-                  SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
+                  SendPacket.Name, SendPacket.ID,
+                  SendPacket.data<SerialPacketType::MessageData>().Message,
                   TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : TheSession().ColorIdx,
@@ -3659,27 +3673,29 @@ int Com_Scenario_Dialog(bool skirmish) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         base::SafeCopy(SendPacket.Name, namebuf);
-        SendPacket.ScenarioInfo.CheatCheck = TheRules().rule_ini().UniqueId();
-        SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
-        SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
-        SendPacket.ScenarioInfo.House = TheSession().House;
-        SendPacket.ScenarioInfo.Color = TheSession().ColorIdx;
-        SendPacket.ScenarioInfo.Credits = TheSession().Options.Credits;
-        SendPacket.ScenarioInfo.IsBases =
-            static_cast<unsigned int>(TheSession().Options.Bases);
-        SendPacket.ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(TheSession().Options.Tiberium);
-        SendPacket.ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(TheSession().Options.Goodies);
-        SendPacket.ScenarioInfo.AIPlayers =
-            static_cast<unsigned char>(TheSession().Options.AIPlayers);
-        SendPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(TheWorld().build_level());
-        SendPacket.ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(TheSession().Options.UnitCount);
-        SendPacket.ScenarioInfo.Seed = TheWorld().seed();
-        SendPacket.ScenarioInfo.Special = TheSpecialFlags();
-        SendPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              d.CheatCheck = TheRules().rule_ini().UniqueId();
+              d.MinVersion = VersionClass::Min_Version();
+              d.MaxVersion = VersionClass::Max_Version();
+              d.House = TheSession().House;
+              d.Color = TheSession().ColorIdx;
+              d.Credits = TheSession().Options.Credits;
+              d.IsBases = static_cast<unsigned int>(TheSession().Options.Bases);
+              d.IsTiberium =
+                  static_cast<unsigned int>(TheSession().Options.Tiberium);
+              d.IsGoodies =
+                  static_cast<unsigned int>(TheSession().Options.Goodies);
+              d.AIPlayers =
+                  static_cast<unsigned char>(TheSession().Options.AIPlayers);
+              d.BuildLevel =
+                  static_cast<unsigned char>(TheWorld().build_level());
+              d.UnitCount =
+                  static_cast<unsigned char>(TheSession().Options.UnitCount);
+              d.Seed = TheWorld().seed();
+              d.Special = TheSpecialFlags();
+              d.GameSpeed = TheOptions().GameSpeed;
+            });
         SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         /*
@@ -3687,27 +3703,36 @@ int Com_Scenario_Dialog(bool skirmish) {
         * on his machine
         ** or request a download if it doesnt exist
         */
-        base::SafeCopy(SendPacket.ScenarioInfo.Scenario,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Description());
-        SendPacket.ScenarioInfo.FileLength = static_cast<unsigned int>(
-            GameFileSize(TheSession()
-                             .Scenarios.at(TheSession().Options.ScenarioIndex)
-                             ->Get_Filename()));
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              base::SafeCopy(
+                  d.Scenario,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Description());
+              d.FileLength = static_cast<unsigned int>(GameFileSize(
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Filename()));
+            });
 
-        base::SafeCopy(SendPacket.ScenarioInfo.ShortFileName,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Get_Filename());
-        base::SafeCopy(SendPacket.ScenarioInfo.FileDigest,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Get_Digest());
-        SendPacket.ScenarioInfo.OfficialScenario =
-            TheSession()
-                .Scenarios.at(TheSession().Options.ScenarioIndex)
-                ->Get_Official();
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              base::SafeCopy(
+                  d.ShortFileName,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Filename());
+              base::SafeCopy(
+                  d.FileDigest,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Digest());
+              d.OfficialScenario =
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Official();
+            });
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
 
@@ -3753,8 +3778,10 @@ int Com_Scenario_Dialog(bool skirmish) {
                            PACKET_TIMING_TIMEOUT) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_TIMING;
-        SendPacket.ScenarioInfo.ResponseTime =
-            TheNetwork().null_modem().Response_Time();
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              d.ResponseTime = TheNetwork().null_modem().Response_Time();
+            });
         SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
@@ -3830,8 +3857,12 @@ int Com_Scenario_Dialog(bool skirmish) {
               gameoptions = true;
               kludge_timer.Set(static_cast<int64_t>(2) * 60);
               base::SafeCopy(TheirName, ReceivePacket.Name);
-              TheirColor = ReceivePacket.ScenarioInfo.Color;
-              TheirHouse = ReceivePacket.ScenarioInfo.House;
+              TheirColor =
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .Color;
+              TheirHouse =
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .House;
               transmit = true;
 
               display = std::max(display, REDRAW_MESSAGE);
@@ -3840,8 +3871,10 @@ int Com_Scenario_Dialog(bool skirmish) {
               // "Clip" the other system's version range to our own
               // ........................................................
               version = TheVersion().Clip_Version(
-                  ReceivePacket.ScenarioInfo.MinVersion,
-                  ReceivePacket.ScenarioInfo.MaxVersion);
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .MinVersion,
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .MaxVersion);
               // ........................................................
               // If the greatest-common-version comes back 0, the other
               // system's range is too low for ours
@@ -3867,8 +3900,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 process = false;
                 rc = 0;
               } else {
-                if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                    TheRules().rule_ini().UniqueId()) {
+                if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                        .CheatCheck != TheRules().rule_ini().UniqueId()) {
                   WWMessageBox().Process(TXT_MISMATCH);
 
                   // to skip the other system not responding msg
@@ -3964,7 +3997,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                               PCOLOR_DIALOG_BLUE
                           ? PCOLOR_REALLY_BLUE
                           : static_cast<PlayerColorType>(ReceivePacket.ID)),
-                  ReceivePacket.Message.Message,
+                  ReceivePacket.data<SerialPacketType::MessageData>().Message,
                   static_cast<PlayerColorType>(ReceivePacket.ID) ==
                           PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
@@ -3980,7 +4013,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             // get their response time
             //
             case SERIAL_TIMING:
-              theirresponsetime = ReceivePacket.ScenarioInfo.ResponseTime;
+              theirresponsetime =
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .ResponseTime;
 
               if (!gameoptions) {
                 // retransmit of game options packet again
@@ -4124,11 +4159,15 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (!skirmish) {
-        SendPacket.ScenarioInfo.ResponseTime =
-            TheNetwork().null_modem().Response_Time();
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              d.ResponseTime = TheNetwork().null_modem().Response_Time();
+            });
         if (theirresponsetime != 10000) {
-          SendPacket.ScenarioInfo.ResponseTime =
-              std::max(SendPacket.ScenarioInfo.ResponseTime, theirresponsetime);
+          SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+              [&](SerialPacketType::ScenarioInfoData& d) {
+                d.ResponseTime = std::max(d.ResponseTime, theirresponsetime);
+              });
         }
       }
 
@@ -4139,13 +4178,18 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish) {
         if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
           TheSession().MaxAhead = static_cast<int>(std::max<int64_t>(
-              ((SendPacket.ScenarioInfo.ResponseTime / 8) +
+              ((SendPacket.data<SerialPacketType::ScenarioInfoData>()
+                    .ResponseTime /
+                8) +
                (TheSession().FrameSendRate - 1)) /
                   TheSession().FrameSendRate * TheSession().FrameSendRate,
               TheSession().FrameSendRate * 2));
         } else {
-          TheSession().MaxAhead = std::max(
-              SendPacket.ScenarioInfo.ResponseTime / 8, MODEM_MIN_MAX_AHEAD);
+          TheSession().MaxAhead =
+              std::max(SendPacket.data<SerialPacketType::ScenarioInfoData>()
+                               .ResponseTime /
+                           8,
+                       MODEM_MIN_MAX_AHEAD);
         }
       }
       SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
@@ -4229,8 +4273,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         .....................................................................*/
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_SIGN_OFF;
-        SendPacket.ScenarioInfo.Color =
-            TheSession().ColorIdx;  // use Color for ID
+        SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              d.Color = TheSession().ColorIdx;  // use Color for ID
+            });
         SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
@@ -5196,11 +5242,17 @@ int Com_Show_Scenario_Dialog() {
           base::SafeCopy(SendPacket.Name, namebuf);
           SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
           if (i == 3) {
-            base::SafeCopy(SendPacket.Message.Message,
-                           TheSession().Messages.Get_Edit_Buf());
+            SendPacket.UpdateData<SerialPacketType::MessageData>(
+                [&](SerialPacketType::MessageData& d) {
+                  base::SafeCopy(d.Message,
+                                 TheSession().Messages.Get_Edit_Buf());
+                });
           } else {
-            base::SafeCopy(SendPacket.Message.Message,
-                           TheSession().Messages.Get_Overflow_Buf());
+            SendPacket.UpdateData<SerialPacketType::MessageData>(
+                [&](SerialPacketType::MessageData& d) {
+                  base::SafeCopy(d.Message,
+                                 TheSession().Messages.Get_Overflow_Buf());
+                });
             TheSession().Messages.Clear_Overflow_Buf();
           }
 
@@ -5215,7 +5267,8 @@ int Com_Show_Scenario_Dialog() {
           Add the message to our own screen
           ..................................................................*/
           TheSession().Messages.Add_Message(
-              SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
+              SendPacket.Name, SendPacket.ID,
+              SendPacket.data<SerialPacketType::MessageData>().Message,
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx,
@@ -5247,11 +5300,14 @@ int Com_Show_Scenario_Dialog() {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       base::SafeCopy(SendPacket.Name, namebuf);
-      SendPacket.ScenarioInfo.CheatCheck = TheRules().rule_ini().UniqueId();
-      SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
-      SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
-      SendPacket.ScenarioInfo.House = TheSession().House;
-      SendPacket.ScenarioInfo.Color = TheSession().ColorIdx;
+      SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+          [&](SerialPacketType::ScenarioInfoData& d) {
+            d.CheatCheck = TheRules().rule_ini().UniqueId();
+            d.MinVersion = VersionClass::Min_Version();
+            d.MaxVersion = VersionClass::Max_Version();
+            d.House = TheSession().House;
+            d.Color = TheSession().ColorIdx;
+          });
       SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
@@ -5298,8 +5354,10 @@ int Com_Show_Scenario_Dialog() {
     if (engine::platform::SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ScenarioInfo.ResponseTime =
-          TheNetwork().null_modem().Response_Time();
+      SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+          [&](SerialPacketType::ScenarioInfoData& d) {
+            d.ResponseTime = TheNetwork().null_modem().Response_Time();
+          });
       SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
@@ -5373,8 +5431,10 @@ int Com_Show_Scenario_Dialog() {
             parms_received = true;
 
             base::SafeCopy(TheirName, ReceivePacket.Name);
-            TheirColor = ReceivePacket.ScenarioInfo.Color;
-            TheirHouse = ReceivePacket.ScenarioInfo.House;
+            TheirColor =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>().Color;
+            TheirHouse =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>().House;
 
             /*...............................................................
             Make sure I don't have the same color as the other guy.
@@ -5406,19 +5466,35 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Save scenario settings.
             ...............................................................*/
-            TheSession().Options.Credits = ReceivePacket.ScenarioInfo.Credits;
-            TheSession().Options.Bases = ReceivePacket.ScenarioInfo.IsBases;
+            TheSession().Options.Credits =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .Credits;
+            TheSession().Options.Bases =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .IsBases;
             TheSession().Options.Tiberium =
-                ReceivePacket.ScenarioInfo.IsTiberium;
-            TheSession().Options.Goodies = ReceivePacket.ScenarioInfo.IsGoodies;
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .IsTiberium;
+            TheSession().Options.Goodies =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .IsGoodies;
             TheSession().Options.AIPlayers =
-                ReceivePacket.ScenarioInfo.AIPlayers;
-            TheWorld().build_level() = ReceivePacket.ScenarioInfo.BuildLevel;
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .AIPlayers;
+            TheWorld().build_level() =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .BuildLevel;
             TheSession().Options.UnitCount =
-                ReceivePacket.ScenarioInfo.UnitCount;
-            TheWorld().seed() = ReceivePacket.ScenarioInfo.Seed;
-            TheSpecialFlags() = ReceivePacket.ScenarioInfo.Special;
-            TheOptions().GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .UnitCount;
+            TheWorld().seed() =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>().Seed;
+            TheSpecialFlags() =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .Special;
+            TheOptions().GameSpeed =
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .GameSpeed;
 
             if (TheSession().Options.Tiberium) {
               TheSpecialFlags().ore_grows = true;
@@ -5460,7 +5536,8 @@ int Com_Show_Scenario_Dialog() {
             *lot.
             */
             if (std::string_view(TheSession().Options.ScenarioDescription) !=
-                ReceivePacket.ScenarioInfo.Scenario) {
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .Scenario) {
               display = std::max(display, REDRAW_BACKGROUND);
             }
 
@@ -5469,23 +5546,33 @@ int Com_Show_Scenario_Dialog() {
             play so ee can request this scenario from the host if we don't
             have it locally.
             ...............................................................*/
-            base::SafeCopy(TheSession().Options.ScenarioDescription,
-                           ReceivePacket.ScenarioInfo.Scenario);
-            base::SafeCopy(TheSession().ScenarioFileName,
-                           ReceivePacket.ScenarioInfo.ShortFileName);
-            base::SafeCopy(TheSession().ScenarioDigest,
-                           ReceivePacket.ScenarioInfo.FileDigest);
+            base::SafeCopy(
+                TheSession().Options.ScenarioDescription,
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .Scenario);
+            base::SafeCopy(
+                TheSession().ScenarioFileName,
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .ShortFileName);
+            base::SafeCopy(
+                TheSession().ScenarioDigest,
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .FileDigest);
             TheSession().ScenarioIsOfficial =
-                ReceivePacket.ScenarioInfo.OfficialScenario;
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .OfficialScenario;
             TheSession().ScenarioFileLength =
-                ReceivePacket.ScenarioInfo.FileLength;
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .FileLength;
 
             //.........................................................
             // "Clip" the other system's version range to our own
             // ........................................................
             version = TheVersion().Clip_Version(
-                ReceivePacket.ScenarioInfo.MinVersion,
-                ReceivePacket.ScenarioInfo.MaxVersion);
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .MinVersion,
+                ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                    .MaxVersion);
             // ........................................................
             // If the greatest-common-version comes back 0, the other
             // system's range is too low for ours
@@ -5516,8 +5603,8 @@ int Com_Show_Scenario_Dialog() {
             // common; look up the protocol that goes with this version.
             // ........................................................
             else {
-              if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                  TheRules().rule_ini().UniqueId()) {
+              if (ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                      .CheatCheck != TheRules().rule_ini().UniqueId()) {
                 WWMessageBox().Process(TXT_MISMATCH);
 
                 // to skip the other system not responding msg
@@ -5775,14 +5862,18 @@ int Com_Show_Scenario_Dialog() {
             //
             if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
               TheSession().MaxAhead = static_cast<int>(std::max<int64_t>(
-                  ((ReceivePacket.ScenarioInfo.ResponseTime / 8) +
+                  ((ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                        .ResponseTime /
+                    8) +
                    (TheSession().FrameSendRate - 1)) /
                       TheSession().FrameSendRate * TheSession().FrameSendRate,
                   TheSession().FrameSendRate * 2));
             } else {
-              TheSession().MaxAhead =
-                  std::max(ReceivePacket.ScenarioInfo.ResponseTime / 8,
-                           MODEM_MIN_MAX_AHEAD);
+              TheSession().MaxAhead = std::max(
+                  ReceivePacket.data<SerialPacketType::ScenarioInfoData>()
+                          .ResponseTime /
+                      8,
+                  MODEM_MIN_MAX_AHEAD);
             }
 
             process = false;
@@ -5805,7 +5896,7 @@ int Com_Show_Scenario_Dialog() {
                             PCOLOR_DIALOG_BLUE
                         ? PCOLOR_REALLY_BLUE
                         : static_cast<PlayerColorType>(ReceivePacket.ID)),
-                ReceivePacket.Message.Message,
+                ReceivePacket.data<SerialPacketType::MessageData>().Message,
                 static_cast<PlayerColorType>(ReceivePacket.ID) ==
                         PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
@@ -5915,8 +6006,10 @@ int Com_Show_Scenario_Dialog() {
       .....................................................................*/
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_SIGN_OFF;
-      SendPacket.ScenarioInfo.Color =
-          TheSession().ColorIdx;  // use Color for ID
+      SendPacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+          [&](SerialPacketType::ScenarioInfoData& d) {
+            d.Color = TheSession().ColorIdx;  // use Color for ID
+          });
       SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);

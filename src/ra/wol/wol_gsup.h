@@ -69,7 +69,7 @@ enum class RESULT_WOLGSUP {
 using enum RESULT_WOLGSUP;
 
 struct GAMEPARAMS {
-  GlobalPacketType GPacket;
+  GlobalPacketType::ScenarioInfoData Scenario;  // the settings the host sends
   //	My additions to game params. - ajw
   bool bAftermathUnits;
   bool bSlowUnitBuildRate;

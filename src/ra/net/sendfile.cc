@@ -133,10 +133,11 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
 
   int file_length = 0;
 
-  SerialPacketType send_packet{
-      .Command = SERIAL_REQ_SCENARIO, .Name = {}, .ID = 0, .ScenarioInfo = {}};
-  SerialPacketType receive_packet{
-      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType send_packet{};
+
+  send_packet.Command = SERIAL_REQ_SCENARIO;
+  SerialPacketType receive_packet{};
+  receive_packet.Command = SERIAL_LAST_COMMAND;
   GlobalPacketType net_send_packet{};
   GlobalPacketType net_receive_packet{};
   int packet_len = 0;
@@ -179,8 +180,11 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
           (receive_packet.Command == SERIAL_FILE_INFO)) {
         base::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
-            receive_packet.ScenarioInfo.ShortFileName);
-        file_length = static_cast<int>(receive_packet.ScenarioInfo.FileLength);
+            receive_packet.data<SerialPacketType::ScenarioInfoData>()
+                .ShortFileName);
+        file_length = static_cast<int>(
+            receive_packet.data<SerialPacketType::ScenarioInfoData>()
+                .FileLength);
         break;
       }
 
@@ -197,9 +201,11 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
         // WWDebugString ("RA95 - Got packet from host\n");
         base::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
-            net_receive_packet.ScenarioInfo.ShortFileName);
-        file_length =
-            static_cast<int>(net_receive_packet.ScenarioInfo.FileLength);
+            net_receive_packet.data<GlobalPacketType::ScenarioInfoData>()
+                .ShortFileName);
+        file_length = static_cast<int>(
+            net_receive_packet.data<GlobalPacketType::ScenarioInfoData>()
+                .FileLength);
         // WWDebugString ("RA95 - Got file info packet from host\n");
         break;
       }
@@ -589,8 +595,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
                                      .BlockNumber = 0,
                                      .BlockLength = 0,
                                      .RawData = {}};
-  SerialPacketType file_info{
-      .Command = SERIAL_FILE_INFO, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType file_info{};
+  file_info.Command = SERIAL_FILE_INFO;
   GlobalPacketType net_file_info{};
 
   if (!GameFileExists(file_name)) {
@@ -608,12 +614,21 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   */
   if (!gametype) {
     file_info.Command = SERIAL_FILE_INFO;
-    base::SafeCopy(file_info.ScenarioInfo.ShortFileName, file_name);
+    file_info.UpdateData<SerialPacketType::ScenarioInfoData>(
+        [&](SerialPacketType::ScenarioInfoData& d) {
+          base::SafeCopy(d.ShortFileName, file_name);
+        });
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
-      base::SafeCopy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
+      file_info.UpdateData<SerialPacketType::ScenarioInfoData>(
+          [&](SerialPacketType::ScenarioInfoData& d) {
+            base::SafeCopy(d.ShortFileName, "DOWNLOAD.TMP");
+          });
     }
-    file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
+    file_info.UpdateData<SerialPacketType::ScenarioInfoData>(
+        [&](SerialPacketType::ScenarioInfoData& d) {
+          d.FileLength = static_cast<unsigned>(file_length);
+        });
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(file_info),
                                            sizeof(file_info), 1);
     while (TheNetwork().null_modem().Num_Send() > 0 &&
@@ -622,15 +637,24 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
   } else {
     net_file_info.Command = NET_FILE_INFO;
-    base::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, file_name);
+    net_file_info.UpdateData<GlobalPacketType::ScenarioInfoData>(
+        [&](GlobalPacketType::ScenarioInfoData& d) {
+          base::SafeCopy(d.ShortFileName, file_name);
+        });
     //		debugprint( "Uploading '%s'\n", file_name );
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
-      base::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
+      net_file_info.UpdateData<GlobalPacketType::ScenarioInfoData>(
+          [&](GlobalPacketType::ScenarioInfoData& d) {
+            base::SafeCopy(d.ShortFileName, "DOWNLOAD.TMP");
+          });
     }
     //		debugprint( "ShortFileName is '%s'\n",
-    // net_file_info.ScenarioInfo.ShortFileName );
-    net_file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
+    // net_file_info.data<GlobalPacketType::ScenarioInfoData>().ShortFileName );
+    net_file_info.UpdateData<GlobalPacketType::ScenarioInfoData>(
+        [&](GlobalPacketType::ScenarioInfoData& d) {
+          d.FileLength = static_cast<unsigned>(file_length);
+        });
 
     for (int i = 0; i < TheSession().RequestCount; i++) {
       TheNetwork().ipx().Send_Global_Message(

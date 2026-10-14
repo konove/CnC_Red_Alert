@@ -712,10 +712,10 @@ void Cycle_Wait_Click(bool cycle) {
   // Ticks left during which input is thrown away.
   int minclicks = 20;
   int64_t timingtime = engine::platform::SystemTicks();
-  SerialPacketType sendpacket{
-      .Command = SERIAL_SCORE_SCREEN, .Name = {}, .ID = 0, .ScenarioInfo = {}};
-  SerialPacketType receivepacket{
-      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType sendpacket{};
+  sendpacket.Command = SERIAL_SCORE_SCREEN;
+  SerialPacketType receivepacket{};
+  receivepacket.Command = SERIAL_LAST_COMMAND;
   int packetlen = 0;
 
   game::TheKeyboard().Clear();
@@ -729,8 +729,10 @@ void Cycle_Wait_Click(bool cycle) {
         base::FillBytes(base::ObjectBytes(sendpacket), 0,
                         sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
-        sendpacket.ScenarioInfo.ResponseTime =
-            TheNetwork().null_modem().Response_Time();
+        sendpacket.UpdateData<SerialPacketType::ScenarioInfoData>(
+            [&](SerialPacketType::ScenarioInfoData& d) {
+              d.ResponseTime = TheNetwork().null_modem().Response_Time();
+            });
         sendpacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),

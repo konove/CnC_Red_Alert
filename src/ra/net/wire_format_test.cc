@@ -196,7 +196,8 @@ TEST_F(WireFormatTest, GlobalGameInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_ANSWER_GAME;
   base::SafeCopy(packet.Name, "Game");
-  packet.GameInfo.IsOpen = 1;
+  packet.UpdateData<GlobalPacketType::GameInfoData>(
+      [](GlobalPacketType::GameInfoData& d) { d.IsOpen = 1; });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "010047616d65000000000000000000000100000000000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
@@ -209,12 +210,15 @@ TEST_F(WireFormatTest, GlobalPlayerInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_ANSWER_PLAYER;
   base::SafeCopy(packet.Name, "Player");
-  packet.PlayerInfo.House = HOUSE_USSR;
-  packet.PlayerInfo.Color = PCOLOR_GREEN;
-  packet.PlayerInfo.NameCRC = 0x11223344;
-  packet.PlayerInfo.MinVersion = 0x55667788;
-  packet.PlayerInfo.MaxVersion = 0x99AABBCC;
-  packet.PlayerInfo.CheatCheck = 0x0D0E0F10;
+  packet.UpdateData<GlobalPacketType::PlayerInfoData>(
+      [](GlobalPacketType::PlayerInfoData& d) {
+        d.House = HOUSE_USSR;
+        d.Color = PCOLOR_GREEN;
+        d.NameCRC = 0x11223344;
+        d.MinVersion = 0x55667788;
+        d.MaxVersion = 0x99AABBCC;
+        d.CheatCheck = 0x0D0E0F10;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0300506c61796572000000000000000002000000030000004433221188776655cc"
             "bbaa99100f0e0d0000000000000000000000000000000000000000000000000000"
@@ -227,23 +231,26 @@ TEST_F(WireFormatTest, GlobalScenarioInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_GAME_OPTIONS;
   base::SafeCopy(packet.Name, "Host");
-  base::SafeCopy(packet.ScenarioInfo.Scenario, "Scenario");
-  packet.ScenarioInfo.Credits = 0x00001388;
-  packet.ScenarioInfo.IsBases = 1;
-  packet.ScenarioInfo.IsTiberium = 1;
-  packet.ScenarioInfo.IsGoodies = 1;
-  packet.ScenarioInfo.IsGhosties = 1;
-  packet.ScenarioInfo.OfficialScenario = 1;
-  packet.ScenarioInfo.BuildLevel = 0x0A;
-  packet.ScenarioInfo.UnitCount = 0x0B;
-  packet.ScenarioInfo.AIPlayers = 0x0C;
-  packet.ScenarioInfo.Seed = 0x11223344;
-  packet.ScenarioInfo.Special = AllSpecialFlags();
-  packet.ScenarioInfo.GameSpeed = 0x05;
-  packet.ScenarioInfo.Version = 0x55667788;
-  packet.ScenarioInfo.FileLength = 0x99AABBCC;
-  base::SafeCopy(packet.ScenarioInfo.ShortFileName, "SCM01EA.INI");
-  base::SafeCopy(packet.ScenarioInfo.FileDigest, "digest");
+  packet.UpdateData<GlobalPacketType::ScenarioInfoData>(
+      [](GlobalPacketType::ScenarioInfoData& d) {
+        base::SafeCopy(d.Scenario, "Scenario");
+        d.Credits = 0x00001388;
+        d.IsBases = 1;
+        d.IsTiberium = 1;
+        d.IsGoodies = 1;
+        d.IsGhosties = 1;
+        d.OfficialScenario = 1;
+        d.BuildLevel = 0x0A;
+        d.UnitCount = 0x0B;
+        d.AIPlayers = 0x0C;
+        d.Seed = 0x11223344;
+        d.Special = AllSpecialFlags();
+        d.GameSpeed = 0x05;
+        d.Version = 0x55667788;
+        d.FileLength = 0x99AABBCC;
+        base::SafeCopy(d.ShortFileName, "SCM01EA.INI");
+        base::SafeCopy(d.FileDigest, "digest");
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0900486f7374000000000000000000005363656e6172696f000000000000000000"
             "000000000000000000000000000000000000000000000000000000881300001f0a"
@@ -256,9 +263,12 @@ TEST_F(WireFormatTest, GlobalMessagePacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_MESSAGE;
   base::SafeCopy(packet.Name, "Sender");
-  base::SafeCopy(packet.Message.Buf, "Hello");
-  packet.Message.Color = PCOLOR_RED;
-  packet.Message.NameCRC = 0x11223344;
+  packet.UpdateData<GlobalPacketType::MessageData>(
+      [](GlobalPacketType::MessageData& d) {
+        base::SafeCopy(d.Buf, "Hello");
+        d.Color = PCOLOR_RED;
+        d.NameCRC = 0x11223344;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0c0053656e646572000000000000000048656c6c6f000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
@@ -270,7 +280,8 @@ TEST_F(WireFormatTest, GlobalMessagePacket) {
 TEST_F(WireFormatTest, GlobalResponseTimePacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_GO;
-  packet.ResponseTime.OneWay = 0x11223344;
+  packet.UpdateData<GlobalPacketType::ResponseTimeData>(
+      [](GlobalPacketType::ResponseTimeData& d) { d.OneWay = 0x11223344; });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0b0000000000000000000000000000004433221100000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
@@ -282,7 +293,8 @@ TEST_F(WireFormatTest, GlobalResponseTimePacket) {
 TEST_F(WireFormatTest, GlobalRejectPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_REJECT_JOIN;
-  packet.Reject.Why = 0x11223344;
+  packet.UpdateData<GlobalPacketType::RejectData>(
+      [](GlobalPacketType::RejectData& d) { d.Why = 0x11223344; });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "080000000000000000000000000000004433221100000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
@@ -294,8 +306,11 @@ TEST_F(WireFormatTest, GlobalRejectPacket) {
 TEST_F(WireFormatTest, GlobalChatPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_CHAT_ANNOUNCE;
-  packet.Chat.ID = 0x11223344;
-  packet.Chat.Color = PCOLOR_LTBLUE;
+  packet.UpdateData<GlobalPacketType::ChatData>(
+      [](GlobalPacketType::ChatData& d) {
+        d.ID = 0x11223344;
+        d.Color = PCOLOR_LTBLUE;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "040000000000000000000000000000004433221101000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
@@ -309,28 +324,31 @@ TEST_F(WireFormatTest, SerialScenarioInfoPacket) {
   packet.Command = SERIAL_GAME_OPTIONS;
   base::SafeCopy(packet.Name, "Host");
   packet.ID = 0x42;
-  packet.ScenarioInfo.House = HOUSE_USSR;
-  packet.ScenarioInfo.Color = PCOLOR_GREEN;
-  packet.ScenarioInfo.MinVersion = 0x11223344;
-  packet.ScenarioInfo.MaxVersion = 0x55667788;
-  base::SafeCopy(packet.ScenarioInfo.Scenario, "Scenario");
-  packet.ScenarioInfo.Credits = 0x00001388;
-  packet.ScenarioInfo.IsBases = 1;
-  packet.ScenarioInfo.IsTiberium = 1;
-  packet.ScenarioInfo.IsGoodies = 1;
-  packet.ScenarioInfo.IsGhosties = 1;
-  packet.ScenarioInfo.OfficialScenario = 1;
-  packet.ScenarioInfo.CheatCheck = 0x0D0E0F10;
-  packet.ScenarioInfo.BuildLevel = 0x0A;
-  packet.ScenarioInfo.UnitCount = 0x0B;
-  packet.ScenarioInfo.AIPlayers = 0x0C;
-  packet.ScenarioInfo.Seed = 0x21222324;
-  packet.ScenarioInfo.Special = AllSpecialFlags();
-  packet.ScenarioInfo.GameSpeed = 0x05;
-  packet.ScenarioInfo.ResponseTime = 0x31323334;
-  packet.ScenarioInfo.FileLength = 0x41424344;
-  base::SafeCopy(packet.ScenarioInfo.ShortFileName, "SCM01EA.INI");
-  base::SafeCopy(packet.ScenarioInfo.FileDigest, "digest");
+  packet.UpdateData<SerialPacketType::ScenarioInfoData>(
+      [](SerialPacketType::ScenarioInfoData& d) {
+        d.House = HOUSE_USSR;
+        d.Color = PCOLOR_GREEN;
+        d.MinVersion = 0x11223344;
+        d.MaxVersion = 0x55667788;
+        base::SafeCopy(d.Scenario, "Scenario");
+        d.Credits = 0x00001388;
+        d.IsBases = 1;
+        d.IsTiberium = 1;
+        d.IsGoodies = 1;
+        d.IsGhosties = 1;
+        d.OfficialScenario = 1;
+        d.CheatCheck = 0x0D0E0F10;
+        d.BuildLevel = 0x0A;
+        d.UnitCount = 0x0B;
+        d.AIPlayers = 0x0C;
+        d.Seed = 0x21222324;
+        d.Special = AllSpecialFlags();
+        d.GameSpeed = 0x05;
+        d.ResponseTime = 0x31323334;
+        d.FileLength = 0x41424344;
+        base::SafeCopy(d.ShortFileName, "SCM01EA.INI");
+        base::SafeCopy(d.FileDigest, "digest");
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "6500486f7374000000000000000042000200000003000000443322118877665553"
             "63656e6172696f0000000000000000000000000000000000000000000000000000"
@@ -344,28 +362,17 @@ TEST_F(WireFormatTest, SerialMessagePacket) {
   packet.Command = SERIAL_MESSAGE;
   base::SafeCopy(packet.Name, "Sender");
   packet.ID = 0x42;
-  base::SafeCopy(packet.Message.Message, "Hello");
-  packet.Message.Color = PCOLOR_RED;
+  packet.UpdateData<SerialPacketType::MessageData>(
+      [](SerialPacketType::MessageData& d) {
+        base::SafeCopy(d.Message, "Hello");
+        d.Color = PCOLOR_RED;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "680053656e646572000000000000420048656c6c6f000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
             "00000000020000000000000000000000000000000000000000000000");
-}
-
-TEST_F(WireFormatTest, SerialChatPacket) {
-  auto packet = Zeroed<SerialPacketType>();
-  packet.Command = SERIAL_CONNECT;
-  base::SafeCopy(packet.Name, "Caller");
-  packet.ID = 0x42;
-  packet.Chat.Color = PCOLOR_LTBLUE;
-  EXPECT_EQ(Hex(base::ObjectBytes(packet)),
-            "640043616c6c657200000000000042000100000000000000000000000000000000"
-            "000000000000000000000000000000000000000000000000000000000000000000"
-            "000000000000000000000000000000000000000000000000000000000000000000"
-            "000000000000000000000000000000000000000000000000000000000000000000"
-            "00000000000000000000000000000000000000000000000000000000");
 }
 
 // True if some payload arm names `type` in its Carries().

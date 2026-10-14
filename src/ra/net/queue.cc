@@ -1974,8 +1974,8 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
 static RetcodeType Process_Serial_Packet(
     std::span<const std::byte> multi_packet_buf, int packetlen,
     int first_time) {
-  SerialPacketType serial_storage{
-      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType serial_storage{};
+  serial_storage.Command = SERIAL_LAST_COMMAND;
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
   EventClass event_storage;
@@ -2013,8 +2013,10 @@ static RetcodeType Process_Serial_Packet(
     }
   }
   if (player_gone) {
-    Destroy_Null_Connection(static_cast<int>(serial_packet->ScenarioInfo.Color),
-                            0);
+    Destroy_Null_Connection(
+        static_cast<int>(
+            serial_packet->data<SerialPacketType::ScenarioInfoData>().Color),
+        0);
     return RC_PLAYER_LEFT;
   }
 
@@ -2022,18 +2024,16 @@ static RetcodeType Process_Serial_Packet(
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
+    const auto message = serial_packet->data<SerialPacketType::MessageData>();
     if (!TheSession().Messages.Concat_Message(
-            serial_packet->Name, serial_packet->ID,
-            serial_packet->Message.Message,
+            serial_packet->Name, serial_packet->ID, message.Message,
             TheRules().MessageDelay * kTicksPerMinute)) {
-      const char* ptr = &base::At(serial_packet->Message.Message, 0);
-      if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
+      if (std::string_view(message.Message).starts_with("SECRET UNITS ON ") &&
           TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       TheSession().Messages.Add_Message(
-          serial_packet->Name, serial_packet->ID,
-          serial_packet->Message.Message,
+          serial_packet->Name, serial_packet->ID, message.Message,
           static_cast<PlayerColorType>(serial_packet->ID),
           FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
@@ -2044,8 +2044,8 @@ static RetcodeType Process_Serial_Packet(
     //.....................................................................
     //	Save this message in our last-message buffer
     //.....................................................................
-    if (!std::string_view(serial_packet->Message.Message).empty()) {
-      base::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+    if (!std::string_view(message.Message).empty()) {
+      base::SafeCopy(TheSession().LastMessage, message.Message);
     }
 
     //.....................................................................

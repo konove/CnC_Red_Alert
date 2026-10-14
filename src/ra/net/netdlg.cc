@@ -1086,7 +1086,10 @@ bool Process_Global_Packet(GlobalPacketType* packet,
 
       mypacket.Command = NET_ANSWER_GAME;
       base::SafeCopy(mypacket.Name, TheSession().GameName);
-      mypacket.GameInfo.IsOpen = TheSession().NetOpen;
+      mypacket.UpdateData<GlobalPacketType::GameInfoData>(
+          [&](GlobalPacketType::GameInfoData& d) {
+            d.IsOpen = TheSession().NetOpen;
+          });
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
@@ -1106,9 +1109,12 @@ bool Process_Global_Packet(GlobalPacketType* packet,
 
     mypacket.Command = NET_ANSWER_PLAYER;
     base::SafeCopy(mypacket.Name, TheSession().Players.at(0)->Name);
-    mypacket.PlayerInfo.House = TheSession().House;
-    mypacket.PlayerInfo.Color = TheSession().ColorIdx;
-    mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(TheSession().GameName);
+    mypacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+        [&](GlobalPacketType::PlayerInfoData& d) {
+          d.House = TheSession().House;
+          d.Color = TheSession().ColorIdx;
+          d.NameCRC = Compute_Name_CRC(TheSession().GameName);
+        });
 
     TheNetwork().ipx().Send_Global_Message(
         base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
@@ -1710,7 +1716,7 @@ static int Net_Join_Dialog() {
   base::SafeCopy(me->Name, namebuf);
   me->LastTime = 0;
   me->LastChance = 0;
-  me->Color = TheSession().GPacket.Chat.Color;
+  me->Color = TheSession().ColorIdx;
 
   //------------------------------------------------------------------------
   // Create the "Lobby" game name on the games list, and create a bogus
@@ -2349,16 +2355,23 @@ static int Net_Join_Dialog() {
           TheSession().GPacket.Command = NET_MESSAGE;
           base::SafeCopy(TheSession().GPacket.Name, namebuf);
           if (i == 3) {
-            base::SafeCopy(TheSession().GPacket.Message.Buf,
-                           TheSession().Messages.Get_Edit_Buf());
+            TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+                [&](GlobalPacketType::MessageData& d) {
+                  base::SafeCopy(d.Buf, TheSession().Messages.Get_Edit_Buf());
+                });
           } else {
-            base::SafeCopy(TheSession().GPacket.Message.Buf,
-                           TheSession().Messages.Get_Overflow_Buf());
+            TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+                [&](GlobalPacketType::MessageData& d) {
+                  base::SafeCopy(d.Buf,
+                                 TheSession().Messages.Get_Overflow_Buf());
+                });
             TheSession().Messages.Clear_Overflow_Buf();
           }
-          TheSession().GPacket.Message.Color = TheSession().ColorIdx;
-          TheSession().GPacket.Message.NameCRC =
-              Compute_Name_CRC(TheSession().GameName);
+          TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+              [&](GlobalPacketType::MessageData& d) {
+                d.Color = TheSession().ColorIdx;
+                d.NameCRC = Compute_Name_CRC(TheSession().GameName);
+              });
 
           //............................................................
           //	If we're joined in a game, send the message to every player
@@ -2383,8 +2396,9 @@ static int Net_Join_Dialog() {
                   &TheSession().Chat.at(i)->Address);
               TheNetwork().ipx().Service();
             }
-            if (HashKeyPhrase(TheSession().GPacket.Message.Buf) ==
-                kWestwoodChatCode) {
+            if (HashKeyPhrase(TheSession()
+                                  .GPacket.data<GlobalPacketType::MessageData>()
+                                  .Buf) == kWestwoodChatCode) {
               TheSession().WWChat = true;
               Clear_Listbox(&playerlist);
               Start_WWChat(&playerlist);
@@ -2397,11 +2411,14 @@ static int Net_Join_Dialog() {
           //............................................................
           TheSession().Messages.Add_Message(
               TheSession().GPacket.Name,
-              static_cast<int>(TheSession().GPacket.Message.Color ==
-                                       PCOLOR_DIALOG_BLUE
-                                   ? PCOLOR_REALLY_BLUE
-                                   : TheSession().GPacket.Message.Color),
-              TheSession().GPacket.Message.Buf,
+              static_cast<int>(
+                  TheSession().GPacket.data<GlobalPacketType::MessageData>()
+                              .Color == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession()
+                            .GPacket.data<GlobalPacketType::MessageData>()
+                            .Color),
+              TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx,
@@ -3069,22 +3086,33 @@ static bool Request_To_Join(const char* playername, int join_index,
 
   TheSession().GPacket.Command = NET_QUERY_JOIN;
   base::SafeCopy(TheSession().GPacket.Name, playername);
-  TheSession().GPacket.PlayerInfo.House = house;
-  TheSession().GPacket.PlayerInfo.Color = color;
+  TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+      [&](GlobalPacketType::PlayerInfoData& d) {
+        d.House = house;
+        d.Color = color;
+      });
   //	Guest sends host his version.
   //	Added to the transmitted _min_ version number is a bit indicating
   // presence of Aftermath expansion.
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
-    TheSession().GPacket.PlayerInfo.MinVersion =
-        VersionClass::Min_Version() | 0x80000000;
+    TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+        [&](GlobalPacketType::PlayerInfoData& d) {
+          d.MinVersion = VersionClass::Min_Version() | 0x80000000;
+        });
   } else {
     //		debugprint( "Guest tells host 'I don't have
     // Aftermath'\n" );
-    TheSession().GPacket.PlayerInfo.MinVersion = VersionClass::Min_Version();
+    TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+        [&](GlobalPacketType::PlayerInfoData& d) {
+          d.MinVersion = VersionClass::Min_Version();
+        });
   }
-  TheSession().GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
-  TheSession().GPacket.PlayerInfo.CheatCheck = TheRules().rule_ini().UniqueId();
+  TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+      [&](GlobalPacketType::PlayerInfoData& d) {
+        d.MaxVersion = VersionClass::Max_Version();
+        d.CheatCheck = TheRules().rule_ini().UniqueId();
+      });
 
   TheNetwork().ipx().Send_Global_Message(
       base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -3314,8 +3342,11 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
 
     TheSession().GPacket.Command = NET_CHAT_ANNOUNCE;
     base::SafeCopy(TheSession().GPacket.Name, myname);
-    TheSession().GPacket.Chat.ID = static_cast<uint32_t>(TheSession().UniqueID);
-    TheSession().GPacket.Chat.Color = TheSession().ColorIdx;
+    TheSession().GPacket.UpdateData<GlobalPacketType::ChatData>(
+        [&](GlobalPacketType::ChatData& d) {
+          d.ID = static_cast<uint32_t>(TheSession().UniqueID);
+          d.Color = TheSession().ColorIdx;
+        });
 
     TheNetwork().ipx().Send_Global_Message(
         base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 0,
@@ -3424,15 +3455,22 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         TheSession().Games.at(i)->LastTime = engine::platform::SystemTicks();
         if (TheSession().Games.at(i)->IsOpen !=
-            TheSession().GPacket.GameInfo.IsOpen) {
-          gamelist->Set_Item(i,
-                             base::FormatRuntime(
-                                 TextString(TheSession().GPacket.GameInfo.IsOpen
-                                                ? TXT_THATGUYS_GAME
-                                                : TXT_THATGUYS_GAME_BRACKET),
-                                 TheSession().GPacket.Name));
+            TheSession()
+                .GPacket.data<GlobalPacketType::GameInfoData>()
+                .IsOpen) {
+          gamelist->Set_Item(
+              i, base::FormatRuntime(
+                     TextString(
+                         TheSession()
+                                 .GPacket.data<GlobalPacketType::GameInfoData>()
+                                 .IsOpen
+                             ? TXT_THATGUYS_GAME
+                             : TXT_THATGUYS_GAME_BRACKET),
+                     TheSession().GPacket.Name));
           TheSession().Games.at(i)->IsOpen =
-              TheSession().GPacket.GameInfo.IsOpen;
+              TheSession()
+                  .GPacket.data<GlobalPacketType::GameInfoData>()
+                  .IsOpen;
           gamelist->Flag_To_Redraw();
 
           //............................................................
@@ -3481,7 +3519,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       auto* const who = TheSession().Games.Add(std::make_unique<GameNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->IsOpen = TheSession().GPacket.GameInfo.IsOpen;
+      who->IsOpen =
+          TheSession().GPacket.data<GlobalPacketType::GameInfoData>().IsOpen;
       who->LastTime = engine::platform::SystemTicks();
 
       //..................................................................
@@ -3489,10 +3528,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // around 	the string if it's a closed game
       //..................................................................
       gamelist->Add_Item(
-          base::FormatRuntime(TextString(TheSession().GPacket.GameInfo.IsOpen
-                                             ? TXT_THATGUYS_GAME
-                                             : TXT_THATGUYS_GAME_BRACKET),
-                              TheSession().GPacket.Name)
+          base::FormatRuntime(
+              TextString(TheSession()
+                                 .GPacket.data<GlobalPacketType::GameInfoData>()
+                                 .IsOpen
+                             ? TXT_THATGUYS_GAME
+                             : TXT_THATGUYS_GAME_BRACKET),
+              TheSession().GPacket.Name)
               .c_str());
 
       //..................................................................
@@ -3509,7 +3551,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // If this game is open, display a message stating that it's
       // now available.
       //..................................................................
-      if (TheSession().GPacket.GameInfo.IsOpen && *joinstate < JOIN_CONFIRMED) {
+      if (TheSession().GPacket.data<GlobalPacketType::GameInfoData>().IsOpen &&
+          *joinstate < JOIN_CONFIRMED) {
         const std::string message = base::FormatRuntime(
             TextString(TXT_S_FORMED_NEW_GAME), TheSession().GPacket.Name);
         TheSession().Messages.Add_Message(nullptr, 0, message.c_str(),
@@ -3541,12 +3584,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         base::SafeCopy(TheSession().Players.at(i)->Name,
                        TheSession().GPacket.Name);
         TheSession().Players.at(i)->House =
-            TheSession().GPacket.PlayerInfo.House;
+            TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House;
         TheSession().Players.at(i)->Color =
-            TheSession().GPacket.PlayerInfo.Color;
+            TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().Color;
 
         base::At(playerlist->Colors, i) = &ThePalettes().color_remaps().at(
-            TheSession().GPacket.PlayerInfo.Color);
+            TheSession()
+                .GPacket.data<GlobalPacketType::PlayerInfoData>()
+                .Color);
 
         if (base::At(playerlist->Colors, i) ==
             &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
@@ -3565,7 +3610,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     i = gamelist->Current_Index();
     if (TheSession().Games.Count() &&
-        TheSession().GPacket.PlayerInfo.NameCRC !=
+        TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().NameCRC !=
             Compute_Name_CRC(TheSession().Games.at(i)->Name)) {
       found = 1;
     }
@@ -3590,14 +3635,17 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           TheSession().Players.Add(std::make_unique<PlayerNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->House = TheSession().GPacket.PlayerInfo.House;
-      who->Color = TheSession().GPacket.PlayerInfo.Color;
+      who->House =
+          TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House;
+      who->Color =
+          TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().Color;
 
       //..................................................................
       //	Create & add a string to the list box
       //..................................................................
 #ifdef OLDWAY
-      if (TheSession().GPacket.PlayerInfo.House == HOUSE_GOOD) {
+      if (TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House ==
+          HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
                        TextString(TXT_ALLIES));
       } else {
@@ -3605,10 +3653,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                        TextString(TXT_SOVIET));
       }
 #else   // OLDWAY
-      absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                     TextString(HouseTypeClass::As_Reference(
-                                    TheSession().GPacket.PlayerInfo.House)
-                                    .Full_Name()));
+      absl::SNPrintF(
+          item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
+          TextString(HouseTypeClass::As_Reference(
+                         TheSession()
+                             .GPacket.data<GlobalPacketType::PlayerInfoData>()
+                             .House)
+                         .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
           item, who->Color == PCOLOR_DIALOG_BLUE
@@ -3641,8 +3692,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //------------------------------------------------------------------------
     if (*joinstate != JOIN_CONFIRMED) {
       base::SafeCopy(TheSession().GameName, TheSession().GPacket.Name);
-      TheSession().House = TheSession().GPacket.PlayerInfo.House;
-      TheSession().ColorIdx = TheSession().GPacket.PlayerInfo.Color;
+      TheSession().House =
+          TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House;
+      TheSession().ColorIdx =
+          TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().Color;
 
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
@@ -3700,7 +3753,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //.....................................................................
       // If we're waiting for confirmation & got rejected, tell the user why
       //.....................................................................
-      *why = static_cast<RejectType>(TheSession().GPacket.Reject.Why);
+      *why = static_cast<RejectType>(
+          TheSession().GPacket.data<GlobalPacketType::RejectData>().Why);
       *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
     }
@@ -3710,31 +3764,61 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // sending us the new values.
     //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED || *joinstate == JOIN_WAIT_CONFIRM) {
-      TheSession().Options.Credits = TheSession().GPacket.ScenarioInfo.Credits;
-      TheSession().Options.Bases = TheSession().GPacket.ScenarioInfo.IsBases;
+      TheSession().Options.Credits =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .Credits;
+      TheSession().Options.Bases =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .IsBases;
       TheSession().Options.Tiberium =
-          TheSession().GPacket.ScenarioInfo.IsTiberium;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .IsTiberium;
       TheSession().Options.Goodies =
-          TheSession().GPacket.ScenarioInfo.IsGoodies;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .IsGoodies;
       //			Session.Options.Ghosts =
       // Session.GPacket.ScenarioInfo.IsGhosties;
       TheSession().Options.AIPlayers =
-          TheSession().GPacket.ScenarioInfo.AIPlayers;
-      TheWorld().build_level() = TheSession().GPacket.ScenarioInfo.BuildLevel;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .AIPlayers;
+      TheWorld().build_level() =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .BuildLevel;
       TheSession().Options.UnitCount =
-          TheSession().GPacket.ScenarioInfo.UnitCount;
-      TheWorld().seed() = TheSession().GPacket.ScenarioInfo.Seed;
-      TheSpecialFlags() = TheSession().GPacket.ScenarioInfo.Special;
-      TheOptions().GameSpeed = TheSession().GPacket.ScenarioInfo.GameSpeed;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .UnitCount;
+      TheWorld().seed() =
+          TheSession().GPacket.data<GlobalPacketType::ScenarioInfoData>().Seed;
+      TheSpecialFlags() =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .Special;
+      TheOptions().GameSpeed =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .GameSpeed;
 
       //	Guest receives game version number from host.
       //	Added to the transmitted version number is a bit indicating
       // presence of Aftermath expansion.
-      const uint32_t lVersion = TheSession().GPacket.ScenarioInfo.Version &
-                                ~0x80000000;  //	Actual version number.
+      const uint32_t lVersion =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .Version &
+          ~0x80000000;  //	Actual version number.
       TheSession().CommProtocol = VersionClass::Version_Protocol(lVersion);
       TheSession().IsAftermath =
-          (TheSession().GPacket.ScenarioInfo.Version & 0x80000000) != 0;
+          (TheSession()
+               .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+               .Version &
+           0x80000000) != 0;
       //			if( bAftermathMultiplayer )
       //				debugprint( "Guest hears host say 'This
       // is an
@@ -3760,15 +3844,25 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       have it locally.
       ...............................................................*/
       base::SafeCopy(TheSession().Options.ScenarioDescription,
-                     TheSession().GPacket.ScenarioInfo.Scenario);
+                     TheSession()
+                         .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+                         .Scenario);
       base::SafeCopy(TheSession().ScenarioFileName,
-                     TheSession().GPacket.ScenarioInfo.ShortFileName);
+                     TheSession()
+                         .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+                         .ShortFileName);
       base::SafeCopy(TheSession().ScenarioDigest,
-                     TheSession().GPacket.ScenarioInfo.FileDigest);
+                     TheSession()
+                         .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+                         .FileDigest);
       TheSession().ScenarioIsOfficial =
-          TheSession().GPacket.ScenarioInfo.OfficialScenario;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .OfficialScenario;
       TheSession().ScenarioFileLength =
-          TheSession().GPacket.ScenarioInfo.FileLength;
+          TheSession()
+              .GPacket.data<GlobalPacketType::ScenarioInfoData>()
+              .FileLength;
 
       retcode = EV_GAME_OPTIONS;
     }
@@ -3871,7 +3965,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //	NET_GO: The game's owner is signalling us to start playing.
     //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED) {
-      TheSession().MaxAhead = TheSession().GPacket.ResponseTime.OneWay;
+      TheSession().MaxAhead =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ResponseTimeData>()
+              .OneWay;
       *joinstate = JOIN_GAME_START;
       retcode = EV_STATE_CHANGE;
       TheSession().HostAddress = TheSession().GAddress;
@@ -3881,7 +3978,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //	NET_LOADGAME: The game's owner is signalling us to start playing.
     //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED) {
-      TheSession().MaxAhead = TheSession().GPacket.ResponseTime.OneWay;
+      TheSession().MaxAhead =
+          TheSession()
+              .GPacket.data<GlobalPacketType::ResponseTimeData>()
+              .OneWay;
       *joinstate = JOIN_GAME_START_LOAD;
       retcode = EV_STATE_CHANGE;
     }
@@ -3894,7 +3994,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     // If this packet is from myself, don't add it to the list
     //.....................................................................
-    if (std::cmp_equal(TheSession().GPacket.Chat.ID, TheSession().UniqueID)) {
+    if (std::cmp_equal(
+            TheSession().GPacket.data<GlobalPacketType::ChatData>().ID,
+            TheSession().UniqueID)) {
       found = 1;
     }
     //.....................................................................
@@ -3909,7 +4011,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                          TheSession().GPacket.Name);
           TheSession().Chat.at(i)->LastTime = engine::platform::SystemTicks();
           TheSession().Chat.at(i)->LastChance = 0;
-          TheSession().Chat.at(i)->Color = TheSession().GPacket.Chat.Color;
+          TheSession().Chat.at(i)->Color =
+              TheSession().GPacket.data<GlobalPacketType::ChatData>().Color;
           found = 1;
           break;
         }
@@ -3924,7 +4027,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who->Address = TheSession().GAddress;
       who->LastTime = engine::platform::SystemTicks();
       who->LastChance = 0;
-      who->Color = TheSession().GPacket.Chat.Color;
+      who->Color =
+          TheSession().GPacket.data<GlobalPacketType::ChatData>().Color;
     }
   } else if (TheSession().GPacket.Command == NET_CHAT_REQUEST) {
     //------------------------------------------------------------------------
@@ -3937,9 +4041,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       TheSession().GPacket.Command = NET_CHAT_ANNOUNCE;
       base::SafeCopy(TheSession().GPacket.Name, my_name);
-      TheSession().GPacket.Chat.ID =
-          static_cast<uint32_t>(TheSession().UniqueID);
-      TheSession().GPacket.Chat.Color = TheSession().ColorIdx;
+      TheSession().GPacket.UpdateData<GlobalPacketType::ChatData>(
+          [&](GlobalPacketType::ChatData& d) {
+            d.ID = static_cast<uint32_t>(TheSession().UniqueID);
+            d.Color = TheSession().ColorIdx;
+          });
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -3955,18 +4061,24 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // If we're in a game, the sender must be in our game.
     //.....................................................................
     if (*joinstate == JOIN_CONFIRMED) {
-      if (TheSession().GPacket.Message.NameCRC ==
+      if (TheSession().GPacket.data<GlobalPacketType::MessageData>().NameCRC ==
           Compute_Name_CRC(TheSession().GameName)) {
         TheSession().Messages.Add_Message(
             TheSession().GPacket.Name,
-            static_cast<int>(TheSession().GPacket.Message.Color ==
-                                     PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : TheSession().GPacket.Message.Color),
-            TheSession().GPacket.Message.Buf,
-            TheSession().GPacket.Message.Color == PCOLOR_DIALOG_BLUE
+            static_cast<int>(
+                TheSession().GPacket.data<GlobalPacketType::MessageData>()
+                            .Color == PCOLOR_DIALOG_BLUE
+                    ? PCOLOR_REALLY_BLUE
+                    : TheSession()
+                          .GPacket.data<GlobalPacketType::MessageData>()
+                          .Color),
+            TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
+            TheSession().GPacket.data<GlobalPacketType::MessageData>().Color ==
+                    PCOLOR_DIALOG_BLUE
                 ? PCOLOR_REALLY_BLUE
-                : TheSession().GPacket.Message.Color,
+                : TheSession()
+                      .GPacket.data<GlobalPacketType::MessageData>()
+                      .Color,
             kTextFont, kTextFlags, -1);
       }
     }
@@ -3976,11 +4088,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     else {
       TheSession().Messages.Add_Message(
           TheSession().GPacket.Name,
-          static_cast<int>(TheSession().GPacket.Message.Color),
-          TheSession().GPacket.Message.Buf,
-          TheSession().GPacket.Message.Color == PCOLOR_DIALOG_BLUE
+          static_cast<int>(
+              TheSession().GPacket.data<GlobalPacketType::MessageData>().Color),
+          TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
+          TheSession().GPacket.data<GlobalPacketType::MessageData>().Color ==
+                  PCOLOR_DIALOG_BLUE
               ? PCOLOR_REALLY_BLUE
-              : TheSession().GPacket.Message.Color,
+              : TheSession()
+                    .GPacket.data<GlobalPacketType::MessageData>()
+                    .Color,
           kTextFont, kTextFlags, -1);
     }
 
@@ -4817,16 +4933,23 @@ static int Net_New_Dialog() {
           TheSession().GPacket.Command = NET_MESSAGE;
           base::SafeCopy(TheSession().GPacket.Name, TheSession().Handle);
           if (i == 3) {
-            base::SafeCopy(TheSession().GPacket.Message.Buf,
-                           TheSession().Messages.Get_Edit_Buf());
+            TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+                [&](GlobalPacketType::MessageData& d) {
+                  base::SafeCopy(d.Buf, TheSession().Messages.Get_Edit_Buf());
+                });
           } else {
-            base::SafeCopy(TheSession().GPacket.Message.Buf,
-                           TheSession().Messages.Get_Overflow_Buf());
+            TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+                [&](GlobalPacketType::MessageData& d) {
+                  base::SafeCopy(d.Buf,
+                                 TheSession().Messages.Get_Overflow_Buf());
+                });
             TheSession().Messages.Clear_Overflow_Buf();
           }
-          TheSession().GPacket.Message.Color = TheSession().ColorIdx;
-          TheSession().GPacket.Message.NameCRC =
-              Compute_Name_CRC(TheSession().GameName);
+          TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+              [&](GlobalPacketType::MessageData& d) {
+                d.Color = TheSession().ColorIdx;
+                d.NameCRC = Compute_Name_CRC(TheSession().GameName);
+              });
 
           //............................................................
           //	Send the message to every player in our player list, except
@@ -4848,11 +4971,14 @@ static int Net_New_Dialog() {
           //............................................................
           TheSession().Messages.Add_Message(
               TheSession().GPacket.Name,
-              static_cast<int>(TheSession().GPacket.Message.Color ==
-                                       PCOLOR_DIALOG_BLUE
-                                   ? PCOLOR_REALLY_BLUE
-                                   : TheSession().GPacket.Message.Color),
-              TheSession().GPacket.Message.Buf,
+              static_cast<int>(
+                  TheSession().GPacket.data<GlobalPacketType::MessageData>()
+                              .Color == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession()
+                            .GPacket.data<GlobalPacketType::MessageData>()
+                            .Color),
+              TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx,
@@ -4925,59 +5051,67 @@ static int Net_New_Dialog() {
         * scenario on his machine
         ** or request a download if it doesnt exist
         */
-        base::SafeCopy(TheSession().GPacket.ScenarioInfo.Scenario,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Description());
-        TheSession().GPacket.ScenarioInfo.FileLength =
-            static_cast<unsigned int>(GameFileSize(
-                TheSession()
-                    .Scenarios.at(TheSession().Options.ScenarioIndex)
-                    ->Get_Filename()));
-        base::SafeCopy(TheSession().GPacket.ScenarioInfo.ShortFileName,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Get_Filename());
-        base::SafeCopy(TheSession().GPacket.ScenarioInfo.FileDigest,
-                       TheSession()
-                           .Scenarios.at(TheSession().Options.ScenarioIndex)
-                           ->Get_Digest());
-        TheSession().GPacket.ScenarioInfo.OfficialScenario =
-            TheSession()
-                .Scenarios.at(TheSession().Options.ScenarioIndex)
-                ->Get_Official();
+        TheSession().GPacket.UpdateData<GlobalPacketType::ScenarioInfoData>(
+            [&](GlobalPacketType::ScenarioInfoData& d) {
+              base::SafeCopy(
+                  d.Scenario,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Description());
+              d.FileLength = static_cast<unsigned int>(GameFileSize(
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Filename()));
+              base::SafeCopy(
+                  d.ShortFileName,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Filename());
+              base::SafeCopy(
+                  d.FileDigest,
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Digest());
+              d.OfficialScenario =
+                  TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
+                      ->Get_Official();
+            });
 
-        TheSession().GPacket.ScenarioInfo.Credits =
-            TheSession().Options.Credits;
-        TheSession().GPacket.ScenarioInfo.IsBases =
-            static_cast<uint8_t>(TheSession().Options.Bases);
-        TheSession().GPacket.ScenarioInfo.IsTiberium =
-            static_cast<uint8_t>(TheSession().Options.Tiberium);
-        TheSession().GPacket.ScenarioInfo.IsGoodies =
-            static_cast<uint8_t>(TheSession().Options.Goodies);
-        TheSession().GPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(TheWorld().build_level());
-        TheSession().GPacket.ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(TheSession().Options.UnitCount);
-        TheSession().GPacket.ScenarioInfo.AIPlayers =
-            static_cast<unsigned char>(TheSession().Options.AIPlayers);
-        TheSession().GPacket.ScenarioInfo.Seed = TheWorld().seed();
-        TheSession().GPacket.ScenarioInfo.Special = TheSpecialFlags();
-        TheSession().GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
-        TheSession().GPacket.ScenarioInfo.Version =
-            TheVersion().Get_Clipped_Version();
+        TheSession().GPacket.UpdateData<GlobalPacketType::ScenarioInfoData>(
+            [&](GlobalPacketType::ScenarioInfoData& d) {
+              d.Credits = TheSession().Options.Credits;
+              d.IsBases = static_cast<uint8_t>(TheSession().Options.Bases);
+              d.IsTiberium =
+                  static_cast<uint8_t>(TheSession().Options.Tiberium);
+              d.IsGoodies = static_cast<uint8_t>(TheSession().Options.Goodies);
+              d.BuildLevel =
+                  static_cast<unsigned char>(TheWorld().build_level());
+              d.UnitCount =
+                  static_cast<unsigned char>(TheSession().Options.UnitCount);
+              d.AIPlayers =
+                  static_cast<unsigned char>(TheSession().Options.AIPlayers);
+              d.Seed = TheWorld().seed();
+              d.Special = TheSpecialFlags();
+              d.GameSpeed = TheOptions().GameSpeed;
+              d.Version = TheVersion().Get_Clipped_Version();
+            });
         //	Host encodes whether or not this is an Aftermath game in the
         // highest bit.
         if (TheSession().IsAftermath) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
-          TheSession().GPacket.ScenarioInfo.Version =
-              TheVersion().Get_Clipped_Version() | 0x80000000;
+          TheSession().GPacket.UpdateData<GlobalPacketType::ScenarioInfoData>(
+              [&](GlobalPacketType::ScenarioInfoData& d) {
+                d.Version = TheVersion().Get_Clipped_Version() | 0x80000000;
+              });
         } else {
           //					debugprint( "Host tells guests
           //'This is NOT an Aftermath game'\n" );
-          TheSession().GPacket.ScenarioInfo.Version =
-              TheVersion().Get_Clipped_Version();
+          TheSession().GPacket.UpdateData<GlobalPacketType::ScenarioInfoData>(
+              [&](GlobalPacketType::ScenarioInfoData& d) {
+                d.Version = TheVersion().Get_Clipped_Version();
+              });
         }
 
         TheNetwork().ipx().Send_Global_Message(
@@ -5062,7 +5196,10 @@ static int Net_New_Dialog() {
     } else {
       TheSession().GPacket.Command = NET_GO;
     }
-    TheSession().GPacket.ResponseTime.OneWay = TheSession().MaxAhead;
+    TheSession().GPacket.UpdateData<GlobalPacketType::ResponseTimeData>(
+        [&](GlobalPacketType::ResponseTimeData& d) {
+          d.OneWay = TheSession().MaxAhead;
+        });
     for (i = 1; i < TheSession().Players.Count(); i++) {
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -5290,7 +5427,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));
       TheSession().GPacket.Command = NET_REJECT_JOIN;
-      TheSession().GPacket.Reject.Why = static_cast<int>(REJECT_DUPLICATE_NAME);
+      TheSession().GPacket.UpdateData<GlobalPacketType::RejectData>(
+          [&](GlobalPacketType::RejectData& d) {
+            d.Why = static_cast<int>(REJECT_DUPLICATE_NAME);
+          });
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
           &TheSession().GAddress);
@@ -5304,7 +5444,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));
       TheSession().GPacket.Command = NET_REJECT_JOIN;
-      TheSession().GPacket.Reject.Why = static_cast<int>(REJECT_GAME_FULL);
+      TheSession().GPacket.UpdateData<GlobalPacketType::RejectData>(
+          [&](GlobalPacketType::RejectData& d) {
+            d.Why = static_cast<int>(REJECT_GAME_FULL);
+          });
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
           &TheSession().GAddress);
@@ -5315,13 +5458,17 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     **	Don't allow joining if the rules.ini file doesn't appear to
     * match.
     */
-    if (TheSession().GPacket.PlayerInfo.CheatCheck !=
-            TheRules().rule_ini().UniqueId() &&
+    if (TheSession()
+                .GPacket.data<GlobalPacketType::PlayerInfoData>()
+                .CheatCheck != TheRules().rule_ini().UniqueId() &&
         !resend) {
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));
       TheSession().GPacket.Command = NET_REJECT_JOIN;
-      TheSession().GPacket.Reject.Why = static_cast<int>(REJECT_MISMATCH);
+      TheSession().GPacket.UpdateData<GlobalPacketType::RejectData>(
+          [&](GlobalPacketType::RejectData& d) {
+            d.Why = static_cast<int>(REJECT_MISMATCH);
+          });
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
           &TheSession().GAddress);
@@ -5340,16 +5487,25 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //	Added to the transmitted _min_ version number is a bit
       // indicating presence of Aftermath expansion.
       const bool bGuestHasAftermath =
-          (TheSession().GPacket.PlayerInfo.MinVersion & 0x80000000) != 0;
+          (TheSession()
+               .GPacket.data<GlobalPacketType::PlayerInfoData>()
+               .MinVersion &
+           0x80000000) != 0;
       if (!bGuestHasAftermath && TheSession().IsAftermath) {
         TheSession().IsAftermath = false;
       }
 
-      TheSession().GPacket.PlayerInfo.MinVersion &=
-          ~0x80000000;  // Strip special bit.
-      version =
-          TheVersion().Clip_Version(TheSession().GPacket.PlayerInfo.MinVersion,
-                                    TheSession().GPacket.PlayerInfo.MaxVersion);
+      TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+          [&](GlobalPacketType::PlayerInfoData& d) {
+            d.MinVersion &= ~0x80000000;  // Strip special bit.
+          });
+      version = TheVersion().Clip_Version(
+          TheSession()
+              .GPacket.data<GlobalPacketType::PlayerInfoData>()
+              .MinVersion,
+          TheSession()
+              .GPacket.data<GlobalPacketType::PlayerInfoData>()
+              .MaxVersion);
 
       // TCTCTC save off version number
 
@@ -5360,8 +5516,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                         sizeof(TheSession().GPacket));
         TheSession().GPacket.Command = NET_REJECT_JOIN;
-        TheSession().GPacket.Reject.Why =
-            static_cast<int>(REJECT_VERSION_TOO_OLD);
+        TheSession().GPacket.UpdateData<GlobalPacketType::RejectData>(
+            [&](GlobalPacketType::RejectData& d) {
+              d.Why = static_cast<int>(REJECT_VERSION_TOO_OLD);
+            });
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType),
             1, &TheSession().GAddress);
@@ -5375,8 +5533,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                         sizeof(TheSession().GPacket));
         TheSession().GPacket.Command = NET_REJECT_JOIN;
-        TheSession().GPacket.Reject.Why =
-            static_cast<int>(REJECT_VERSION_TOO_NEW);
+        TheSession().GPacket.UpdateData<GlobalPacketType::RejectData>(
+            [&](GlobalPacketType::RejectData& d) {
+              d.Why = static_cast<int>(REJECT_VERSION_TOO_NEW);
+            });
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType),
             1, &TheSession().GAddress);
@@ -5395,7 +5555,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
           TheSession().Players.Add(std::make_unique<PlayerNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->House = TheSession().GPacket.PlayerInfo.House;
+      who->House =
+          TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House;
 
       //..................................................................
       //	Set player's color; if requested color isn't used, give it to
@@ -5403,8 +5564,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // color we
       //	give him as used.
       //..................................................................
-      if (color_used.at(TheSession().GPacket.PlayerInfo.Color) == 0) {
-        who->Color = TheSession().GPacket.PlayerInfo.Color;
+      if (color_used.at(TheSession()
+                            .GPacket.data<GlobalPacketType::PlayerInfoData>()
+                            .Color) == 0) {
+        who->Color =
+            TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().Color;
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (color_used.at(static_cast<PlayerColorType>(i)) == 0) {
@@ -5419,7 +5583,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //	Add player name to the list box
       //..................................................................
 #ifdef OLDWAY
-      if (TheSession().GPacket.PlayerInfo.House == HOUSE_GOOD) {
+      if (TheSession().GPacket.data<GlobalPacketType::PlayerInfoData>().House ==
+          HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
                        TextString(TXT_ALLIES));
       } else {
@@ -5427,10 +5592,13 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                        TextString(TXT_SOVIET));
       }
 #else   // OLDWAY
-      absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                     TextString(HouseTypeClass::As_Reference(
-                                    TheSession().GPacket.PlayerInfo.House)
-                                    .Full_Name()));
+      absl::SNPrintF(
+          item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
+          TextString(HouseTypeClass::As_Reference(
+                         TheSession()
+                             .GPacket.data<GlobalPacketType::PlayerInfoData>()
+                             .House)
+                         .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
           item, who->Color == PCOLOR_DIALOG_BLUE
@@ -5445,8 +5613,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
 
       TheSession().GPacket.Command = NET_CONFIRM_JOIN;
       base::SafeCopy(TheSession().GPacket.Name, TheSession().Handle);
-      TheSession().GPacket.PlayerInfo.House = who->House;
-      TheSession().GPacket.PlayerInfo.Color = who->Color;
+      TheSession().GPacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+          [&](GlobalPacketType::PlayerInfoData& d) {
+            d.House = who->House;
+            d.Color = who->Color;
+          });
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -5503,14 +5674,18 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //------------------------------------------------------------------------
     TheSession().Messages.Add_Message(
         TheSession().GPacket.Name,
-        static_cast<int>(TheSession().GPacket.Message.Color ==
-                                 PCOLOR_DIALOG_BLUE
-                             ? PCOLOR_REALLY_BLUE
-                             : TheSession().GPacket.Message.Color),
-        TheSession().GPacket.Message.Buf,
-        TheSession().GPacket.Message.Color == PCOLOR_DIALOG_BLUE
+        static_cast<int>(
+            TheSession().GPacket.data<GlobalPacketType::MessageData>().Color ==
+                    PCOLOR_DIALOG_BLUE
+                ? PCOLOR_REALLY_BLUE
+                : TheSession()
+                      .GPacket.data<GlobalPacketType::MessageData>()
+                      .Color),
+        TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
+        TheSession().GPacket.data<GlobalPacketType::MessageData>().Color ==
+                PCOLOR_DIALOG_BLUE
             ? PCOLOR_REALLY_BLUE
-            : TheSession().GPacket.Message.Color,
+            : TheSession().GPacket.data<GlobalPacketType::MessageData>().Color,
         kTextFont, kTextFlags, -1);
 
     PlaySoundEffect(VOC_INCOMING_MESSAGE);

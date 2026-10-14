@@ -25,6 +25,7 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/strings/safe_string.h"
@@ -118,28 +119,37 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
 static void Send_Network_Chat_Message(const int rc) {
   TheSession().GPacket.Command = NET_MESSAGE;
   base::SafeCopy(TheSession().GPacket.Name, TheSession().Players.at(0)->Name);
-  TheSession().GPacket.Message.Color = TheSession().ColorIdx;
-  TheSession().GPacket.Message.NameCRC =
-      Compute_Name_CRC(TheSession().GameName);
+  TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+      [&](GlobalPacketType::MessageData& d) {
+        d.Color = TheSession().ColorIdx;
+        d.NameCRC = Compute_Name_CRC(TheSession().GameName);
+      });
 
   if (rc == 3) {
-    base::SafeCopy(TheSession().GPacket.Message.Buf,
-                   TheSession().Messages.Get_Edit_Buf());
+    TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+        [&](GlobalPacketType::MessageData& d) {
+          base::SafeCopy(d.Buf, TheSession().Messages.Get_Edit_Buf());
+        });
   } else {
-    base::SafeCopy(TheSession().GPacket.Message.Buf,
-                   TheSession().Messages.Get_Overflow_Buf());
+    TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+        [&](GlobalPacketType::MessageData& d) {
+          base::SafeCopy(d.Buf, TheSession().Messages.Get_Overflow_Buf());
+        });
     TheSession().Messages.Clear_Overflow_Buf();
   }
 
   // If 'F4' was hit, MessageAddress will be a broadcast address; send the
   // message to every player we have a connection with.
   if (TheSession().MessageAddress.Is_Broadcast()) {
-    char* ptr = &TheSession().GPacket.Message.Buf[0];
-    if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-        TheRules().NewUnitsEnabled) {
-      *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
-      Enable_Secret_Units();
-    }
+    TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+        [](GlobalPacketType::MessageData& d) {
+          if (std::string_view(d.Buf).starts_with("SECRET UNITS ON ") &&
+              TheRules().NewUnitsEnabled) {
+            // Force it to an odd hack so we know it was broadcast.
+            base::At(d.Buf, 0) = 'X';
+            Enable_Secret_Units();
+          }
+        });
     for (int i = 0; i < TheNetwork().ipx().Num_Connections(); ++i) {
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -158,7 +168,9 @@ static void Send_Network_Chat_Message(const int rc) {
 
   // Store this message in our LastMessage buffer; the computer may send us a
   // version of it later.
-  base::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);
+  base::SafeCopy(
+      TheSession().LastMessage,
+      TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf);
 }
 
 void Message_Input(engine::window::KeyNumber& input) {
@@ -279,19 +291,24 @@ void Message_Input(engine::window::KeyNumber& input) {
     // the EventClass.Type!)
     if (TheSession().Type == GAME_NULL_MODEM ||
         TheSession().Type == GAME_MODEM) {
-      SerialPacketType packet_storage{
-          .Command = SERIAL_MESSAGE, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+      SerialPacketType packet_storage{};
+      packet_storage.Command = SERIAL_MESSAGE;
       auto* serial_packet = &packet_storage;
 
       base::SafeCopy(serial_packet->Name, TheSession().Players.at(0)->Name);
       serial_packet->ID = static_cast<unsigned char>(TheSession().ColorIdx);
 
       if (rc == 3) {
-        base::SafeCopy(serial_packet->Message.Message,
-                       TheSession().Messages.Get_Edit_Buf());
+        serial_packet->UpdateData<SerialPacketType::MessageData>(
+            [&](SerialPacketType::MessageData& d) {
+              base::SafeCopy(d.Message, TheSession().Messages.Get_Edit_Buf());
+            });
       } else {
-        base::SafeCopy(serial_packet->Message.Message,
-                       TheSession().Messages.Get_Overflow_Buf());
+        serial_packet->UpdateData<SerialPacketType::MessageData>(
+            [&](SerialPacketType::MessageData& d) {
+              base::SafeCopy(d.Message,
+                             TheSession().Messages.Get_Overflow_Buf());
+            });
         TheSession().Messages.Clear_Overflow_Buf();
       }
 
@@ -303,12 +320,14 @@ void Message_Input(engine::window::KeyNumber& input) {
       // A chat message is how the secret units get switched on for everyone
       // at once: both ends recognize the phrase and enable them locally, so
       // the setting stays in step without a new packet type.
-      const char* ptr = &serial_packet->Message.Message[0];
-      if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
+      const auto message = serial_packet->data<SerialPacketType::MessageData>();
+      if (std::string_view(message.Message).starts_with("SECRET UNITS ON ") &&
           TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-      base::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+      base::SafeCopy(
+          TheSession().LastMessage,
+          serial_packet->data<SerialPacketType::MessageData>().Message);
     } else if (TheSession().Type == GAME_IPX ||
                TheSession().Type == GAME_INTERNET) {
       if constexpr (config::kWolapiEnabled) {
@@ -379,28 +398,45 @@ void IPX_Call_Back() {
         if (!TheSession().NetProtect) {
           msg_ok = true;
         } else {
-          msg_ok = TheSession().GPacket.Message.NameCRC ==
-                   Compute_Name_CRC(TheSession().GameName);
+          msg_ok = TheSession()
+                       .GPacket.data<GlobalPacketType::MessageData>()
+                       .NameCRC == Compute_Name_CRC(TheSession().GameName);
         }
 
         if (msg_ok) {
           if (!TheSession().Messages.Concat_Message(
                   TheSession().GPacket.Name,
-                  static_cast<int>(TheSession().GPacket.Message.Color),
-                  TheSession().GPacket.Message.Buf,
+                  static_cast<int>(
+                      TheSession()
+                          .GPacket.data<GlobalPacketType::MessageData>()
+                          .Color),
+                  TheSession()
+                      .GPacket.data<GlobalPacketType::MessageData>()
+                      .Buf,
                   TheRules().MessageDelay * kTicksPerMinute)) {
             if (TheRules().NewUnitsEnabled &&
-                std::string_view(TheSession().GPacket.Message.Buf)
+                std::string_view(
+                    TheSession()
+                        .GPacket.data<GlobalPacketType::MessageData>()
+                        .Buf)
                     .starts_with("XECRET UNITS ON ")) {
-              TheSession().GPacket.Message.Buf[0] = 'S';
+              TheSession().GPacket.UpdateData<GlobalPacketType::MessageData>(
+                  [](GlobalPacketType::MessageData& d) {
+                    base::At(d.Buf, 0) = 'S';
+                  });
               Enable_Secret_Units();
             }
             TheSession().Messages.Add_Message(
                 TheSession().GPacket.Name,
-                static_cast<int>(TheSession().GPacket.Message.Color),
-                TheSession().GPacket.Message.Buf,
-                TheSession().GPacket.Message.Color, FontType::k6PointGradient,
-                TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                static_cast<int>(
+                    TheSession()
+                        .GPacket.data<GlobalPacketType::MessageData>()
+                        .Color),
+                TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf,
+                TheSession()
+                    .GPacket.data<GlobalPacketType::MessageData>()
+                    .Color,
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 TheRules().MessageDelay * kTicksPerMinute);
 
             PlaySoundEffect(VOC_INCOMING_MESSAGE);
@@ -411,8 +447,9 @@ void IPX_Call_Back() {
           TheMap().Flag_To_Redraw(true);
 
           // Save this message in our last-message buffer
-          base::SafeCopy(TheSession().LastMessage,
-                         TheSession().GPacket.Message.Buf);
+          base::SafeCopy(
+              TheSession().LastMessage,
+              TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf);
         }
       } else {
         Process_Global_Packet(&TheSession().GPacket, &TheSession().GAddress);

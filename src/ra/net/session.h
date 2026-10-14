@@ -40,14 +40,18 @@
 #define CNC_RED_ALERT_RA_NET_SESSION_H_
 
 #include <array>
+#include <concepts>
 #include <cstdint>
 #include <memory>
 #include <span>
 #include <string>
+#include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "base/enum_array.h"
 #include "base/installed.h"
+#include "base/payload.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/connect.h"
 #include "engine/net/ipxaddr.h"
@@ -313,47 +317,74 @@ struct ChatNode : NodeName {
 //...........................................................................
 // Packet sent over the serial Global Channel
 //...........................................................................
-struct SerialPacketType {
-  SerialCommandType Command;    // One of the enum's defined above
-  char Name[MPLAYER_NAME_MAX];  // Player or Game Name
-  unsigned char ID;             // unique ID of sender of message
-  union {
-    struct {
-      HousesType House;                   // player's House
-      PlayerColorType Color;              // player's color or SIGNOFF ID
-      uint32_t MinVersion;                // min version this game supports
-      uint32_t MaxVersion;                // max version this game supports
-      char Scenario[kDescripMax];         // Scenario name
-      int Credits;                        // player's credits
-      unsigned int IsBases : 1;           // 1 = bases are allowed
-      unsigned int IsTiberium : 1;        // 1 = tiberium is allowed
-      unsigned int IsGoodies : 1;         // 1 = goodies are allowed
-      unsigned int IsGhosties : 1;        // 1 = ghosts are allowed
-      unsigned int OfficialScenario : 1;  //	Is this scenario an official
-                                          // Westwood one?
-      int CheatCheck;                     // Unique ID of "rules.ini" file.
-      unsigned char BuildLevel;           // buildable level
-      unsigned char UnitCount;            // max # units
-      unsigned char AIPlayers;            // # of AI players allowed
-      int Seed;                           // random number seed
-      SpecialFlags Special;               // command-line options
-      unsigned int GameSpeed;             // Game Speed
-      int32_t ResponseTime;               // packet response time
-      unsigned int FileLength;  // Length of scenario file to expect from host.
-      // Name of the scenario file to expect from the host: 12 characters of
-      // 8.3 name plus the terminator.
-      char ShortFileName[13];
-      char FileDigest[32];  // Digest of scenario file to expect from host
-                            //	ajw - This is not necessarily null-terminated.
-    } ScenarioInfo;
-    struct {
-      char Message[MAX_MESSAGE_LENGTH];  // inter-player message
-      PlayerColorType Color;             // player's color or SIGNOFF ID
-    } Message;
-    struct {
-      PlayerColorType Color;  // player's color or SIGNOFF ID
-    } Chat;
+class SerialPacketType {
+ public:
+  // The payload arms, by what Command says the packet is. Each names its
+  // commands in Carries(); data<T>() and UpdateData<T>() check that Command
+  // is one of them. The arms share the payload's bytes, as the union they
+  // replace did.
+  struct ScenarioInfoData {
+    static constexpr bool Carries(SerialCommandType command) {
+      // Every serial command but MESSAGE; SIGN_OFF, TIMING and
+      // SCORE_SCREEN use only Color, the sender's ID.
+      return command != SERIAL_MESSAGE;
+    }
+    HousesType House;                   // player's House
+    PlayerColorType Color;              // player's color or SIGNOFF ID
+    uint32_t MinVersion;                // min version this game supports
+    uint32_t MaxVersion;                // max version this game supports
+    char Scenario[kDescripMax];         // Scenario name
+    int Credits;                        // player's credits
+    unsigned int IsBases : 1;           // 1 = bases are allowed
+    unsigned int IsTiberium : 1;        // 1 = tiberium is allowed
+    unsigned int IsGoodies : 1;         // 1 = goodies are allowed
+    unsigned int IsGhosties : 1;        // 1 = ghosts are allowed
+    unsigned int OfficialScenario : 1;  //	Is this scenario an official
+                                        // Westwood one?
+    int CheatCheck;                     // Unique ID of "rules.ini" file.
+    unsigned char BuildLevel;           // buildable level
+    unsigned char UnitCount;            // max # units
+    unsigned char AIPlayers;            // # of AI players allowed
+    int Seed;                           // random number seed
+    SpecialFlags Special;               // command-line options
+    unsigned int GameSpeed;             // Game Speed
+    int32_t ResponseTime;               // packet response time
+    unsigned int FileLength;  // Length of scenario file to expect from host.
+    // Name of the scenario file to expect from the host: 12 characters of
+    // 8.3 name plus the terminator.
+    char ShortFileName[13];
+    char FileDigest[32];  // Digest of scenario file to expect from host
+                          //	ajw - This is not necessarily null-terminated.
   };
+  struct MessageData {
+    static constexpr bool Carries(SerialCommandType command) {
+      return command == SERIAL_MESSAGE;
+    }
+    char Message[MAX_MESSAGE_LENGTH];  // inter-player message
+    PlayerColorType Color;             // player's color or SIGNOFF ID
+  };
+
+  // Returns a copy of payload arm T. Command must be one T carries.
+  template <class T>
+  [[nodiscard]] T data() const {
+    DCHECK(T::Carries(Command));
+    return data_.Get<T>();
+  }
+  // Copies arm T out, lets `edit` change it and copies it back; the payload
+  // bytes past T keep what they held. Set Command first: it must be one T
+  // carries.
+  template <class T, std::invocable<T&> Edit>
+  void UpdateData(Edit&& edit) {
+    DCHECK(T::Carries(Command));
+    data_.Update<T>(std::forward<Edit>(edit));
+  }
+
+  SerialCommandType Command = SERIAL_LAST_COMMAND;  // none until set
+  char Name[MPLAYER_NAME_MAX]{};                    // Player or Game Name
+  unsigned char ID = 0;  // unique ID of sender of message
+
+ private:
+  base::Payload<ScenarioInfoData, MessageData> data_;
 };
 
 // Both packets go on the wire with sizeof(), so every peer must agree on these
@@ -381,60 +412,103 @@ struct RemoteFileTransferType {
 //...........................................................................
 // Packet sent over the network Global Channel
 //...........................................................................
-struct GlobalPacketType {
-  NetCommandType Command;       // One of the enum's defined above
-  char Name[MPLAYER_NAME_MAX];  // Player or Game Name
-  union {
-    struct {
-      unsigned int IsOpen : 1;  // 1 = game is open for joining
-    } GameInfo;
-    struct {
-      HousesType House;       // player's House
-      PlayerColorType Color;  // player's color
-      uint32_t NameCRC;       // CRC of player's game's name
-      uint32_t MinVersion;    // game's min supported version
-      uint32_t MaxVersion;    // game's max supported version
-      int CheatCheck;         // Unique ID of "rules.ini" file.
-    } PlayerInfo;
-    struct {
-      char Scenario[kDescripMax];  // Scenario Name
-      int Credits;                 // player's credits
-      uint8_t IsBases : 1;         // 1 = bases are allowed
-      uint8_t IsTiberium : 1;      // 1 = tiberium is allowed
-      uint8_t IsGoodies : 1;       // 1 = goodies are allowed
-      uint8_t IsGhosties : 1;      // 1 = ghosts are allowed
-      uint8_t OfficialScenario
-          : 1;                   // Is this scenario an official Westwood one?
-      unsigned char BuildLevel;  // buildable level
-      unsigned char UnitCount;   // max # units
-      unsigned char AIPlayers;   // # of AI players allowed
-      int Seed;                  // random number seed
-      SpecialFlags Special;      // command-line options
-      unsigned int GameSpeed;    // Game Speed
-      uint32_t Version;          // version # common to all players
-      unsigned int FileLength;   // Length of scenario file to expect from host.
-      // Name of the scenario file to expect from the host: 12 characters of
-      // 8.3 name plus the terminator.
-      char ShortFileName[13];
-      char FileDigest[32];  // Digest of scenario file to expect from host
-                            //	ajw - This is not necessarily null-terminated.
-    } ScenarioInfo;
-    struct {
-      char Buf[MAX_MESSAGE_LENGTH];  // inter-user message
-      PlayerColorType Color;         // color of sender of message
-      uint32_t NameCRC;              // CRC of sender's Game Name
-    } Message;
-    struct {
-      int OneWay;  // one-way response time
-    } ResponseTime;
-    struct {
-      int Why;  // why were we rejected from the game?
-    } Reject;
-    struct {
-      uint32_t ID;            // unique ID for this chat node
-      PlayerColorType Color;  // my color
-    } Chat;
+class GlobalPacketType {
+ public:
+  // The payload arms, by what Command says the packet is; see
+  // SerialPacketType.
+  struct GameInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_ANSWER_GAME;
+    }
+    unsigned int IsOpen : 1;  // 1 = game is open for joining
   };
+  struct PlayerInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_QUERY_JOIN || command == NET_ANSWER_PLAYER ||
+             command == NET_CONFIRM_JOIN;
+    }
+    HousesType House;       // player's House
+    PlayerColorType Color;  // player's color
+    uint32_t NameCRC;       // CRC of player's game's name
+    uint32_t MinVersion;    // game's min supported version
+    uint32_t MaxVersion;    // game's max supported version
+    int CheatCheck;         // Unique ID of "rules.ini" file.
+  };
+  struct ScenarioInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_GAME_OPTIONS || command == NET_FILE_INFO;
+    }
+    char Scenario[kDescripMax];    // Scenario Name
+    int Credits;                   // player's credits
+    uint8_t IsBases : 1;           // 1 = bases are allowed
+    uint8_t IsTiberium : 1;        // 1 = tiberium is allowed
+    uint8_t IsGoodies : 1;         // 1 = goodies are allowed
+    uint8_t IsGhosties : 1;        // 1 = ghosts are allowed
+    uint8_t OfficialScenario : 1;  // Is this scenario an official Westwood one?
+    unsigned char BuildLevel;      // buildable level
+    unsigned char UnitCount;       // max # units
+    unsigned char AIPlayers;       // # of AI players allowed
+    int Seed;                      // random number seed
+    SpecialFlags Special;          // command-line options
+    unsigned int GameSpeed;        // Game Speed
+    uint32_t Version;              // version # common to all players
+    unsigned int FileLength;  // Length of scenario file to expect from host.
+    // Name of the scenario file to expect from the host: 12 characters of
+    // 8.3 name plus the terminator.
+    char ShortFileName[13];
+    char FileDigest[32];  // Digest of scenario file to expect from host
+                          //	ajw - This is not necessarily null-terminated.
+  };
+  struct MessageData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_MESSAGE;
+    }
+    char Buf[MAX_MESSAGE_LENGTH];  // inter-user message
+    PlayerColorType Color;         // color of sender of message
+    uint32_t NameCRC;              // CRC of sender's Game Name
+  };
+  struct ResponseTimeData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_GO || command == NET_LOADGAME;
+    }
+    int OneWay;  // one-way response time
+  };
+  struct RejectData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_REJECT_JOIN;
+    }
+    int Why;  // why were we rejected from the game?
+  };
+  struct ChatData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_CHAT_ANNOUNCE;
+    }
+    uint32_t ID;            // unique ID for this chat node
+    PlayerColorType Color;  // my color
+  };
+
+  // Returns a copy of payload arm T. Command must be one T carries.
+  template <class T>
+  [[nodiscard]] T data() const {
+    DCHECK(T::Carries(Command));
+    return data_.Get<T>();
+  }
+  // Copies arm T out, lets `edit` change it and copies it back; the payload
+  // bytes past T keep what they held. Set Command first: it must be one T
+  // carries.
+  template <class T, std::invocable<T&> Edit>
+  void UpdateData(Edit&& edit) {
+    DCHECK(T::Carries(Command));
+    data_.Update<T>(std::forward<Edit>(edit));
+  }
+
+  NetCommandType Command{};       // One of the enum's defined above
+  char Name[MPLAYER_NAME_MAX]{};  // Player or Game Name
+
+ private:
+  base::Payload<GameInfoData, PlayerInfoData, ScenarioInfoData, MessageData,
+                ResponseTimeData, RejectData, ChatData>
+      data_;
 };
 
 static_assert(sizeof(GlobalPacketType) == 144);
