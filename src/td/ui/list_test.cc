@@ -22,13 +22,13 @@ namespace {
 // Measuring a list item reads the font it is printed in, which Game installs
 // in the real game. A default Assets has no fonts, so the items measure as
 // nothing, which is all these tests need.
-class InstalledAssets {
+class InstalledAssetsTest : public testing::Test {
  protected:
   Assets assets_;
   base::Installed<Assets>::Scope assets_scope_{assets_};
 };
 
-class TdListClassTest : public InstalledAssets, public testing::Test {
+class TdListClassTest : public InstalledAssetsTest {
  protected:
   // No scroll arrow shapes: the tests never draw.
   ListClass list_{0, 0, 0, 100, 60, FontType::k6Point, TPF_NONE, {}, {}};
@@ -154,7 +154,7 @@ TEST_F(TdListClassTest, ClearRemovesEverything) {
   EXPECT_EQ(list_.Get_Item(0), nullptr);
 }
 
-class TdCheckListClassTest : public InstalledAssets, public testing::Test {};
+class TdCheckListClassTest : public InstalledAssetsTest {};
 
 TEST_F(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
   CheckListClass list(0, 0, 0, 100, 60, FontType::k6Point, TPF_NONE, {}, {});

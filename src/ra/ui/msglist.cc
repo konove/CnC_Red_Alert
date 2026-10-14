@@ -432,11 +432,12 @@ TextLabelClass* MessageListClass::Add_Message(
                      &ThePalettes().color_remaps().at(color), font, style))
                  .get();
   if (timeout == -1) {
-    txtlabel->UserData1 = 0;
+    txtlabel->label_data().UserData1 = 0;
   } else {
-    txtlabel->UserData1 = engine::platform::SystemTicks() + timeout;
+    txtlabel->label_data().UserData1 =
+        engine::platform::SystemTicks() + timeout;
   }
-  txtlabel->UserData2 = id;
+  txtlabel->label_data().UserData2 = id;
 
   PlaySoundEffect(VOC_INCOMING_MESSAGE);
 
@@ -489,7 +490,7 @@ char* MessageListClass::Get_Message(int id) {
   //------------------------------------------------------------------------
   for (game::GadgetClass* const gadg : MessageList.gadgets()) {
     const auto& label = dynamic_cast<TextLabelClass&>(*gadg);
-    if (label.UserData2 == id) {
+    if (label.label_data().UserData2 == id) {
       return label.Text;
     }
   }
@@ -524,7 +525,7 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
   //------------------------------------------------------------------------
   for (game::GadgetClass* const gadg : MessageList.gadgets()) {
     auto& label = dynamic_cast<TextLabelClass&>(*gadg);
-    if (label.UserData2 == id) {
+    if (label.label_data().UserData2 == id) {
       return &label;
     }
   }
@@ -574,7 +575,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   //------------------------------------------------------------------------
   for (game::GadgetClass* const gadg : MessageList.gadgets()) {
     auto& label = dynamic_cast<TextLabelClass&>(*gadg);
-    if (label.UserData2 == id &&
+    if (label.label_data().UserData2 == id &&
         std::string_view(label.Text).starts_with(name)) {
       tlabel = &label;
       break;
@@ -661,9 +662,9 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Set the new timeout value for the message
   //------------------------------------------------------------------------
   if (timeout == -1) {
-    tlabel->UserData1 = 0;
+    tlabel->label_data().UserData1 = 0;
   } else {
-    tlabel->UserData1 = engine::platform::SystemTicks() + timeout;
+    tlabel->label_data().UserData1 = engine::platform::SystemTicks() + timeout;
   }
 
   return 1;
@@ -917,8 +918,8 @@ int MessageListClass::Manage() {
     //.....................................................................
     //	If this message's time is up, remove it from the list
     //.....................................................................
-    if (txtlabel.UserData1 != 0 &&
-        engine::platform::SystemTicks() > txtlabel.UserData1) {
+    if (txtlabel.label_data().UserData1 != 0 &&
+        engine::platform::SystemTicks() > txtlabel.label_data().UserData1) {
       MessageList.Remove(txtlabel);
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel.Text == base::At(MessageBuffers, i)) {

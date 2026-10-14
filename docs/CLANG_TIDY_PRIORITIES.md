@@ -236,7 +236,7 @@ primary.
 | `cppcoreguidelines-avoid-non-const-global-variables`                | Skipped | Commit `Record the P4 policy decisions`: 1,399 reports; removing globals is architecture work `CLAUDE.md` defers. See review below.                                                                                                                                                                         |
 | `cppcoreguidelines-non-private-member-variables-in-classes`         | Skipped | Commit `Record the P4 policy decisions`: 1,219 reports; encapsulating the legacy classes is a hierarchy refactor. See review below.                                                                                                                                                                         |
 | `misc-non-private-member-variables-in-classes`                      | Skipped | Commit `Record the P4 policy decisions`: 2,394 reports over the same exposed members. See review below.                                                                                                                                                                                                     |
-| `misc-multiple-inheritance`                                         | Skipped | Commit `Record the P4 policy decisions`: 11 reports: the aircraft, anim, bullet, techno and terrain classes in both games and `GraphicBufferClass`; changing them is a hierarchy refactor. See review below.                                                                                                |
+| `misc-multiple-inheritance`                                         | Enabled | Commit `Enable misc-multiple-inheritance`: 5 reports, down from 11; see the multiple inheritance enablement below.                                                                                                                                                                                          |
 | `misc-no-recursion`                                                 | Skipped | Commit `Record the P4 policy decisions`: 47 reports, mostly mutually recursive virtual calls through the object model (`Assign_Destination`, `Transmit_Message`, `Do_Action`), bounded by game state. See review below.                                                                                     |
 | `cppcoreguidelines-avoid-do-while`                                  | Skipped | Commit `Record the P4 policy decisions`: 100 reports; do-while is valid and often the clearest loop. See review below.                                                                                                                                                                                      |
 | `clang-diagnostic-global-constructors`                              | Skipped | Commit `Record the P4 policy decisions`: 1,143 reports, 716 of them the static type-class tables in the `*data.cc` files. See review below.                                                                                                                                                                 |
@@ -1933,6 +1933,26 @@ copy that is executed or dropped; and a placement `new` into a test's own byte a
 Verification: an isolated sweep over every translation unit reports nothing; the full strict build
 and the GCC build; CTest in both; both save/load smoke tests.
 
+### Multiple inheritance enablement (2026-10-14)
+
+`misc-multiple-inheritance` is now enforced. It was skipped on 2026-09-12 with 11 reports as a
+hierarchy refactor. Since then most of those mixins became members or interfaces and
+`GraphicBufferClass` is gone; a re-sweep found 5:
+
+- **`TextLabelClass`** inherited each game's `Skin::LabelData`, the plain fields the message list
+  keeps on a label (its timeout, id, segments and CRC). The label holds it as a member instead,
+  reached through `label_data()`.
+- **TD's list tests** mixed an `InstalledAssets` holder into each fixture; it is now the fixtures'
+  common base, `InstalledAssetsTest`.
+- **`TechnoClass`** in both games derives from `ObjectClass`, `RadioPeer` and `MissionHandler`. The
+  latter two have no data and only pure functions, but the check counts a class as an interface only
+  when its destructor is pure or defaulted where it is declared, and theirs is defined out of line
+  to be the key function `clang-diagnostic-weak-vtables` asks for. Each declaration carries a
+  reasoned `NOLINTNEXTLINE`.
+
+Verification: an isolated sweep over every translation unit reports nothing; the full strict build
+and the GCC build; CTest in both.
+
 ### Nodiscard review (2026-09-12)
 
 `modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
@@ -2224,7 +2244,6 @@ case the rewrite would be large, would contradict a project rule, or would fight
 | `misc-no-recursion`                                                                                         | 47            | Mostly mutually recursive virtual calls through the object model (`Assign_Destination`, `Transmit_Message`, `Do_Action`), bounded by game state rather than input.                                                                                                                                                             |
 | `clang-diagnostic-nested-anon-types`                                                                        | 20            | Anonymous structs in anonymous unions, which GCC, Clang and MSVC all accept; naming them would rename every member access.                                                                                                                                                                                                     |
 | `cppcoreguidelines-avoid-const-or-ref-data-members`                                                         | 13            | The serializer and archive helpers' reference members and the queues' `const` capacity. None is ever reassigned, by design.                                                                                                                                                                                                    |
-| `misc-multiple-inheritance`                                                                                 | 11            | The aircraft, anim, bullet, techno and terrain classes in both games and `GraphicBufferClass`; changing the hierarchy is a refactor `CLAUDE.md` defers.                                                                                                                                                                        |
 
 ### P4 fix-it pass B and hand fixes (2026-09-12)
 

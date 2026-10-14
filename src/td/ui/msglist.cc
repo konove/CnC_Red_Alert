@@ -223,7 +223,7 @@ TextLabelClass* MessageListClass::Add_Message(
     /*
     ** Dont check for duplicates in multi-segment strings
     */
-    if ((!txtlabel->Segments) &&
+    if ((!txtlabel->label_data().Segments) &&
         ((std::string_view(txtlabel->Text) == txt) &&
          txtlabel->Color == color && txtlabel->TextFont == font &&
          txtlabel->Style == style)) {
@@ -242,7 +242,7 @@ TextLabelClass* MessageListClass::Add_Message(
     for (game::GadgetClass* const gadget : MessageList.gadgets()) {
       txtlabel = dynamic_cast<TextLabelClass*>(gadget);
       if (txtlabel->Color == color && txtlabel->TextFont == font &&
-          txtlabel->Style == style && txtlabel->CRC == crc) {
+          txtlabel->Style == style && txtlabel->label_data().CRC == crc) {
         const std::string_view current(txtlabel->Text);
         const std::string_view incoming(txt);
         const auto current_colon = current.find(':');
@@ -257,7 +257,8 @@ TextLabelClass* MessageListClass::Add_Message(
           ** If this message segment hasnt already come through then add it to
           *the existing text
           */
-          if ((txtlabel->Segments & base::Bit<uint8_t>(position)) == 0) {
+          if ((txtlabel->label_data().Segments &
+               base::Bit<uint8_t>(position)) == 0) {
             /*
             ** Search for the ':' to find the actual message after the players
             *name
@@ -278,7 +279,7 @@ TextLabelClass* MessageListClass::Add_Message(
               /*
               ** Flag this string segment as complete
               */
-              txtlabel->Segments |= base::Bit<uint8_t>(position);
+              txtlabel->label_data().Segments |= base::Bit<uint8_t>(position);
               return txtlabel;
             }
           } else {
@@ -348,9 +349,9 @@ TextLabelClass* MessageListClass::Add_Message(
   ------------------------------------------------------------------------*/
   auto label = std::make_unique<TextLabelClass>(txt, x, y, color, font, style);
   if (timeout == -1) {
-    label->UserData = 0;
+    label->label_data().UserData = 0;
   } else {
-    label->UserData = engine::platform::SystemTicks() + timeout;
+    label->label_data().UserData = engine::platform::SystemTicks() + timeout;
   }
 
   /*------------------------------------------------------------------------
@@ -358,8 +359,8 @@ TextLabelClass* MessageListClass::Add_Message(
   message.
   ------------------------------------------------------------------------*/
   int found = 0;
-  label->Segments = 0;
-  label->CRC = crc;
+  label->label_data().Segments = 0;
+  label->label_data().CRC = crc;
 
   for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
     if (base::At(BufferAvail, i)) {
@@ -400,7 +401,7 @@ TextLabelClass* MessageListClass::Add_Message(
                                     1) = '\0';
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
-        label->Segments = base::Bit<uint8_t>(position);
+        label->label_data().Segments = base::Bit<uint8_t>(position);
       }
 
       label->Text = base::At(MessageBuffers, i);
@@ -524,8 +525,8 @@ int MessageListClass::Manage() {
     /*.....................................................................
     If this message's time is up, remove it from the list
     .....................................................................*/
-    if (txtlabel->UserData != 0 &&
-        engine::platform::SystemTicks() > txtlabel->UserData) {
+    if (txtlabel->label_data().UserData != 0 &&
+        engine::platform::SystemTicks() > txtlabel->label_data().UserData) {
       /*..................................................................
       If we're about to delete the edit message, clear our edit message
       values.
@@ -611,7 +612,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       ESC = abort message
       ------------------------------------------------------------------*/
       case '\x1b':
-        EditLabel->UserData = 1;  // force it to be removed
+        EditLabel->label_data().UserData = 1;  // force it to be removed
         input = KN_NONE;
         break;
 
@@ -619,7 +620,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       RETURN = send the message
       ------------------------------------------------------------------*/
       case '\r':
-        EditLabel->UserData = 1;  // force it to be removed
+        EditLabel->label_data().UserData = 1;  // force it to be removed
         retcode = 3;
         input = KN_NONE;
         break;

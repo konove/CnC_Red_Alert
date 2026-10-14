@@ -49,11 +49,11 @@
 
 namespace game {
 
-// A line of text that is drawn but takes no input. Skin::LabelData adds the
+// A line of text that is drawn but takes no input. label_data() holds the
 // fields the game's message list keeps on each label.
 // NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin.
 template <WidgetSkin Skin>
-class TextLabelClass : public GadgetClass, public Skin::LabelData {
+class TextLabelClass : public GadgetClass {
  public:
   // Red Alert's colour is a scheme the label points at, Tiberian Dawn's a
   // palette index, which cannot be marked lifetimebound.
@@ -82,11 +82,23 @@ class TextLabelClass : public GadgetClass, public Skin::LabelData {
   // Sets the displayed text of the label.
   virtual void Set_Text(char* txt) { Text = txt; }
 
+  // The game's own bookkeeping for this label (its timeout, id or segments).
+  Skin::LabelData& label_data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return label_data_;
+  }
+  [[nodiscard]] const Skin::LabelData& label_data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return label_data_;
+  }
+
   Skin::Font TextFont;
   Skin::PrintFlags Style;
   char* Text;
   Skin::TextColor Color;
   int PixWidth{-1};  // -1: not clipped
+
+ private:
+  Skin::LabelData label_data_;
 };
 // NOLINTEND(portability-template-virtual-member-function)
 

@@ -71,6 +71,10 @@ namespace ra {
 /****************************************************************************
 **	This is the common data between building and units.
 */
+// RadioPeer and MissionHandler are interfaces: they hold no data and every
+// function is pure but the destructor, which is defined out of line to give
+// each vtable a home (-Wweak-vtables) and so does not count as pure here.
+// NOLINTNEXTLINE(misc-multiple-inheritance)
 class TechnoClass : public ObjectClass,
                     public RadioPeer,
                     public MissionHandler {
