@@ -22,6 +22,11 @@ struct Narrow {
 struct Pointer {
   void* address;
 };
+struct Gapped {
+  int32_t first;
+  int8_t second;  // three padding bytes follow
+  int32_t third;
+};
 
 static_assert(sizeof(Payload<Pair, Narrow>) == 8);
 static_assert(alignof(Payload<Pair, Narrow>) == 4);
@@ -73,6 +78,24 @@ TEST(PayloadTest, UpdateKeepsZeroPadding) {
   });
   for (const std::byte b : payload.bytes().subspan(5)) {
     EXPECT_EQ(b, std::byte{0});
+  }
+}
+
+// The padding inside an arm is part of the bytes that go over the wire, so an
+// update must leave it as it was, not as a by-value copy of the arm left it.
+TEST(PayloadTest, UpdateKeepsThePaddingInsideAnArm) {
+  Payload<Gapped> payload;
+  for (std::byte& b : payload.bytes()) {
+    b = std::byte{0xAB};
+  }
+  payload.Update<Gapped>([](Gapped& g) {
+    g.first = 1;
+    g.second = 2;
+    g.third = 3;
+  });
+  const auto padding = payload.bytes().subspan(5, 3);
+  for (const std::byte b : padding) {
+    EXPECT_EQ(b, std::byte{0xAB});
   }
 }
 

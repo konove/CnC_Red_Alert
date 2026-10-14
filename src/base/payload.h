@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "base/buffer.h"
 #include "base/unaligned.h"
 
 namespace base {
@@ -27,9 +28,10 @@ namespace base {
 //
 // Writing an arm changes only its own sizeof(T) bytes. The rest keep what they
 // held, as with a union member store. Update() takes the arm's padding from the
-// storage and writes it back, so storage that starts zeroed stays
-// deterministic byte for byte, which matters to data compared or sent as raw
-// bytes.
+// storage and writes it back, padding inside the arm included, so storage
+// that starts zeroed stays deterministic byte for byte, which matters to data
+// compared or sent as raw bytes. Get() makes no such promise: it returns the
+// arm by value, and the copy's padding is unspecified.
 //
 // Example:
 //   struct Move { int32_t who; int32_t where; };
@@ -56,7 +58,11 @@ class Payload {
   template <class T, std::invocable<T&> Edit>
     requires kHolds<T>
   void Update(Edit&& edit) {
-    T arm = Get<T>();
+    // The bytes go straight into the object `edit` sees and straight back
+    // out. Taking the copy from Get() would lose the padding: a struct
+    // returned by value is copied member by member.
+    T arm{};
+    CopyBytes(ObjectBytes(arm), std::span<const std::byte>(bytes_), sizeof(T));
     std::invoke(std::forward<Edit>(edit), arm);
     WriteUnaligned(std::span(bytes_), arm);
   }

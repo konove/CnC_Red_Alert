@@ -2909,13 +2909,10 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 static_cast<std::byte>(numunits);
           }
 
-          const Target whom = TheNetwork()
-                                  .out_list()
-                                  .First()
-                                  .data<EventClass::MegaMissionData>()
-                                  .Whom;
+          // Whom leads the arm, so it is the payload's first bytes.
           base::CopyBytes(buf.subspan(base::ToSize(size)),
-                          base::ObjectBytes(whom), base::ToSize(datasize));
+                          TheNetwork().out_list().First().payload_bytes(),
+                          base::ToSize(datasize));
 
           size += datasize;
         }
@@ -2933,14 +2930,13 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
           base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-          const auto order = TheNetwork()
-                                 .out_list()
-                                 .First()
-                                 .data<EventClass::MegaMissionData>();
+          // The storage, not a copy of the arm: the copy's padding is
+          // unspecified, and the bytes go over the wire.
           base::CopyBytes(
               buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
                           sizeof(numunits)),
-              base::ObjectBytes(order), base::ToSize(datasize));
+              TheNetwork().out_list().First().payload_bytes(),
+              base::ToSize(datasize));
 
           size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
         }
