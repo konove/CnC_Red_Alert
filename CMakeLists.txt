@@ -226,6 +226,10 @@ else ()
                     # -Wswitch-default wants a default label. Clang flags that
                     # combination as redundant; the GCC requirement wins.
                     -Wno-covered-switch-default
+                    # Abseil's CHECK_EQ-style macros expand to absl_nullable
+                    # (_Nullable), a Clang extension; .clang-tidy drops the same
+                    # diagnostic.
+                    -Wno-nullability-extension
             )
         endif ()
     else ()

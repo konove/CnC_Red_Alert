@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 439,
+  "nextId": 440,
   "items": [
     {
       "id": "T-2",
@@ -4613,12 +4613,13 @@
         "cmake",
         "strict-build"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:02:47Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-14T06:38:33Z",
       "parent": "T-192",
       "source": "ff429d5f",
+      "resolution": "Added `-Wno-nullability-extension` to the Clang strict flags in `CMakeLists.txt`, matching `.clang-tidy`. Abseil is already `SYSTEM`, but the warning lands where `CHECK_*` expands in our code, so it has to be off tree-wide. `tools/strict_tu.py src/engine/crypto/pk.cc` now prints no nullability lines.",
       "anchors": [
         {
           "path": "CMakeLists.txt",
@@ -5987,7 +5988,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-14T06:38:44Z",
       "source": "37ea18f9..323cb376",
       "comments": [
         {
@@ -6004,6 +6005,11 @@
           "author": "agent",
           "time": "2026-10-10T20:52:39Z",
           "text": "`engine/crypto/digit_cursor.h` no longer exists (the Rust migration left only `digit_cursor_reference_test_util.h`), so its `-Wnullability-extension` lines and that anchor are gone. The `base/array.h` lifetime-bound warnings were still printed by `tools/strict_tu.py` on 2026-10-10 (70 per RA translation unit)."
+        },
+        {
+          "author": "agent",
+          "time": "2026-10-14T06:38:44Z",
+          "text": "Another `-Wunsafe-buffer-usage-in-container` site, seen 2026-10-13 running `tools/strict_tu.py src/engine/crypto/pk.cc`: `src/engine/stream/rust_bytes.h:33`, the `std::span(bytes.data(), bytes.size())` in `ToByteVector`. Its `NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)` silences only clang-tidy; the compiler still prints it in every TU that includes the header. The `-Wnullability-extension` part is done in T-161."
         }
       ],
       "anchors": [
@@ -15591,7 +15597,7 @@
       "status": "open",
       "author": "user",
       "created": "2026-10-13T07:48:12Z",
-      "updated": "2026-10-13T07:48:12Z",
+      "updated": "2026-10-14T06:23:38Z",
       "anchors": [
         {
           "path": "src/ra/core/coordinate.h",
@@ -15654,10 +15660,10 @@
         "base",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T14:55:54Z",
-      "updated": "2026-10-13T22:39:37Z",
+      "updated": "2026-10-14T01:12:25Z",
       "source": "b7d8591a6",
       "resolution": "Moved both `base::Bit` overloads to the new `src/base/bit.h` and their tests to `bit_test.cc`. The 51 files that call it include `base/bit.h`; 33 of them no longer include `base/numeric.h`, which now holds only `ToSize()` and `ToSigned()`.",
       "anchors": [
@@ -15716,6 +15722,25 @@
           ],
           "lost": false
         }
+      ]
+    },
+    {
+      "id": "T-439",
+      "title": "Pilot Abseil nullability annotations on the nullable returns of one header",
+      "details": "Clang's nullability qualifiers, spelled `absl_nullable` / `absl_nonnull` / `absl_nullability_unknown` (from `absl/base/nullability.h`; empty under GCC, so the GCC `build/` is unaffected), let the static analyzer check null handling across function boundaries. The five `clang-analyzer-nullability.*` checks are already enabled in `.clang-tidy`, but they find nothing because `src/` has no annotations.\n\nMeasured on a probe with clang-tidy 23 (2026-10-13), with only a declaration `int* _Nullable Find(int)`:\n- `return Find(k);` from a `_Nonnull` function → `NullableReturnedFromNonnull`\n- `*Find(k)` → `NullableDereferenced`\n- `Use(Find(k))` where `Use(int* _Nonnull)` → `NullablePassedToNonnull`\n- `p ? Use(p) : 0` → clean\n- the same file without annotations → 0 findings\n\nCodegen does not change: a null check on a `_Nonnull` pointer survived `-O2`, unlike `[[gnu::nonnull]]`. `-fsanitize=nullability` (not part of `undefined`) traps the same violations at runtime.\n\nPilot:\n- Pick one widely used header whose functions are documented \"returns ..., or nullptr if ...\", for example a cell or object lookup, and annotate those returns `absl_nullable`.\n- Run the strict build in deep mode and count the analyzer's findings: real missing checks vs. noise.\n- The cost: `-Wnullability-completeness` (on under `-Weverything`) then wants every pointer in that header annotated, so adoption goes a whole header at a time; `#pragma clang assume_nonnull begin/end` reduces it but makes every pointer in the region a non-null claim. `-Wnullable-to-nonnull-conversion` (also on under `-Weverything`) flags even checked conversions and probably needs turning off.\n- Optionally add `-fsanitize=nullability` to the `ENABLE_ASAN` configuration.\n\nThe result decides whether to annotate more headers (and whether CLAUDE.md should ask for it on nullable returns).",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "cmake",
+        "strict-build"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T06:38:41Z",
+      "updated": "2026-10-14T06:38:41Z",
+      "blockedBy": [
+        "T-161"
       ]
     }
   ]
