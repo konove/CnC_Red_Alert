@@ -5988,7 +5988,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-14T06:38:44Z",
+      "updated": "2026-10-14T06:47:29Z",
       "source": "37ea18f9..323cb376",
       "comments": [
         {
@@ -6010,6 +6010,11 @@
           "author": "agent",
           "time": "2026-10-14T06:38:44Z",
           "text": "Another `-Wunsafe-buffer-usage-in-container` site, seen 2026-10-13 running `tools/strict_tu.py src/engine/crypto/pk.cc`: `src/engine/stream/rust_bytes.h:33`, the `std::span(bytes.data(), bytes.size())` in `ToByteVector`. Its `NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)` silences only clang-tidy; the compiler still prints it in every TU that includes the header. The `-Wnullability-extension` part is done in T-161."
+        },
+        {
+          "author": "agent",
+          "time": "2026-10-14T06:47:29Z",
+          "text": "Full `build-strict` rebuild on 2026-10-13 (after T-161, all 927 steps, exit 0) printed 208,000 lines of warnings. Count per diagnostic: `-Wlifetime-safety-lifetimebound-violation` 8,789, `-Wglobal-constructors` 3,433, `-Wnested-anon-types` 2,817, `-Wexit-time-destructors` 1,273, `-Woverloaded-virtual` 510, `-Wunsafe-buffer-usage-in-container` 62, `-Wlifetime-safety-intra-tu-constructor-suggestions` 53, `-Wunsafe-buffer-usage-in-libc-call` 46, `-Wswitch-default` 46, `-Wlifetime-safety-invalidation` 24. `-Wglobal-constructors`, `-Wexit-time-destructors` and `-Wnested-anon-types` are excluded in `.clang-tidy` but still on in the compiler flags; the same fix as T-161 (a `-Wno-` in `CMakeLists.txt`) would drop about 7,500 of those lines. `-Woverloaded-virtual` and `-Wswitch-default` are not excluded in `.clang-tidy`, so they come from code clang-tidy does not check (probably the dependencies or the tests) and need looking at before being turned off."
         }
       ],
       "anchors": [
