@@ -119,6 +119,15 @@ set(TD_UI_TEST_UTIL
     ${CMAKE_SOURCE_DIR}/src/engine/gfx/font_test_util.cc
 )
 
+# Golden bytes of the events and packets that cross the wire.
+add_gtest(
+    NAME td_wire_format_test
+    SOURCES net/wire_format_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_wire_format_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_wire_format_test)
+
 # Reads scenario objects from INI text and writes them back in a real Game.
 add_gtest(
     NAME td_scenario_objects_ini_test

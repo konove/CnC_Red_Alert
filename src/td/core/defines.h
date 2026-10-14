@@ -2399,6 +2399,9 @@ struct GlobalPacketType {
   };
 };
 
+// The packet goes on the wire with sizeof(), so every peer must agree on it.
+static_assert(sizeof(GlobalPacketType) == 52);
+
 /****************************************************************************
 **	This structure is for keeping score in multiplayer games.
 */
