@@ -99,32 +99,32 @@ namespace td {
 base::EnumArray<EventClass::EventType, unsigned char,
                 static_cast<int>(EventClass::LAST_EVENT)>
     EventClass::EventLength = {
-        0,                                          // EMPTY
-        size_of(EventClass, Data.General),          // ALLY
-        size_of(EventClass, Data.MegaMission),      // MEGAMISSION
-        size_of(EventClass, Data.Target),           // IDLE
-        size_of(EventClass, Data.Target),           // SCATTER
-        0,                                          // DESTRUCT
-        0,                                          // DEPLOY
-        size_of(EventClass, Data.Place),            // PLACE
-        0,                                          // OPTIONS
-        size_of(EventClass, Data.General),          // GAMESPEED
-        size_of(EventClass, Data.Specific),         // PRODUCE
-        size_of(EventClass, Data.Specific.Type),    // SUSPEND
-        size_of(EventClass, Data.Specific.Type),    // ABANDON
-        size_of(EventClass, Data.Target),           // PRIMARY
-        size_of(EventClass, Data.Special),          // SPECIAL_PLACE
-        0,                                          // EXIT
-        size_of(EventClass, Data.Anim),             // ANIMATION
-        size_of(EventClass, Data.Target),           // REPAIR
-        size_of(EventClass, Data.Target),           // SELL
-        size_of(EventClass, Data.Options),          // SPECIAL
-        0,                                          // FRAMESYNC
-        0,                                          //	MESSAGE
-        size_of(EventClass, Data.FrameInfo.Delay),  // RESPONSE_TIME
-        size_of(EventClass, Data.FrameInfo),        // FRAMEINFO
-        size_of(EventClass, Data.Timing),           // TIMING
-        size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
+        0,                             // EMPTY
+        sizeof(GeneralData),           // ALLY
+        sizeof(MegaMissionData),       // MEGAMISSION
+        sizeof(TargetData),            // IDLE
+        sizeof(TargetData),            // SCATTER
+        0,                             // DESTRUCT
+        0,                             // DEPLOY
+        sizeof(PlaceData),             // PLACE
+        0,                             // OPTIONS
+        sizeof(GeneralData),           // GAMESPEED
+        sizeof(SpecificData),          // PRODUCE
+        sizeof(RTTIType),              // SUSPEND
+        sizeof(RTTIType),              // ABANDON
+        sizeof(TargetData),            // PRIMARY
+        sizeof(SpecialData),           // SPECIAL_PLACE
+        0,                             // EXIT
+        sizeof(AnimData),              // ANIMATION
+        sizeof(TargetData),            // REPAIR
+        sizeof(TargetData),            // SELL
+        sizeof(OptionsData),           // SPECIAL
+        0,                             // FRAMESYNC
+        0,                             //	MESSAGE
+        sizeof(FrameInfoData::Delay),  // RESPONSE_TIME
+        sizeof(FrameInfoData),         // FRAMEINFO
+        sizeof(TimingData),            // TIMING
+        sizeof(ProcessTimeData),       // PROCESS_TIME
 };
 
 base::EnumArray<EventClass::EventType, const char*,
@@ -158,7 +158,7 @@ EventClass::EventClass(SpecialFlags data) : EventClass() {
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Options.Data = data;
+  UpdateData<OptionsData>([&](OptionsData& d) { d.Data = data; });
 }
 
 /***********************************************************************************************
@@ -182,7 +182,7 @@ EventClass::EventClass(EventType type, Target target) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Target.Whom = target;
+  UpdateData<TargetData>([&](TargetData& d) { d.Whom = target; });
 }
 
 /***********************************************************************************************
@@ -220,37 +220,9 @@ EventClass::EventClass(EventType type) : EventClass() {
 EventClass::EventClass(EventType type, int val) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = type;
-  Data.General.Value = val;
+  UpdateData<GeneralData>([&](GeneralData& d) { d.Value = val; });
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-}
-
-/***********************************************************************************************
- * EventClass::EventClass -- Constructor for navigation computer events. *
- *                                                                                             *
- *    Constructor for events that are used to assign the navigation computer. *
- *                                                                                             *
- * INPUT:   type     -- The type of event (this constructor can be used by other
- *navigation    * type events). *
- *                                                                                             *
- *          src      -- The object that the event should apply to. *
- *                                                                                             *
- *          dest     -- The destination (or target) that the event needs to
- *complete.          *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/27/1994 JLB : Created. *
- *=============================================================================================*/
-EventClass::EventClass(EventType type, Target src, Target dest) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
-  Type = type;
-  // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.NavCom.Whom = src;
-  Data.NavCom.Where = dest;
 }
 
 /***********************************************************************************************
@@ -275,9 +247,11 @@ EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Anim.What = anim;
-  Data.Anim.Owner = owner;
-  Data.Anim.Where = coord;
+  UpdateData<AnimData>([&](AnimData& d) {
+    d.What = anim;
+    d.Owner = owner;
+    d.Where = coord;
+  });
 }
 
 /***********************************************************************************************
@@ -307,10 +281,12 @@ EventClass::EventClass(Target src, MissionType mission, Target target,
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.MegaMission.Whom = src;
-  Data.MegaMission.Mission = mission;
-  Data.MegaMission.Target = target;
-  Data.MegaMission.Destination = destination;
+  UpdateData<MegaMissionData>([&](MegaMissionData& d) {
+    d.Whom = src;
+    d.Mission = mission;
+    d.Target = target;
+    d.Destination = destination;
+  });
 }
 
 /***********************************************************************************************
@@ -336,8 +312,10 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Specific.Type = object;
-  Data.Specific.ID = id;
+  UpdateData<SpecificData>([&](SpecificData& d) {
+    d.Type = object;
+    d.ID = id;
+  });
 }
 
 /***********************************************************************************************
@@ -367,8 +345,10 @@ EventClass::EventClass(EventType type, RTTIType object, Cell cell)
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Place.Type = object;
-  Data.Place.Cell = cell;
+  UpdateData<PlaceData>([&](PlaceData& d) {
+    d.Type = object;
+    d.Cell = cell;
+  });
 }
 
 /***********************************************************************************************
@@ -394,8 +374,10 @@ EventClass::EventClass(EventType type, int id, Cell cell) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Special.ID = id;
-  Data.Special.Cell = cell;
+  UpdateData<SpecialData>([&](SpecialData& d) {
+    d.ID = id;
+    d.Cell = cell;
+  });
 }
 
 /***********************************************************************************************
@@ -441,13 +423,13 @@ void EventClass::Execute() {
     **	Make or break alliance.
     */
     case ALLY:
-      house = TheObjectHeaps().house().Slot(Data.General.Value);
+      house = TheObjectHeaps().house().Slot(data<GeneralData>().Value);
       if (TheObjectHeaps().house().Slot(ID)->Is_Ally(house)) {
         TheObjectHeaps().house().Slot(ID)->Make_Enemy(
-            static_cast<HousesType>(Data.General.Value));
+            static_cast<HousesType>(data<GeneralData>().Value));
       } else {
         TheObjectHeaps().house().Slot(ID)->Make_Ally(
-            static_cast<HousesType>(Data.General.Value));
+            static_cast<HousesType>(data<GeneralData>().Value));
       }
       break;
 
@@ -468,7 +450,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      TheSpecialFlags() = Data.Options.Data;
+      TheSpecialFlags() = data<OptionsData>().Data;
       HouseClass* sender = TheObjectHeaps().house().Slot(ID);
 
       std::string message =
@@ -488,7 +470,7 @@ void EventClass::Execute() {
     */
     case REPAIR:
       CCDebugString("C&C95 - Repair packet received\n");
-      techno = Data.Target.Whom.AsTechno();
+      techno = data<TargetData>().Whom.AsTechno();
       if (techno && techno->IsActive) {
         techno->Repair(-1);
       }
@@ -500,14 +482,14 @@ void EventClass::Execute() {
     */
     case SELL:
       CCDebugString("C&C95 - Sell packet received\n");
-      techno = Data.Target.Whom.AsTechno();
+      techno = data<TargetData>().Whom.AsTechno();
       if (techno && techno->IsActive &&
           techno->House == TheObjectHeaps().house().Slot(ID)) {
         techno->Sell_Back(-1);
       } else {
-        if (Data.Target.Whom.kind() == KIND_CELL) {
+        if (data<TargetData>().Whom.kind() == KIND_CELL) {
           TheObjectHeaps().house().Slot(ID)->Sell_Wall(
-              Data.Target.Whom.AsCell());
+              data<TargetData>().Whom.AsCell());
         }
       }
       break;
@@ -517,9 +499,10 @@ void EventClass::Execute() {
     **	result of player intervention.
     */
     case ANIMATION:
-      anim = base::NewPooled<AnimClass>(Data.Anim.What, Data.Anim.Where);
-      if (anim && (Data.Anim.Owner != HOUSE_NONE &&
-                   ThePlayer()->Class->House != Data.Anim.Owner &&
+      anim = base::NewPooled<AnimClass>(data<AnimData>().What,
+                                        data<AnimData>().Where);
+      if (anim && (data<AnimData>().Owner != HOUSE_NONE &&
+                   ThePlayer()->Class->House != data<AnimData>().Owner &&
                    !TheSpecialFlags().visible_target)) {
         anim->Make_Invisible();
       }
@@ -534,8 +517,8 @@ void EventClass::Execute() {
     */
     case PLACE:
       CCDebugString("C&C95 - Place packet received\n");
-      TheObjectHeaps().house().Slot(ID)->Place_Object(Data.Place.Type,
-                                                      Data.Place.Cell);
+      TheObjectHeaps().house().Slot(ID)->Place_Object(data<PlaceData>().Type,
+                                                      data<PlaceData>().Cell);
       break;
 
     /*
@@ -545,8 +528,8 @@ void EventClass::Execute() {
     */
     case PRODUCE:
       CCDebugString("C&C95 - Produce packet received\n");
-      TheObjectHeaps().house().Slot(ID)->Begin_Production(Data.Specific.Type,
-                                                          Data.Specific.ID);
+      TheObjectHeaps().house().Slot(ID)->Begin_Production(
+          data<SpecificData>().Type, data<SpecificData>().ID);
       break;
 
     /*
@@ -555,7 +538,8 @@ void EventClass::Execute() {
     */
     case SUSPEND:
       CCDebugString("C&C95 - Suspend packet received\n");
-      TheObjectHeaps().house().Slot(ID)->Suspend_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Suspend_Production(
+          data<SpecificData>().Type);
       break;
 
     /*
@@ -565,7 +549,8 @@ void EventClass::Execute() {
     */
     case ABANDON:
       CCDebugString("C&C95 - Abandon packet received\n");
-      TheObjectHeaps().house().Slot(ID)->Abandon_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Abandon_Production(
+          data<SpecificData>().Type);
       break;
 
     /*
@@ -573,7 +558,7 @@ void EventClass::Execute() {
     */
     case PRIMARY: {
       CCDebugString("C&C95 - Primary building packet received\n");
-      BuildingClass* building = Data.Target.Whom.AsBuilding();
+      BuildingClass* building = data<TargetData>().Whom.AsBuilding();
       if (building && building->IsActive) {
         building->Toggle_Primary();
       }
@@ -584,17 +569,18 @@ void EventClass::Execute() {
     **	action routes through this event. It sets a unit's mission, TarCom,
     **	and NavCom to the values specified.
     */
-    case MEGAMISSION:
-      techno = Data.MegaMission.Whom.AsTechno();
+    case MEGAMISSION: {
+      const auto order = data<MegaMissionData>();
+      techno = order.Whom.AsTechno();
       if (techno && techno->IsActive) {
         /*
         **	Fetch a pointer to the object of the mission.
         */
         ObjectClass* object = nullptr;
-        if (Data.MegaMission.Target) {
-          object = Data.MegaMission.Target.AsObject();
+        if (order.Target) {
+          object = order.Target.AsObject();
         } else {
-          object = Data.MegaMission.Destination.AsObject();
+          object = order.Destination.AsObject();
         }
 
         /*
@@ -643,7 +629,7 @@ void EventClass::Execute() {
           object->Clicked_As_Target();
         }
 
-        techno->Assign_Mission(Data.MegaMission.Mission);
+        techno->Assign_Mission(order.Mission);
 
         /*
         **	Guard area mode is handled with care. The specified target is
@@ -651,37 +637,35 @@ void EventClass::Execute() {
         *addition, the *	movement destination is immediately set to this
         *new location.
         */
-        if (Data.MegaMission.Mission == MISSION_GUARD_AREA &&
+        if (order.Mission == MISSION_GUARD_AREA &&
             //					Data.MegaMission.Target
             //&&
             (techno->What_Am_I() == RTTI_INFANTRY ||
              techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_AIRCRAFT)) {
-          dynamic_cast<FootClass*>(techno)->ArchiveTarget =
-              Data.MegaMission.Target;
+          dynamic_cast<FootClass*>(techno)->ArchiveTarget = order.Target;
           techno->Assign_Target(Target{});
-          techno->Assign_Destination(Data.MegaMission.Target);
+          techno->Assign_Destination(order.Target);
         } else {
-          techno->Assign_Target(Data.MegaMission.Target);
-          techno->Assign_Destination(Data.MegaMission.Destination);
+          techno->Assign_Target(order.Target);
+          techno->Assign_Destination(order.Destination);
         }
 
 #ifdef NEVER
         if ((techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_INFANTRY) &&
-            Data.MegaMission.Mission == MISSION_GUARD_AREA) {
-          dynamic_cast<FootClass*>(techno)->ArchiveTarget =
-              Data.MegaMission.Destination;
+            order.Mission == MISSION_GUARD_AREA) {
+          dynamic_cast<FootClass*>(techno)->ArchiveTarget = order.Destination;
         }
 #endif
       }
-      break;
+    } break;
 
     /*
     **	Request that the unit/infantry/aircraft go into idle mode.
     */
     case IDLE:
-      techno = Data.Target.Whom.AsTechno();
+      techno = data<TargetData>().Whom.AsTechno();
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
         techno->Assign_Destination(Target{});
@@ -695,7 +679,7 @@ void EventClass::Execute() {
     *location.
     */
     case SCATTER:
-      techno = Data.Target.Whom.AsTechno();
+      techno = data<TargetData>().Whom.AsTechno();
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
         techno->Scatter(Coordinate{}, true);
@@ -709,7 +693,8 @@ void EventClass::Execute() {
     case SPECIAL_PLACE:
       CCDebugString("C&C95 - Special blast packet received\n");
       TheObjectHeaps().house().Slot(ID)->Place_Special_Blast(
-          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell);
+          static_cast<SpecialWeaponType>(data<SpecialData>().ID),
+          data<SpecialData>().Cell);
       break;
 
     /*
@@ -739,7 +724,7 @@ void EventClass::Execute() {
     */
     case GAMESPEED:
       CCDebugString("C&C95 - Game speed packet received\n");
-      TheOptions().GameSpeed = static_cast<unsigned>(Data.General.Value);
+      TheOptions().GameSpeed = static_cast<unsigned>(data<GeneralData>().Value);
       break;
 
     /*
@@ -749,9 +734,9 @@ void EventClass::Execute() {
       char flip[128];
       absl::SNPrintF(flip, sizeof(flip),
                      "C&C95 - Changing MaxAhead to %d frames\n",
-                     Data.FrameInfo.Delay);
+                     data<FrameInfoData>().Delay);
       CCDebugString(flip);
-      TheSession().max_ahead() = Data.FrameInfo.Delay;
+      TheSession().max_ahead() = data<FrameInfoData>().Delay;
       break;
 
     //
@@ -769,22 +754,24 @@ void EventClass::Execute() {
       //  period of vulnerability's frame start & end values, so we
       //  can reschedule these events to execute after it's over.
       //
-      if (std::cmp_greater(Data.Timing.MaxAhead, TheSession().max_ahead())) {
+      if (std::cmp_greater(data<TimingData>().MaxAhead,
+                           TheSession().max_ahead())) {
         TheNetwork().new_max_ahead_frame1() = Frame;
-        TheNetwork().new_max_ahead_frame2() = Frame + Data.Timing.MaxAhead;
+        TheNetwork().new_max_ahead_frame2() =
+            Frame + data<TimingData>().MaxAhead;
       }
       // #endif
 
-      TheSession().desired_frame_rate() = Data.Timing.DesiredFrameRate;
-      TheSession().max_ahead() = Data.Timing.MaxAhead;
+      TheSession().desired_frame_rate() = data<TimingData>().DesiredFrameRate;
+      TheSession().max_ahead() = data<TimingData>().MaxAhead;
 
       absl::SNPrintF(flip, sizeof(flip),
                      "C&C95 -  Timing packet: DesiredFrameRate = %d\n",
-                     Data.Timing.DesiredFrameRate);
+                     data<TimingData>().DesiredFrameRate);
       CCDebugString(flip);
       absl::SNPrintF(flip, sizeof(flip),
                      "C&C95 -  Timing packet: MaxAhead = %d\n",
-                     Data.Timing.MaxAhead);
+                     data<TimingData>().MaxAhead);
       CCDebugString(flip);
 
       /*
@@ -811,12 +798,12 @@ void EventClass::Execute() {
       for (i = 0; i < TheSession().player_count(); i++) {
         if (MPlayerID == base::At(TheSession().player_ids(), i)) {
           base::At(TheSession().their_process_time(), i) =
-              Data.ProcessTime.AverageTicks;
+              data<ProcessTimeData>().AverageTicks;
 
           char flip_text[128];
           absl::SNPrintF(flip_text, sizeof(flip_text),
                          "C&C95 - Received PROCESS_TIME packet of %04x ticks\n",
-                         Data.ProcessTime.AverageTicks);
+                         data<ProcessTimeData>().AverageTicks);
           CCDebugString(flip_text);
 
           break;

@@ -383,14 +383,22 @@ bool Process_Global_Packet(GlobalPacketType* packet,
       base::SafeCopy(mypacket.Name, TheSession().game_name());
 #ifdef PATCH
       if (TheGameState().compatibility_v107()) {
-        mypacket.GameInfo.Version = 1;
+        mypacket.UpdateData<GlobalPacketType::GameInfoData>(
+            [&](GlobalPacketType::GameInfoData& d) { d.Version = 1; });
       } else {
-        mypacket.GameInfo.Version = 2;
+        mypacket.UpdateData<GlobalPacketType::GameInfoData>(
+            [&](GlobalPacketType::GameInfoData& d) { d.Version = 2; });
       }
 #else
-      mypacket.GameInfo.Version = Version_Number();
+      mypacket.UpdateData<GlobalPacketType::GameInfoData>(
+          [&](GlobalPacketType::GameInfoData& d) {
+            d.Version = Version_Number();
+          });
 #endif
-      mypacket.GameInfo.IsOpen = TheNetwork().is_open();
+      mypacket.UpdateData<GlobalPacketType::GameInfoData>(
+          [&](GlobalPacketType::GameInfoData& d) {
+            d.IsOpen = TheNetwork().is_open();
+          });
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
@@ -408,10 +416,12 @@ bool Process_Global_Packet(GlobalPacketType* packet,
 
     mypacket.Command = NET_ANSWER_PLAYER;
     base::SafeCopy(mypacket.Name, TheSession().player_name());
-    mypacket.PlayerInfo.House = TheSession().house();
-    mypacket.PlayerInfo.Color =
-        static_cast<unsigned int>(TheSession().color_index());
-    mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(TheSession().game_name());
+    mypacket.UpdateData<GlobalPacketType::PlayerInfoData>(
+        [&](GlobalPacketType::PlayerInfoData& d) {
+          d.House = TheSession().house();
+          d.Color = static_cast<unsigned int>(TheSession().color_index());
+          d.NameCRC = Compute_Name_CRC(TheSession().game_name());
+        });
 
     TheNetwork().ipx().Send_Global_Message(
         base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
@@ -1582,56 +1592,63 @@ static int Net_Join_Dialog() {
               while (sent_so_far < message_length) {
                 TheNetwork().global_packet().Command = NET_MESSAGE;
                 base::SafeCopy(TheNetwork().global_packet().Name, namebuf);
-                base::SafeCopy(
-                    std::span(TheNetwork().global_packet().Message.Buf)
-                        .first(COMPAT_MESSAGE_LENGTH - 4),
-                    std::string_view(TheSession().messages().Get_Edit_Buf())
-                        .substr(base::ToSize(sent_so_far)));
-
-                /*
-                ** Steve I's stuff for splitting message on word boundries
-                */
                 int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                TheNetwork()
+                    .global_packet()
+                    .UpdateData<GlobalPacketType::MessageData>(
+                        [&](GlobalPacketType::MessageData& d) {
+                          base::SafeCopy(
+                              std::span(d.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
+                              std::string_view(
+                                  TheSession().messages().Get_Edit_Buf())
+                                  .substr(base::ToSize(sent_so_far)));
 
-                /* Start at the end of the message and find a space with 10
-                 * chars. */
-                const auto the_string =
-                    std::span(TheNetwork().global_packet().Message.Buf);
-                while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                       base::At(the_string,
-                                base::ToSize(actual_message_size)) != ' ') {
-                  --actual_message_size;
-                }
-                if (base::At(the_string, base::ToSize(actual_message_size)) ==
-                    ' ') {
-                  /* Now delete the extra characters after the space (they musnt
-                   * print) */
-                  for (int k = 0;
-                       k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-                       k++) {
-                    base::At(the_string,
-                             base::ToSize(k + actual_message_size)) =
-                        static_cast<char>(0xff);
-                  }
-                } else {
-                  actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
-                }
+                          /*
+                          ** Steve I's stuff for splitting message on word
+                          * boundries
+                          */
 
-                base::At(TheNetwork().global_packet().Message.Buf,
-                         COMPAT_MESSAGE_LENGTH - 5) = 0;
-                base::WriteUnaligned(
-                    base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                        .subspan(COMPAT_MESSAGE_LENGTH - 4),
-                    magic_number);
-                base::WriteUnaligned(
-                    base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                        .subspan(COMPAT_MESSAGE_LENGTH - 2),
-                    crc);
-                TheNetwork().global_packet().Message.ID =
-                    static_cast<unsigned char>(Build_MPlayerID(
-                        TheSession().color_index(), TheSession().house()));
-                TheNetwork().global_packet().Message.NameCRC =
-                    Compute_Name_CRC(TheSession().game_name());
+                          /* Start at the end of the message and find a space
+                           * with 10 chars. */
+                          const auto the_string = std::span(d.Buf);
+                          while (COMPAT_MESSAGE_LENGTH - 5 -
+                                         actual_message_size <
+                                     10 &&
+                                 base::At(the_string,
+                                          base::ToSize(actual_message_size)) !=
+                                     ' ') {
+                            --actual_message_size;
+                          }
+                          if (base::At(the_string,
+                                       base::ToSize(actual_message_size)) ==
+                              ' ') {
+                            /* Now delete the extra characters after the space
+                             * (they musnt print) */
+                            for (int k = 0; k < COMPAT_MESSAGE_LENGTH - 5 -
+                                                    actual_message_size;
+                                 k++) {
+                              base::At(the_string,
+                                       base::ToSize(k + actual_message_size)) =
+                                  static_cast<char>(0xff);
+                            }
+                          } else {
+                            actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                          }
+
+                          base::At(d.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
+                          base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                                   COMPAT_MESSAGE_LENGTH - 4),
+                                               magic_number);
+                          base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                                   COMPAT_MESSAGE_LENGTH - 2),
+                                               crc);
+
+                          d.ID = static_cast<unsigned char>(
+                              Build_MPlayerID(TheSession().color_index(),
+                                              TheSession().house()));
+                          d.NameCRC =
+                              Compute_Name_CRC(TheSession().game_name());
+                        });
 
                 /*..................................................................
                 Send the message to every player in our player list.  The local
@@ -1649,7 +1666,10 @@ static int Net_Join_Dialog() {
 
                   std::string message = base::FormatRuntime(
                       Text_String(TXT_FROM), TheSession().player_name(),
-                      TheNetwork().global_packet().Message.Buf);
+                      TheNetwork()
+                          .global_packet()
+                          .data<GlobalPacketType::MessageData>()
+                          .Buf);
                   TheSession().messages().Add_Message(
                       message.data(),
                       base::At(TheSession().text_colors(),
@@ -2163,9 +2183,11 @@ static bool Request_To_Join(const char* playername, int join_index,
 
   TheNetwork().global_packet().Command = NET_QUERY_JOIN;
   base::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
-  TheNetwork().global_packet().PlayerInfo.House = house;
-  TheNetwork().global_packet().PlayerInfo.Color =
-      static_cast<unsigned int>(color);
+  TheNetwork().global_packet().UpdateData<GlobalPacketType::PlayerInfoData>(
+      [&](GlobalPacketType::PlayerInfoData& d) {
+        d.House = house;
+        d.Color = static_cast<unsigned int>(color);
+      });
 
   TheNetwork().ipx().Send_Global_Message(
       base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
@@ -2359,15 +2381,24 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         TheNetwork().games().at(base::ToSize(i))->LastTime =
             engine::platform::SystemTicks();
         if (TheNetwork().games().at(base::ToSize(i))->IsOpen !=
-            TheNetwork().global_packet().GameInfo.IsOpen) {
+            TheNetwork()
+                .global_packet()
+                .data<GlobalPacketType::GameInfoData>()
+                .IsOpen) {
           gamelist->Set_Item(
               i, base::FormatRuntime(
-                     Text_String(TheNetwork().global_packet().GameInfo.IsOpen
+                     Text_String(TheNetwork()
+                                         .global_packet()
+                                         .data<GlobalPacketType::GameInfoData>()
+                                         .IsOpen
                                      ? TXT_THATGUYS_GAME
                                      : TXT_THATGUYS_GAME_BRACKET),
                      TheNetwork().global_packet().Name));
           TheNetwork().games().at(base::ToSize(i))->IsOpen =
-              TheNetwork().global_packet().GameInfo.IsOpen;
+              TheNetwork()
+                  .global_packet()
+                  .data<GlobalPacketType::GameInfoData>()
+                  .IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
           If this game has gone from closed to open, copy the responder's
@@ -2393,8 +2424,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           TheNetwork().games().emplace_back(std::make_unique<GameNode>()).get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->Version = TheNetwork().global_packet().GameInfo.Version;
-      who->IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
+      who->Version = TheNetwork()
+                         .global_packet()
+                         .data<GlobalPacketType::GameInfoData>()
+                         .Version;
+      who->IsOpen = TheNetwork()
+                        .global_packet()
+                        .data<GlobalPacketType::GameInfoData>()
+                        .IsOpen;
       who->LastTime = engine::platform::SystemTicks();
 
       /*..................................................................
@@ -2402,7 +2439,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       the string if it's a closed game
       ..................................................................*/
       const std::string game_name = base::FormatRuntime(
-          Text_String(TheNetwork().global_packet().GameInfo.IsOpen
+          Text_String(TheNetwork()
+                              .global_packet()
+                              .data<GlobalPacketType::GameInfoData>()
+                              .IsOpen
                           ? TXT_THATGUYS_GAME
                           : TXT_THATGUYS_GAME_BRACKET),
           TheNetwork().global_packet().Name);
@@ -2431,13 +2471,22 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         base::SafeCopy(TheNetwork().players().at(base::ToSize(i))->Name,
                        TheNetwork().global_packet().Name);
         TheNetwork().players().at(base::ToSize(i))->House =
-            TheNetwork().global_packet().PlayerInfo.House;
+            TheNetwork()
+                .global_packet()
+                .data<GlobalPacketType::PlayerInfoData>()
+                .House;
         TheNetwork().players().at(base::ToSize(i))->Color =
             static_cast<unsigned char>(
-                TheNetwork().global_packet().PlayerInfo.Color);
+                TheNetwork()
+                    .global_packet()
+                    .data<GlobalPacketType::PlayerInfoData>()
+                    .Color);
         base::At(playerlist->Colors, i) =
             base::At(TheSession().text_colors(),
-                     TheNetwork().global_packet().PlayerInfo.Color);
+                     TheNetwork()
+                         .global_packet()
+                         .data<GlobalPacketType::PlayerInfoData>()
+                         .Color);
         found = 1;
         break;
       }
@@ -2447,7 +2496,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     .....................................................................*/
     i = gamelist->Current_Index();
     if (std::ssize(TheNetwork().games()) &&
-        TheNetwork().global_packet().PlayerInfo.NameCRC !=
+        TheNetwork()
+                .global_packet()
+                .data<GlobalPacketType::PlayerInfoData>()
+                .NameCRC !=
             Compute_Name_CRC(TheNetwork().games().at(base::ToSize(i))->Name)) {
       found = 1;
     }
@@ -2473,14 +2525,23 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                             .get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->House = TheNetwork().global_packet().PlayerInfo.House;
+      who->House = TheNetwork()
+                       .global_packet()
+                       .data<GlobalPacketType::PlayerInfoData>()
+                       .House;
       who->Color = static_cast<unsigned char>(
-          TheNetwork().global_packet().PlayerInfo.Color);
+          TheNetwork()
+              .global_packet()
+              .data<GlobalPacketType::PlayerInfoData>()
+              .Color);
 
       /*..................................................................
       Create & add a string to the list box
       ..................................................................*/
-      if (TheNetwork().global_packet().PlayerInfo.House == HOUSE_GOOD) {
+      if (TheNetwork()
+              .global_packet()
+              .data<GlobalPacketType::PlayerInfoData>()
+              .House == HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
                        TheNetwork().global_packet().Name,
                        Text_String(TXT_G_D_I));
@@ -2502,9 +2563,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     if (*joinstate != JOIN_CONFIRMED) {
       base::SafeCopy(TheSession().game_name(),
                      TheNetwork().global_packet().Name);
-      TheSession().house() = TheNetwork().global_packet().PlayerInfo.House;
+      TheSession().house() = TheNetwork()
+                                 .global_packet()
+                                 .data<GlobalPacketType::PlayerInfoData>()
+                                 .House;
       TheSession().color_index() =
-          static_cast<int>(TheNetwork().global_packet().PlayerInfo.Color);
+          static_cast<int>(TheNetwork()
+                               .global_packet()
+                               .data<GlobalPacketType::PlayerInfoData>()
+                               .Color);
 
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
@@ -2556,22 +2623,47 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     ------------------------------------------------------------------------*/
     if (*joinstate == JOIN_CONFIRMED) {
       TheSession().credits() =
-          static_cast<int>(TheNetwork().global_packet().ScenarioInfo.Credits);
-      TheSession().bases() = TheNetwork().global_packet().ScenarioInfo.IsBases;
-      TheSession().tiberium() =
-          TheNetwork().global_packet().ScenarioInfo.IsTiberium;
-      TheSession().crates() =
-          TheNetwork().global_packet().ScenarioInfo.IsGoodies;
-      TheSession().ghosts() =
-          TheNetwork().global_packet().ScenarioInfo.IsGhosties;
-      TheWorld().build_level() =
-          TheNetwork().global_packet().ScenarioInfo.BuildLevel;
+          static_cast<int>(TheNetwork()
+                               .global_packet()
+                               .data<GlobalPacketType::ScenarioInfoData>()
+                               .Credits);
+      TheSession().bases() = TheNetwork()
+                                 .global_packet()
+                                 .data<GlobalPacketType::ScenarioInfoData>()
+                                 .IsBases;
+      TheSession().tiberium() = TheNetwork()
+                                    .global_packet()
+                                    .data<GlobalPacketType::ScenarioInfoData>()
+                                    .IsTiberium;
+      TheSession().crates() = TheNetwork()
+                                  .global_packet()
+                                  .data<GlobalPacketType::ScenarioInfoData>()
+                                  .IsGoodies;
+      TheSession().ghosts() = TheNetwork()
+                                  .global_packet()
+                                  .data<GlobalPacketType::ScenarioInfoData>()
+                                  .IsGhosties;
+      TheWorld().build_level() = TheNetwork()
+                                     .global_packet()
+                                     .data<GlobalPacketType::ScenarioInfoData>()
+                                     .BuildLevel;
       TheSession().unit_count() =
-          TheNetwork().global_packet().ScenarioInfo.UnitCount;
-      TheWorld().seed() = TheNetwork().global_packet().ScenarioInfo.Seed;
-      TheSpecialFlags() = TheNetwork().global_packet().ScenarioInfo.Special;
-      TheOptions().GameSpeed =
-          TheNetwork().global_packet().ScenarioInfo.GameSpeed;
+          TheNetwork()
+              .global_packet()
+              .data<GlobalPacketType::ScenarioInfoData>()
+              .UnitCount;
+      TheWorld().seed() = TheNetwork()
+                              .global_packet()
+                              .data<GlobalPacketType::ScenarioInfoData>()
+                              .Seed;
+      TheSpecialFlags() = TheNetwork()
+                              .global_packet()
+                              .data<GlobalPacketType::ScenarioInfoData>()
+                              .Special;
+      TheOptions().GameSpeed = TheNetwork()
+                                   .global_packet()
+                                   .data<GlobalPacketType::ScenarioInfoData>()
+                                   .GameSpeed;
 
       if (TheSession().tiberium()) {
         TheSpecialFlags().tiberium_grows = 1;
@@ -2583,11 +2675,17 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       if (TheNetwork().winsock().Get_Connected()) {
         TheSession().scenario_index() =
-            TheNetwork().global_packet().ScenarioInfo.Scenario;
+            TheNetwork()
+                .global_packet()
+                .data<GlobalPacketType::ScenarioInfoData>()
+                .Scenario;
       } else {
         TheSession().scenario_index() = -1;
         for (i = 0; i < std::ssize(TheSession().scenario_files()); i++) {
-          if (std::cmp_equal(TheNetwork().global_packet().ScenarioInfo.Scenario,
+          if (std::cmp_equal(TheNetwork()
+                                 .global_packet()
+                                 .data<GlobalPacketType::ScenarioInfoData>()
+                                 .Scenario,
                              base::At(TheSession().scenario_files(), i))) {
             TheSession().scenario_index() = i;
           }
@@ -2669,8 +2767,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     NET_GO: The game's owner is signalling us to start playing.
     ------------------------------------------------------------------------*/
     if (*joinstate == JOIN_CONFIRMED) {
-      TheSession().max_ahead() =
-          TheNetwork().global_packet().ResponseTime.OneWay;
+      TheSession().max_ahead() = TheNetwork()
+                                     .global_packet()
+                                     .data<GlobalPacketType::ResponseTimeData>()
+                                     .OneWay;
       *joinstate = JOIN_GAME_START;
       retcode = EV_STATE_CHANGE;
       CCDebugString("C&C95 - Received the 'GO' packet\n");
@@ -2679,17 +2779,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     /*------------------------------------------------------------------------
     NET_MESSAGE: Someone is sending us a message
     ------------------------------------------------------------------------*/
+    const auto received =
+        TheNetwork().global_packet().data<GlobalPacketType::MessageData>();
     std::string message = base::FormatRuntime(
-        Text_String(TXT_FROM), TheNetwork().global_packet().Name,
-        TheNetwork().global_packet().Message.Buf);
+        Text_String(TXT_FROM), TheNetwork().global_packet().Name, received.Buf);
     const auto magic_number = base::ReadUnaligned<uint16_t>(
-        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-            .subspan(COMPAT_MESSAGE_LENGTH - 4));
+        base::ObjectBytes(received.Buf).subspan(COMPAT_MESSAGE_LENGTH - 4));
     const auto crc = base::ReadUnaligned<uint16_t>(
-        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-            .subspan(COMPAT_MESSAGE_LENGTH - 2));
-    const int color = static_cast<int>(
-        MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
+        base::ObjectBytes(received.Buf).subspan(COMPAT_MESSAGE_LENGTH - 2));
+    const int color = static_cast<int>(MPlayerID_To_ColorIndex(received.ID));
     TheSession().messages().Add_Message(
         message.data(), base::At(TheSession().text_colors(), color),
         FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -3650,54 +3748,59 @@ static int Net_New_Dialog() {
             TheNetwork().global_packet().Command = NET_MESSAGE;
             base::SafeCopy(TheNetwork().global_packet().Name,
                            TheSession().player_name());
-            base::SafeCopy(
-                std::span(TheNetwork().global_packet().Message.Buf)
-                    .first(COMPAT_MESSAGE_LENGTH - 4),
-                std::string_view(TheSession().messages().Get_Edit_Buf())
-                    .substr(base::ToSize(sent_so_far)));
-
-            /*
-            ** Steve I's stuff for splitting message on word boundries
-            */
             int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+            TheNetwork()
+                .global_packet()
+                .UpdateData<GlobalPacketType::MessageData>(
+                    [&](GlobalPacketType::MessageData& d) {
+                      base::SafeCopy(
+                          std::span(d.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
+                          std::string_view(
+                              TheSession().messages().Get_Edit_Buf())
+                              .substr(base::ToSize(sent_so_far)));
 
-            /* Start at the end of the message and find a space with 10 chars.
-             */
-            const auto the_string =
-                std::span(TheNetwork().global_packet().Message.Buf);
-            while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                   base::At(the_string, base::ToSize(actual_message_size)) !=
-                       ' ') {
-              --actual_message_size;
-            }
-            if (base::At(the_string, base::ToSize(actual_message_size)) ==
-                ' ') {
-              /* Now delete the extra characters after the space (they musnt
-               * print) */
-              for (int k = 0;
-                   k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; k++) {
-                base::At(the_string, base::ToSize(k + actual_message_size)) =
-                    static_cast<char>(0xff);
-              }
-            } else {
-              actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
-            }
+                      /*
+                      ** Steve I's stuff for splitting message on word boundries
+                      */
 
-            base::At(TheNetwork().global_packet().Message.Buf,
-                     COMPAT_MESSAGE_LENGTH - 5) = 0;
-            base::WriteUnaligned(
-                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                    .subspan(COMPAT_MESSAGE_LENGTH - 4),
-                magic_number);
-            base::WriteUnaligned(
-                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                    .subspan(COMPAT_MESSAGE_LENGTH - 2),
-                crc);
-            TheNetwork().global_packet().Message.ID =
-                static_cast<unsigned char>(Build_MPlayerID(
-                    TheSession().color_index(), TheSession().house()));
-            TheNetwork().global_packet().Message.NameCRC =
-                Compute_Name_CRC(TheSession().game_name());
+                      /* Start at the end of the message and find a space with
+                       * 10 chars.
+                       */
+                      const auto the_string = std::span(d.Buf);
+                      while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size <
+                                 10 &&
+                             base::At(the_string,
+                                      base::ToSize(actual_message_size)) !=
+                                 ' ') {
+                        --actual_message_size;
+                      }
+                      if (base::At(the_string,
+                                   base::ToSize(actual_message_size)) == ' ') {
+                        /* Now delete the extra characters after the space (they
+                         * musnt print) */
+                        for (int k = 0; k < COMPAT_MESSAGE_LENGTH - 5 -
+                                                actual_message_size;
+                             k++) {
+                          base::At(the_string,
+                                   base::ToSize(k + actual_message_size)) =
+                              static_cast<char>(0xff);
+                        }
+                      } else {
+                        actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                      }
+
+                      base::At(d.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
+                      base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                               COMPAT_MESSAGE_LENGTH - 4),
+                                           magic_number);
+                      base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                               COMPAT_MESSAGE_LENGTH - 2),
+                                           crc);
+
+                      d.ID = static_cast<unsigned char>(Build_MPlayerID(
+                          TheSession().color_index(), TheSession().house()));
+                      d.NameCRC = Compute_Name_CRC(TheSession().game_name());
+                    });
 
             /*..................................................................
             Send the message to every player in our player list.
@@ -3715,7 +3818,10 @@ static int Net_New_Dialog() {
             ..................................................................*/
             std::string message = base::FormatRuntime(
                 Text_String(TXT_FROM), TheSession().player_name(),
-                TheNetwork().global_packet().Message.Buf);
+                TheNetwork()
+                    .global_packet()
+                    .data<GlobalPacketType::MessageData>()
+                    .Buf);
             TheSession().messages().Add_Message(
                 message.data(),
                 base::At(TheSession().text_colors(),
@@ -3764,27 +3870,29 @@ static int Net_New_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_GAME_OPTIONS;
-        TheNetwork().global_packet().ScenarioInfo.Scenario =
-            static_cast<unsigned char>(base::At(TheSession().scenario_files(),
-                                                TheSession().scenario_index()));
-        TheNetwork().global_packet().ScenarioInfo.Credits =
-            static_cast<unsigned int>(TheSession().credits());
-        TheNetwork().global_packet().ScenarioInfo.IsBases =
-            static_cast<unsigned int>(TheSession().bases());
-        TheNetwork().global_packet().ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(TheSession().tiberium());
-        TheNetwork().global_packet().ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(TheSession().crates());
-        TheNetwork().global_packet().ScenarioInfo.IsGhosties =
-            static_cast<unsigned int>(TheSession().ghosts());
-        TheNetwork().global_packet().ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(TheWorld().build_level());
-        TheNetwork().global_packet().ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(TheSession().unit_count());
-        TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
-        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecialFlags();
-        TheNetwork().global_packet().ScenarioInfo.GameSpeed =
-            TheOptions().GameSpeed;
+        TheNetwork()
+            .global_packet()
+            .UpdateData<GlobalPacketType::ScenarioInfoData>(
+                [&](GlobalPacketType::ScenarioInfoData& d) {
+                  d.Scenario = static_cast<unsigned char>(
+                      base::At(TheSession().scenario_files(),
+                               TheSession().scenario_index()));
+                  d.Credits = static_cast<unsigned int>(TheSession().credits());
+                  d.IsBases = static_cast<unsigned int>(TheSession().bases());
+                  d.IsTiberium =
+                      static_cast<unsigned int>(TheSession().tiberium());
+                  d.IsGoodies =
+                      static_cast<unsigned int>(TheSession().crates());
+                  d.IsGhosties =
+                      static_cast<unsigned int>(TheSession().ghosts());
+                  d.BuildLevel =
+                      static_cast<unsigned char>(TheWorld().build_level());
+                  d.UnitCount =
+                      static_cast<unsigned char>(TheSession().unit_count());
+                  d.Seed = TheWorld().seed();
+                  d.Special = TheSpecialFlags();
+                  d.GameSpeed = TheOptions().GameSpeed;
+                });
 
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
@@ -3857,7 +3965,10 @@ static int Net_New_Dialog() {
     base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                     sizeof(GlobalPacketType));
     TheNetwork().global_packet().Command = NET_GO;
-    TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
+    TheNetwork().global_packet().UpdateData<GlobalPacketType::ResponseTimeData>(
+        [&](GlobalPacketType::ResponseTimeData& d) {
+          d.OneWay = TheSession().max_ahead();
+        });
     for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
@@ -4055,18 +4166,29 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
                       .get();  // node to add to Players Vector
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->House = TheNetwork().global_packet().PlayerInfo.House;
+      who->House = TheNetwork()
+                       .global_packet()
+                       .data<GlobalPacketType::PlayerInfoData>()
+                       .House;
 
       /*..................................................................
       Set player's color; if requested color isn't used, give it to him;
       otherwise, give him the 1st available color.  Mark the color we
       give him as used.
       ..................................................................*/
-      if (TheNetwork().global_packet().PlayerInfo.Color < MAX_MPLAYER_COLORS &&
-          base::At(color_used, TheNetwork().global_packet().PlayerInfo.Color) ==
-              0) {
+      if (TheNetwork()
+                  .global_packet()
+                  .data<GlobalPacketType::PlayerInfoData>()
+                  .Color < MAX_MPLAYER_COLORS &&
+          base::At(color_used, TheNetwork()
+                                   .global_packet()
+                                   .data<GlobalPacketType::PlayerInfoData>()
+                                   .Color) == 0) {
         who->Color = static_cast<unsigned char>(
-            TheNetwork().global_packet().PlayerInfo.Color);
+            TheNetwork()
+                .global_packet()
+                .data<GlobalPacketType::PlayerInfoData>()
+                .Color);
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (base::At(color_used, i) == 0) {
@@ -4080,7 +4202,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*..................................................................
       Add player name to the list box
       ..................................................................*/
-      if (TheNetwork().global_packet().PlayerInfo.House == HOUSE_GOOD) {
+      if (TheNetwork()
+              .global_packet()
+              .data<GlobalPacketType::PlayerInfoData>()
+              .House == HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
                        TheNetwork().global_packet().Name,
                        Text_String(TXT_G_D_I));
@@ -4101,8 +4226,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       TheNetwork().global_packet().Command = NET_CONFIRM_JOIN;
       base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
-      TheNetwork().global_packet().PlayerInfo.House = who->House;
-      TheNetwork().global_packet().PlayerInfo.Color = who->Color;
+      TheNetwork().global_packet().UpdateData<GlobalPacketType::PlayerInfoData>(
+          [&](GlobalPacketType::PlayerInfoData& d) {
+            d.House = who->House;
+            d.Color = who->Color;
+          });
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
@@ -4144,17 +4272,15 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     /*------------------------------------------------------------------------
     NET_MESSAGE: Someone is sending us a message
     ------------------------------------------------------------------------*/
+    const auto received =
+        TheNetwork().global_packet().data<GlobalPacketType::MessageData>();
     std::string message = base::FormatRuntime(
-        Text_String(TXT_FROM), TheNetwork().global_packet().Name,
-        TheNetwork().global_packet().Message.Buf);
+        Text_String(TXT_FROM), TheNetwork().global_packet().Name, received.Buf);
     const auto magic_number = base::ReadUnaligned<uint16_t>(
-        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-            .subspan(COMPAT_MESSAGE_LENGTH - 4));
+        base::ObjectBytes(received.Buf).subspan(COMPAT_MESSAGE_LENGTH - 4));
     const auto crc = base::ReadUnaligned<uint16_t>(
-        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-            .subspan(COMPAT_MESSAGE_LENGTH - 2));
-    const int color = static_cast<int>(
-        MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
+        base::ObjectBytes(received.Buf).subspan(COMPAT_MESSAGE_LENGTH - 2));
+    const int color = static_cast<int>(MPlayerID_To_ColorIndex(received.ID));
     TheSession().messages().Add_Message(
         message.data(), base::At(TheSession().text_colors(), color),
         FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4724,27 +4850,29 @@ static int Net_Fake_New_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_GAME_OPTIONS;
-        TheNetwork().global_packet().ScenarioInfo.Scenario =
-            static_cast<unsigned char>(
-                TheSession().scenario_index());  // MPlayerFilenum[ScenarioIdx];
-        TheNetwork().global_packet().ScenarioInfo.Credits =
-            static_cast<unsigned int>(TheSession().credits());
-        TheNetwork().global_packet().ScenarioInfo.IsBases =
-            static_cast<unsigned int>(TheSession().bases());
-        TheNetwork().global_packet().ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(TheSession().tiberium());
-        TheNetwork().global_packet().ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(TheSession().crates());
-        TheNetwork().global_packet().ScenarioInfo.IsGhosties =
-            static_cast<unsigned int>(TheSession().ghosts());
-        TheNetwork().global_packet().ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(TheWorld().build_level());
-        TheNetwork().global_packet().ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(TheSession().unit_count());
-        TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
-        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecialFlags();
-        TheNetwork().global_packet().ScenarioInfo.GameSpeed =
-            TheOptions().GameSpeed;
+        TheNetwork()
+            .global_packet()
+            .UpdateData<GlobalPacketType::ScenarioInfoData>(
+                [&](GlobalPacketType::ScenarioInfoData& d) {
+                  d.Scenario = static_cast<unsigned char>(
+                      TheSession()
+                          .scenario_index());  // MPlayerFilenum[ScenarioIdx];
+                  d.Credits = static_cast<unsigned int>(TheSession().credits());
+                  d.IsBases = static_cast<unsigned int>(TheSession().bases());
+                  d.IsTiberium =
+                      static_cast<unsigned int>(TheSession().tiberium());
+                  d.IsGoodies =
+                      static_cast<unsigned int>(TheSession().crates());
+                  d.IsGhosties =
+                      static_cast<unsigned int>(TheSession().ghosts());
+                  d.BuildLevel =
+                      static_cast<unsigned char>(TheWorld().build_level());
+                  d.UnitCount =
+                      static_cast<unsigned char>(TheSession().unit_count());
+                  d.Seed = TheWorld().seed();
+                  d.Special = TheSpecialFlags();
+                  d.GameSpeed = TheOptions().GameSpeed;
+                });
 
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
@@ -4823,7 +4951,10 @@ static int Net_Fake_New_Dialog() {
     base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                     sizeof(GlobalPacketType));
     TheNetwork().global_packet().Command = NET_GO;
-    TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
+    TheNetwork().global_packet().UpdateData<GlobalPacketType::ResponseTimeData>(
+        [&](GlobalPacketType::ResponseTimeData& d) {
+          d.OneWay = TheSession().max_ahead();
+        });
     for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       char flopbuf[128];
       absl::SNPrintF(flopbuf, sizeof(flopbuf),

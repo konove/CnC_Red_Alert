@@ -165,60 +165,68 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
   check([](EventClass& e) { e.Type = EventClass::OPTIONS; }, EventClass::OPTIONS);
   check([](EventClass& e) {
     e.Type = EventClass::GAMESPEED;
-    e.Data.General.Value = 3;
+    e.UpdateData<EventClass::GeneralData>(
+        [](EventClass::GeneralData& d) { d.Value = 3; });
   }, EventClass::GAMESPEED, 3);
   check(
       [](EventClass& e) {
         e.Type = EventClass::IDLE;
-        e.Data.Target.Whom = Target::FromPacked(123);
+        e.UpdateData<EventClass::TargetData>([](EventClass::TargetData& d) {
+          d.Whom = Target::FromPacked(123);
+        });
       },
       EventClass::IDLE, Target::FromPacked(123));
   check(
       [](EventClass& e) {
-        e.Type = EventClass::IDLE;
-        e.Data.NavCom.Whom = Target::FromPacked(123);
-        e.Data.NavCom.Where = Target::FromPacked(456);
-      },
-      EventClass::IDLE, Target::FromPacked(123), Target::FromPacked(456));
-  check(
-      [](EventClass& e) {
         e.Type = EventClass::MEGAMISSION;
-        e.Data.MegaMission.Whom = Target::FromPacked(123);
-        e.Data.MegaMission.Mission = MISSION_MOVE;
-        e.Data.MegaMission.Target = Target::FromPacked(456);
-        e.Data.MegaMission.Destination = Target::FromPacked(789);
+        e.UpdateData<EventClass::MegaMissionData>(
+            [](EventClass::MegaMissionData& d) {
+              d.Whom = Target::FromPacked(123);
+              d.Mission = MISSION_MOVE;
+              d.Target = Target::FromPacked(456);
+              d.Destination = Target::FromPacked(789);
+            });
       },
       Target::FromPacked(123), MISSION_MOVE, Target::FromPacked(456),
       Target::FromPacked(789));
   check([](EventClass& e) {
     e.Type = EventClass::PRODUCE;
-    e.Data.Specific.Type = RTTI_UNITTYPE;
-    e.Data.Specific.ID = 2;
+    e.UpdateData<EventClass::SpecificData>([](EventClass::SpecificData& d) {
+      d.Type = RTTI_UNITTYPE;
+      d.ID = 2;
+    });
   }, EventClass::PRODUCE, RTTI_UNITTYPE, 2);
   check(
       [](EventClass& e) {
         e.Type = EventClass::PLACE;
-        e.Data.Place.Type = RTTI_BUILDINGTYPE;
-        e.Data.Place.Cell = Cell::FromIndex(100);
+        e.UpdateData<EventClass::PlaceData>([](EventClass::PlaceData& d) {
+          d.Type = RTTI_BUILDINGTYPE;
+          d.Cell = Cell::FromIndex(100);
+        });
       },
       EventClass::PLACE, RTTI_BUILDINGTYPE, Cell::FromIndex(100));
   check(
       [](EventClass& e) {
         e.Type = EventClass::SPECIAL_PLACE;
-        e.Data.Special.ID = 2;
-        e.Data.Special.Cell = Cell::FromIndex(100);
+        e.UpdateData<EventClass::SpecialData>([](EventClass::SpecialData& d) {
+          d.ID = 2;
+          d.Cell = Cell::FromIndex(100);
+        });
       },
       EventClass::SPECIAL_PLACE, 2, Cell::FromIndex(100));
   check([](EventClass& e) {
     e.Type = EventClass::ANIMATION;
-    e.Data.Anim.What = ANIM_FIRE_SMALL;
-    e.Data.Anim.Owner = HOUSE_GOOD;
-    e.Data.Anim.Where = Coordinate::FromPacked(100);
+    e.UpdateData<EventClass::AnimData>([](EventClass::AnimData& d) {
+      d.What = ANIM_FIRE_SMALL;
+      d.Owner = HOUSE_GOOD;
+      d.Where = Coordinate::FromPacked(100);
+    });
   }, ANIM_FIRE_SMALL, HOUSE_GOOD, Coordinate::FromPacked(100));
   SpecialFlags options{};
   check([&options](EventClass& e) {
     e.Type = EventClass::SPECIAL;
-    e.Data.Options.Data = options;
+    e.UpdateData<EventClass::OptionsData>(
+        [&options](EventClass::OptionsData& d) { d.Data = options; });
   }, options);
 }
 

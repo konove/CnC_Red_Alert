@@ -78,13 +78,14 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   frame.Frame = 123;
   frame.ID = static_cast<unsigned>(HOUSE_GOOD);
   frame.MPlayerID = 7;
-  frame.Data.FrameInfo.Delay = 4;
+  frame.UpdateData<EventClass::FrameInfoData>(
+      [](EventClass::FrameInfoData& d) { d.Delay = 4; });
   const auto header_size =
-      offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
+      EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData);
   base::CopyBytes(packet, base::ObjectBytes(frame), header_size);
   const auto payload = packet.subspan(header_size);
   base::WriteUnaligned(payload, EventClass::RESPONSE_TIME);
-  decltype(frame.Data.FrameInfo.Delay) const delay = 9;
+  decltype(EventClass::FrameInfoData::Delay) const delay = 9;
   base::WriteUnaligned(payload.subspan(sizeof(EventClass::EventType)), delay);
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));
@@ -95,7 +96,8 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   EXPECT_EQ(TheNetwork().do_list().at(1).Frame, 123);
   EXPECT_EQ(TheNetwork().do_list().at(1).ID, static_cast<unsigned>(HOUSE_GOOD));
   EXPECT_EQ(TheNetwork().do_list().at(1).MPlayerID, 7);
-  EXPECT_EQ(TheNetwork().do_list().at(1).Data.FrameInfo.Delay, 9);
+  EXPECT_EQ(
+      TheNetwork().do_list().at(1).data<EventClass::FrameInfoData>().Delay, 9);
 }
 
 TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
@@ -104,7 +106,8 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
   event.Type = EventClass::RESPONSE_TIME;
   event.Frame = 321;
   event.IsExecuted = true;
-  event.Data.FrameInfo.Delay = 11;
+  event.UpdateData<EventClass::FrameInfoData>(
+      [](EventClass::FrameInfoData& d) { d.Delay = 11; });
   base::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
                        event);
   const auto before = bytes;
@@ -114,7 +117,8 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
       1);
   ASSERT_EQ(TheNetwork().do_list().Count(), 1);
   EXPECT_EQ(TheNetwork().do_list().at(0).Frame, 321);
-  EXPECT_EQ(TheNetwork().do_list().at(0).Data.FrameInfo.Delay, 11);
+  EXPECT_EQ(
+      TheNetwork().do_list().at(0).data<EventClass::FrameInfoData>().Delay, 11);
   EXPECT_FALSE(TheNetwork().do_list().at(0).IsExecuted);
   EXPECT_EQ(bytes, before);
 }
@@ -138,14 +142,14 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
   EventClass frame;
   frame.Type = EventClass::FRAMEINFO;
   const auto header_size =
-      offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
+      EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData);
   base::CopyBytes(bytes, base::ObjectBytes(frame), header_size);
   const auto mission = std::span(bytes).subspan(header_size);
   base::WriteUnaligned(mission, EventClass::MEGAMISSION);
   base::At(mission, sizeof(EventClass::EventType)) = std::byte{2};
   const int size =
       static_cast<int>(header_size + sizeof(EventClass::EventType) + 1 +
-                       sizeof(frame.Data.MegaMission));
+                       sizeof(EventClass::MegaMissionData));
   EXPECT_EQ(Extract_Compressed_Events(bytes, size), 1);
   EXPECT_EQ(TheNetwork().do_list().Count(), 1);
 }

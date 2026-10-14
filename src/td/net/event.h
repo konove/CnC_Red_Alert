@@ -41,12 +41,19 @@
 #ifndef CNC_RED_ALERT_TD_NET_EVENT_H_
 #define CNC_RED_ALERT_TD_NET_EVENT_H_
 
+#include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <type_traits>
+#include <utility>
 
+#include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
+#include "base/payload.h"
 #include "td/core/defines.h"
 #include "td/core/special_flags.h"
 
@@ -103,6 +110,101 @@ class EventClass {
   };
   using enum EventType;
 
+  // The payload arms: what each kind of event carries after its header. Each
+  // names the event types that carry it in Carries(); data<T>() and
+  // UpdateData<T>() check that Type is one of them. The arms share the
+  // payload's bytes, as the union they replace did, so writing one leaves
+  // the bytes past its end as they were.
+  struct OptionsData {
+    static constexpr bool Carries(EventType type) { return type == SPECIAL; }
+    SpecialFlags Data;  // The special option flags.
+  };
+  struct TargetData {
+    static constexpr bool Carries(EventType type) {
+      return type == IDLE || type == SCATTER || type == PRIMARY ||
+             type == REPAIR || type == SELL;
+    }
+    td::Target Whom;  // The object to apply the event to.
+  };
+  struct AnimData {
+    static constexpr bool Carries(EventType type) { return type == ANIMATION; }
+    AnimType What;     // The animation to create.
+    HousesType Owner;  // The owner of the animation (when it matters).
+    Coordinate Where;  // The location to place the animation.
+  };
+  struct GeneralData {
+    static constexpr bool Carries(EventType type) {
+      return type == ALLY || type == GAMESPEED;
+    }
+    int Value;  // general-purpose data
+  };
+  struct MegaMissionData {
+    static constexpr bool Carries(EventType type) {
+      return type == MEGAMISSION;
+    }
+    td::Target Whom;         // Whom to apply mission to.
+    MissionType Mission;     // What mission to apply.
+    td::Target Target;       // Target to assign.
+    td::Target Destination;  // Destination to assign.
+  };
+  // The leading fields of MegaMissionData.
+  struct MissionData {
+    static constexpr bool Carries(EventType type) {
+      return type == MEGAMISSION;
+    }
+    td::Target Whom;      // Whom to apply mission to.
+    MissionType Mission;  // What mission to apply.
+  };
+  // PLACE comes as a SpecificData from the sidebar, which names only the type
+  // and leaves ID -1, and as a PlaceData from the map.
+  struct SpecificData {
+    static constexpr bool Carries(EventType type) {
+      return type == PRODUCE || type == SUSPEND || type == ABANDON ||
+             type == PLACE;
+    }
+    RTTIType Type;
+    int ID;
+  };
+  struct PlaceData {
+    static constexpr bool Carries(EventType type) { return type == PLACE; }
+    RTTIType Type;
+    td::Cell Cell;
+  };
+  struct SpecialData {
+    static constexpr bool Carries(EventType type) {
+      return type == SPECIAL_PLACE;
+    }
+    int ID;
+    td::Cell Cell;
+  };
+  // FRAMEINFO, FRAMESYNC and RESPONSE_TIME: exactly one of these is sent each
+  // frame, whether there is data that frame or not. RESPONSE_TIME sends only
+  // Delay.
+  struct FrameInfoData {
+    static constexpr bool Carries(EventType type) {
+      return type == FRAMEINFO || type == FRAMESYNC || type == RESPONSE_TIME;
+    }
+    uint32_t CRC;  // the game CRC when this packet was generated, to detect
+                   // sync errors
+    uint16_t CommandCount;  // # commands sent so far, to detect missed packets
+    unsigned char Delay;    // propagation delay used this frame
+                            // (Frame - Delay = sender's current frame #)
+  };
+  // New timing values for all systems in a multiplayer game; replaces
+  // RESPONSE_TIME for the COMM_MULTI_E_COMP protocol.
+  struct TimingData {
+    static constexpr bool Carries(EventType type) { return type == TIMING; }
+    uint16_t DesiredFrameRate;
+    uint16_t MaxAhead;
+  };
+  // Sent by every system to compute the "desired" frame rate for the game.
+  struct ProcessTimeData {
+    static constexpr bool Carries(EventType type) {
+      return type == PROCESS_TIME;
+    }
+    uint16_t AverageTicks;
+  };
+
   EventType Type = EMPTY;  // Type of queue command object.
 
   /*
@@ -129,90 +231,6 @@ class EventClass {
   */
   unsigned char MPlayerID = 0;
 
-  /*
-  **	This union contains the specific data that the event requires.
-  */
-  union {
-    struct {
-      SpecialFlags Data;  // The special option flags.
-    } Options;
-    struct {
-      td::Target Whom;  // The object to apply the event to.
-    } Target;
-    struct {
-      AnimType What;     // The animation to create.
-      HousesType Owner;  // The owner of the animation (when it matters).
-      Coordinate Where;  // The location to place the animation.
-    } Anim;
-    struct {
-      int Value;  // general-purpose data
-    } General;
-    struct {
-      td::Target Whom;      // Whom to apply mission to.
-      MissionType Mission;  // What mission to apply.
-      td::Target Target;    // Target to assign.
-      td::Target Destination;  // Destination to assign.
-    } MegaMission;
-    struct {
-      td::Target Whom;      // Whom to apply mission to.
-      MissionType Mission;  // What mission to apply.
-    } Mission;
-    struct {
-      td::Target Whom;   // Whom to apply movement change to.
-      td::Target Where;  // Where to set NavCom to.
-    } NavCom;
-    struct {
-      td::Target Whom;    // Whom to apply attack change to.
-      td::Target Target;  // What to set TarCom to.
-    } TarCom;
-    struct {
-      RTTIType Type;
-      int ID;
-    } Specific;
-    struct {
-      RTTIType Type;
-      td::Cell Cell;
-    } Place;
-    struct {
-      int ID;
-      td::Cell Cell;
-    } Special;
-    /*
-    ** This structure is used for FRAMEINFO, FRAMESYNC, and RESPONSE_TIME
-    ** events; exactly one of these will be sent each frame, whether there's
-    ** data that frame or not.
-    ** CRC: the game CRC when this packet was generated; used to detect sync
-    *errors
-    ** CommandCount: # of commands the sender has sent; used to detect missed
-    *packets
-    ** Delay: sender's propogation delay value for this frame
-    */
-    struct {
-      uint32_t CRC;
-      uint16_t CommandCount;        // # commands sent so far
-      unsigned char Delay;          // propogation delay used this frame
-                            // (Frame - Delay = sender's current frame #)
-    } FrameInfo;
-
-    //
-    // This structure sets new timing values for all systems in a multiplayer
-    // game.  This structure replaces the RESPONSE_TIME event for
-    // the COMM_MULTI_E_COMP protocol.
-    //
-    struct {
-      uint16_t DesiredFrameRate;
-      uint16_t MaxAhead;
-    } Timing;
-
-    //
-    // This structure is transmitted by all systems, and is used to compute
-    // the "desired" frame rate for the game.
-    //
-    struct {
-      uint16_t AverageTicks;
-    } ProcessTime;
-
-  } Data{};
 
   //-------------- Functions ---------------------
   // Events cross the wire and are compared as raw bytes, so every byte has to
@@ -226,8 +244,6 @@ class EventClass {
   EventClass(EventType type, td::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);
-  EventClass(EventType type, td::Target src, td::Target dest);
-  //		EventClass(td::Target src, MissionType mission);
   EventClass(td::Target src, MissionType mission,
              td::Target target = td::Target{},
              td::Target destination = td::Target{});
@@ -239,10 +255,52 @@ class EventClass {
   // Process the event.
   void Execute();
 
+  // Returns a copy of payload arm T. Type must be one T carries.
+  template <class T>
+  [[nodiscard]] T data() const {
+    DCHECK(T::Carries(Type));
+    return data_.Get<T>();
+  }
+  // Copies arm T out, lets `edit` change it and copies it back; the payload
+  // bytes past T keep what they held. Set Type first: it must be one T
+  // carries.
+  template <class T, std::invocable<T&> Edit>
+  void UpdateData(Edit&& edit) {
+    DCHECK(T::Carries(Type));
+    data_.Update<T>(std::forward<Edit>(edit));
+  }
+  // The payload read as a FRAMEINFO header, whatever Type says: the first
+  // event of every packet is one, and a receiver reads it before it trusts
+  // the sender's Type.
+  [[nodiscard]] FrameInfoData packet_frame_info() const {
+    return data_.Get<FrameInfoData>();
+  }
+  // The payload as it goes over the wire, for the packet packer.
+  [[nodiscard]] std::span<const std::byte> payload_bytes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data_.bytes();
+  }
+  [[nodiscard]] std::span<std::byte> payload_bytes()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data_.bytes();
+  }
+  // Zeroes the payload.
+  void ClearData() { data_ = {}; }
+
+  // Where the payload starts in the event's bytes: the header before it is
+  // Type, then Frame, ID and IsExecuted in one word, then MPlayerID.
+  static constexpr std::size_t kPayloadOffset = 12;
+
   static base::EnumArray<EventType, unsigned char, static_cast<int>(LAST_EVENT)>
       EventLength;
   static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
       EventNames;
+
+ private:
+  base::Payload<OptionsData, TargetData, AnimData, GeneralData, MegaMissionData,
+                MissionData, SpecificData, PlaceData, SpecialData,
+                FrameInfoData, TimingData, ProcessTimeData>
+      data_;
 };
 
 // Events cross the wire as raw bytes, so their size is part of the protocol.

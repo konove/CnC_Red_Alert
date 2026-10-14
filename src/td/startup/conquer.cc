@@ -1097,54 +1097,59 @@ static void Message_Input(engine::window::KeyNumber& input) {
           TheNetwork().global_packet().Command = NET_MESSAGE;
           base::SafeCopy(TheNetwork().global_packet().Name,
                          TheSession().player_name());
-          base::SafeCopy(
-              std::span(TheNetwork().global_packet().Message.Buf)
-                  .first(COMPAT_MESSAGE_LENGTH - 4),
-              std::string_view(TheSession().messages().Get_Edit_Buf())
-                  .substr(base::ToSize(sent_so_far)));
+          TheNetwork()
+              .global_packet()
+              .UpdateData<GlobalPacketType::MessageData>(
+                  [&](GlobalPacketType::MessageData& d) {
+                    base::SafeCopy(
+                        std::span(d.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
+                        std::string_view(TheSession().messages().Get_Edit_Buf())
+                            .substr(base::ToSize(sent_so_far)));
 
-          /*
-          ** Steve I's stuff for splitting message on word boundries
-          */
-          actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                    /*
+                    ** Steve I's stuff for splitting message on word boundries
+                    */
+                    actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
-          /* Start at the end of the message and find a space with 10 chars. */
-          the_string = TheNetwork().global_packet().Message.Buf;
-          while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                 base::At(the_string, base::ToSize(actual_message_size)) !=
-                     ' ') {
-            --actual_message_size;
-          }
-          if (base::At(the_string, base::ToSize(actual_message_size)) == ' ') {
-            /* Now delete the extra characters after the space (they musnt
-             * print) */
-            for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
-                 j++) {
-              base::At(the_string, base::ToSize(j + actual_message_size)) =
-                  static_cast<char>(0xff);
-            }
-          } else {
-            actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
-          }
+                    /* Start at the end of the message and find a space with 10
+                     * chars. */
+                    the_string = d.Buf;
+                    while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size <
+                               10 &&
+                           base::At(the_string,
+                                    base::ToSize(actual_message_size)) != ' ') {
+                      --actual_message_size;
+                    }
+                    if (base::At(the_string,
+                                 base::ToSize(actual_message_size)) == ' ') {
+                      /* Now delete the extra characters after the space (they
+                       * musnt print) */
+                      for (int j = 0;
+                           j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
+                           j++) {
+                        base::At(the_string,
+                                 base::ToSize(j + actual_message_size)) =
+                            static_cast<char>(0xff);
+                      }
+                    } else {
+                      actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                    }
 
-          base::At(TheNetwork().global_packet().Message.Buf,
-                   COMPAT_MESSAGE_LENGTH - 5) = 0;
-          /*
-          ** Flag this message segment as either a message head or a message
-          *tail.
-          */
-          base::WriteUnaligned(
-              base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                  .subspan(COMPAT_MESSAGE_LENGTH - 4),
-              magic_number);
-          base::WriteUnaligned(
-              base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
-                  .subspan(COMPAT_MESSAGE_LENGTH - 2),
-              crc);
+                    base::At(d.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
+                    /*
+                    ** Flag this message segment as either a message head or a
+                    * message tail.
+                    */
+                    base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                             COMPAT_MESSAGE_LENGTH - 4),
+                                         magic_number);
+                    base::WriteUnaligned(base::ObjectBytes(d.Buf).subspan(
+                                             COMPAT_MESSAGE_LENGTH - 2),
+                                         crc);
 
-          TheNetwork().global_packet().Message.ID = TheSession().local_id();
-          TheNetwork().global_packet().Message.NameCRC =
-              Compute_Name_CRC(TheSession().game_name());
+                    d.ID = TheSession().local_id();
+                    d.NameCRC = Compute_Name_CRC(TheSession().game_name());
+                  });
 
           /*
           **	If 'F4' was hit, message_address will be a broadcast address;
@@ -1353,22 +1358,26 @@ void Call_Back() {
           if (!TheNetwork().protect()) {
             msg_ok = true;
           } else {
-            msg_ok = TheNetwork().global_packet().Message.NameCRC ==
-                     Compute_Name_CRC(TheSession().game_name());
+            msg_ok = TheNetwork()
+                         .global_packet()
+                         .data<GlobalPacketType::MessageData>()
+                         .NameCRC == Compute_Name_CRC(TheSession().game_name());
           }
 
           if (msg_ok) {
+            const auto received = TheNetwork()
+                                      .global_packet()
+                                      .data<GlobalPacketType::MessageData>();
             std::string message = base::FormatRuntime(
                 Text_String(TXT_FROM), TheNetwork().global_packet().Name,
-                TheNetwork().global_packet().Message.Buf);
+                received.Buf);
             magic_number = base::ReadUnaligned<uint16_t>(
-                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                base::ObjectBytes(received.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
             crc = base::ReadUnaligned<uint16_t>(
-                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                base::ObjectBytes(received.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
-            color = static_cast<int>(MPlayerID_To_ColorIndex(
-                TheNetwork().global_packet().Message.ID));
+            color = static_cast<int>(MPlayerID_To_ColorIndex(received.ID));
             TheSession().messages().Add_Message(
                 message.data(), base::At(TheSession().text_colors(), color),
                 FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1383,10 +1392,16 @@ void Call_Back() {
             /*
             **	Save this message in our last-message buffer
             */
-            if (!std::string_view(TheNetwork().global_packet().Message.Buf)
+            if (!std::string_view(TheNetwork()
+                                      .global_packet()
+                                      .data<GlobalPacketType::MessageData>()
+                                      .Buf)
                      .empty()) {
               base::SafeCopy(TheSession().last_message(),
-                             TheNetwork().global_packet().Message.Buf);
+                             TheNetwork()
+                                 .global_packet()
+                                 .data<GlobalPacketType::MessageData>()
+                                 .Buf);
             }
           }
         } else {

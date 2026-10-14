@@ -5239,8 +5239,7 @@ int Com_Show_Scenario_Dialog() {
 
                   /* Start at the end of the message and find a space with 10
                    * chars. */
-                  const auto the_string =
-                      std::span(TheNetwork().global_packet().Message.Buf);
+                  const auto the_string = std::span(SendPacket.Message);
                   while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                          base::At(the_string,
                                   base::ToSize(actual_message_size)) != ' ') {

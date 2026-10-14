@@ -13,6 +13,7 @@
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "gtest/gtest.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/cell.h"
 #include "td/core/coordinate.h"
 #include "td/core/defines.h"
@@ -115,11 +116,6 @@ TEST_F(WireFormatTest, ValueEvent) {
             "0900000000000000000000000d0c0b0a0000000000000000");
 }
 
-TEST_F(WireFormatTest, NavComEvent) {
-  EXPECT_EQ(EventHex(EventClass(EventClass::ALLY, kWhom, kTarget)),
-            "010000000000000000000000051007200000000000000000");
-}
-
 TEST_F(WireFormatTest, MegaMissionEvent) {
   EXPECT_EQ(EventHex(EventClass(kWhom, MISSION_ATTACK, kTarget, kDestination)),
             "020000000000000000000000051000000100000007200930");
@@ -149,9 +145,11 @@ TEST_F(WireFormatTest, AnimationEvent) {
 TEST_F(WireFormatTest, FrameInfoEvent) {
   EventClass event;
   event.Type = EventClass::FRAMEINFO;
-  event.Data.FrameInfo.CRC = 0x11223344;
-  event.Data.FrameInfo.CommandCount = 0x5566;
-  event.Data.FrameInfo.Delay = 0x77;
+  event.UpdateData<EventClass::FrameInfoData>([](EventClass::FrameInfoData& d) {
+    d.CRC = 0x11223344;
+    d.CommandCount = 0x5566;
+    d.Delay = 0x77;
+  });
   EXPECT_EQ(EventHex(event),
             "170000000000000000000000443322116655770000000000");
 }
@@ -159,8 +157,10 @@ TEST_F(WireFormatTest, FrameInfoEvent) {
 TEST_F(WireFormatTest, TimingEvent) {
   EventClass event;
   event.Type = EventClass::TIMING;
-  event.Data.Timing.DesiredFrameRate = 0x1122;
-  event.Data.Timing.MaxAhead = 0x3344;
+  event.UpdateData<EventClass::TimingData>([](EventClass::TimingData& d) {
+    d.DesiredFrameRate = 0x1122;
+    d.MaxAhead = 0x3344;
+  });
   EXPECT_EQ(EventHex(event),
             "180000000000000000000000221144330000000000000000");
 }
@@ -168,7 +168,8 @@ TEST_F(WireFormatTest, TimingEvent) {
 TEST_F(WireFormatTest, ProcessTimeEvent) {
   EventClass event;
   event.Type = EventClass::PROCESS_TIME;
-  event.Data.ProcessTime.AverageTicks = 0x5566;
+  event.UpdateData<EventClass::ProcessTimeData>(
+      [](EventClass::ProcessTimeData& d) { d.AverageTicks = 0x5566; });
   EXPECT_EQ(EventHex(event),
             "190000000000000000000000665500000000000000000000");
 }
@@ -177,8 +178,10 @@ TEST_F(WireFormatTest, ProcessTimeEvent) {
 // store into a union member does.
 TEST_F(WireFormatTest, ASecondArmKeepsTheFirstArmsTail) {
   EventClass event(kWhom, MISSION_ATTACK, kTarget, kDestination);
-  event.Data.Mission.Whom = kDestination;
-  event.Data.Mission.Mission = MISSION_GUARD;
+  event.UpdateData<EventClass::MissionData>([](EventClass::MissionData& d) {
+    d.Whom = kDestination;
+    d.Mission = MISSION_GUARD;
+  });
   EXPECT_EQ(EventHex(event),
             "020000000000000000000000093000000400000007200930");
 }
@@ -187,8 +190,11 @@ TEST_F(WireFormatTest, GameInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_ANSWER_GAME;
   base::SafeCopy(packet.Name, "Game");
-  packet.GameInfo.Version = 0x11223344;
-  packet.GameInfo.IsOpen = 1;
+  packet.UpdateData<GlobalPacketType::GameInfoData>(
+      [](GlobalPacketType::GameInfoData& d) {
+        d.Version = 0x11223344;
+        d.IsOpen = 1;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0100000047616d6500000000000000004433221101000000000000000000000000"
             "00000000000000000000000000000000000000");
@@ -198,9 +204,12 @@ TEST_F(WireFormatTest, PlayerInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_ANSWER_PLAYER;
   base::SafeCopy(packet.Name, "Player");
-  packet.PlayerInfo.House = HOUSE_BAD;
-  packet.PlayerInfo.Color = 0x05;
-  packet.PlayerInfo.NameCRC = 0x11223344;
+  packet.UpdateData<GlobalPacketType::PlayerInfoData>(
+      [](GlobalPacketType::PlayerInfoData& d) {
+        d.House = HOUSE_BAD;
+        d.Color = 0x05;
+        d.NameCRC = 0x11223344;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "03000000506c617965720000000000000100000005000000443322110000000000"
             "00000000000000000000000000000000000000");
@@ -210,17 +219,20 @@ TEST_F(WireFormatTest, ScenarioInfoPacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_GAME_OPTIONS;
   base::SafeCopy(packet.Name, "Host");
-  packet.ScenarioInfo.Scenario = 0x2A;
-  packet.ScenarioInfo.Credits = 0x00001388;
-  packet.ScenarioInfo.IsBases = 1;
-  packet.ScenarioInfo.IsTiberium = 1;
-  packet.ScenarioInfo.IsGoodies = 1;
-  packet.ScenarioInfo.IsGhosties = 1;
-  packet.ScenarioInfo.BuildLevel = 0x0A;
-  packet.ScenarioInfo.UnitCount = 0x0B;
-  packet.ScenarioInfo.Seed = 0x11223344;
-  packet.ScenarioInfo.Special = AllSpecialFlags();
-  packet.ScenarioInfo.GameSpeed = 0x05;
+  packet.UpdateData<GlobalPacketType::ScenarioInfoData>(
+      [](GlobalPacketType::ScenarioInfoData& d) {
+        d.Scenario = 0x2A;
+        d.Credits = 0x00001388;
+        d.IsBases = 1;
+        d.IsTiberium = 1;
+        d.IsGoodies = 1;
+        d.IsGhosties = 1;
+        d.BuildLevel = 0x0A;
+        d.UnitCount = 0x0B;
+        d.Seed = 0x11223344;
+        d.Special = AllSpecialFlags();
+        d.GameSpeed = 0x05;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "07000000486f737400000000000000002a000000881300000f0a0b0044332211ff"
             "ffff1f05000000000000000000000000000000");
@@ -230,9 +242,12 @@ TEST_F(WireFormatTest, MessagePacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_MESSAGE;
   base::SafeCopy(packet.Name, "Sender");
-  base::SafeCopy(packet.Message.Buf, "Hello");
-  packet.Message.ID = 0x42;
-  packet.Message.NameCRC = 0x11223344;
+  packet.UpdateData<GlobalPacketType::MessageData>(
+      [](GlobalPacketType::MessageData& d) {
+        base::SafeCopy(d.Buf, "Hello");
+        d.ID = 0x42;
+        d.NameCRC = 0x11223344;
+      });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "0a00000053656e64657200000000000048656c6c6f000000000000000000000000"
             "00000000000000000000004200000044332211");
@@ -241,10 +256,46 @@ TEST_F(WireFormatTest, MessagePacket) {
 TEST_F(WireFormatTest, ResponseTimePacket) {
   auto packet = Zeroed<GlobalPacketType>();
   packet.Command = NET_GO;
-  packet.ResponseTime.OneWay = 0x11223344;
+  packet.UpdateData<GlobalPacketType::ResponseTimeData>(
+      [](GlobalPacketType::ResponseTimeData& d) { d.OneWay = 0x11223344; });
   EXPECT_EQ(Hex(base::ObjectBytes(packet)),
             "090000000000000000000000000000004433221100000000000000000000000000"
             "00000000000000000000000000000000000000");
+}
+
+// True if some payload arm names `type` in its Carries().
+bool AnArmCarries(const EventClass::EventType type) {
+  using E = EventClass;
+  return E::OptionsData::Carries(type) || E::TargetData::Carries(type) ||
+         E::AnimData::Carries(type) || E::GeneralData::Carries(type) ||
+         E::MegaMissionData::Carries(type) || E::MissionData::Carries(type) ||
+         E::SpecificData::Carries(type) || E::PlaceData::Carries(type) ||
+         E::SpecialData::Carries(type) || E::FrameInfoData::Carries(type) ||
+         E::TimingData::Carries(type) || E::ProcessTimeData::Carries(type);
+}
+
+TEST(EventArmsTest, EveryTypeWithALengthCarriesAnArm) {
+  for (const auto type : magic_enum::enum_values<EventClass::EventType>()) {
+    if (type == EventClass::LAST_EVENT) {
+      continue;
+    }
+    if (EventClass::EventLength.at(type) != 0) {
+      EXPECT_TRUE(AnArmCarries(type)) << magic_enum::enum_name(type);
+    }
+  }
+}
+
+// The packet code copies an event's header and its payload separately, at
+// kPayloadOffset.
+TEST(EventArmsTest, ThePayloadStartsAtItsOffset) {
+  EventClass event;
+  event.Type = EventClass::GAMESPEED;
+  event.UpdateData<EventClass::GeneralData>(
+      [](EventClass::GeneralData& d) { d.Value = 0x5A; });
+  EXPECT_EQ(
+      base::ObjectBytes(event).subspan(EventClass::kPayloadOffset).front(),
+      std::byte{0x5A});
+  EXPECT_EQ(event.payload_bytes().front(), std::byte{0x5A});
 }
 
 }  // namespace

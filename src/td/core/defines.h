@@ -40,16 +40,19 @@
 #ifndef CNC_RED_ALERT_TD_CORE_DEFINES_H_
 #define CNC_RED_ALERT_TD_CORE_DEFINES_H_
 
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/attributes.h"
 #include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/enum_step.h"  // IWYU pragma: export
 #include "base/flags.h"      // IWYU pragma: export
+#include "base/payload.h"
 #include "engine/gfx/palette_index.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
@@ -2362,41 +2365,81 @@ using enum NetCommandType;
 /****************************************************************************
 **	These is the structure sent over the network Global Channel.
 */
-struct GlobalPacketType {
-  NetCommandType Command;       // One of the enum's defined above
-  char Name[MPLAYER_NAME_MAX];  // Player or Game Name
-  union {
-    struct {
-      int Version;              // game's version number
-      unsigned int IsOpen : 1;  // 1 = game is open for joining
-    } GameInfo;
-    struct {
-      HousesType House;       // player's House
-      unsigned int Color;     // player's color
-      uint32_t NameCRC;       // CRC of player's game's name
-    } PlayerInfo;
-    struct {
-      unsigned char Scenario;       // Scenario #
-      unsigned int Credits;         // player's credits
-      unsigned int IsBases : 1;     // 1 = bases are allowed
-      unsigned int IsTiberium : 1;  // 1 = tiberium is allowed
-      unsigned int IsGoodies : 1;   // 1 = goodies are allowed
-      unsigned int IsGhosties : 1;  // 1 = ghosts are allowed
-      unsigned char BuildLevel;     // buildable level
-      unsigned char UnitCount;      // max # units
-      int Seed;                     // random number seed
-      SpecialFlags Special;         // command-line options
-      unsigned int GameSpeed;       // Game Speed
-    } ScenarioInfo;
-    struct {
-      char Buf[COMPAT_MESSAGE_LENGTH];  // inter-user message
-      unsigned char ID;                 // ID of sender of message
-      uint32_t NameCRC;                 // CRC of sender's Game Name
-    } Message;
-    struct {
-      int OneWay;  // one-way response time
-    } ResponseTime;
+class GlobalPacketType {
+ public:
+  // The payload arms, by what Command says the packet is. Each names its
+  // commands in Carries(); data<T>() and UpdateData<T>() check that Command
+  // is one of them. The arms share the payload's bytes, as the union they
+  // replace did.
+  struct GameInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_ANSWER_GAME;
+    }
+    int Version;              // game's version number
+    unsigned int IsOpen : 1;  // 1 = game is open for joining
   };
+  struct PlayerInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_QUERY_JOIN || command == NET_ANSWER_PLAYER ||
+             command == NET_CONFIRM_JOIN;
+    }
+    HousesType House;    // player's House
+    unsigned int Color;  // player's color
+    uint32_t NameCRC;    // CRC of player's game's name
+  };
+  struct ScenarioInfoData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_GAME_OPTIONS;
+    }
+    unsigned char Scenario;       // Scenario #
+    unsigned int Credits;         // player's credits
+    unsigned int IsBases : 1;     // 1 = bases are allowed
+    unsigned int IsTiberium : 1;  // 1 = tiberium is allowed
+    unsigned int IsGoodies : 1;   // 1 = goodies are allowed
+    unsigned int IsGhosties : 1;  // 1 = ghosts are allowed
+    unsigned char BuildLevel;     // buildable level
+    unsigned char UnitCount;      // max # units
+    int Seed;                     // random number seed
+    SpecialFlags Special;         // command-line options
+    unsigned int GameSpeed;       // Game Speed
+  };
+  struct MessageData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_MESSAGE;
+    }
+    char Buf[COMPAT_MESSAGE_LENGTH];  // inter-user message
+    unsigned char ID;                 // ID of sender of message
+    uint32_t NameCRC;                 // CRC of sender's Game Name
+  };
+  struct ResponseTimeData {
+    static constexpr bool Carries(NetCommandType command) {
+      return command == NET_GO;
+    }
+    int OneWay;  // one-way response time
+  };
+
+  // Returns a copy of payload arm T. Command must be one T carries.
+  template <class T>
+  [[nodiscard]] T data() const {
+    DCHECK(T::Carries(Command));
+    return data_.Get<T>();
+  }
+  // Copies arm T out, lets `edit` change it and copies it back; the payload
+  // bytes past T keep what they held. Set Command first: it must be one T
+  // carries.
+  template <class T, std::invocable<T&> Edit>
+  void UpdateData(Edit&& edit) {
+    DCHECK(T::Carries(Command));
+    data_.Update<T>(std::forward<Edit>(edit));
+  }
+
+  NetCommandType Command{};       // One of the enum's defined above
+  char Name[MPLAYER_NAME_MAX]{};  // Player or Game Name
+
+ private:
+  base::Payload<GameInfoData, PlayerInfoData, ScenarioInfoData, MessageData,
+                ResponseTimeData>
+      data_;
 };
 
 // The packet goes on the wire with sizeof(), so every peer must agree on it.
