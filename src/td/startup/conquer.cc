@@ -207,18 +207,7 @@ static bool check_heap = false;
 
 // The object Trap_Object() found for the [SyncBug] trap, for watching in a
 // debugger; nullptr if none.
-struct TrapObjectType {
-  union {
-    AircraftClass* Aircraft;
-    AnimClass* Anim;
-    BuildingClass* Building;
-    BulletClass* Bullet;
-    InfantryClass* Infantry;
-    UnitClass* Unit;
-    void* All;
-  } Ptr;
-};
-static TrapObjectType trap_object = {nullptr};
+[[maybe_unused]] static ObjectClass* trap_object = nullptr;
 
 /****************************************
 **	Function prototypes for this module **
@@ -2500,7 +2489,7 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Trap_Object() {
-  trap_object.Ptr.All = nullptr;
+  trap_object = nullptr;
 
   switch (TheDebugState().trap_object_type()) {
     case RTTI_AIRCRAFT:
@@ -2509,7 +2498,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().aircraft().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().ActiveAt(i);
+          trap_object = TheObjectHeaps().aircraft().ActiveAt(i);
           break;
         }
       }
@@ -2521,7 +2510,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().anim().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Anim = TheObjectHeaps().anim().ActiveAt(i);
+          trap_object = TheObjectHeaps().anim().ActiveAt(i);
           break;
         }
       }
@@ -2533,7 +2522,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().building().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Building = TheObjectHeaps().building().ActiveAt(i);
+          trap_object = TheObjectHeaps().building().ActiveAt(i);
           break;
         }
       }
@@ -2545,7 +2534,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().bullet().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().ActiveAt(i);
+          trap_object = TheObjectHeaps().bullet().ActiveAt(i);
           break;
         }
       }
@@ -2557,7 +2546,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().infantry().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().ActiveAt(i);
+          trap_object = TheObjectHeaps().infantry().ActiveAt(i);
           break;
         }
       }
@@ -2569,7 +2558,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().unit().ActiveAt(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Unit = TheObjectHeaps().unit().ActiveAt(i);
+          trap_object = TheObjectHeaps().unit().ActiveAt(i);
           break;
         }
       }
@@ -2584,7 +2573,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().aircraft().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Slot(i);
+          trap_object = TheObjectHeaps().aircraft().Slot(i);
           TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
           return;
         }
@@ -2593,7 +2582,7 @@ void Trap_Object() {
         if (TheObjectHeaps().anim().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().anim().Slot(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Anim = TheObjectHeaps().anim().Slot(i);
+          trap_object = TheObjectHeaps().anim().Slot(i);
           TheDebugState().trap_object_type() = RTTI_ANIM;
           return;
         }
@@ -2603,7 +2592,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().building().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Building = TheObjectHeaps().building().Slot(i);
+          trap_object = TheObjectHeaps().building().Slot(i);
           TheDebugState().trap_object_type() = RTTI_BUILDING;
           return;
         }
@@ -2612,7 +2601,7 @@ void Trap_Object() {
         if (TheObjectHeaps().bullet().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().bullet().Slot(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Slot(i);
+          trap_object = TheObjectHeaps().bullet().Slot(i);
           TheDebugState().trap_object_type() = RTTI_BULLET;
           return;
         }
@@ -2622,7 +2611,7 @@ void Trap_Object() {
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().infantry().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Slot(i);
+          trap_object = TheObjectHeaps().infantry().Slot(i);
           TheDebugState().trap_object_type() = RTTI_INFANTRY;
           return;
         }
@@ -2631,7 +2620,7 @@ void Trap_Object() {
         if (TheObjectHeaps().unit().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
             TheObjectHeaps().unit().Slot(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Unit = TheObjectHeaps().unit().Slot(i);
+          trap_object = TheObjectHeaps().unit().Slot(i);
           TheDebugState().trap_object_type() = RTTI_UNIT;
           return;
         }
