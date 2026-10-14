@@ -402,6 +402,16 @@ target_compile_definitions(ra_team_type_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_team_type_test)
 apply_language_setting(ra_team_type_test)
 
+# Golden bytes of the events and packets that cross the wire.
+add_gtest(
+    NAME ra_wire_format_test
+    SOURCES net/wire_format_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_wire_format_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_wire_format_test)
+apply_language_setting(ra_wire_format_test)
+
 # Plays the scenario editor's trigger and team lists on a headless screen.
 add_gtest(
     NAME ra_map_editor_lists_test
