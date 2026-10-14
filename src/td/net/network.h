@@ -146,11 +146,11 @@ class Network {
   // second list is what connections are formed from, and it is filled both
   // from replies to this machine's query and from other machines' queries,
   // so anyone who knows about this machine is known to it in turn.
-  std::vector<std::unique_ptr<NodeNameType>>& games()
+  std::vector<std::unique_ptr<GameNode>>& games()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return games_;
   }
-  std::vector<std::unique_ptr<NodeNameType>>& players()
+  std::vector<std::unique_ptr<PlayerNode>>& players()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return players_;
   }
@@ -275,8 +275,8 @@ class Network {
 
   std::vector<std::byte> meta_packet_;
 
-  std::vector<std::unique_ptr<NodeNameType>> games_;
-  std::vector<std::unique_ptr<NodeNameType>> players_;
+  std::vector<std::unique_ptr<GameNode>> games_;
+  std::vector<std::unique_ptr<PlayerNode>> players_;
 
   bool is_server_ = false;
   int internet_max_players_ = 0;

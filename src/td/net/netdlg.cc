@@ -943,7 +943,6 @@ static int Net_Join_Dialog() {
   char item[kGameListItemSize];
   int64_t starttime = 0;
 
-  NodeNameType* who = nullptr;
 
   int message_length = 0;
   int sent_so_far = 0;
@@ -1713,15 +1712,14 @@ static int Net_Join_Dialog() {
           playerlist.Add_Item(item, base::At(TheSession().text_colors(),
                                              TheSession().color_index()));
 
-          who = TheNetwork()
-                    .players()
-                    .emplace_back(std::make_unique<NodeNameType>())
-                    .get();
+          auto* const who = TheNetwork()
+                                .players()
+                                .emplace_back(std::make_unique<PlayerNode>())
+                                .get();
           base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = engine::net::IPXAddressClass();
-          who->Player.House = TheSession().house();
-          who->Player.Color =
-              static_cast<unsigned char>(TheSession().color_index());
+          who->House = TheSession().house();
+          who->Color = static_cast<unsigned char>(TheSession().color_index());
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -1802,7 +1800,7 @@ static int Net_Join_Dialog() {
     ---------------------------------------------------------------------*/
     for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
       if (engine::platform::SystemTicks() -
-              TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
+              TheNetwork().games().at(base::ToSize(i))->LastTime >
           400) {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
@@ -1913,8 +1911,8 @@ static int Net_Join_Dialog() {
         if (std::string_view(TheSession().player_name()) !=
             TheNetwork().players().at(base::ToSize(i))->Name) {
           id = static_cast<unsigned char>(Build_MPlayerID(
-              TheNetwork().players().at(base::ToSize(i))->Player.Color,
-              TheNetwork().players().at(base::ToSize(i))->Player.House));
+              TheNetwork().players().at(base::ToSize(i))->Color,
+              TheNetwork().players().at(base::ToSize(i))->House));
 
           base::At(tmp_id, i) = id;
 
@@ -2114,7 +2112,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------- The game must be open --------------------------
   */
-  if (!TheNetwork().games().at(base::ToSize(join_index))->Game.IsOpen) {
+  if (!TheNetwork().games().at(base::ToSize(join_index))->IsOpen) {
     CCMessageBox().Process(TXT_GAME_IS_CLOSED);
     return false;
   }
@@ -2143,11 +2141,11 @@ static bool Request_To_Join(const char* playername, int join_index,
 #else
   v = Version_Number();
 #endif
-  if (TheNetwork().games().at(base::ToSize(join_index))->Game.Version > v) {
+  if (TheNetwork().games().at(base::ToSize(join_index))->Version > v) {
     CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
     return false;
   }
-  if (TheNetwork().games().at(base::ToSize(join_index))->Game.Version < v) {
+  if (TheNetwork().games().at(base::ToSize(join_index))->Version < v) {
     CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
     return false;
   }
@@ -2315,7 +2313,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ColorListClass* playerlist,
                                         int join_index) {
   char item[kGameListItemSize];  // general-purpose string
-  NodeNameType* who = nullptr;   // node to add to Games or Players
   int i = 0;
   int found = 0;
   JoinEventType retcode = EV_NONE;
@@ -2359,9 +2356,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         /*...............................................................
         If name was found, update the node's time stamp & IsOpen flag.
         ...............................................................*/
-        TheNetwork().games().at(base::ToSize(i))->Game.LastTime =
+        TheNetwork().games().at(base::ToSize(i))->LastTime =
             engine::platform::SystemTicks();
-        if (TheNetwork().games().at(base::ToSize(i))->Game.IsOpen !=
+        if (TheNetwork().games().at(base::ToSize(i))->IsOpen !=
             TheNetwork().global_packet().GameInfo.IsOpen) {
           gamelist->Set_Item(
               i, base::FormatRuntime(
@@ -2369,7 +2366,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                      ? TXT_THATGUYS_GAME
                                      : TXT_THATGUYS_GAME_BRACKET),
                      TheNetwork().global_packet().Name));
-          TheNetwork().games().at(base::ToSize(i))->Game.IsOpen =
+          TheNetwork().games().at(base::ToSize(i))->IsOpen =
               TheNetwork().global_packet().GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
@@ -2377,7 +2374,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           address into our Game slot, since the guy responding to this
           must be game owner.
           ............................................................*/
-          if (TheNetwork().games().at(base::ToSize(i))->Game.IsOpen) {
+          if (TheNetwork().games().at(base::ToSize(i))->IsOpen) {
             TheNetwork().games().at(base::ToSize(i))->Address =
                 TheNetwork().global_address();
           }
@@ -2392,15 +2389,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*..................................................................
       Create a new node structure, fill it in, add it to 'Games'
       ..................................................................*/
-      who = TheNetwork()
-                .games()
-                .emplace_back(std::make_unique<NodeNameType>())
-                .get();
+      auto* const who =
+          TheNetwork().games().emplace_back(std::make_unique<GameNode>()).get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->Game.Version = TheNetwork().global_packet().GameInfo.Version;
-      who->Game.IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
-      who->Game.LastTime = engine::platform::SystemTicks();
+      who->Version = TheNetwork().global_packet().GameInfo.Version;
+      who->IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
+      who->LastTime = engine::platform::SystemTicks();
 
       /*..................................................................
       Create a string for "xxx's Game", leaving room for brackets around
@@ -2435,9 +2430,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           TheNetwork().global_address()) {
         base::SafeCopy(TheNetwork().players().at(base::ToSize(i))->Name,
                        TheNetwork().global_packet().Name);
-        TheNetwork().players().at(base::ToSize(i))->Player.House =
+        TheNetwork().players().at(base::ToSize(i))->House =
             TheNetwork().global_packet().PlayerInfo.House;
-        TheNetwork().players().at(base::ToSize(i))->Player.Color =
+        TheNetwork().players().at(base::ToSize(i))->Color =
             static_cast<unsigned char>(
                 TheNetwork().global_packet().PlayerInfo.Color);
         base::At(playerlist->Colors, i) =
@@ -2472,14 +2467,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*..................................................................
       Create & add a node to the Vector
       ..................................................................*/
-      who = TheNetwork()
-                .players()
-                .emplace_back(std::make_unique<NodeNameType>())
-                .get();
+      auto* const who = TheNetwork()
+                            .players()
+                            .emplace_back(std::make_unique<PlayerNode>())
+                            .get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
-      who->Player.Color = static_cast<unsigned char>(
+      who->House = TheNetwork().global_packet().PlayerInfo.House;
+      who->Color = static_cast<unsigned char>(
           TheNetwork().global_packet().PlayerInfo.Color);
 
       /*..................................................................
@@ -2494,8 +2489,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                        TheNetwork().global_packet().Name,
                        Text_String(TXT_N_O_D));
       }
-      playerlist->Add_Item(
-          item, base::At(TheSession().text_colors(), who->Player.Color));
+      playerlist->Add_Item(item,
+                           base::At(TheSession().text_colors(), who->Color));
 
       retcode = EV_NEW_PLAYER;
     }
@@ -3883,9 +3878,9 @@ static int Net_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
-      id = static_cast<unsigned char>(Build_MPlayerID(
-          TheNetwork().players().at(base::ToSize(i))->Player.Color,
-          TheNetwork().players().at(base::ToSize(i))->Player.House));
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(TheNetwork().players().at(base::ToSize(i))->Color,
+                          TheNetwork().players().at(base::ToSize(i))->House));
 
       base::At(tmp_id, i) = id;
 
@@ -4056,11 +4051,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       ..................................................................*/
       auto* who = TheNetwork()
                       .players()
-                      .emplace_back(std::make_unique<NodeNameType>())
+                      .emplace_back(std::make_unique<PlayerNode>())
                       .get();  // node to add to Players Vector
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
-      who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
+      who->House = TheNetwork().global_packet().PlayerInfo.House;
 
       /*..................................................................
       Set player's color; if requested color isn't used, give it to him;
@@ -4070,17 +4065,17 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       if (TheNetwork().global_packet().PlayerInfo.Color < MAX_MPLAYER_COLORS &&
           base::At(color_used, TheNetwork().global_packet().PlayerInfo.Color) ==
               0) {
-        who->Player.Color = static_cast<unsigned char>(
+        who->Color = static_cast<unsigned char>(
             TheNetwork().global_packet().PlayerInfo.Color);
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (base::At(color_used, i) == 0) {
-            who->Player.Color = static_cast<unsigned char>(i);
+            who->Color = static_cast<unsigned char>(i);
             break;
           }
         }
       }
-      base::At(color_used, who->Player.Color) = 1;
+      base::At(color_used, who->Color) = 1;
 
       /*..................................................................
       Add player name to the list box
@@ -4094,8 +4089,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
                        TheNetwork().global_packet().Name,
                        Text_String(TXT_N_O_D));
       }
-      playerlist->Add_Item(
-          item, base::At(TheSession().text_colors(), who->Player.Color));
+      playerlist->Add_Item(item,
+                           base::At(TheSession().text_colors(), who->Color));
 
       /*..................................................................
       Send a confirmation packet
@@ -4106,8 +4101,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       TheNetwork().global_packet().Command = NET_CONFIRM_JOIN;
       base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
-      TheNetwork().global_packet().PlayerInfo.House = who->Player.House;
-      TheNetwork().global_packet().PlayerInfo.Color = who->Player.Color;
+      TheNetwork().global_packet().PlayerInfo.House = who->House;
+      TheNetwork().global_packet().PlayerInfo.Color = who->Color;
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
@@ -4137,7 +4132,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         Mark his color as available
         ...............................................................*/
         base::At(color_used,
-                 TheNetwork().players().at(base::ToSize(i))->Player.Color) = 0;
+                 TheNetwork().players().at(base::ToSize(i))->Color) = 0;
         /*...............................................................
         Delete from the Vector list
         ...............................................................*/
@@ -4856,9 +4851,9 @@ static int Net_Fake_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
-      id = static_cast<unsigned char>(Build_MPlayerID(
-          TheNetwork().players().at(base::ToSize(i))->Player.Color,
-          TheNetwork().players().at(base::ToSize(i))->Player.House));
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(TheNetwork().players().at(base::ToSize(i))->Color,
+                          TheNetwork().players().at(base::ToSize(i))->House));
 
       base::At(tmp_id, i) = id;
 
@@ -5044,7 +5039,6 @@ static int Net_Fake_Join_Dialog() {
   char item[kGameListItemSize];
   int64_t starttime = 0;
 
-  NodeNameType* who = nullptr;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -5300,15 +5294,14 @@ static int Net_Fake_Join_Dialog() {
           playerlist.Add_Item(item, base::At(TheSession().text_colors(),
                                              TheSession().color_index()));
 
-          who = TheNetwork()
-                    .players()
-                    .emplace_back(std::make_unique<NodeNameType>())
-                    .get();
+          auto* const who = TheNetwork()
+                                .players()
+                                .emplace_back(std::make_unique<PlayerNode>())
+                                .get();
           base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = engine::net::IPXAddressClass();
-          who->Player.House = TheSession().house();
-          who->Player.Color =
-              static_cast<unsigned char>(TheSession().color_index());
+          who->House = TheSession().house();
+          who->Color = static_cast<unsigned char>(TheSession().color_index());
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -5379,7 +5372,7 @@ static int Net_Fake_Join_Dialog() {
     ---------------------------------------------------------------------*/
     for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
       if (engine::platform::SystemTicks() -
-              TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
+              TheNetwork().games().at(base::ToSize(i))->LastTime >
           400) {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
@@ -5501,8 +5494,8 @@ static int Net_Fake_Join_Dialog() {
         if (std::string_view(TheSession().player_name()) !=
             TheNetwork().players().at(base::ToSize(i))->Name) {
           id = static_cast<unsigned char>(Build_MPlayerID(
-              TheNetwork().players().at(base::ToSize(i))->Player.Color,
-              TheNetwork().players().at(base::ToSize(i))->Player.House));
+              TheNetwork().players().at(base::ToSize(i))->Color,
+              TheNetwork().players().at(base::ToSize(i))->House));
 
           base::At(tmp_id, i) = id;
 

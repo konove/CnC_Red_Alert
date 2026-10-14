@@ -8,24 +8,24 @@
 
 namespace td {
 
-// Node for lists of available games & players in multiplayer.
-// 'Game' structure is for games; 'Player' structure for players.
-struct NodeNameTag {
+// A name and an address on the network: what every list node has.
+struct NodeName {
   char Name[MPLAYER_NAME_MAX]{};
   engine::net::IPXAddressClass Address;
-  union {
-    struct {
-      int Version;
-      unsigned char IsOpen;
-      int64_t LastTime;
-    } Game{};
-    struct {
-      HousesType House;
-      unsigned char Color;
-    } Player;
-  };
 };
-using NodeNameType = NodeNameTag;
+
+// A game announced on the network, in Network::games().
+struct GameNode : NodeName {
+  int Version = 0;
+  unsigned char IsOpen = 0;  // is the game open?
+  int64_t LastTime = 0;      // last time we heard from it
+};
+
+// A player in this game, in Network::players().
+struct PlayerNode : NodeName {
+  HousesType House{};
+  unsigned char Color = 0;
+};
 
 }  // namespace td
 
