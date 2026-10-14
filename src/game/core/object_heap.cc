@@ -58,7 +58,7 @@ void* ObjectHeapBase::AllocateSlot() {
   if (Count() >= Capacity()) {
     return nullptr;
   }
-  const auto slot_index = static_cast<int>(base::first_false(in_use_));
+  const auto slot_index = static_cast<int>(base::IndexOf(in_use_, false));
   if (slot_index == -1) {
     return nullptr;
   }

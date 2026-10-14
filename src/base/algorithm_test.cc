@@ -20,6 +20,14 @@ TEST(IndexOfTest, ReturnsMinusOneWhenAbsent) {
   EXPECT_EQ(base::IndexOf(std::vector<int>{}, 5), -1);
 }
 
+// ObjectHeapBase finds its free slot this way, through vector<bool>'s proxy
+// iterators.
+TEST(IndexOfTest, SearchesAVectorOfBool) {
+  EXPECT_EQ(base::IndexOf(std::vector<bool>{true, true, false, true}, false),
+            2);
+  EXPECT_EQ(base::IndexOf(std::vector<bool>{true, true}, false), -1);
+}
+
 TEST(EraseFirstTest, RemovesOnlyTheFirstMatchAndKeepsOrder) {
   std::vector<int> values = {1, 7, 2, 7, 3};
   EXPECT_TRUE(base::EraseFirst(values, 7));

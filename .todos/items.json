@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 440,
+  "nextId": 442,
   "items": [
     {
       "id": "T-2",
@@ -4613,10 +4613,10 @@
         "cmake",
         "strict-build"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:02:47Z",
-      "updated": "2026-10-14T06:38:33Z",
+      "updated": "2026-10-14T06:55:05Z",
       "parent": "T-192",
       "source": "ff429d5f",
       "resolution": "Added `-Wno-nullability-extension` to the Clang strict flags in `CMakeLists.txt`, matching `.clang-tidy`. Abseil is already `SYSTEM`, but the warning lands where `CHECK_*` expands in our code, so it has to be off tree-wide. `tools/strict_tu.py src/engine/crypto/pk.cc` now prints no nullability lines.",
@@ -15746,6 +15746,179 @@
       "updated": "2026-10-14T06:38:41Z",
       "blockedBy": [
         "T-161"
+      ]
+    },
+    {
+      "id": "T-440",
+      "title": "Give IndexOf and EraseFirst a projection and use them where finds are written by hand",
+      "details": "`base::IndexOf` and `base::EraseFirst` (`src/base/algorithm.h`) call `std::ranges::find` without passing a projection, so callers that search by a member or through `unique_ptr::get` write the find-then-distance or find-then-erase themselves. Add a defaulted `Proj proj = {}` (`std::identity`) to both, forwarded to `std::ranges::find`, with a projection test for each in `src/base/algorithm_test.cc`, then switch over:\n\n- `src/game/core/owned_vector.h` `OwnedVector::ID`: `find_if` over `e.get() == element` → `base::IndexOf(elements_, element, &std::unique_ptr<T>::get)`; `Delete(U*)` then becomes `EraseFirst` with the same projection (it still has to destroy the element, which erase does).\n- `src/td/ai/prebuilt_base.cc` `RemoveFirstNodeOfType`: → `base::EraseFirst(nodes_, type, &BaseNode::type)`.\n- These need no projection and can switch now:\n  - `src/ra/map/map.cc` `MapClass::Detach`: the index loop that erases the first matching trigger → `base::EraseFirst(TheWorld().map_triggers(), target.AsTrigger())`.\n  - `src/td/editor/mapedsel.cc`: the `ranges::distance` + `find` + bounds check (and its MSVC comment) → `base::IndexOf(MapEditMissions, ...)` with a `>= 0` check.\n  - `src/game/ui/list.h` `Remove_Item(const char*)`: → `Remove_Item(static_cast<int>(base::IndexOf(List, text)))`, as `src/ra/ui/tlist.h` already does.\n  - `src/game/ui/gadget_list.cc` `AddAfter`: find + `std::distance` → `IndexOf` with the DCHECK as `>= 0`.\n- `RemoveNodeFor` in both `prebuilt_base.cc` files is find_if + erase; an `EraseFirstIf(vector, pred)` would cover it, but only if the projection form above isn't enough.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "base",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T15:39:28Z",
+      "updated": "2026-10-14T15:39:28Z",
+      "source": "2268c0c21",
+      "anchors": [
+        {
+          "path": "src/base/algorithm.h",
+          "startLine": 15,
+          "endLine": 31,
+          "text": "ssize IndexOf(const Container& c, const T& value) {\n  const auto it = std::ranges::find(c, value);\n  if (it == c.end()) {\n    return -1;\n  }\n  return static_cast<ssize>(std::distance(c.begin(), it));\n}\n\n// Removes the first element equal to value, keeping the others in order.\n// Returns false, leaving the vector alone, if no element is equal. Unlike\n// std::erase, this removes one match, not all of them.\ntemplate <typename T, typename Allocator, typename U>\nbool EraseFirst(std::vector<T, Allocator>& vector, const U& value) {\n  const auto it = std::ranges::find(vector, value);\n  if (it == vector.end()) {\n    return false;\n  }",
+          "before": [
+            "",
+            "// Returns the index of the first element equal to value, or -1 if none is.",
+            "template <typename Container, typename T>"
+          ],
+          "after": [
+            "  vector.erase(it);",
+            "  return true;",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/core/owned_vector.h",
+          "startLine": 50,
+          "endLine": 68,
+          "text": "  [[nodiscard]] base::ssize ID(const T* element) const {\n    const auto found = std::ranges::find_if(\n        elements_, [element](const auto& e) { return e.get() == element; });\n    return found == elements_.end() ? -1 : found - elements_.begin();\n  }\n\n  // Removes an object and destroys it, keeping the others in order. Returns\n  // false, and does nothing, if it is not in the list. Constrained so that a\n  // literal 0 picks the index overload.\n  template <class U>\n    requires std::same_as<U, T> || std::same_as<U, const T>\n  bool Delete(U* element) {\n    const base::ssize index = ID(element);\n    if (index < 0) {\n      return false;\n    }\n    Delete(index);\n    return true;\n  }",
+          "before": [
+            "  }",
+            "",
+            "  // Returns the index of an object in the list, or -1 if it is not there."
+          ],
+          "after": [
+            "",
+            "  // Removes the object at index, which must be in range, and destroys it.",
+            "  void Delete(base::ssize index) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/ai/prebuilt_base.cc",
+          "startLine": 164,
+          "endLine": 169,
+          "text": "void PrebuiltBase::RemoveFirstNodeOfType(const StructType type) {\n  const auto node = std::ranges::find(nodes_, type, &BaseNode::type);\n  if (node != nodes_.end()) {\n    nodes_.erase(node);\n  }\n}",
+          "before": [
+            "  }",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {",
+            "  for (const BaseNode& node : nodes_) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/map.cc",
+          "startLine": 2201,
+          "endLine": 2208,
+          "text": "    for (int index = 0; index < std::ssize(TheWorld().map_triggers());\n         index++) {\n      if (base::At(TheWorld().map_triggers(), index) == target.AsTrigger()) {\n        TheWorld().map_triggers().erase(TheWorld().map_triggers().begin() +\n                                        index);\n        break;\n      }\n    }",
+          "before": [
+            "  **\tRemove this trigger from the map zone/line tracking list.",
+            "  */",
+            "  if (target.kind() == RTTI_TRIGGER) {"
+          ],
+          "after": [
+            "",
+            "    /*",
+            "    **\tLoop through all cells; remove any reference to this trigger"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/editor/mapedsel.cc",
+          "startLine": 349,
+          "endLine": 357,
+          "text": "  // pointer in libstdc++ and libc++ but a class in MSVC's STL.\n  const auto index = std::ranges::distance(\n      MapEditMissions.begin(),\n      std::ranges::find(\n          MapEditMissions,\n          base::At(TheWorld().current_object(), 0)->Get_Mission()));\n  if (index < std::ssize(MapEditMissions)) {\n    mission_index = static_cast<int>(index);\n  }",
+          "before": [
+            "  int mission_index = 0;  // object's current mission",
+            "  // Not std::views::enumerate: Apple's libc++ does not ship it yet.",
+            "  // Distance rather than an iterator variable: std::array's iterator is a"
+          ],
+          "after": [
+            "  const int strength = TheWorld()",
+            "                           .current_object()",
+            "                           .at(0)"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/ui/list.h",
+          "startLine": 261,
+          "endLine": 264,
+          "text": "    const auto found = std::ranges::find(List, text);\n    if (found != List.end()) {\n      Remove_Item(static_cast<int>(found - List.begin()));\n    }",
+          "before": [
+            "    // Items are copies, so a pointer handed out by Get_Item can only be",
+            "    // matched by content; the first equal item is the one such a pointer",
+            "    // came from."
+          ],
+          "after": [
+            "  }",
+            "  // Removes the item at `index`; out-of-range indices are ignored.",
+            "  virtual void Remove_Item(int index) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/ui/gadget_list.cc",
+          "startLine": 41,
+          "endLine": 47,
+          "text": "  const auto found = std::ranges::find(gadgets_, &predecessor);\n  DCHECK(found != gadgets_.end()) << \"the predecessor is not in this list\";\n  if (found == gadgets_.end()) {\n    InsertAt(std::ssize(gadgets_), gadget);\n    return;\n  }\n  InsertAt(std::distance(gadgets_.begin(), found) + 1, gadget);",
+          "before": [
+            "  }",
+            "  // Before the search: taking `gadget` out moves what stands behind it.",
+            "  Detach(gadget);"
+          ],
+          "after": [
+            "}",
+            "",
+            "void GadgetList::Remove(GadgetClass& gadget) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-441",
+      "title": "Check whether a trigger missing from its list still decrements the trigger cursor",
+      "details": "`TriggerClass::~TriggerClass` (`src/ra/ai/trigger.cc`) decrements `logic_trigger_id()` when `logic_trigger_id() >= base::IndexOf(logic_triggers(), this)`, and the same for `map_trigger_id()` / `map_triggers()`. When `this` is not in the list, `IndexOf` returns -1, the comparison is always true, and the cursor is decremented anyway, which can skip a trigger in the loop the cursor drives. Check whether a trigger with `ATTACH_GENERAL`/`ATTACH_MAP` can be destroyed while not in its list (e.g. already detached by `LogicClass::Detach` / `MapClass::Detach`, or during scenario load/clear) and compare with the original code; if so, guard with `index >= 0 &&`.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T15:39:28Z",
+      "updated": "2026-10-14T15:39:28Z",
+      "source": "2268c0c21",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger.cc",
+          "startLine": 113,
+          "endLine": 135,
+          "text": "TriggerClass::~TriggerClass() {\n  if ((TheGameState().active() && Class != nullptr &&\n       base::Any(Class->AttachesTo() & ATTACH_GENERAL)) &&\n      (TheWorld().logic_trigger_id() >=\n       base::IndexOf(TheWorld().logic_triggers(), this))) {\n    TheWorld().logic_trigger_id()--;\n    if (TheWorld().logic_trigger_id() < 0 &&\n        std::ssize(TheWorld().logic_triggers()) == 0) {\n      TheWorld().logic_trigger_id() = 0;\n    }\n  }\n\n  if ((TheGameState().active() && Class != nullptr &&\n       base::Any(Class->AttachesTo() & ATTACH_MAP)) &&\n      (TheWorld().map_trigger_id() >=\n       base::IndexOf(TheWorld().map_triggers(), this))) {\n    TheWorld().map_trigger_id()--;\n    if (TheWorld().map_trigger_id() < 0 &&\n        std::ssize(TheWorld().map_triggers()) == 0) {\n      TheWorld().map_trigger_id() = 0;\n    }\n  }\n",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 07/29/1995 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  if (TheGameState().active() && Class != nullptr &&",
+            "      Class->house != HOUSE_NONE &&",
+            "      Class->action1->type() == TriggerActionType::kAllowWin) {"
+          ],
+          "lost": false
+        }
       ]
     }
   ]
