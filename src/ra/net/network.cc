@@ -42,7 +42,7 @@ void FollowMovedPlayer(engine::net::IPXManagerClass& ipx,
   const int id = event.ID;
   DCHECK(id != ThePlayer()->ID);
   for (int k = 1; k < TheSession().Players.Count(); k++) {
-    if (TheSession().Players.at(k)->Player.ID == static_cast<HousesType>(id)) {
+    if (TheSession().Players.at(k)->ID == static_cast<HousesType>(id)) {
       // Null until Create_Connections() has run. Dropping this packet is
       // fine: the next frame sync arrives at the new address.
       if (engine::net::IPXAddressClass* address = ipx.Connection_Address(id)) {

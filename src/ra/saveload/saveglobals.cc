@@ -110,16 +110,16 @@ template void OptionsClass::Serialize(ArchiveWriter&);
 template void OptionsClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void NodeNameTag::Serialize(Archive& ar) {
+void PlayerNode::Serialize(Archive& ar) {
   if constexpr (Archive::kIsReading) {
-    Player = {};
+    *this = {};
   }
-  ar(Name, Address, Player.House, Player.Color, Player.ID, Player.ProcessTime);
+  ar(Name, Address, House, Color, ID, ProcessTime);
   if constexpr (Archive::kIsReading) {
     Name[sizeof(Name) - 1] = '\0';
   }
 }
-template void NodeNameTag::Serialize(ArchiveWriter&);
-template void NodeNameTag::Serialize(ArchiveReader&);
+template void PlayerNode::Serialize(ArchiveWriter&);
+template void PlayerNode::Serialize(ArchiveReader&);
 
 }  // namespace ra

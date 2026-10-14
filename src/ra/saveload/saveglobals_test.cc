@@ -118,22 +118,22 @@ TEST(SaveGlobalsTest, TruncatedScoreFails) {
 }
 
 TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
-  NodeNameType player{};
+  PlayerNode player{};
   base::SafeCopy(player.Name, "Player");
   engine::net::NetNumType network = {1, 2, 3, 4};
   engine::net::NetNodeType node = {5, 6, 7, 8, 9, 10};
   player.Address.Set_Address(network, node);
-  player.Player.House = HOUSE_USSR;
-  player.Player.Color = PCOLOR_RED;
-  player.Player.ID = HOUSE_MULTI1;
-  player.Player.ProcessTime = 123;
+  player.House = HOUSE_USSR;
+  player.Color = PCOLOR_RED;
+  player.ID = HOUSE_MULTI1;
+  player.ProcessTime = 123;
   GlobalsSink pipe;
   ArchiveWriter writer(pipe);
   writer(player);
   EXPECT_EQ(pipe.bytes.size(),
             sizeof(player.Name) + 10 + (4 * sizeof(int32_t)));
 
-  NodeNameType loaded{};
+  PlayerNode loaded{};
   ASSERT_TRUE(ReadValue(loaded, pipe.bytes));
   EXPECT_STREQ(loaded.Name, "Player");
   engine::net::NetNumType loaded_network{};
@@ -145,10 +145,10 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   EXPECT_EQ(base::CompareBytes(base::ObjectBytes(loaded_node),
                                base::ObjectBytes(node), sizeof(node)),
             0);
-  EXPECT_EQ(loaded.Player.House, HOUSE_USSR);
-  EXPECT_EQ(loaded.Player.Color, PCOLOR_RED);
-  EXPECT_EQ(loaded.Player.ID, HOUSE_MULTI1);
-  EXPECT_EQ(loaded.Player.ProcessTime, 123);
+  EXPECT_EQ(loaded.House, HOUSE_USSR);
+  EXPECT_EQ(loaded.Color, PCOLOR_RED);
+  EXPECT_EQ(loaded.ID, HOUSE_MULTI1);
+  EXPECT_EQ(loaded.ProcessTime, 123);
 }
 
 }  // namespace

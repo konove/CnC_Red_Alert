@@ -1401,11 +1401,11 @@ static void Generate_Real_Timing_Event(engine::net::ConnManClass* net,
     //
     // If we haven't heard from all systems yet, bail out.
     //
-    if (TheSession().Players.at(i)->Player.ProcessTime == -1) {
+    if (TheSession().Players.at(i)->ProcessTime == -1) {
       return;
     }
     highest_ticks =
-        std::max(TheSession().Players.at(i)->Player.ProcessTime, highest_ticks);
+        std::max(TheSession().Players.at(i)->ProcessTime, highest_ticks);
   }
 
   //
@@ -4453,8 +4453,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event,
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
   for (int i = 0; i < TheSession().Players.Count(); i++) {
-    if (event->ID ==
-        static_cast<unsigned>(TheSession().Players.at(i)->Player.ID)) {
+    if (event->ID == static_cast<unsigned>(TheSession().Players.at(i)->ID)) {
       absl::FPrintF(fp, "Player's Name: %s", TheSession().Players.at(i)->Name);
     }
   }

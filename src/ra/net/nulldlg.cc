@@ -2754,7 +2754,6 @@ int Com_Scenario_Dialog(bool skirmish) {
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
   bool load_game = false;  // 1 = load a saved game
-  NodeNameType* who = nullptr;       // node to add to Players
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   RemapControlType* scheme = Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
@@ -4047,11 +4046,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       Add both players to the Players vector; the local system is always
       index 0.
       .....................................................................*/
-      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
-      base::SafeCopy(who->Name, namebuf);
-      who->Player.House = TheSession().House;
-      who->Player.Color = TheSession().ColorIdx;
-      who->Player.ProcessTime = -1;
+      auto* const me = TheSession().Players.Add(std::make_unique<PlayerNode>());
+      base::SafeCopy(me->Name, namebuf);
+      me->House = TheSession().House;
+      me->Color = TheSession().ColorIdx;
+      me->ProcessTime = -1;
 
       /*
       **	Fetch the difficulty setting when in skirmish mode.
@@ -4093,7 +4092,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (!skirmish) {
-        who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+        auto* const them =
+            TheSession().Players.Add(std::make_unique<PlayerNode>());
 
         /* If the names of the players are the same then we MUST force them
          * be be unique. This is necessary to prevent a crash after loading
@@ -4107,10 +4107,10 @@ int Com_Scenario_Dialog(bool skirmish) {
           }
         }
 
-        base::SafeCopy(who->Name, TheirName);
-        who->Player.House = TheirHouse;
-        who->Player.Color = TheirColor;
-        who->Player.ProcessTime = -1;
+        base::SafeCopy(them->Name, TheirName);
+        them->House = TheirHouse;
+        them->Color = TheirColor;
+        them->ProcessTime = -1;
       }
 
       /*.....................................................................
@@ -4627,7 +4627,6 @@ int Com_Show_Scenario_Dialog() {
   // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
   bool load_game = false;            // 1 = load saved game
-  NodeNameType* who = nullptr;       // node to add to Players
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   const char* p = nullptr;
   RemapControlType* scheme = Get_Color_Scheme();
@@ -5873,7 +5872,7 @@ int Com_Show_Scenario_Dialog() {
     Add both players to the Players vector; the local system is always
     index 0.
     .....................................................................*/
-    who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+    auto* const me = TheSession().Players.Add(std::make_unique<PlayerNode>());
 
     /* If the names of the players are the same then we MUST force them
      * to be unique. This is necessary to prevent a crash after loading
@@ -5887,16 +5886,16 @@ int Com_Show_Scenario_Dialog() {
       }
     }
 
-    base::SafeCopy(who->Name, namebuf);
-    who->Player.House = TheSession().House;
-    who->Player.Color = TheSession().ColorIdx;
-    who->Player.ProcessTime = -1;
+    base::SafeCopy(me->Name, namebuf);
+    me->House = TheSession().House;
+    me->Color = TheSession().ColorIdx;
+    me->ProcessTime = -1;
 
-    who = TheSession().Players.Add(std::make_unique<NodeNameType>());
-    base::SafeCopy(who->Name, TheirName);
-    who->Player.House = TheirHouse;
-    who->Player.Color = TheirColor;
-    who->Player.ProcessTime = -1;
+    auto* const them = TheSession().Players.Add(std::make_unique<PlayerNode>());
+    base::SafeCopy(them->Name, TheirName);
+    them->House = TheirHouse;
+    them->Color = TheirColor;
+    them->ProcessTime = -1;
 
     starttime = engine::platform::SystemTicks();
     while ((TheNetwork().null_modem().Num_Send() &&

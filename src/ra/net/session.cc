@@ -303,11 +303,11 @@ int SessionClass::Create_Connections() {
     //.....................................................................
     if (absl::EqualsIgnoreCase(
             Players.at(i)->Name,
-            HouseClass::As_Pointer(Players.at(i)->Player.ID)->IniName)) {
-      TheNetwork().ipx().Create_Connection(
-          static_cast<int>(Players.at(i)->Player.ID), Players.at(i)->Name,
-          &Players.at(i)->Address);
-      Players.at(i)->Player.ProcessTime = -1;
+            HouseClass::As_Pointer(Players.at(i)->ID)->IniName)) {
+      TheNetwork().ipx().Create_Connection(static_cast<int>(Players.at(i)->ID),
+                                           Players.at(i)->Name,
+                                           &Players.at(i)->Address);
+      Players.at(i)->ProcessTime = -1;
     } else {
       return 0;
     }
@@ -403,7 +403,7 @@ void SessionClass::SerializePlayers(Archive& ar) {
     }
     Players.Clear();
     for (int i = 0; i < count; ++i) {
-      auto node = std::make_unique<NodeNameType>();
+      auto node = std::make_unique<PlayerNode>();
       ar(*node);
       if (!ar.ok()) {
         return;

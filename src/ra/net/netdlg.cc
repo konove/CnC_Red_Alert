@@ -1533,7 +1533,6 @@ static int Net_Join_Dialog() {
   const char* p = nullptr;
   int parms_received = 0;  // 1 = game options received
   int found = 0;
-  NodeNameType* who = nullptr;                  // node to add to Players
   RejectType why = REJECT_NONE;                 // reason for rejection
   engine::platform::Stopwatch<engine::platform::SystemTickSource>
       lastclick_timer;                          // time b/w send periods
@@ -1707,20 +1706,20 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   // Add myself to the Chat vector
   //------------------------------------------------------------------------
-  who = TheSession().Chat.Add(std::make_unique<NodeNameType>());
-  base::SafeCopy(who->Name, namebuf);
-  who->Chat.LastTime = 0;
-  who->Chat.LastChance = 0;
-  who->Chat.Color = TheSession().GPacket.Chat.Color;
+  auto* const me = TheSession().Chat.Add(std::make_unique<ChatNode>());
+  base::SafeCopy(me->Name, namebuf);
+  me->LastTime = 0;
+  me->LastChance = 0;
+  me->Color = TheSession().GPacket.Chat.Color;
 
   //------------------------------------------------------------------------
   // Create the "Lobby" game name on the games list, and create a bogus
   // node for the gamelist, so Games[i] will always match gamelist[i]
   //------------------------------------------------------------------------
-  who = TheSession().Games.Add(std::make_unique<NodeNameType>());
-  who->Name[0] = '\0';
-  who->Game.IsOpen = 0;
-  who->Game.LastTime = 0;
+  auto* const lobby = TheSession().Games.Add(std::make_unique<GameNode>());
+  lobby->Name[0] = '\0';
+  lobby->IsOpen = 0;
+  lobby->LastTime = 0;
   gamelist.Add_Item(TextString(TXT_LOBBY));
   gamelist.Set_Selected_Index(0);
   game_index = 0;
@@ -2591,10 +2590,11 @@ static int Net_Join_Dialog() {
                 ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                 : &ThePalettes().color_remaps().at(TheSession().ColorIdx));
 
-        who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+        auto* const who =
+            TheSession().Players.Add(std::make_unique<PlayerNode>());
         base::SafeCopy(who->Name, namebuf);
-        who->Player.House = TheSession().House;
-        who->Player.Color = TheSession().ColorIdx;
+        who->House = TheSession().House;
+        who->Color = TheSession().ColorIdx;
 
         Send_Join_Queries(game_index, joinstate, 0, 1, 0, namebuf);
 
@@ -2742,7 +2742,7 @@ static int Net_Join_Dialog() {
       //.....................................................................
       for (i = 1; i < TheSession().Games.Count(); i++) {
         if (engine::platform::SystemTicks() -
-                TheSession().Games.at(i)->Game.LastTime >
+                TheSession().Games.at(i)->LastTime >
             400) {
           TheSession().Games.Delete(i);
 
@@ -2771,9 +2771,9 @@ static int Net_Join_Dialog() {
       // the Chat vector.
       //.....................................................................
       base::SafeCopy(TheSession().Chat.at(0)->Name, namebuf);
-      TheSession().Chat.at(0)->Chat.Color = TheSession().ColorIdx;
-      if (TheSession().Chat.at(0)->Chat.Color == PCOLOR_DIALOG_BLUE) {
-        TheSession().Chat.at(0)->Chat.Color = PCOLOR_REALLY_BLUE;
+      TheSession().Chat.at(0)->Color = TheSession().ColorIdx;
+      if (TheSession().Chat.at(0)->Color == PCOLOR_DIALOG_BLUE) {
+        TheSession().Chat.at(0)->Color = PCOLOR_REALLY_BLUE;
       }
 
       //.....................................................................
@@ -2784,13 +2784,13 @@ static int Net_Join_Dialog() {
       //.....................................................................
       for (i = 1; i < TheSession().Chat.Count(); i++) {
         if (engine::platform::SystemTicks() -
-                TheSession().Chat.at(i)->Chat.LastTime >
+                TheSession().Chat.at(i)->LastTime >
             360) {
           TheSession().Chat.Delete(i);
         } else if (engine::platform::SystemTicks() -
-                           TheSession().Chat.at(i)->Chat.LastTime >
+                           TheSession().Chat.at(i)->LastTime >
                        300 &&
-                   TheSession().Chat.at(i)->Chat.LastChance == 0) {
+                   TheSession().Chat.at(i)->LastChance == 0) {
           base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                           sizeof(TheSession().GPacket));
           TheSession().GPacket.Name[0] = 0;
@@ -2799,7 +2799,7 @@ static int Net_Join_Dialog() {
               base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType),
               0, &TheSession().Chat.at(i)->Address);
           TheNetwork().ipx().Service();
-          TheSession().Chat.at(i)->Chat.LastChance = 1;
+          TheSession().Chat.at(i)->LastChance = 1;
         }
       }
 
@@ -2827,12 +2827,12 @@ static int Net_Join_Dialog() {
             if (!absl::EqualsIgnoreCase(TheSession().Chat.at(i)->Name,
                                         playerlist.Get_Item(i)) ||
                 &ThePalettes().color_remaps().at(
-                    TheSession().Chat.at(i)->Chat.Color == PCOLOR_DIALOG_BLUE
+                    TheSession().Chat.at(i)->Color == PCOLOR_DIALOG_BLUE
                         ? PCOLOR_REALLY_BLUE
-                        : TheSession().Chat.at(i)->Chat.Color) !=
+                        : TheSession().Chat.at(i)->Color) !=
                     base::At(playerlist.Colors, i)) {
               base::At(playerlist.Colors, i) = &ThePalettes().color_remaps().at(
-                  TheSession().Chat.at(i)->Chat.Color);
+                  TheSession().Chat.at(i)->Color);
               if (base::At(playerlist.Colors, i) ==
                   &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
                 base::At(playerlist.Colors, i) =
@@ -2846,10 +2846,10 @@ static int Net_Join_Dialog() {
           if (!absl::EqualsIgnoreCase(TheSession().Chat.at(0)->Name,
                                       playerlist.Get_Item(0)) ||
               &ThePalettes().color_remaps().at(
-                  TheSession().Chat.at(0)->Chat.Color) !=
+                  TheSession().Chat.at(0)->Color) !=
                   base::At(playerlist.Colors, 0)) {
             base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
-                TheSession().Chat.at(0)->Chat.Color);
+                TheSession().Chat.at(0)->Color);
             playerlist.Set_Item(0, TheSession().Chat.at(0)->Name);
             playerlist.Flag_To_Redraw();
           }
@@ -3053,7 +3053,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   //	The game must be open
   //------------------------------------------------------------------------
-  if (!TheSession().Games.at(join_index)->Game.IsOpen) {
+  if (!TheSession().Games.at(join_index)->IsOpen) {
     TheSession().Messages.Add_Message(
         nullptr, 0, TextString(TXT_GAME_IS_CLOSED), PCOLOR_BROWN, kTextFont,
         kTextFlags, 1200);
@@ -3380,7 +3380,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         int join_index, const char* my_name,
                                         RejectType* why) {
   char item[kGameListItemSize];  // general-purpose string
-  NodeNameType* who = nullptr;   // node to add to Games or Players
   int i = 0;
   int found = 0;
   JoinEventType retcode = EV_NONE;
@@ -3423,9 +3422,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	If name was found, update the node's time stamp & IsOpen flag.
         //...............................................................
-        TheSession().Games.at(i)->Game.LastTime =
-            engine::platform::SystemTicks();
-        if (TheSession().Games.at(i)->Game.IsOpen !=
+        TheSession().Games.at(i)->LastTime = engine::platform::SystemTicks();
+        if (TheSession().Games.at(i)->IsOpen !=
             TheSession().GPacket.GameInfo.IsOpen) {
           gamelist->Set_Item(i,
                              base::FormatRuntime(
@@ -3433,7 +3431,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                                 ? TXT_THATGUYS_GAME
                                                 : TXT_THATGUYS_GAME_BRACKET),
                                  TheSession().GPacket.Name));
-          TheSession().Games.at(i)->Game.IsOpen =
+          TheSession().Games.at(i)->IsOpen =
               TheSession().GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
 
@@ -3442,7 +3440,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           // responder's address into our Game slot, since the guy
           // responding to this must be game owner.
           //............................................................
-          if (TheSession().Games.at(i)->Game.IsOpen) {
+          if (TheSession().Games.at(i)->IsOpen) {
             TheSession().Games.at(i)->Address = TheSession().GAddress;
           }
 
@@ -3452,7 +3450,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           //............................................................
           if (*joinstate < JOIN_CONFIRMED) {
             std::string message;
-            if (TheSession().Games.at(i)->Game.IsOpen) {
+            if (TheSession().Games.at(i)->IsOpen) {
               message = base::FormatRuntime(
                   TextString(TXT_S_FORMED_NEW_GAME),
                   TheSession().Games.at(TheSession().Games.Count() - 1)->Name);
@@ -3480,11 +3478,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Create a new node structure, fill it in, add it to 'Games'
       //..................................................................
-      who = TheSession().Games.Add(std::make_unique<NodeNameType>());
+      auto* const who = TheSession().Games.Add(std::make_unique<GameNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->Game.IsOpen = TheSession().GPacket.GameInfo.IsOpen;
-      who->Game.LastTime = engine::platform::SystemTicks();
+      who->IsOpen = TheSession().GPacket.GameInfo.IsOpen;
+      who->LastTime = engine::platform::SystemTicks();
 
       //..................................................................
       //	Create a string for "xxx's Game", leaving room for brackets
@@ -3542,9 +3540,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       if (TheSession().Players.at(i)->Address == TheSession().GAddress) {
         base::SafeCopy(TheSession().Players.at(i)->Name,
                        TheSession().GPacket.Name);
-        TheSession().Players.at(i)->Player.House =
+        TheSession().Players.at(i)->House =
             TheSession().GPacket.PlayerInfo.House;
-        TheSession().Players.at(i)->Player.Color =
+        TheSession().Players.at(i)->Color =
             TheSession().GPacket.PlayerInfo.Color;
 
         base::At(playerlist->Colors, i) = &ThePalettes().color_remaps().at(
@@ -3588,11 +3586,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Create & add a node to the Vector
       //..................................................................
-      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+      auto* const who =
+          TheSession().Players.Add(std::make_unique<PlayerNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->Player.House = TheSession().GPacket.PlayerInfo.House;
-      who->Player.Color = TheSession().GPacket.PlayerInfo.Color;
+      who->House = TheSession().GPacket.PlayerInfo.House;
+      who->Color = TheSession().GPacket.PlayerInfo.Color;
 
       //..................................................................
       //	Create & add a string to the list box
@@ -3612,9 +3611,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                     .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
-          item, who->Player.Color == PCOLOR_DIALOG_BLUE
+          item, who->Color == PCOLOR_DIALOG_BLUE
                     ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
-                    : &ThePalettes().color_remaps().at(who->Player.Color));
+                    : &ThePalettes().color_remaps().at(who->Color));
 
       //..................................................................
       // If this player's in the Chat vector, remove him from there
@@ -3908,10 +3907,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         if (TheSession().Chat.at(i)->Address == TheSession().GAddress) {
           base::SafeCopy(TheSession().Chat.at(i)->Name,
                          TheSession().GPacket.Name);
-          TheSession().Chat.at(i)->Chat.LastTime =
-              engine::platform::SystemTicks();
-          TheSession().Chat.at(i)->Chat.LastChance = 0;
-          TheSession().Chat.at(i)->Chat.Color = TheSession().GPacket.Chat.Color;
+          TheSession().Chat.at(i)->LastTime = engine::platform::SystemTicks();
+          TheSession().Chat.at(i)->LastChance = 0;
+          TheSession().Chat.at(i)->Color = TheSession().GPacket.Chat.Color;
           found = 1;
           break;
         }
@@ -3921,12 +3919,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // Add a new node to the list
     //.....................................................................
     if (!found) {
-      who = TheSession().Chat.Add(std::make_unique<NodeNameType>());
+      auto* const who = TheSession().Chat.Add(std::make_unique<ChatNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->Chat.LastTime = engine::platform::SystemTicks();
-      who->Chat.LastChance = 0;
-      who->Chat.Color = TheSession().GPacket.Chat.Color;
+      who->LastTime = engine::platform::SystemTicks();
+      who->LastChance = 0;
+      who->Color = TheSession().GPacket.Chat.Color;
     }
   } else if (TheSession().GPacket.Command == NET_CHAT_REQUEST) {
     //------------------------------------------------------------------------
@@ -4161,7 +4159,6 @@ static int Net_New_Dialog() {
   const int tabs[] = {77 * 2};       // tabs for player list box
   const int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  NodeNameType* who = nullptr;  // node to add to Players
   int64_t ping_timer = 0;  // for sending Ping packets
 
   ColorUsedArray color_used;  // 1 = color has been used
@@ -4399,10 +4396,10 @@ static int Net_New_Dialog() {
                 ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                 : &ThePalettes().color_remaps().at(TheSession().ColorIdx));
 
-  who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+  auto* const who = TheSession().Players.Add(std::make_unique<PlayerNode>());
   base::SafeCopy(who->Name, TheSession().Handle);
-  who->Player.House = TheSession().House;
-  who->Player.Color = TheSession().ColorIdx;
+  who->House = TheSession().House;
+  who->Color = TheSession().ColorIdx;
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
 
@@ -5229,7 +5226,6 @@ static int Net_New_Dialog() {
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                            ColorUsedArray& color_used) {
   char item[kGameListItemSize];  // general-purpose string
-  NodeNameType* who = nullptr;   // node to add to Players Vector
   int found = 0;
   JoinEventType retval = EV_NONE;
   int resend = 0;
@@ -5395,10 +5391,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Add node to the Vector list
       //..................................................................
-      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
+      auto* const who =
+          TheSession().Players.Add(std::make_unique<PlayerNode>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->Player.House = TheSession().GPacket.PlayerInfo.House;
+      who->House = TheSession().GPacket.PlayerInfo.House;
 
       //..................................................................
       //	Set player's color; if requested color isn't used, give it to
@@ -5407,16 +5404,16 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //	give him as used.
       //..................................................................
       if (color_used.at(TheSession().GPacket.PlayerInfo.Color) == 0) {
-        who->Player.Color = TheSession().GPacket.PlayerInfo.Color;
+        who->Color = TheSession().GPacket.PlayerInfo.Color;
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (color_used.at(static_cast<PlayerColorType>(i)) == 0) {
-            who->Player.Color = static_cast<PlayerColorType>(i);
+            who->Color = static_cast<PlayerColorType>(i);
             break;
           }
         }
       }
-      color_used.at(who->Player.Color) = 1;
+      color_used.at(who->Color) = 1;
 
       //..................................................................
       //	Add player name to the list box
@@ -5436,9 +5433,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                     .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
-          item, who->Player.Color == PCOLOR_DIALOG_BLUE
+          item, who->Color == PCOLOR_DIALOG_BLUE
                     ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
-                    : &ThePalettes().color_remaps().at(who->Player.Color));
+                    : &ThePalettes().color_remaps().at(who->Color));
 
       //..................................................................
       //	Send a confirmation packet
@@ -5448,8 +5445,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
 
       TheSession().GPacket.Command = NET_CONFIRM_JOIN;
       base::SafeCopy(TheSession().GPacket.Name, TheSession().Handle);
-      TheSession().GPacket.PlayerInfo.House = who->Player.House;
-      TheSession().GPacket.PlayerInfo.Color = who->Player.Color;
+      TheSession().GPacket.PlayerInfo.House = who->House;
+      TheSession().GPacket.PlayerInfo.Color = who->Color;
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -5483,7 +5480,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         //	Mark his color as available
         //...............................................................
-        color_used.at(TheSession().Players.at(i)->Player.Color) = 0;
+        color_used.at(TheSession().Players.at(i)->Color) = 0;
 
         //...............................................................
         //	Delete from the Vector list

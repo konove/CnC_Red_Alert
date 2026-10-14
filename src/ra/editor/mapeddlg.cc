@@ -336,10 +336,10 @@ int MapEditClass::Load_Scenario() {
   if (player == SCEN_PLAYER_MPLAYER) {
     TheSession().Players.Clear();
 
-    auto who = std::make_unique<NodeNameType>();  // node to add to Players
+    auto who = std::make_unique<PlayerNode>();  // node to add to Players
     base::SafeCopy(who->Name, TheSession().Handle);
-    who->Player.House = TheSession().House;
-    who->Player.Color = TheSession().ColorIdx;
+    who->House = TheSession().House;
+    who->Color = TheSession().ColorIdx;
     TheSession().Players.Add(std::move(who));
 
     TheSession().NumPlayers = 1;

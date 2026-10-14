@@ -47,8 +47,8 @@ constexpr std::array<LocalPlayer, 2> kPlayers = {{
 
 // Adds `player` to the session's player list.
 void AddPlayer(const LocalPlayer& player) {
-  NodeNameType* const who =
-      TheSession().Players.Add(std::make_unique<NodeNameType>());
+  PlayerNode* const who =
+      TheSession().Players.Add(std::make_unique<PlayerNode>());
   base::SafeCopy(who->Name, player.name);
   // The UDP transport keeps a player's IP address in the first four bytes of
   // the IPX node number, which is where it puts a sender's.
@@ -56,8 +56,8 @@ void AddPlayer(const LocalPlayer& player) {
   engine::net::NetNodeType node{};
   std::ranges::copy(player.address_bytes, std::begin(node));
   who->Address.Set_Address(net, node);
-  who->Player.House = player.house;
-  who->Player.Color = player.color;
+  who->House = player.house;
+  who->Color = player.color;
 }
 
 }  // namespace

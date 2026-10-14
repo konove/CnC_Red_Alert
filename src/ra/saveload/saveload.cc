@@ -1389,7 +1389,7 @@ bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
  *                                                                         *
  * This assumes that each player MUST keep their name the same as it was
  ** when the game was saved!  It's also assumed that the network
- ** connections have not been formed yet, since Player[i]->Player.ID will
+ ** connections have not been formed yet, since Player[i]->ID will
  ** be invalid until this routine has been called.
  **
  *                                                                         *
@@ -1473,7 +1473,7 @@ static bool Reconcile_Players() {
       if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
                                  housep->IniName)) {
         found = 1;
-        TheSession().Players.at(i)->Player.ID = house;
+        TheSession().Players.at(i)->ID = house;
         break;
       }
     }

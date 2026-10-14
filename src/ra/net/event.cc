@@ -1028,9 +1028,8 @@ void EventClass::Execute() {
     //
     case PROCESS_TIME:
       for (int i = 0; i < TheSession().Players.Count(); i++) {
-        if (static_cast<HousesType>(ID) ==
-            TheSession().Players.at(i)->Player.ID) {
-          TheSession().Players.at(i)->Player.ProcessTime =
+        if (static_cast<HousesType>(ID) == TheSession().Players.at(i)->ID) {
+          TheSession().Players.at(i)->ProcessTime =
               Data.ProcessTime.AverageTicks;
           break;
         }
@@ -1061,8 +1060,7 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
         for (int i = 0; i < TheSession().Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) ==
-              TheSession().Players.at(i)->Player.ID) {
+          if (static_cast<HousesType>(ID) == TheSession().Players.at(i)->ID) {
             if (format != nullptr) {
               message =
                   absl::StrFormat(*format, TheSession().Players.at(i)->Name);
@@ -1095,8 +1093,7 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
         for (int i = 0; i < TheSession().Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) ==
-              TheSession().Players.at(i)->Player.ID) {
+          if (static_cast<HousesType>(ID) == TheSession().Players.at(i)->ID) {
             if (format != nullptr) {
               message =
                   absl::StrFormat(*format, TheSession().Players.at(i)->Name);

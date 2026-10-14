@@ -3561,16 +3561,16 @@ void WOL_GameSetupDialog::TriggerGameStart(const char* szGoMessage) {
   //	Add myself to Session.Players list.
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
-  auto player = std::make_unique<NodeNameType>();
-  NodeNameType* pPlayerNew = player.get();
+  auto player = std::make_unique<PlayerNode>();
+  PlayerNode* pPlayerNew = player.get();
   base::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
   // pPlayerNew->Address = Session.GAddress;
-  pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
-  // debugprint( "ME: pPlayerNew->Player.House = %i\n", pPlayerNew->Player.House
+  pPlayerNew->House = GetPlayerHouse(pWO->szMyName);
+  // debugprint( "ME: pPlayerNew->House = %i\n", pPlayerNew->House
   // );
-  pPlayerNew->Player.Color = GetPlayerColor(pWO->szMyName);
+  pPlayerNew->Color = GetPlayerColor(pWO->szMyName);
   //	This gets done later.
-  //	pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
+  //	pPlayerNew->ID = (HousesType)( pPlayerNew->Color +
   // HOUSE_MULTI1 );
 
   TheSession().Players.Add(std::move(player));
@@ -3592,7 +3592,7 @@ void WOL_GameSetupDialog::TriggerGameStart(const char* szGoMessage) {
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
       // szPlayerName );
-      player = std::make_unique<NodeNameType>();
+      player = std::make_unique<PlayerNode>();
       pPlayerNew = player.get();
       base::SafeCopy(pPlayerNew->Name, szPlayerName);
       //	Get player's IP address from pChatSink...
@@ -3615,12 +3615,12 @@ void WOL_GameSetupDialog::TriggerGameStart(const char* szGoMessage) {
       // memcpy( node + 2, &lAddress, 4 );
       pPlayerNew->Address.Set_Address(net, node);
       // pPlayerNew->Address = Session.GAddress;
-      pPlayerNew->Player.House = GetPlayerHouse(szPlayerName);
-      // debugprint( "Player %i: pPlayerNew->Player.House = %i\n", iItem,
-      // pPlayerNew->Player.House );
-      pPlayerNew->Player.Color = GetPlayerColor(szPlayerName);
+      pPlayerNew->House = GetPlayerHouse(szPlayerName);
+      // debugprint( "Player %i: pPlayerNew->House = %i\n", iItem,
+      // pPlayerNew->House );
+      pPlayerNew->Color = GetPlayerColor(szPlayerName);
       //	This gets done later.
-      // pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
+      // pPlayerNew->ID = (HousesType)( pPlayerNew->Color +
       // HOUSE_MULTI1 );
 
       TheSession().Players.Add(std::move(player));

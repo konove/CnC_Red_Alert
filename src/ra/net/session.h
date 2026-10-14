@@ -279,36 +279,36 @@ class PhoneEntryClass {
 };
 //
 
-//...........................................................................
-//	This is a "node", used for the lists of available games & players.  The
-//	'Game' structure is used for games; the 'Player' structure for players.
-//...........................................................................
-struct NodeNameTag {
-  // Only the Player arm is saved; Game and Chat describe live discovery data.
+// A name and an address on the network: what every list node has.
+struct NodeName {
+  char Name[MPLAYER_NAME_MAX]{};  // player or game name
+  engine::net::IPXAddressClass Address;
+};
+
+// A game announced on the network, in Session::Games.
+struct GameNode : NodeName {
+  unsigned char IsOpen = 0;  // is the game open?
+  int64_t LastTime = 0;      // last time we heard from it
+};
+
+// A player in this game, in Session::Players. The only node a save holds.
+struct PlayerNode : NodeName {
+  // Saved-game support; defined in saveglobals.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  char Name[MPLAYER_NAME_MAX]{};  // player or game name
-  engine::net::IPXAddressClass Address;
-  union {
-    struct {
-      unsigned char IsOpen;    // is the game open?
-      int64_t LastTime;        // last time we heard from this guy
-    } Game{};
-    struct {
-      HousesType House;       // "ActLike" House of this player
-      PlayerColorType Color;  // Color of this player
-      HousesType ID;          // Actual House of this player
-      int ProcessTime;        // Length of time to process players main loop
-    } Player;
-    struct {
-      int64_t LastTime;          // last time we heard from this guy
-      unsigned char LastChance;  // we're about to remove him from the list
-      PlayerColorType Color;     // chat player's color
-    } Chat;
-  };
+  HousesType House{};       // "ActLike" House of this player
+  PlayerColorType Color{};  // Color of this player
+  HousesType ID{};          // Actual House of this player
+  int ProcessTime = 0;      // Length of time to process players main loop
 };
-using NodeNameType = NodeNameTag;
+
+// A player in the chat lobby, in Session::Chat.
+struct ChatNode : NodeName {
+  int64_t LastTime = 0;          // last time we heard from this guy
+  unsigned char LastChance = 0;  // we're about to remove him from the list
+  PlayerColorType Color{};       // chat player's color
+};
 
 //...........................................................................
 // Packet sent over the serial Global Channel
@@ -698,9 +698,9 @@ class SessionClass {
   uint16_t GProductID{0};                     // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
-  game::OwnedVector<NodeNameType> Games;      // list of games
-  game::OwnedVector<NodeNameType> Players;    // list of players
-  game::OwnedVector<NodeNameType> Chat;       // list of chat nodes
+  game::OwnedVector<GameNode> Games;          // list of games
+  game::OwnedVector<PlayerNode> Players;      // list of players
+  game::OwnedVector<ChatNode> Chat;           // list of chat nodes
 
   //.....................................................................
   // Modem-specific variables
@@ -737,8 +737,8 @@ class SessionClass {
 extern template void SessionClass::SerializePlayers<ArchiveWriter>(ArchiveWriter&);
 extern template void SessionClass::SerializePlayers<ArchiveReader>(ArchiveReader&);
 
-extern template void NodeNameTag::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void NodeNameTag::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void PlayerNode::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void PlayerNode::Serialize<ArchiveReader>(ArchiveReader&);
 extern template void SessionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SessionClass::Serialize<ArchiveReader>(ArchiveReader&);
 

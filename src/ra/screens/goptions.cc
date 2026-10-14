@@ -139,8 +139,7 @@ void GameOptionsClass::Process() {
   // if there are more than 1.
   //
   for (int i = 0; i < TheSession().Players.Count(); i++) {
-    if (!HouseClass::As_Pointer(TheSession().Players.at(i)->Player.ID)
-             ->IsDefeated) {
+    if (!HouseClass::As_Pointer(TheSession().Players.at(i)->ID)->IsDefeated) {
       num_players++;
     }
   }

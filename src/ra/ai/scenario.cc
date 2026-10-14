@@ -2462,8 +2462,8 @@ void Assign_Houses() {
         continue;
       }
       if (lowest_color == PCOLOR_NONE ||
-          TheSession().Players.at(j)->Player.Color < lowest_color) {
-        lowest_color = TheSession().Players.at(j)->Player.Color;
+          TheSession().Players.at(j)->Color < lowest_color) {
+        lowest_color = TheSession().Players.at(j)->Color;
         index = j;
       }
     }
@@ -2472,7 +2472,7 @@ void Assign_Houses() {
     // Mark this player as having been assigned.
     //.....................................................................
     base::At(assigned, index) = 1;
-    color_used.at(TheSession().Players.at(index)->Player.Color) = true;
+    color_used.at(TheSession().Players.at(index)->Color) = true;
 
     //.....................................................................
     // Assign the lowest-color'd player to the next available slot in the
@@ -2484,8 +2484,8 @@ void Assign_Houses() {
     // A second copy that stays put for the whole game -- see InitialName.
     base::SafeCopy(housep->InitialName, TheSession().Players.at(index)->Name);
     housep->IsHuman = true;
-    housep->Init_Data(TheSession().Players.at(index)->Player.Color,
-                      TheSession().Players.at(index)->Player.House,
+    housep->Init_Data(TheSession().Players.at(index)->Color,
+                      TheSession().Players.at(index)->House,
                       TheSession().Options.Credits);
     if (index == 0) {
       ThePlayer() = housep;
@@ -2501,7 +2501,7 @@ void Assign_Houses() {
     //.....................................................................
     // Record where we placed this player
     //.....................................................................
-    TheSession().Players.at(index)->Player.ID = house;
+    TheSession().Players.at(index)->ID = house;
 
     //		debugprint( "Assigned ID of %i to %s\n", house,
     // Session.Players[index]->Name );

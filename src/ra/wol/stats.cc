@@ -474,7 +474,7 @@ void Send_Statistics_Packet() {
           if (TheNetwork().connection_lost()) {
             if constexpr (config::kWolapiEnabled) {
               if (TheNetwork().reconnect_cancelled()) {
-                if (TheSession().Players.at(0)->Player.ID == HOUSE_MULTI1) {
+                if (TheSession().Players.at(0)->ID == HOUSE_MULTI1) {
                   //	I am player1.
                   completion = kCompletionPlayer2WonByDisconnection;
                 } else {
