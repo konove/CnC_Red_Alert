@@ -327,14 +327,8 @@ void LogicClass::Detach(Target target, bool /*unused*/) {
   **	Remove any triggers from the logic trigger list.
   */
   if (target.kind() == RTTI_TRIGGER) {
-    for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
-         index++) {
-      if (target.AsTrigger() == base::At(TheWorld().logic_triggers(), index)) {
-        TheWorld().logic_triggers().erase(TheWorld().logic_triggers().begin() +
-                                          index);
-        index--;
-      }
-    }
+    EraseTrigger(TheWorld().logic_triggers(), TheWorld().logic_trigger_id(),
+                 target.AsTrigger());
   }
 }
 

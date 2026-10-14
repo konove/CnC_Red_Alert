@@ -50,13 +50,12 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
-#include <string>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "base/algorithm.h"
-#include "base/flags.h"
 #include "base/pooled.h"
+#include "base/types.h"
 #include "engine/platform/timer.h"
 #include "game/core/object_heap.h"
 #include "ra/ai/tevent.h"
@@ -111,28 +110,6 @@ TriggerClass::TriggerClass()
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
-  if ((TheGameState().active() && Class != nullptr &&
-       base::Any(Class->AttachesTo() & ATTACH_GENERAL)) &&
-      (TheWorld().logic_trigger_id() >=
-       base::IndexOf(TheWorld().logic_triggers(), this))) {
-    TheWorld().logic_trigger_id()--;
-    if (TheWorld().logic_trigger_id() < 0 &&
-        std::ssize(TheWorld().logic_triggers()) == 0) {
-      TheWorld().logic_trigger_id() = 0;
-    }
-  }
-
-  if ((TheGameState().active() && Class != nullptr &&
-       base::Any(Class->AttachesTo() & ATTACH_MAP)) &&
-      (TheWorld().map_trigger_id() >=
-       base::IndexOf(TheWorld().map_triggers(), this))) {
-    TheWorld().map_trigger_id()--;
-    if (TheWorld().map_trigger_id() < 0 &&
-        std::ssize(TheWorld().map_triggers()) == 0) {
-      TheWorld().map_trigger_id() = 0;
-    }
-  }
-
   if (TheGameState().active() && Class != nullptr &&
       Class->house != HOUSE_NONE &&
       Class->action1->type() == TriggerActionType::kAllowWin) {
@@ -412,6 +389,21 @@ TriggerClass* Find_Or_Make(TriggerType* trigtype) {
   */
   auto* trig = base::NewPooled<TriggerClass>(trigtype);
   return trig;
+}
+
+void EraseTrigger(std::vector<TriggerClass*>& triggers, int& cursor,
+                  const TriggerClass* trigger) {
+  const base::ssize index = base::IndexOf(triggers, trigger);
+  if (index < 0) {
+    return;
+  }
+  triggers.erase(triggers.begin() + index);
+  // The trigger being sprung may be the one removed (a volatile trigger
+  // deletes itself) or another one (TriggerActionType::kDestroyTrigger); only
+  // a removal at or before the cursor shifts what it points at.
+  if (index <= cursor) {
+    cursor--;
+  }
 }
 
 /***********************************************************************************************

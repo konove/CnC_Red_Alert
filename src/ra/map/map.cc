@@ -93,6 +93,7 @@
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
+#include "ra/ai/trigger.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/random_pick.h"
@@ -2198,14 +2199,8 @@ void MapClass::Detach(Target target, bool /*unused*/) {
   **	Remove this trigger from the map zone/line tracking list.
   */
   if (target.kind() == RTTI_TRIGGER) {
-    for (int index = 0; index < std::ssize(TheWorld().map_triggers());
-         index++) {
-      if (base::At(TheWorld().map_triggers(), index) == target.AsTrigger()) {
-        TheWorld().map_triggers().erase(TheWorld().map_triggers().begin() +
-                                        index);
-        break;
-      }
-    }
+    EraseTrigger(TheWorld().map_triggers(), TheWorld().map_trigger_id(),
+                 target.AsTrigger());
 
     /*
     **	Loop through all cells; remove any reference to this trigger

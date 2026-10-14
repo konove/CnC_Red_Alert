@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -146,6 +147,13 @@ class TriggerClass {
 };
 
 TriggerClass* Find_Or_Make(TriggerType* trigtype);
+
+// Removes `trigger` from `triggers`, a list the AI walks with `cursor` as its
+// index, and steps `cursor` back when the removal moves the trigger it points
+// at down a slot, so the walk goes on with the trigger after it. Does nothing
+// if `trigger` is not in the list.
+void EraseTrigger(std::vector<TriggerClass*>& triggers, int& cursor,
+                  const TriggerClass* trigger);
 
 extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);

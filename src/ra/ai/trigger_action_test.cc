@@ -4,6 +4,7 @@
 #include "ra/ai/trigger_action.h"
 
 #include <string_view>
+#include <vector>
 
 #include "base/array.h"
 #include "base/pooled.h"
@@ -519,6 +520,28 @@ TEST_F(TriggerActionGameTest, DestroyTriggerDeletesEveryTriggerOfTheType) {
 
   ASSERT_EQ(TheObjectHeaps().trigger().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().trigger().ActiveAt(0), kept);
+}
+
+// The AI walks the logic and map trigger lists with a cursor, and a trigger
+// it springs may destroy others: the cursor has to stay on the trigger being
+// sprung whichever side of it the destroyed ones were.
+TEST_F(TriggerActionGameTest, DestroyTriggerKeepsTheListCursorsInPlace) {
+  auto* other_type = base::NewPooled<TriggerType>();
+  auto* before = base::NewPooled<TriggerClass>(trigger_type_);
+  auto* sprung = base::NewPooled<TriggerClass>(other_type);
+  auto* after = base::NewPooled<TriggerClass>(trigger_type_);
+  TheWorld().logic_triggers() = {before, sprung, after};
+  TheWorld().logic_trigger_id() = 1;
+  TheWorld().map_triggers() = {sprung, after};
+  TheWorld().map_trigger_id() = 0;
+
+  EXPECT_TRUE(Perform({.type = TriggerActionType::kDestroyTrigger,
+                       .trigger_type = trigger_type_}));
+
+  ASSERT_EQ(TheWorld().logic_triggers(), std::vector<TriggerClass*>{sprung});
+  EXPECT_EQ(TheWorld().logic_trigger_id(), 0);
+  ASSERT_EQ(TheWorld().map_triggers(), std::vector<TriggerClass*>{sprung});
+  EXPECT_EQ(TheWorld().map_trigger_id(), 0);
 }
 
 TEST_F(TriggerActionGameTest, DestroyTriggerWithNoTypeDeletesNothing) {
