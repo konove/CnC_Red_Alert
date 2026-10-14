@@ -34,7 +34,7 @@ include(Testing)
 add_gtest(
         NAME base_test
         SOURCES algorithm_test.cc array_test.cc bit_test.cc buffer_test.cc bytes_of_test.cc cardinal_test.cc clip_test.cc
-            count_up_test.cc enum_array_test.cc enum_step_test.cc fixed_test.cc flags_test.cc hsv_test.cc installed_test.cc numeric_test.cc point_test.cc pooled_test.cc rect_test.cc trig_test.cc
+            count_up_test.cc enum_array_test.cc enum_step_test.cc fixed_test.cc flags_test.cc hsv_test.cc installed_test.cc numeric_test.cc payload_test.cc point_test.cc pooled_test.cc rect_test.cc trig_test.cc
             strings/format_test.cc strings/number_parse_test.cc strings/safe_string_test.cc
             strings/tokenizer_test.cc unaligned_test.cc
         LIBS base engine_stream
