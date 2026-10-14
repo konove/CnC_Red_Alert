@@ -129,7 +129,7 @@ primary.
 | `cppcoreguidelines-owning-memory`                               | Enabled | Commit `Enable cppcoreguidelines-owning-memory`: pooled game and type objects are created and destroyed through `base::NewPooled`/`base::DeletePooled`; everything else owns through `std::unique_ptr`, containers or stack objects. Nine reasoned suppressions. Plan [OWNING_MEMORY_PLAN.md](OWNING_MEMORY_PLAN.md); see review below.                                                                                      |
 | `cppcoreguidelines-no-malloc`                                   | Enabled | Commit `Hold INI section and entry names in std::string`: the 3 reports were RA's `INIEntry` and `INISection` freeing names that `ini.cc` had `strdup`ed at 4 sites; the names are now `std::string`, and the 12 readers use `.c_str()`, `.data()` and `.size()`.                                                                                                                                                            |
 | `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                                                                                                                                                                                                                                                                                                                                            |
-| `cppcoreguidelines-pro-type-union-access`                       | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,438 reports on the event, target and packet unions, whose layouts are part of the network and save formats. See review below.                                                                                                                                                                                                                         |
+| `cppcoreguidelines-pro-type-union-access`                       | Enabled | Commits `Plan the removal of the unions behind pro-type-union-access` to `Enable cppcoreguidelines-pro-type-union-access` ([UNION_ACCESS_PLAN.md](UNION_ACCESS_PLAN.md)): the 1,165 sites are gone with the unions behind them. The wire payloads hold their arms in `base::Payload`. See "Union access enablement" below.                                                                                                   |
 | `cppcoreguidelines-pro-bounds-array-to-pointer-decay`           | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 4,423 reports, mostly C strings and fixed arrays passed to C-style APIs. See review below.                                                                                                                                                                                                                                                              |
 | `hicpp-no-array-decay`                                          | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-bounds-array-to-pointer-decay` on older tools.                                                                                                                                                                                                                                                                                                                    |
 | `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Enabled | Commit `Enable the constant-index and pointer-arithmetic bounds checks`: 10 reports left, all `p[0]` on a C string or SDL pointer, now read through `*p`, a span or `std::string_view`. Plan [BOUNDS_PROFILE_PLAN.md](BOUNDS_PROFILE_PLAN.md); see review below.                                                                                                                                                             |
@@ -249,7 +249,7 @@ primary.
 | `clang-diagnostic-documentation-unknown-command`                    | Enabled | Commit `Enforce the remaining P4 fix-it checks`: backslashes in doc comments no longer read as documentation commands.                                                                                                                                                                                      |
 | `clang-diagnostic-pedantic`                                         | Enabled | Commit `Apply the mechanical P4 fix-its`: no reports; enabled to keep it that way.                                                                                                                                                                                                                          |
 | `clang-diagnostic-c99-extensions`                                   | Enabled | Commit `Enforce the remaining P4 fix-it checks`: the shape block's flexible array member carries a reasoned suppression.                                                                                                                                                                                    |
-| `clang-diagnostic-nested-anon-types`                                | Skipped | Commit `Record the P4 policy decisions`: 20 anonymous structs in anonymous unions, an extension GCC, Clang and MSVC all accept. See review below.                                                                                                                                                           |
+| `clang-diagnostic-nested-anon-types`                                | Enabled | Commit `Enable cppcoreguidelines-pro-type-union-access`: no reports once the unions were gone; `-Wno-nested-anon-types` is dropped from `CMakeLists.txt`.                                                                                                                                                   |
 | `clang-diagnostic-nullability-extension`                            | Skipped | Commit `Record the P4 policy decisions`: 278 reports, all Abseil's `absl_nonnull`/`absl_nullable` expanding inside `CHECK` macros. See review below.                                                                                                                                                        |
 | `misc-confusable-identifiers`                                       | Enabled | Commit `Enforce the remaining P4 fix-it checks`: five key-name constants that spell their key carry reasoned suppressions.                                                                                                                                                                                  |
 | `bugprone-copy-constructor-mutates-argument`                        | Covered | Already enforced through `cert-oop58-cpp`; reconcile the excluded name.                                                                                                                                                                                                                                     |
@@ -1415,6 +1415,9 @@ are now enforced; see "Bounds index and pointer arithmetic enablement" below.
 The union reports are the event, target and packet unions, whose layouts are part of the network and
 savegame formats; replacing them with variants changes those formats.
 
+Superseded on 2026-10-14 for `pro-type-union-access`: the unions are gone without changing those
+formats, and the check is enforced; see "Union access enablement" below.
+
 `readability-implicit-bool-conversion` was later enabled with the options that allow pointers and
 integers as conditions; see the implicit bool conversion review.
 
@@ -1953,6 +1956,36 @@ hierarchy refactor. Since then most of those mixins became members or interfaces
 Verification: an isolated sweep over every translation unit reports nothing; the full strict build
 and the GCC build; CTest in both.
 
+### Union access enablement (2026-10-14)
+
+`cppcoreguidelines-pro-type-union-access` is now enforced, and with it
+`clang-diagnostic-nested-anon-types`. A sweep on 2026-10-14 found 1,165 unique sites
+([UNION_ACCESS_PLAN.md](UNION_ACCESS_PLAN.md)). They were in unions that held one value read as
+several types, and in the payloads of the events and packets that go over the wire:
+
+- **In-memory unions** became the one type they stood for. The Base64 groups and the Blowfish
+  reference words are a `uint32_t` taken apart with shifts. The team mission argument and
+  `TEventClass`'s data are an `int32_t` read through typed accessors. `set_house()` replaces only
+  the low byte, as the one-byte union store did. The cell occupancy bits are `game::OccupyFlags`.
+  The sync-bug trap is an `ObjectClass*`. The network list nodes are one struct per list.
+- **Wire payloads** (`EventClass`, `GlobalPacketType`, RA's `SerialPacketType`) keep their bytes in
+  `base::Payload`, typed storage laid out like the union. Each arm is a named struct whose
+  `Carries()` lists its event types or commands, and `data<T>()` and `UpdateData<T>()` `DCHECK` that
+  the selector is one of them. Golden tests (`ra_wire_format_test`, `td_wire_format_test`) recorded
+  one event per constructor and one packet per arm before the change. They still pass unchanged, and
+  `net_check` stays in step in both the optimized and the Debug build.
+
+The golden bytes caught one defect on the way. `Payload::Update()` first took its copy from a
+by-value `Get()`, and GCC returns a struct member by member, so the padding inside an arm went out
+as garbage. A `base` test now pins interior padding.
+
+Verification: an isolated sweep over all 659 translation units reports nothing, and so does a
+`-Wnested-anon-types -fsyntax-only` compile of each with its own flags. The full strict build, CTest
+in `build`, `net_check`, both save/load smoke scripts and `ui_check` all pass. CTest in
+`build-debug`, where the `DCHECK`s run, fails only on T-229's four known aborts and the two
+`PkDifferentialTest` cases that outlast the timeout unoptimized. Tiberian Dawn has no `-NETGAME`
+mode, so its network play is checked only by the golden bytes and the queue tests.
+
 ### Nodiscard review (2026-09-12)
 
 `modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
@@ -2242,7 +2275,7 @@ case the rewrite would be large, would contradict a project rule, or would fight
 | `clang-diagnostic-nullability-extension`                                                                    | 278           | Every report is Abseil's `absl_nonnull`/`absl_nullable` expanding to `_Nonnull`/`_Nullable` inside `CHECK` macros.                                                                                                                                                                                                             |
 | `cppcoreguidelines-avoid-do-while`                                                                          | 100           | `do`-`while` is valid and often the clearest form of a loop that must run once.                                                                                                                                                                                                                                                |
 | `misc-no-recursion`                                                                                         | 47            | Mostly mutually recursive virtual calls through the object model (`Assign_Destination`, `Transmit_Message`, `Do_Action`), bounded by game state rather than input.                                                                                                                                                             |
-| `clang-diagnostic-nested-anon-types`                                                                        | 20            | Anonymous structs in anonymous unions, which GCC, Clang and MSVC all accept; naming them would rename every member access.                                                                                                                                                                                                     |
+| `clang-diagnostic-nested-anon-types`                                                                        | 20            | Anonymous structs in anonymous unions, which GCC, Clang and MSVC all accept; naming them would rename every member access. Superseded 2026-10-14: no unions remain, and the warning is on.                                                                                                                                     |
 | `cppcoreguidelines-avoid-const-or-ref-data-members`                                                         | 13            | The serializer and archive helpers' reference members and the queues' `const` capacity. None is ever reassigned, by design.                                                                                                                                                                                                    |
 
 ### P4 fix-it pass B and hand fixes (2026-09-12)

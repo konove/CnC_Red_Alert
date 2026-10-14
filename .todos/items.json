@@ -827,8 +827,8 @@
       "anchors": [
         {
           "path": "src/td/net/netdlg.cc",
-          "startLine": 2624,
-          "endLine": 2624,
+          "startLine": 2676,
+          "endLine": 2676,
           "text": "      if (TheNetwork().winsock().Get_Connected()) {",
           "before": [
             "        TheSpecialFlags().tiberium_spreads = 0;",
@@ -837,8 +837,8 @@
           ],
           "after": [
             "        TheSession().scenario_index() =",
-            "            TheNetwork().global_packet().ScenarioInfo.Scenario;",
-            "      } else {"
+            "            TheNetwork()",
+            "                .global_packet()"
           ],
           "lost": false
         }
@@ -863,16 +863,16 @@
       "anchors": [
         {
           "path": "src/ra/net/netdlg.cc",
-          "startLine": 2871,
-          "endLine": 2872,
+          "startLine": 2850,
+          "endLine": 2851,
           "text": "                  base::At(playerlist.Colors, 0)) {\n            base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(",
           "before": [
             "                                      playerlist.Get_Item(0)) ||",
             "              &ThePalettes().color_remaps().at(",
-            "                  TheSession().Chat.at(0)->Chat.Color) !="
+            "                  TheSession().Chat.at(0)->Color) !="
           ],
           "after": [
-            "                TheSession().Chat.at(0)->Chat.Color);",
+            "                TheSession().Chat.at(0)->Color);",
             "            playerlist.Set_Item(0, TheSession().Chat.at(0)->Name);",
             "            playerlist.Flag_To_Redraw();"
           ],
@@ -5985,10 +5985,10 @@
         "tools",
         "strict-build"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-14T17:08:44Z",
+      "updated": "2026-10-14T17:10:29Z",
       "source": "37ea18f9..323cb376",
       "resolution": "Every project-site warning the strict compile printed was one clang-tidy already reports as an error and a NOLINT accepts (NOLINT only silences clang-tidy), or one `.clang-tidy` excludes. The strict Clang flags now carry `-Wno-` for those 11 diagnostics; the 8 NOLINT-gated ones (lifetime-safety ×3, unsafe-buffer-usage ×3, switch-default, overloaded-virtual) are re-enabled for clang-tidy alone through `ExtraArgs` in `.clang-tidy`, and the 3 excluded ones are dropped from the check list. A full `build-strict` went from 208,000 warning lines to 0 in project code (googletest's own `gtest-all.cc` still prints one `-Wcharacter-conversion`); removing a NOLINT still fails `tools/strict_tu.py`. Source fixes were not viable: Clang 23 cannot follow `span::subspan/front/first` or `std::end`.",
       "comments": [
@@ -10418,7 +10418,7 @@
             "  **\tThis is the event that will controls how this event gets triggered.",
             "  */"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -10829,7 +10829,7 @@
             "  **\tThis is the event that will controls how this event gets triggered.",
             "  */"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -14193,11 +14193,11 @@
       "anchors": [
         {
           "path": "src/ra/net/chat.cc",
-          "startLine": 164,
-          "endLine": 164,
+          "startLine": 175,
+          "endLine": 175,
           "text": "void Message_Input(engine::window::KeyNumber& input) {",
           "before": [
-            "  base::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);",
+            "      TheSession().GPacket.data<GlobalPacketType::MessageData>().Buf);",
             "}",
             ""
           ],

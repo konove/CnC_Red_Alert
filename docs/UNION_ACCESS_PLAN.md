@@ -852,16 +852,16 @@ Run after Task 7, after Task 10 and in Task 11:
 
 ## Progress
 
-| Task | State | Commit |
-| ---- | ----- | ------ |
-| 1    |       |        |
-| 2    |       |        |
-| 3    |       |        |
-| 4    |       |        |
-| 5    |       |        |
-| 6    |       |        |
-| 7    |       |        |
-| 8    |       |        |
-| 9    |       |        |
-| 10   |       |        |
-| 11   |       |        |
+| Task | State                                           | Commit                                             |
+| ---- | ----------------------------------------------- | -------------------------------------------------- |
+| 1    | Done                                            | `ef9634cc4`                                        |
+| 2    | Done                                            | `bff8c71ad`                                        |
+| 3    | Done                                            | `1e4e02862`, `5877f6df4`                           |
+| 4    | Done                                            | `e3910eae2`                                        |
+| 5    | Done                                            | `499026188`, `65c367c9f`, `f4d5d4a8d`, `53735e01b` |
+| 6    | Done                                            | `c154046f3`, `990e6427e`                           |
+| 7    | Done                                            | `efc641ffe`, `54820f863`                           |
+| 8    | Done                                            | `b95dabe31`, `4f563d992` (padding fix)             |
+| 9    | Done                                            | `98a04cbc8`                                        |
+| 10   | Done; TD network play unchecked (no `-NETGAME`) | `f54d2a2fe`                                        |
+| 11   | Done                                            | `Enable cppcoreguidelines-pro-type-union-access`   |

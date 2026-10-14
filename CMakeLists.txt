@@ -231,12 +231,11 @@ else ()
                     # too. Abseil's CHECK_EQ-style macros expand to
                     # absl_nullable (_Nullable), a Clang extension. Static
                     # tables and function-local statics are how both games hold
-                    # their data, and GlobalPacketType nests anonymous structs
-                    # (docs/CLANG_TIDY_PRIORITIES.md, P4 policy decisions).
+                    # their data (docs/CLANG_TIDY_PRIORITIES.md, P4 policy
+                    # decisions).
                     -Wno-nullability-extension
                     -Wno-exit-time-destructors
                     -Wno-global-constructors
-                    -Wno-nested-anon-types
                     # clang-tidy reports these as errors, and a NOLINT accepts
                     # a site, but the compiler would still print every accepted
                     # site again: the base::At overloads alone once per element
