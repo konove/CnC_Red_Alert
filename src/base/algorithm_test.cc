@@ -28,10 +28,30 @@ TEST(IndexOfTest, SearchesAVectorOfBool) {
   EXPECT_EQ(base::IndexOf(std::vector<bool>{true, true}, false), -1);
 }
 
+struct Node {
+  int type = 0;
+  int weight = 0;
+
+  bool operator==(const Node&) const = default;
+};
+
+TEST(IndexOfTest, ComparesTheProjection) {
+  const std::vector<Node> nodes = {{1, 10}, {2, 20}, {2, 30}};
+  EXPECT_EQ(base::IndexOf(nodes, 2, &Node::type), 1);
+  EXPECT_EQ(base::IndexOf(nodes, 3, &Node::type), -1);
+}
+
 TEST(EraseFirstTest, RemovesOnlyTheFirstMatchAndKeepsOrder) {
   std::vector<int> values = {1, 7, 2, 7, 3};
   EXPECT_TRUE(base::EraseFirst(values, 7));
   EXPECT_EQ(values, (std::vector<int>{1, 2, 7, 3}));
+}
+
+TEST(EraseFirstTest, ComparesTheProjection) {
+  std::vector<Node> nodes = {{1, 10}, {2, 20}, {2, 30}};
+  EXPECT_TRUE(base::EraseFirst(nodes, 2, &Node::type));
+  EXPECT_EQ(nodes, (std::vector<Node>{{1, 10}, {2, 30}}));
+  EXPECT_FALSE(base::EraseFirst(nodes, 3, &Node::type));
 }
 
 TEST(EraseFirstTest, ReturnsFalseAndLeavesTheVectorWhenAbsent) {

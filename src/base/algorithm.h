@@ -3,6 +3,7 @@
 #define CNC_RED_ALERT_BASE_ALGORITHM_H_
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <vector>
 
@@ -10,22 +11,30 @@
 
 namespace base {
 
-// Returns the index of the first element equal to value, or -1 if none is.
-template <typename Container, typename T>
-ssize IndexOf(const Container& c, const T& value) {
-  const auto it = std::ranges::find(c, value);
+// Returns the index of the first element whose projection equals value, or -1
+// if none does. The projection, as in std::ranges::find, defaults to the
+// element itself.
+//
+// Example:
+//   base::IndexOf(nodes, StructType::kPower, &BaseNode::type);
+template <typename Container, typename T, typename Projection = std::identity>
+ssize IndexOf(const Container& c, const T& value, Projection projection = {}) {
+  const auto it = std::ranges::find(c, value, projection);
   if (it == c.end()) {
     return -1;
   }
   return static_cast<ssize>(std::distance(c.begin(), it));
 }
 
-// Removes the first element equal to value, keeping the others in order.
-// Returns false, leaving the vector alone, if no element is equal. Unlike
-// std::erase, this removes one match, not all of them.
-template <typename T, typename Allocator, typename U>
-bool EraseFirst(std::vector<T, Allocator>& vector, const U& value) {
-  const auto it = std::ranges::find(vector, value);
+// Removes the first element whose projection equals value, keeping the others
+// in order. Returns false, leaving the vector alone, if none does. Unlike
+// std::erase, this removes one match, not all of them. The projection works as
+// in IndexOf().
+template <typename T, typename Allocator, typename U,
+          typename Projection = std::identity>
+bool EraseFirst(std::vector<T, Allocator>& vector, const U& value,
+                Projection projection = {}) {
+  const auto it = std::ranges::find(vector, value, projection);
   if (it == vector.end()) {
     return false;
   }
