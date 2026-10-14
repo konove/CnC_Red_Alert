@@ -66,9 +66,7 @@ class OccupyFlags {
   }
 
   // True if infantry takes any of the five spots.
-  [[nodiscard]] constexpr bool AnySpot() const {
-    return (bits_ & kSpots) != 0;
-  }
+  [[nodiscard]] constexpr bool AnySpot() const { return (bits_ & kSpots) != 0; }
   // True if infantry takes all five spots, so no more fits.
   [[nodiscard]] constexpr bool AllSpots() const {
     return (bits_ & kSpots) == kSpots;
