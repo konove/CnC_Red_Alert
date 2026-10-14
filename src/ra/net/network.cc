@@ -29,12 +29,12 @@ namespace {
 void FollowMovedPlayer(engine::net::IPXManagerClass& ipx,
                        std::span<const std::byte> payload,
                        const engine::net::IPXAddressClass& from) {
-  if (payload.size() < offsetof(EventClass, Data)) {
+  if (payload.size() < EventClass::kPayloadOffset) {
     return;
   }
   EventClass event;
   base::CopyBytes(base::ObjectBytes(event), payload,
-                  offsetof(EventClass, Data));
+                  EventClass::kPayloadOffset);
   if (event.Type != EventClass::FRAMESYNC) {
     return;
   }

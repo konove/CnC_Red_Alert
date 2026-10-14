@@ -1330,12 +1330,13 @@ static void Generate_Timing_Event(engine::net::ConnManClass* net, int my_sent) {
     //.....................................................................
     if (SessionClass::Am_I_Master()) {
       ev.Type = EventClass::RESPONSE_TIME;
+      unsigned char delay = 0;
       //..................................................................
       // For multi-frame compressed events, the MaxAhead must be an even
       // multiple of the FrameSendRate.
       //..................................................................
       if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+        delay = static_cast<unsigned char>(std::max(
             ((resp_time / 8) + (TheSession().FrameSendRate - 1)) /
                 TheSession().FrameSendRate * TheSession().FrameSendRate,
             TheSession().FrameSendRate * 2));
@@ -1347,14 +1348,16 @@ static void Generate_Timing_Event(engine::net::ConnManClass* net, int my_sent) {
       else {
         if (TheSession().Type == GAME_MODEM ||
             TheSession().Type == GAME_NULL_MODEM) {
-          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
-              resp_time / 8, MODEM_MIN_MAX_AHEAD));
+          delay = static_cast<unsigned char>(
+              std::max(resp_time / 8, MODEM_MIN_MAX_AHEAD));
         } else if (TheSession().Type == GAME_IPX ||
                    TheSession().Type == GAME_INTERNET) {
-          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
-              resp_time / 8, NETWORK_MIN_MAX_AHEAD));
+          delay = static_cast<unsigned char>(
+              std::max(resp_time / 8, NETWORK_MIN_MAX_AHEAD));
         }
       }
+      ev.UpdateData<EventClass::FrameInfoData>(
+          [&](EventClass::FrameInfoData& d) { d.Delay = delay; });
       TheNetwork().out_list().Add(ev);
     }
   }
@@ -1461,9 +1464,10 @@ static void Generate_Real_Timing_Event(engine::net::ConnManClass* net,
       std::max<int>(maxahead, static_cast<int>(TheSession().FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
-  ev.Data.Timing.DesiredFrameRate =
-      static_cast<uint16_t>(TheSession().DesiredFrameRate);
-  ev.Data.Timing.MaxAhead = static_cast<uint16_t>(maxahead);
+  ev.UpdateData<EventClass::TimingData>([&](EventClass::TimingData& d) {
+    d.DesiredFrameRate = static_cast<uint16_t>(TheSession().DesiredFrameRate);
+    d.MaxAhead = static_cast<uint16_t>(maxahead);
+  });
 
   TheNetwork().out_list().Add(ev);
 
@@ -1527,7 +1531,10 @@ static void Generate_Process_Time_Event(engine::net::ConnManClass* net) {
       static_cast<int>(TheSession().ProcessTicks / TheSession().ProcessFrames);
 
   ev.Type = EventClass::PROCESS_TIME;
-  ev.Data.ProcessTime.AverageTicks = static_cast<uint16_t>(avgticks);
+  ev.UpdateData<EventClass::ProcessTimeData>(
+      [&](EventClass::ProcessTimeData& d) {
+        d.AverageTicks = static_cast<uint16_t>(avgticks);
+      });
   TheNetwork().out_list().Add(ev);
 
   TheSession().ProcessTicks = 0;
@@ -1749,11 +1756,12 @@ static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count) {
         static_cast<unsigned>(game::CurrentFrame() + TheSession().MaxAhead);
   }
   packet.ID = static_cast<unsigned>(ThePlayer()->ID);
-  packet.Data.FrameInfo.CRC =
-      static_cast<std::uint32_t>(TheWorld().scenario_crc());
-  packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
-  packet.Data.FrameInfo.Delay =
-      static_cast<unsigned char>(TheSession().MaxAhead);
+  packet.UpdateData<EventClass::FrameInfoData>(
+      [&](EventClass::FrameInfoData& d) {
+        d.CRC = static_cast<std::uint32_t>(TheWorld().scenario_crc());
+        d.CommandCount = static_cast<uint16_t>(cmd_count);
+        d.Delay = static_cast<unsigned char>(TheSession().MaxAhead);
+      });
 
   //------------------------------------------------------------------------
   // Send the event.  For modem, this just sends to the other player;
@@ -1762,9 +1770,7 @@ static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count) {
 
   net->Send_Private_Message(
       base::ObjectBytes(packet),
-      offsetof(EventClass, Data) +
-          sizeof(std::declval<EventClass>().Data.FrameInfo),
-      0);
+      EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData), 0);
 }  // end of Send_FrameSync
 
 /***************************************************************************
@@ -1817,13 +1823,13 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
   //------------------------------------------------------------------------
   //	Get an event ptr to the incoming message
   //------------------------------------------------------------------------
-  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
-                                   sizeof(event_storage.Data.FrameInfo))) {
+  if (std::cmp_less(packetlen, EventClass::kPayloadOffset +
+                                   sizeof(EventClass::FrameInfoData))) {
     return RC_NORMAL;
   }
   base::CopyBytes(
       base::ObjectBytes(event_storage), multi_packet_buf,
-      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
+      EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData));
 
   //------------------------------------------------------------------------
   //	Get the index of the sender
@@ -1839,7 +1845,7 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
   //	Compute the other player's frame # (at the time this packet was sent)
   //------------------------------------------------------------------------
   if (base::At(their_frame, base::ToSize(index)) <
-      static_cast<int>(event->Frame - event->Data.FrameInfo.Delay)) {
+      static_cast<int>(event->Frame - event->packet_frame_info().Delay)) {
     //.....................................................................
     // If the original frame # for this player is -1, it means we've heard
     // from this player for the 1st time; return the appropriate value.
@@ -1849,17 +1855,17 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
     }
 
     base::At(their_frame, base::ToSize(index)) =
-        event->Frame - event->Data.FrameInfo.Delay;
+        event->Frame - event->packet_frame_info().Delay;
   }
 
   //------------------------------------------------------------------------
   //	Extract the other player's CommandCount.  This count will include
   //	the commands in this packet, if there are any.
   //------------------------------------------------------------------------
-  if (event->Data.FrameInfo.CommandCount >
+  if (event->packet_frame_info().CommandCount >
       base::At(their_sent, base::ToSize(index))) {
     if (abs(base::At(their_sent, base::ToSize(index)) -
-            event->Data.FrameInfo.CommandCount) > 500) {
+            event->packet_frame_info().CommandCount) > 500) {
       const DumpFile file = OpenDumpFile("badcount.txt");
       if (FILE* fp = file.get()) {
         absl::FPrintF(fp, "Event Type:%s\n",
@@ -1870,15 +1876,15 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
           absl::FPrintF(fp, "Wrong Event Type!\n");
         } else {
           absl::FPrintF(fp, "CRC:%x  CommandCount:%d  Delay:%d\n",
-                        event->Data.FrameInfo.CRC,
-                        event->Data.FrameInfo.CommandCount,
-                        event->Data.FrameInfo.Delay);
+                        event->packet_frame_info().CRC,
+                        event->packet_frame_info().CommandCount,
+                        event->packet_frame_info().Delay);
         }
       }
     }
 
     base::At(their_sent, base::ToSize(index)) =
-        event->Data.FrameInfo.CommandCount;
+        event->packet_frame_info().CommandCount;
   }
 
   if (TheDebugState().print_events()) {
@@ -1888,9 +1894,9 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
       absl::PrintF("(%" PRId64 ") Received FRAMEINFO: ", game::CurrentFrame());
     }
     absl::PrintF("EvFrame:%d ID:%d CRC:%x CmdCount:%d Delay:%d\n", event->Frame,
-                 event->ID, event->Data.FrameInfo.CRC,
-                 event->Data.FrameInfo.CommandCount,
-                 event->Data.FrameInfo.Delay);
+                 event->ID, event->packet_frame_info().CRC,
+                 event->packet_frame_info().CommandCount,
+                 event->packet_frame_info().Delay);
   }
 
   //------------------------------------------------------------------------
@@ -1917,7 +1923,7 @@ static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
     }
 
     base::At(their_recv, base::ToSize(index)) += i;
-  } else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
+  } else if (event->packet_frame_info().CRC != TheWorld().scenario_crc()) {
     //------------------------------------------------------------------------
     //	If the event was a FRAMESYNC packet, there will be no commands to add,
     //	but we must check the ScenarioCRC value.
@@ -2066,13 +2072,13 @@ static RetcodeType Process_Serial_Packet(
   //........................................................................
   //	are we getting our own packets back??
   //........................................................................
-  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
-                                   sizeof(event_storage.Data.FrameInfo))) {
+  if (std::cmp_less(packetlen, EventClass::kPayloadOffset +
+                                   sizeof(EventClass::FrameInfoData))) {
     return RC_NORMAL;
   }
   base::CopyBytes(
       base::ObjectBytes(event_storage), multi_packet_buf,
-      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
+      EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData));
 
   if (event->Type <= EventClass::EMPTY ||
       event->Type >= EventClass::LAST_EVENT) {
@@ -2436,9 +2442,12 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   // Fill in the rest of the event
   //........................................................................
   finfo->ID = static_cast<unsigned>(ThePlayer()->ID);
-  finfo->Data.FrameInfo.CRC = GameCRC;
-  finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
-  finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
+  finfo->UpdateData<EventClass::FrameInfoData>(
+      [&](EventClass::FrameInfoData& d) {
+        d.CRC = GameCRC;
+        d.CommandCount = static_cast<uint16_t>(num_cmds);
+        d.Delay = static_cast<unsigned char>(frame_delay);
+      });
   base::WriteUnaligned(buf, frame_info);
   base::WriteUnaligned(buf, frame_info);
   base::WriteUnaligned(buf, frame_info);
@@ -2449,8 +2458,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   if (TheSession().CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
     size += sizeof(EventClass);
   } else {
-    size += offsetof(EventClass, Data) +
-            sizeof(std::declval<EventClass>().Data.FrameInfo);
+    size += EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData);
   }
 
   //------------------------------------------------------------------------
@@ -2527,9 +2535,12 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     game::TheKeyboard().Peek();
 
     if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
-      ev_size =
-          static_cast<int>(sizeof(EventClass) +
-                           TheNetwork().out_list().First().Data.Variable.Size);
+      ev_size = static_cast<int>(sizeof(EventClass) +
+                                 TheNetwork()
+                                     .out_list()
+                                     .First()
+                                     .data<EventClass::VariableData>()
+                                     .Size);
     } else {
       ev_size = sizeof(EventClass);
     }
@@ -2571,8 +2582,13 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
       size += sizeof(EventClass);
       base::CopyBytes(buf.subspan(base::ToSize(size)),
                       TheNetwork().out_list().First().variable_bytes(),
-                      TheNetwork().out_list().First().Data.Variable.Size);
-      size += TheNetwork().out_list().First().Data.Variable.Size;
+                      TheNetwork()
+                          .out_list()
+                          .First()
+                          .data<EventClass::VariableData>()
+                          .Size);
+      size +=
+          TheNetwork().out_list().First().data<EventClass::VariableData>().Size;
     } else {
       base::CopyBytes(buf.subspan(base::ToSize(size)),
                       base::ObjectBytes(TheNetwork().out_list().First()),
@@ -2650,9 +2666,12 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // in the packet header.)
     //.....................................................................
     if (eventtype == EventClass::ADDPLAYER) {
-      storedsize =
-          datasize + kEventTypeSize +
-          static_cast<int>(TheNetwork().out_list().First().Data.Variable.Size);
+      storedsize = datasize + kEventTypeSize +
+                   static_cast<int>(TheNetwork()
+                                        .out_list()
+                                        .First()
+                                        .data<EventClass::VariableData>()
+                                        .Size);
     } else {
       storedsize = datasize + kEventTypeSize;
     }
@@ -2681,12 +2700,24 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         // - increment the MegaMission rep count
         // - set the MegaMission rep flag
         //...............................................................
-        if (TheNetwork().out_list().First().Data.MegaMission.Mission ==
-                prevevent.Data.MegaMission.Mission &&
-            TheNetwork().out_list().First().Data.MegaMission.Target ==
-                prevevent.Data.MegaMission.Target &&
-            TheNetwork().out_list().First().Data.MegaMission.Destination ==
-                prevevent.Data.MegaMission.Destination) {
+        if (TheNetwork()
+                    .out_list()
+                    .First()
+                    .data<EventClass::MegaMissionData>()
+                    .Mission ==
+                prevevent.data<EventClass::MegaMissionData>().Mission &&
+            TheNetwork()
+                    .out_list()
+                    .First()
+                    .data<EventClass::MegaMissionData>()
+                    .Target ==
+                prevevent.data<EventClass::MegaMissionData>().Target &&
+            TheNetwork()
+                    .out_list()
+                    .First()
+                    .data<EventClass::MegaMissionData>()
+                    .Destination ==
+                prevevent.data<EventClass::MegaMissionData>().Destination) {
           if (TheDebugState().print_events()) {
             absl::PrintF(
                 "      adding Whom:%x (%x) Mission:%s Target:%x (%x) Dest:%x "
@@ -2696,33 +2727,49 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                     TheNetwork()
                         .out_list()
                         .First()
-                        .Data.MegaMission.Whom.packed()),
-
-                TheNetwork().out_list().First().Data.MegaMission.Whom.value(),
-                MissionClass::Mission_Name(
-                    TheNetwork().out_list().First().Data.MegaMission.Mission),
-                static_cast<unsigned int>(
-
-                    TheNetwork()
-                        .out_list()
-                        .First()
-                        .Data.MegaMission.Target.packed()),
-
-                TheNetwork().out_list().First().Data.MegaMission.Target.value(),
-                static_cast<unsigned int>(
-
-                    TheNetwork()
-                        .out_list()
-                        .First()
-                        .Data.MegaMission.Destination.packed()),
+                        .data<EventClass::MegaMissionData>()
+                        .Whom.packed()),
 
                 TheNetwork()
                     .out_list()
                     .First()
-                    .Data.MegaMission.Destination.value());
+                    .data<EventClass::MegaMissionData>()
+                    .Whom.value(),
+                MissionClass::Mission_Name(
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .data<EventClass::MegaMissionData>()
+                        .Mission),
+                static_cast<unsigned int>(
+
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .data<EventClass::MegaMissionData>()
+                        .Target.packed()),
+
+                TheNetwork()
+                    .out_list()
+                    .First()
+                    .data<EventClass::MegaMissionData>()
+                    .Target.value(),
+                static_cast<unsigned int>(
+
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .data<EventClass::MegaMissionData>()
+                        .Destination.packed()),
+
+                TheNetwork()
+                    .out_list()
+                    .First()
+                    .data<EventClass::MegaMissionData>()
+                    .Destination.value());
           }
 
-          datasize = sizeof(prevevent.Data.MegaMission.Whom);
+          datasize = sizeof(EventClass::MegaMissionData::Whom);
           storedsize = datasize;
           numunits++;
           missiondup = true;
@@ -2833,11 +2880,16 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
         base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-        base::CopyBytes(
-            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(
-                TheNetwork().out_list().First().Data.FrameInfo.Delay),
-            base::ToSize(datasize));
+        {
+          const unsigned char delay = TheNetwork()
+                                          .out_list()
+                                          .First()
+                                          .data<EventClass::FrameInfoData>()
+                                          .Delay;
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+              base::ObjectBytes(delay), base::ToSize(datasize));
+        }
 
         size += datasize + kEventTypeSize;
         break;
@@ -2857,11 +2909,13 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 static_cast<std::byte>(numunits);
           }
 
-          base::CopyBytes(
-              buf.subspan(base::ToSize(size)),
-              base::ObjectBytes(
-                  TheNetwork().out_list().First().Data.MegaMission.Whom),
-              base::ToSize(datasize));
+          const Target whom = TheNetwork()
+                                  .out_list()
+                                  .First()
+                                  .data<EventClass::MegaMissionData>()
+                                  .Whom;
+          base::CopyBytes(buf.subspan(base::ToSize(size)),
+                          base::ObjectBytes(whom), base::ToSize(datasize));
 
           size += datasize;
         }
@@ -2879,12 +2933,14 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
           base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
+          const auto order = TheNetwork()
+                                 .out_list()
+                                 .First()
+                                 .data<EventClass::MegaMissionData>();
           base::CopyBytes(
               buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
                           sizeof(numunits)),
-              base::ObjectBytes(
-                  TheNetwork().out_list().First().Data.MegaMission),
-              base::ToSize(datasize));
+              base::ObjectBytes(order), base::ToSize(datasize));
 
           size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
         }
@@ -2896,17 +2952,22 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       case EventClass::ADDPLAYER:
         base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-        base::CopyBytes(
-            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(
-                TheNetwork().out_list().First().Data.Variable.Size),
-            base::ToSize(datasize));
-        size += datasize + kEventTypeSize;
+        {
+          const uint32_t variable_size = TheNetwork()
+                                             .out_list()
+                                             .First()
+                                             .data<EventClass::VariableData>()
+                                             .Size;
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+              base::ObjectBytes(variable_size), base::ToSize(datasize));
+          size += datasize + kEventTypeSize;
 
-        base::CopyBytes(buf.subspan(base::ToSize(size)),
-                        TheNetwork().out_list().First().variable_bytes(),
-                        TheNetwork().out_list().First().Data.Variable.Size);
-        size += TheNetwork().out_list().First().Data.Variable.Size;
+          base::CopyBytes(buf.subspan(base::ToSize(size)),
+                          TheNetwork().out_list().First().variable_bytes(),
+                          variable_size);
+          size += static_cast<int>(variable_size);
+        }
 
         break;
 
@@ -2949,7 +3010,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(TheNetwork().out_list().First().Data),
+            TheNetwork().out_list().First().payload_bytes(),
             base::ToSize(datasize));
 
         size += datasize + kEventTypeSize;
@@ -3071,16 +3132,17 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
       // Special processing for variable-sized events
       //..................................................................
       if (event->Type == EventClass::ADDPLAYER) {
-        if (std::cmp_greater(event->Data.Variable.Size,
+        if (std::cmp_greater(event->data<EventClass::VariableData>().Size,
                              base::ToSize(leftover) - sizeof(EventClass))) {
           return count;
         }
-        base::CopyBytes(event->Allocate_Variable(event->Data.Variable.Size),
+        base::CopyBytes(event->Allocate_Variable(
+                            event->data<EventClass::VariableData>().Size),
                         buf.subspan(base::ToSize(pos) + sizeof(EventClass)),
-                        event->Data.Variable.Size);
+                        event->data<EventClass::VariableData>().Size);
 
-        pos += event->Data.Variable.Size;
-        leftover -= event->Data.Variable.Size;
+        pos += event->data<EventClass::VariableData>().Size;
+        leftover -= event->data<EventClass::VariableData>().Size;
       }
 
       if (!TheNetwork().do_list().Add(*event)) {
@@ -3150,8 +3212,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
   // For the 1st packet only, this will include all info before the Data
   // union, plus the size of the FrameInfo structure, minus the EventType size.
   //------------------------------------------------------------------------
-  datasize = offsetof(EventClass, Data) +
-             sizeof(std::declval<EventClass>().Data.FrameInfo) -
+  datasize = EventClass::kPayloadOffset + sizeof(EventClass::FrameInfoData) -
              sizeof(EventClass::EventType);
   if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
     return count;
@@ -3179,15 +3240,15 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
         EventClass frame_header;
         base::CopyBytes(base::ObjectBytes(frame_header),
                         buf.subspan(base::ToSize(pos)),
-                        offsetof(EventClass, Data));
+                        EventClass::kPayloadOffset);
         eventdata.Frame = frame_header.Frame;
         eventdata.ID = frame_header.ID;
 
         //...............................................................
         // Adjust position past the common data
         //...............................................................
-        pos += offsetof(EventClass, Data) - sizeof(EventClass::EventType);
-        leftover -= offsetof(EventClass, Data) - sizeof(EventClass::EventType);
+        pos += EventClass::kPayloadOffset - sizeof(EventClass::EventType);
+        leftover -= EventClass::kPayloadOffset - sizeof(EventClass::EventType);
       } else if (event_type == EventClass::MEGAMISSION) {
         //..................................................................
         // if MEGAMISSION event get the number of units (events to generate)
@@ -3201,8 +3262,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       //..................................................................
       // clear the union data portion of the event
       //..................................................................
-      base::FillBytes(base::ObjectBytes(eventdata.Data), 0,
-                      sizeof(eventdata.Data));
+      eventdata.ClearData();
       eventdata.Type = event_type;
       datasize = EventClass::EventLength.at(eventdata.Type);
       if (datasize < 0 || leftover < datasize + kEventTypeSize) {
@@ -3211,19 +3271,26 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
 
       switch (eventdata.Type) {
         case EventClass::RESPONSE_TIME:
-          base::CopyBytes(
-              base::ObjectBytes(eventdata.Data.FrameInfo.Delay),
-              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
-              base::ToSize(datasize));
+          eventdata.UpdateData<EventClass::FrameInfoData>(
+              [&](EventClass::FrameInfoData& d) {
+                base::CopyBytes(base::ObjectBytes(d.Delay),
+                                buf.subspan(base::ToSize(pos) +
+                                            sizeof(EventClass::EventType)),
+                                base::ToSize(datasize));
+              });
           break;
 
         case EventClass::ADDPLAYER: {
-          base::CopyBytes(
-              base::ObjectBytes(eventdata.Data.Variable.Size),
-              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
-              base::ToSize(datasize));
+          eventdata.UpdateData<EventClass::VariableData>(
+              [&](EventClass::VariableData& d) {
+                base::CopyBytes(base::ObjectBytes(d.Size),
+                                buf.subspan(base::ToSize(pos) +
+                                            sizeof(EventClass::EventType)),
+                                base::ToSize(datasize));
+              });
 
-          const auto variable_size = eventdata.Data.Variable.Size;
+          const auto variable_size =
+              eventdata.data<EventClass::VariableData>().Size;
           if (std::cmp_greater(variable_size,
                                leftover - datasize - kEventTypeSize)) {
             return count;
@@ -3245,18 +3312,21 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
           if (numunits == 0 ||
               std::cmp_less(
                   leftover - datasize - kEventTypeSize,
-                  (numunits - 1) * sizeof(eventdata.Data.MegaMission.Whom))) {
+                  (numunits - 1) * sizeof(EventClass::MegaMissionData::Whom))) {
             return count;
           }
-          base::CopyBytes(
-              base::ObjectBytes(eventdata.Data.MegaMission),
-              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
-              base::ToSize(datasize));
+          eventdata.UpdateData<EventClass::MegaMissionData>(
+              [&](EventClass::MegaMissionData& d) {
+                base::CopyBytes(base::ObjectBytes(d),
+                                buf.subspan(base::ToSize(pos) +
+                                            sizeof(EventClass::EventType)),
+                                base::ToSize(datasize));
+              });
 
           if (numunits > 1) {
             pos += datasize + kEventTypeSize;
             leftover -= datasize + kEventTypeSize;
-            datasize = sizeof(eventdata.Data.MegaMission.Whom);
+            datasize = sizeof(EventClass::MegaMissionData::Whom);
 
             while (numunits) {
               game::TheKeyboard().Peek();
@@ -3270,9 +3340,12 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
               //......................................................
               count++;
               numunits--;
-              base::CopyBytes(
-                  base::ObjectBytes(eventdata.Data.MegaMission.Whom),
-                  buf.subspan(base::ToSize(pos)), base::ToSize(datasize));
+              eventdata.UpdateData<EventClass::MegaMissionData>(
+                  [&](EventClass::MegaMissionData& d) {
+                    base::CopyBytes(base::ObjectBytes(d.Whom),
+                                    buf.subspan(base::ToSize(pos)),
+                                    base::ToSize(datasize));
+                  });
 
               //......................................................
               // if one unit left fall thru to normal code
@@ -3320,7 +3393,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
         case EventClass::LAST_EVENT:
         default:
           base::CopyBytes(
-              base::ObjectBytes(eventdata.Data),
+              eventdata.payload_bytes(),
               buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
               base::ToSize(datasize));
           break;
@@ -3381,8 +3454,8 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       //..................................................................
       // size of FRAMESYNC event - EventType size
       //..................................................................
-      datasize = offsetof(EventClass, Data) +
-                 sizeof(std::declval<EventClass>().Data.FrameInfo) -
+      datasize = EventClass::kPayloadOffset +
+                 sizeof(EventClass::FrameInfoData) -
                  sizeof(EventClass::EventType);
     }
   }
@@ -3625,14 +3698,26 @@ static int Execute_DoList(
           if (check_crc &&
               std::cmp_equal(TheNetwork().do_list().at(j).Frame,
                              game::CurrentFrame()) &&
-              TheNetwork().do_list().at(j).Data.FrameInfo.Delay < 32) {
+              TheNetwork()
+                      .do_list()
+                      .at(j)
+                      .data<EventClass::FrameInfoData>()
+                      .Delay < 32) {
             // The delay is below 32, so adding a full turn keeps the
             // difference non-negative before wrapping onto the CRC ring.
             index = (TheNetwork().do_list().at(j).Frame -
-                     TheNetwork().do_list().at(j).Data.FrameInfo.Delay + 32) %
+                     TheNetwork()
+                         .do_list()
+                         .at(j)
+                         .data<EventClass::FrameInfoData>()
+                         .Delay +
+                     32) %
                     32;
-            if (base::At(CRC, index) !=
-                TheNetwork().do_list().at(j).Data.FrameInfo.CRC) {
+            if (base::At(CRC, index) != TheNetwork()
+                                            .do_list()
+                                            .at(j)
+                                            .data<EventClass::FrameInfoData>()
+                                            .CRC) {
               Print_CRCs(&TheNetwork().do_list().at(j));
 
               if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
@@ -4412,9 +4497,12 @@ static void Print_CRCs(const EventClass* ev) {
     absl::FPrintF(fp, "  Frame:        %d\n", ev->Frame);
     absl::FPrintF(fp, "  ID:           %x\n",
                   static_cast<unsigned int>(ev->ID));
-    absl::FPrintF(fp, "  CRC:          %x\n", ev->Data.FrameInfo.CRC);
-    absl::FPrintF(fp, "  CommandCount: %d\n", ev->Data.FrameInfo.CommandCount);
-    absl::FPrintF(fp, "  Delay:        %d\n", ev->Data.FrameInfo.Delay);
+    absl::FPrintF(fp, "  CRC:          %x\n",
+                  ev->data<EventClass::FrameInfoData>().CRC);
+    absl::FPrintF(fp, "  CommandCount: %d\n",
+                  ev->data<EventClass::FrameInfoData>().CommandCount);
+    absl::FPrintF(fp, "  Delay:        %d\n",
+                  ev->data<EventClass::FrameInfoData>().Delay);
   }
 
 } /* end of Print_CRCs */

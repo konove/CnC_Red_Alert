@@ -116,40 +116,39 @@ namespace ra {
 base::EnumArray<EventClass::EventType, unsigned char,
                 static_cast<int>(EventClass::LAST_EVENT)>
     EventClass::EventLength = {
-        0,                                                      // EMPTY
-        sizeof(std::declval<EventClass>().Data.General),        // ALLY
-        sizeof(std::declval<EventClass>().Data.MegaMission),    // MEGAMISSION
-        sizeof(std::declval<EventClass>().Data.MegaMission_F),  // MEGAMISSION_F
-        sizeof(std::declval<EventClass>().Data.Target),         // IDLE
-        sizeof(std::declval<EventClass>().Data.Target),         // SCATTER
-        0,                                                      // DESTRUCT
-        0,                                                      // DEPLOY
-        sizeof(std::declval<EventClass>().Data.Place),          // PLACE
-        0,                                                      // OPTIONS
-        sizeof(std::declval<EventClass>().Data.General),        // GAMESPEED
-        sizeof(std::declval<EventClass>().Data.Specific),       // PRODUCE
-        sizeof(std::declval<EventClass>().Data.Specific.Type),  // SUSPEND
-        sizeof(std::declval<EventClass>().Data.Specific.Type),  // ABANDON
-        sizeof(std::declval<EventClass>().Data.Target),         // PRIMARY
-        sizeof(std::declval<EventClass>().Data.Special),        // SPECIAL_PLACE
-        0,                                                      // EXIT
-        sizeof(std::declval<EventClass>().Data.Anim),           // ANIMATION
-        sizeof(std::declval<EventClass>().Data.Target),         // REPAIR
-        sizeof(std::declval<EventClass>().Data.Target),         // SELL
-        sizeof(std::declval<EventClass>().Data.SellCell),       // SELLCELL
-        sizeof(std::declval<EventClass>().Data.Options),        // SPECIAL
-        0,                                                      // FRAMESYNC
-        0,                                                      // MESSAGE
-        sizeof(
-            std::declval<EventClass>().Data.FrameInfo.Delay),   // RESPONSE_TIME
-        sizeof(std::declval<EventClass>().Data.FrameInfo),      // FRAMEINFO
-        0,                                                      // SAVEGAME
-        sizeof(std::declval<EventClass>().Data.NavCom),         // ARCHIVE
-        sizeof(std::declval<EventClass>().Data.Variable.Size),  // ADDPLAYER
-        sizeof(std::declval<EventClass>().Data.Timing),         // TIMING
-        sizeof(std::declval<EventClass>().Data.ProcessTime),    // PROCESS_TIME
-        0,                                                      // PROPOSE_DRAW
-        0,                                                      // RETRACT_DRAW
+        0,                                 // EMPTY
+        sizeof(GeneralData),               // ALLY
+        sizeof(MegaMissionData),           // MEGAMISSION
+        sizeof(MegaMissionFormationData),  // MEGAMISSION_F
+        sizeof(TargetData),                // IDLE
+        sizeof(TargetData),                // SCATTER
+        0,                                 // DESTRUCT
+        0,                                 // DEPLOY
+        sizeof(PlaceData),                 // PLACE
+        0,                                 // OPTIONS
+        sizeof(GeneralData),               // GAMESPEED
+        sizeof(SpecificData),              // PRODUCE
+        sizeof(RTTIType),                  // SUSPEND
+        sizeof(RTTIType),                  // ABANDON
+        sizeof(TargetData),                // PRIMARY
+        sizeof(SpecialData),               // SPECIAL_PLACE
+        0,                                 // EXIT
+        sizeof(AnimData),                  // ANIMATION
+        sizeof(TargetData),                // REPAIR
+        sizeof(TargetData),                // SELL
+        sizeof(SellCellData),              // SELLCELL
+        sizeof(OptionsData),               // SPECIAL
+        0,                                 // FRAMESYNC
+        0,                                 // MESSAGE
+        sizeof(FrameInfoData::Delay),      // RESPONSE_TIME
+        sizeof(FrameInfoData),             // FRAMEINFO
+        0,                                 // SAVEGAME
+        sizeof(NavComData),                // ARCHIVE
+        sizeof(VariableData::Size),        // ADDPLAYER
+        sizeof(TimingData),                // TIMING
+        sizeof(ProcessTimeData),           // PROCESS_TIME
+        0,                                 // PROPOSE_DRAW
+        0,                                 // RETRACT_DRAW
 };
 
 base::EnumArray<EventClass::EventType, const char*,
@@ -185,7 +184,7 @@ EventClass::EventClass(SpecialFlags data) : EventClass() {
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Options.Data = data;
+  UpdateData<OptionsData>([&](OptionsData& d) { d.Data = data; });
 }
 
 /***********************************************************************************************
@@ -209,7 +208,7 @@ EventClass::EventClass(EventType type, ra::Target target) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Target.Whom = target;
+  UpdateData<TargetData>([&](TargetData& d) { d.Whom = target; });
 }
 
 EventClass::EventClass(EventType type, Cell cell) : EventClass() {
@@ -217,7 +216,7 @@ EventClass::EventClass(EventType type, Cell cell) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.SellCell.Cell = cell;
+  UpdateData<SellCellData>([&](SellCellData& d) { d.Cell = cell; });
 }
 
 /***********************************************************************************************
@@ -255,7 +254,7 @@ EventClass::EventClass(EventType type) : EventClass() {
 EventClass::EventClass(EventType type, int val) : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
-  Data.General.Value = val;
+  UpdateData<GeneralData>([&](GeneralData& d) { d.Value = val; });
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
 }
@@ -285,8 +284,10 @@ EventClass::EventClass(EventType type, ra::Target src, ra::Target dest)
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.NavCom.Whom = src;
-  Data.NavCom.Where = dest;
+  UpdateData<NavComData>([&](NavComData& d) {
+    d.Whom = src;
+    d.Where = dest;
+  });
 }
 
 /***********************************************************************************************
@@ -311,9 +312,11 @@ EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Anim.What = anim;
-  Data.Anim.Owner = owner;
-  Data.Anim.Where = coord;
+  UpdateData<AnimData>([&](AnimData& d) {
+    d.What = anim;
+    d.Owner = owner;
+    d.Where = coord;
+  });
 }
 
 /***********************************************************************************************
@@ -343,10 +346,12 @@ EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.MegaMission.Whom = src;
-  Data.MegaMission.Mission = mission;
-  Data.MegaMission.Target = target;
-  Data.MegaMission.Destination = destination;
+  UpdateData<MegaMissionData>([&](MegaMissionData& d) {
+    d.Whom = src;
+    d.Mission = mission;
+    d.Target = target;
+    d.Destination = destination;
+  });
 }
 
 /***********************************************************************************************
@@ -381,12 +386,14 @@ EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
   Type = MEGAMISSION_F;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.MegaMission_F.Whom = src;
-  Data.MegaMission_F.Mission = mission;
-  Data.MegaMission_F.Target = target;
-  Data.MegaMission_F.Destination = destination;
-  Data.MegaMission_F.Speed = speed;
-  Data.MegaMission_F.MaxSpeed = maxspeed;
+  UpdateData<MegaMissionFormationData>([&](MegaMissionFormationData& d) {
+    d.Whom = src;
+    d.Mission = mission;
+    d.Target = target;
+    d.Destination = destination;
+    d.Speed = speed;
+    d.MaxSpeed = maxspeed;
+  });
 }
 
 /***********************************************************************************************
@@ -412,8 +419,10 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Specific.Type = object;
-  Data.Specific.ID = id;
+  UpdateData<SpecificData>([&](SpecificData& d) {
+    d.Type = object;
+    d.ID = id;
+  });
 }
 
 /***********************************************************************************************
@@ -443,8 +452,10 @@ EventClass::EventClass(EventType type, RTTIType object, Cell cell)
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Place.Type = object;
-  Data.Place.Cell = cell;
+  UpdateData<PlaceData>([&](PlaceData& d) {
+    d.Type = object;
+    d.Cell = cell;
+  });
 }
 
 /***********************************************************************************************
@@ -471,9 +482,11 @@ EventClass::EventClass(EventType type, int id, Cell cell, Coordinate where)
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Special.ID = id;
-  Data.Special.Cell = cell;
-  Data.Special.Where = where;
+  UpdateData<SpecialData>([&](SpecialData& d) {
+    d.ID = id;
+    d.Cell = cell;
+    d.Where = where;
+  });
 }
 
 /***********************************************************************************************
@@ -494,22 +507,27 @@ EventClass::EventClass(EventType type, int id, Cell cell, Coordinate where)
 std::span<std::byte> EventClass::variable_bytes() const {
   // The ADDPLAYER owner stores the allocation extent alongside its pointer.
   // Receive paths replace the untrusted wire pointer before calling this.
+  const auto variable = data<VariableData>();
   // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  return {static_cast<std::byte*>(Data.Variable.Pointer), Data.Variable.Size};
+  return {static_cast<std::byte*>(variable.Pointer), variable.Size};
 }
 
 std::span<std::byte> EventClass::Allocate_Variable(uint32_t size) {
   // The event is a by-value record, so it cannot hold an owner; see event.h.
-  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see above.
-  Data.Variable.Pointer = new std::byte[size];
-  Data.Variable.Size = size;
+  UpdateData<VariableData>([&](VariableData& d) {
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see above.
+    d.Pointer = new std::byte[size];
+    d.Size = size;
+  });
   return variable_bytes();
 }
 
 void EventClass::Free_Variable() {
-  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see Allocate_Variable.
-  delete[] static_cast<std::byte*>(Data.Variable.Pointer);
-  Data.Variable.Pointer = nullptr;
+  UpdateData<VariableData>([](VariableData& d) {
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see Allocate_Variable.
+    delete[] static_cast<std::byte*>(d.Pointer);
+    d.Pointer = nullptr;
+  });
 }
 
 EventClass::EventClass(EventType type, std::span<std::byte> payload)
@@ -518,8 +536,10 @@ EventClass::EventClass(EventType type, std::span<std::byte> payload)
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
-  Data.Variable.Pointer = payload.data();
-  Data.Variable.Size = static_cast<uint32_t>(payload.size());
+  UpdateData<VariableData>([&](VariableData& d) {
+    d.Pointer = payload.data();
+    d.Size = static_cast<uint32_t>(payload.size());
+  });
 }
 
 /***********************************************************************************************
@@ -555,9 +575,9 @@ void EventClass::Execute() {
     **	Update the archive target for this building.
     */
     case ARCHIVE:
-      techno = Data.NavCom.Whom.AsTechnoInSlot();
+      techno = data<NavComData>().Whom.AsTechnoInSlot();
       if (techno && techno->IsActive) {
-        techno->ArchiveTarget = Data.NavCom.Where;
+        techno->ArchiveTarget = data<NavComData>().Where;
       }
       break;
 
@@ -565,14 +585,14 @@ void EventClass::Execute() {
     **	Make or break alliance.
     */
     case ALLY: {
-      const HouseClass* house =
-          TheObjectHeaps().house().Slot(Data.General.Value);
+      const int other = data<GeneralData>().Value;
+      const HouseClass* house = TheObjectHeaps().house().Slot(other);
       if (TheObjectHeaps().house().Slot(ID)->Is_Ally(house)) {
         TheObjectHeaps().house().Slot(ID)->Make_Enemy(
-            static_cast<HousesType>(Data.General.Value));
+            static_cast<HousesType>(other));
       } else {
         TheObjectHeaps().house().Slot(ID)->Make_Ally(
-            static_cast<HousesType>(Data.General.Value));
+            static_cast<HousesType>(other));
       }
     } break;
 
@@ -591,7 +611,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      TheSpecialFlags() = Data.Options.Data;
+      TheSpecialFlags() = data<OptionsData>().Data;
       const HouseClass* house = TheObjectHeaps().house().Slot(ID);
 
       // The format string comes from the localized string table, so verify the
@@ -614,7 +634,7 @@ void EventClass::Execute() {
     *by the *	player clicking the repair wrench on a building.
     */
     case REPAIR:
-      techno = Data.Target.Whom.AsTechnoInSlot();
+      techno = data<TargetData>().Whom.AsTechnoInSlot();
       if (techno && techno->IsActive) {
         techno->Repair(-1);
       }
@@ -625,7 +645,7 @@ void EventClass::Execute() {
     *clicking the *	sell animating cursor over the building or unit.
     */
     case SELL:
-      techno = Data.Target.Whom.AsTechnoInSlot();
+      techno = data<TargetData>().Whom.AsTechnoInSlot();
       if (techno && techno->IsActive &&
           techno->House == TheObjectHeaps().house().Slot(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
@@ -646,21 +666,21 @@ void EventClass::Execute() {
     */
     case SELLCELL:
       //			cell = Data.SellCell.Cell;
-      TheObjectHeaps().house().Slot(ID)->Sell_Wall(Data.SellCell.Cell);
+      TheObjectHeaps().house().Slot(ID)->Sell_Wall(data<SellCellData>().Cell);
       break;
 
     /*
     **	This even is used to trigger an animation that is generated as a direct
     **	result of player intervention.
     */
-    case ANIMATION:
-      anim = base::NewPooled<AnimClass>(Data.Anim.What, Data.Anim.Where);
-      if (anim && (Data.Anim.Owner != HOUSE_NONE &&
-                   ThePlayer()->Class->House != Data.Anim.Owner)) {
+    case ANIMATION: {
+      const auto animation = data<AnimData>();
+      anim = base::NewPooled<AnimClass>(animation.What, animation.Where);
+      if (anim && (animation.Owner != HOUSE_NONE &&
+                   ThePlayer()->Class->House != animation.Owner)) {
         anim->Make_Invisible();
       }
-
-      break;
+    } break;
 
     /*
     **	This event will place the specified object at the specified location.
@@ -669,8 +689,8 @@ void EventClass::Execute() {
     *determine the *	exact factory and real object pointer to use.
     */
     case PLACE:
-      TheObjectHeaps().house().Slot(ID)->Place_Object(Data.Place.Type,
-                                                      Data.Place.Cell);
+      TheObjectHeaps().house().Slot(ID)->Place_Object(data<PlaceData>().Type,
+                                                      data<PlaceData>().Cell);
       break;
 
     /*
@@ -679,8 +699,8 @@ void EventClass::Execute() {
     *and *	what factory to use.
     */
     case PRODUCE:
-      TheObjectHeaps().house().Slot(ID)->Begin_Production(Data.Specific.Type,
-                                                          Data.Specific.ID);
+      TheObjectHeaps().house().Slot(ID)->Begin_Production(
+          data<SpecificData>().Type, data<SpecificData>().ID);
       break;
 
     /*
@@ -688,7 +708,8 @@ void EventClass::Execute() {
     *the *	object type, the factory can be inferred.
     */
     case SUSPEND:
-      TheObjectHeaps().house().Slot(ID)->Suspend_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Suspend_Production(
+          data<SpecificData>().Type);
       break;
 
     /*
@@ -697,7 +718,8 @@ void EventClass::Execute() {
     *be inferred.
     */
     case ABANDON:
-      TheObjectHeaps().house().Slot(ID)->Abandon_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Abandon_Production(
+          data<SpecificData>().Type);
       break;
 
     /*
@@ -707,8 +729,9 @@ void EventClass::Execute() {
       // The building in the slot, live or not, as the event's target named
       // it; the IsActive test below drops a dead one.
       BuildingClass* building =
-          Data.Target.Whom.kind() == RTTI_BUILDING
-              ? dynamic_cast<BuildingClass*>(Data.Target.Whom.AsTechnoInSlot())
+          data<TargetData>().Whom.kind() == RTTI_BUILDING
+              ? dynamic_cast<BuildingClass*>(
+                    data<TargetData>().Whom.AsTechnoInSlot())
               : nullptr;
       if (building && building->IsActive) {
         building->Toggle_Primary();
@@ -720,29 +743,31 @@ void EventClass::Execute() {
     **	action routes through this event. It sets a unit's mission, TarCom,
     **	and NavCom to the values specified.
     */
-    case MEGAMISSION_F:
-      techno = Data.MegaMission_F.Whom.AsTechnoInSlot();
+    case MEGAMISSION_F: {
+      const auto order = data<MegaMissionFormationData>();
+      techno = order.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && techno->Is_Foot()) {
         auto* foot_class = dynamic_cast<FootClass*>(techno);
         foot_class->IsFormationMove = true;
-        foot_class->FormationSpeed = Data.MegaMission_F.Speed;
-        foot_class->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
+        foot_class->FormationSpeed = order.Speed;
+        foot_class->FormationMaxSpeed = order.MaxSpeed;
         TheWorld().form_move() = true;
-        TheWorld().form_speed() = Data.MegaMission_F.Speed;
-        TheWorld().form_max_speed() = Data.MegaMission_F.MaxSpeed;
+        TheWorld().form_speed() = order.Speed;
+        TheWorld().form_max_speed() = order.MaxSpeed;
         formation = true;
       }
+    }
       [[fallthrough]];
 
-    case MEGAMISSION:
+    case MEGAMISSION: {
+      const auto order = data<MegaMissionData>();
       if (TheDebugState().print_events()) {
-        absl::PrintF(
-            "Whom:%x Tgt:%x Dest:%x ",
-            static_cast<unsigned>(Data.MegaMission.Whom.packed()),
-            static_cast<unsigned>(Data.MegaMission.Target.packed()),
-            static_cast<unsigned>(Data.MegaMission.Destination.packed()));
+        absl::PrintF("Whom:%x Tgt:%x Dest:%x ",
+                     static_cast<unsigned>(order.Whom.packed()),
+                     static_cast<unsigned>(order.Target.packed()),
+                     static_cast<unsigned>(order.Destination.packed()));
       }
-      techno = Data.MegaMission.Whom.AsTechnoInSlot();
+      techno = order.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && techno->Strength > 0 &&
           !techno->IsInLimbo) {
         /*
@@ -750,8 +775,8 @@ void EventClass::Execute() {
         *error with *	this object, such as it is dead, then bail.
         */
         ObjectClass* object = nullptr;
-        if (Data.MegaMission.Target.is_valid()) {
-          object = Data.MegaMission.Target.AsObjectInSlot();
+        if (order.Target.is_valid()) {
+          object = order.Target.AsObjectInSlot();
           if (object != nullptr &&
               (!object->IsActive || object->Strength == 0 ||
                object->IsInLimbo)) {
@@ -765,8 +790,8 @@ void EventClass::Execute() {
         **	If the destination target is invalid because the object is dead,
         *then *	bail from processing this mega mission.
         */
-        if (Data.MegaMission.Destination.is_valid()) {
-          object = Data.MegaMission.Destination.AsObjectInSlot();
+        if (order.Destination.is_valid()) {
+          object = order.Destination.AsObjectInSlot();
           if (object != nullptr &&
               (!object->IsActive || object->Strength == 0 ||
                object->IsInLimbo)) {
@@ -803,9 +828,9 @@ void EventClass::Execute() {
         *this is a *	special queued move mission and there is already a valid
         *navigation *	target for this unit.
         */
-        const bool q = Data.MegaMission.Mission == MISSION_QMOVE;
+        const bool q = order.Mission == MISSION_QMOVE;
 
-        techno->Assign_Mission(Data.MegaMission.Mission);
+        techno->Assign_Mission(order.Mission);
 
         if (techno->Is_Foot()) {
           dynamic_cast<FootClass*>(techno)->SuspendedNavCom = ra::Target{};
@@ -818,21 +843,20 @@ void EventClass::Execute() {
         *addition, the *	movement destination is immediately set to this
         *new location.
         */
-        if (Data.MegaMission.Mission == MISSION_GUARD_AREA &&
-            techno->Is_Foot()) {
+        if (order.Mission == MISSION_GUARD_AREA && techno->Is_Foot()) {
           techno->Assign_Target(ra::Target{});
-          techno->Assign_Destination(Data.MegaMission.Target);
-          techno->ArchiveTarget = Data.MegaMission.Target;
+          techno->Assign_Destination(order.Target);
+          techno->ArchiveTarget = order.Target;
         } else {
           if (q && techno->Is_Foot()) {
             dynamic_cast<FootClass*>(techno)->Queue_Navigation_List(
-                Data.MegaMission.Destination);
+                order.Destination);
           } else {
             if (techno->Is_Foot()) {
               dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();
             }
-            techno->Assign_Target(Data.MegaMission.Target);
-            techno->Assign_Destination(Data.MegaMission.Destination);
+            techno->Assign_Target(order.Target);
+            techno->Assign_Destination(order.Destination);
           }
         }
 
@@ -846,7 +870,7 @@ void EventClass::Execute() {
         //				rt = Data.MegaMission.Whom;
         if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
-            Data.MegaMission.Mission == MISSION_MOVE) {
+            order.Mission == MISSION_MOVE) {
           auto* ship = dynamic_cast<VesselClass*>(techno);
           if (object != nullptr) {
             if (object->What_Am_I() == RTTI_BUILDING &&
@@ -866,15 +890,14 @@ void EventClass::Execute() {
             ship->IsSelfRepairing = false;
           }
         }
-
       }
-      break;
+    } break;
 
     /*
     **	Request that the unit/infantry/aircraft go into idle mode.
     */
     case IDLE:
-      techno = Data.Target.Whom.AsTechnoInSlot();
+      techno = data<TargetData>().Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
         techno->Transmit_Message(RADIO_OVER_OUT);
@@ -892,7 +915,7 @@ void EventClass::Execute() {
     *location.
     */
     case SCATTER:
-      techno = Data.Target.Whom.AsTechnoInSlot();
+      techno = data<TargetData>().Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
         dynamic_cast<FootClass*>(techno)->IsScattering = true;
@@ -904,11 +927,12 @@ void EventClass::Execute() {
     **	If we are placing down the ion cannon blast then lets take
     ** care of it.
     */
-    case SPECIAL_PLACE:
+    case SPECIAL_PLACE: {
+      const auto special = data<SpecialData>();
       TheObjectHeaps().house().Slot(ID)->Place_Special_Blast(
-          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell,
-          Data.Special.Where);
-      break;
+          static_cast<SpecialWeaponType>(special.ID), special.Cell,
+          special.Where);
+    } break;
 
     /*
     **	Exit the game.
@@ -937,14 +961,14 @@ void EventClass::Execute() {
     **	Process the options Game Speed
     */
     case GAMESPEED:
-      TheOptions().GameSpeed = static_cast<unsigned>(Data.General.Value);
+      TheOptions().GameSpeed = static_cast<unsigned>(data<GeneralData>().Value);
       break;
 
     /*
     **	Adjust connection timing for multiplayer games
     */
     case RESPONSE_TIME:
-      TheSession().MaxAhead = Data.FrameInfo.Delay;
+      TheSession().MaxAhead = data<FrameInfoData>().Delay;
       break;
 
     /*
@@ -985,7 +1009,7 @@ void EventClass::Execute() {
     */
     case ADDPLAYER:
       absl::PrintF("ADDPLAYER EVENT!\n");
-      for (int i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
+      for (int i = 0; std::cmp_less(i, data<VariableData>().Size); i++) {
         absl::PrintF("%d\n", std::to_integer<char>(
                                  base::At(variable_bytes(), base::ToSize(i))));
       }
@@ -999,7 +1023,8 @@ void EventClass::Execute() {
     // RESPONSE_TIME, only it works.  It's only used with the
     // COMM_MULTI_E_COMP protocol.
     //
-    case TIMING:
+    case TIMING: {
+      const auto timing = data<TimingData>();
       //
       // If MaxAhead is about to increase, we're vulnerable to a Packet-
       // Received-Too-Late error, if any system generates an event after
@@ -1007,19 +1032,18 @@ void EventClass::Execute() {
       // period of vulnerability's frame start & end values, so we
       // can reschedule these events to execute after it's over.
       //
-      if (std::cmp_greater(Data.Timing.MaxAhead, TheSession().MaxAhead)) {
+      if (std::cmp_greater(timing.MaxAhead, TheSession().MaxAhead)) {
         TheNetwork().new_max_ahead_frame1() = Frame;
-        TheNetwork().new_max_ahead_frame2() = Frame + Data.Timing.MaxAhead;
+        TheNetwork().new_max_ahead_frame2() = Frame + timing.MaxAhead;
       }
-      TheSession().DesiredFrameRate = Data.Timing.DesiredFrameRate;
-      TheSession().MaxAhead = Data.Timing.MaxAhead;
+      TheSession().DesiredFrameRate = timing.DesiredFrameRate;
+      TheSession().MaxAhead = timing.MaxAhead;
 
       if (TheDebugState().print_events()) {
         absl::PrintF("DesiredFrameRate:%d MaxAhead:%d ",
                      TheSession().DesiredFrameRate, TheSession().MaxAhead);
       }
-
-      break;
+    } break;
 
     //
     // This event tells all systems what the other systems' process
@@ -1030,7 +1054,7 @@ void EventClass::Execute() {
       for (int i = 0; i < TheSession().Players.Count(); i++) {
         if (static_cast<HousesType>(ID) == TheSession().Players.at(i)->ID) {
           TheSession().Players.at(i)->ProcessTime =
-              Data.ProcessTime.AverageTicks;
+              data<ProcessTimeData>().AverageTicks;
           break;
         }
       }

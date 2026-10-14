@@ -13,6 +13,7 @@
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "gtest/gtest.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/core/cell.h"
 #include "ra/core/coordinate.h"
 #include "ra/core/defines.h"
@@ -141,7 +142,8 @@ TEST_F(WireFormatTest, AnimationEvent) {
 TEST_F(WireFormatTest, VariableEvent) {
   std::array<std::byte, 0x0123> payload{};
   EventClass event(EventClass::ADDPLAYER, payload);
-  event.Data.Variable.Pointer = nullptr;
+  event.UpdateData<EventClass::VariableData>(
+      [](EventClass::VariableData& d) { d.Pointer = nullptr; });
   EXPECT_EQ(EventHex(event),
             "1c00000000000000000000000000000023010000000000000000000000000000");
 }
@@ -149,9 +151,11 @@ TEST_F(WireFormatTest, VariableEvent) {
 TEST_F(WireFormatTest, FrameInfoEvent) {
   EventClass event;
   event.Type = EventClass::FRAMEINFO;
-  event.Data.FrameInfo.CRC = 0x11223344;
-  event.Data.FrameInfo.CommandCount = 0x5566;
-  event.Data.FrameInfo.Delay = 0x77;
+  event.UpdateData<EventClass::FrameInfoData>([](EventClass::FrameInfoData& d) {
+    d.CRC = 0x11223344;
+    d.CommandCount = 0x5566;
+    d.Delay = 0x77;
+  });
   EXPECT_EQ(EventHex(event),
             "1900000000000000443322116655770000000000000000000000000000000000");
 }
@@ -159,8 +163,10 @@ TEST_F(WireFormatTest, FrameInfoEvent) {
 TEST_F(WireFormatTest, TimingEvent) {
   EventClass event;
   event.Type = EventClass::TIMING;
-  event.Data.Timing.DesiredFrameRate = 0x1122;
-  event.Data.Timing.MaxAhead = 0x3344;
+  event.UpdateData<EventClass::TimingData>([](EventClass::TimingData& d) {
+    d.DesiredFrameRate = 0x1122;
+    d.MaxAhead = 0x3344;
+  });
   EXPECT_EQ(EventHex(event),
             "1d00000000000000221144330000000000000000000000000000000000000000");
 }
@@ -168,7 +174,8 @@ TEST_F(WireFormatTest, TimingEvent) {
 TEST_F(WireFormatTest, ProcessTimeEvent) {
   EventClass event;
   event.Type = EventClass::PROCESS_TIME;
-  event.Data.ProcessTime.AverageTicks = 0x5566;
+  event.UpdateData<EventClass::ProcessTimeData>(
+      [](EventClass::ProcessTimeData& d) { d.AverageTicks = 0x5566; });
   EXPECT_EQ(EventHex(event),
             "1e00000000000000665500000000000000000000000000000000000000000000");
 }
@@ -177,8 +184,10 @@ TEST_F(WireFormatTest, ProcessTimeEvent) {
 // store into a union member does.
 TEST_F(WireFormatTest, ASecondArmKeepsTheFirstArmsTail) {
   EventClass event(kWhom, MISSION_ATTACK, kTarget, kDestination);
-  event.Data.Mission.Whom = kDestination;
-  event.Data.Mission.Mission = MISSION_GUARD;
+  event.UpdateData<EventClass::MissionData>([](EventClass::MissionData& d) {
+    d.Whom = kDestination;
+    d.Mission = MISSION_GUARD;
+  });
   EXPECT_EQ(EventHex(event),
             "0200000000000000090000030500000007000002090000030000000000000000");
 }
@@ -357,6 +366,44 @@ TEST_F(WireFormatTest, SerialChatPacket) {
             "000000000000000000000000000000000000000000000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000000"
             "00000000000000000000000000000000000000000000000000000000");
+}
+
+// True if some payload arm names `type` in its Carries().
+bool AnArmCarries(const EventClass::EventType type) {
+  using E = EventClass;
+  return E::OptionsData::Carries(type) || E::SellCellData::Carries(type) ||
+         E::TargetData::Carries(type) || E::AnimData::Carries(type) ||
+         E::GeneralData::Carries(type) || E::MegaMissionData::Carries(type) ||
+         E::MegaMissionFormationData::Carries(type) ||
+         E::MissionData::Carries(type) || E::NavComData::Carries(type) ||
+         E::SpecificData::Carries(type) || E::PlaceData::Carries(type) ||
+         E::SpecialData::Carries(type) || E::FrameInfoData::Carries(type) ||
+         E::VariableData::Carries(type) || E::TimingData::Carries(type) ||
+         E::ProcessTimeData::Carries(type);
+}
+
+TEST(EventArmsTest, EveryTypeWithALengthCarriesAnArm) {
+  for (const auto type : magic_enum::enum_values<EventClass::EventType>()) {
+    if (type == EventClass::LAST_EVENT) {
+      continue;
+    }
+    if (EventClass::EventLength.at(type) != 0) {
+      EXPECT_TRUE(AnArmCarries(type)) << magic_enum::enum_name(type);
+    }
+  }
+}
+
+// The packet code copies an event's header and its payload separately, at
+// kPayloadOffset.
+TEST(EventArmsTest, ThePayloadStartsAtItsOffset) {
+  EventClass event;
+  event.Type = EventClass::GAMESPEED;
+  event.UpdateData<EventClass::GeneralData>(
+      [](EventClass::GeneralData& d) { d.Value = 0x5A; });
+  EXPECT_EQ(
+      base::ObjectBytes(event).subspan(EventClass::kPayloadOffset).front(),
+      std::byte{0x5A});
+  EXPECT_EQ(event.payload_bytes().front(), std::byte{0x5A});
 }
 
 }  // namespace

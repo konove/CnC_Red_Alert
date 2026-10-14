@@ -46,7 +46,7 @@ class SpecialOptionsDialogTest : public UiFixture {
       return {};
     }
     EXPECT_EQ(events.First().Type, EventClass::SPECIAL);
-    return events.First().Data.Options.Data;
+    return events.First().data<EventClass::OptionsData>().Data;
   }
 };
 
