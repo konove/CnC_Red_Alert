@@ -16250,11 +16250,12 @@
         "ci",
         "base"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T21:54:47Z",
-      "updated": "2026-10-14T21:54:47Z",
+      "updated": "2026-10-14T22:04:16Z",
       "source": "T-229",
+      "resolution": "The lint job runs ctest on the Debug build it already makes, so the tests now run with DCHECKs in. The C++ reference bignum is compiled at -O2 in Debug through `optimize_in_debug()`, which takes the slowest test from 489 s to 36 s; locally the whole Debug ctest at -j4 takes under a minute.",
       "anchors": [
         {
           "path": ".github/workflows/cmake-multi-platform.yml",

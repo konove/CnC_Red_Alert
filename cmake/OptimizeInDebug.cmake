@@ -9,7 +9,8 @@
 # against 0.12 s at RelWithDebInfo, and these kernels were 72% of its CPU
 # (RSA bignum 24%, Blowfish 15%, the fading table 15%, SHA-1 14%, LCW 3%,
 # the window blit 2%). The bignum, Blowfish, SHA-1 and LCW have since moved
-# to Rust (src/rust), which is built at opt-level 2 in Debug.
+# to Rust (src/rust), which is built at opt-level 2 in Debug; the C++ bignum
+# stays, at -O2, as the reference the crypto tests check the Rust one against.
 function(optimize_in_debug)
     set_property(SOURCE ${ARGN} APPEND PROPERTY COMPILE_OPTIONS
             "$<$<CONFIG:Debug>:-O2>")

@@ -164,3 +164,10 @@ jobs:
 
     - name: Build with clang-tidy
       run: cmake --build ${{ github.workspace }}/build --parallel $(( $(getconf _NPROCESSORS_ONLN) / 2 ))
+
+    # The build job tests a Release build, where NDEBUG compiles every DCHECK
+    # out; this is the only run with them in, so a test that feeds the code a
+    # value it is meant to reject cannot pass by never reaching the check.
+    - name: Test with DCHECKs
+      working-directory: ${{ github.workspace }}/build
+      run: ctest --output-on-failure --parallel $(getconf _NPROCESSORS_ONLN)

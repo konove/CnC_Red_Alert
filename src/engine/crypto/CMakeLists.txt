@@ -37,3 +37,6 @@ add_gtest(
             sha1_compress_reference_test_util.cc sha1_compress_test.cc
         LIBS engine_crypto base absl::str_format
 )
+# The C++ bignum the Rust one replaced is the reference the differential tests
+# check against; at -O0 PkDifferentialTest took eight minutes of a Debug ctest.
+optimize_in_debug(mp_reference_test_util.cc pk_reference_test_util.cc)
