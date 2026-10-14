@@ -191,8 +191,6 @@ SessionClass::SessionClass()
   SerialDefaults.CallWaitStringIndex = 0;       // set from INI file
   base::SafeCopy(SerialDefaults.CallWaitString, "");
 
-  TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
-
 }  // end of SessionClass
 
 /***************************************************************************
@@ -1050,7 +1048,7 @@ void SessionClass::Trap_Object() {
   //------------------------------------------------------------------------
   // Initialize
   //------------------------------------------------------------------------
-  TrapObject.Ptr.All = nullptr;
+  TrapObject = nullptr;
 
   //------------------------------------------------------------------------
   // Search for the object based upon its type, then its coordinate or
@@ -1062,7 +1060,7 @@ void SessionClass::Trap_Object() {
         if (TheObjectHeaps().aircraft().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().aircraft().ActiveAt(i)->As_Target() ==
                 TrapTarget) {
-          TrapObject.Ptr.Aircraft = TheObjectHeaps().aircraft().ActiveAt(i);
+          TrapObject = TheObjectHeaps().aircraft().ActiveAt(i);
           break;
         }
       }
@@ -1072,7 +1070,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
         if (TheObjectHeaps().anim().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().anim().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Anim = TheObjectHeaps().anim().ActiveAt(i);
+          TrapObject = TheObjectHeaps().anim().ActiveAt(i);
           break;
         }
       }
@@ -1083,7 +1081,7 @@ void SessionClass::Trap_Object() {
         if (TheObjectHeaps().building().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().building().ActiveAt(i)->As_Target() ==
                 TrapTarget) {
-          TrapObject.Ptr.Building = TheObjectHeaps().building().ActiveAt(i);
+          TrapObject = TheObjectHeaps().building().ActiveAt(i);
           break;
         }
       }
@@ -1093,7 +1091,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
         if (TheObjectHeaps().bullet().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().bullet().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Bullet = TheObjectHeaps().bullet().ActiveAt(i);
+          TrapObject = TheObjectHeaps().bullet().ActiveAt(i);
           break;
         }
       }
@@ -1104,7 +1102,7 @@ void SessionClass::Trap_Object() {
         if (TheObjectHeaps().infantry().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().infantry().ActiveAt(i)->As_Target() ==
                 TrapTarget) {
-          TrapObject.Ptr.Infantry = TheObjectHeaps().infantry().ActiveAt(i);
+          TrapObject = TheObjectHeaps().infantry().ActiveAt(i);
           break;
         }
       }
@@ -1114,7 +1112,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
         if (TheObjectHeaps().unit().ActiveAt(i)->Coord == TrapCoord ||
             TheObjectHeaps().unit().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Unit = TheObjectHeaps().unit().ActiveAt(i);
+          TrapObject = TheObjectHeaps().unit().ActiveAt(i);
           break;
         }
       }
@@ -1127,7 +1125,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
         if (TheObjectHeaps().aircraft().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().aircraft().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Aircraft = TheObjectHeaps().aircraft().Slot(i);
+          TrapObject = TheObjectHeaps().aircraft().Slot(i);
           TrapObjType = RTTI_AIRCRAFT;
           return;
         }
@@ -1135,7 +1133,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
         if (TheObjectHeaps().anim().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().anim().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Anim = TheObjectHeaps().anim().Slot(i);
+          TrapObject = TheObjectHeaps().anim().Slot(i);
           TrapObjType = RTTI_ANIM;
           return;
         }
@@ -1143,7 +1141,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
         if (TheObjectHeaps().building().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().building().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Building = TheObjectHeaps().building().Slot(i);
+          TrapObject = TheObjectHeaps().building().Slot(i);
           TrapObjType = RTTI_BUILDING;
           return;
         }
@@ -1151,7 +1149,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
         if (TheObjectHeaps().bullet().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().bullet().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Bullet = TheObjectHeaps().bullet().Slot(i);
+          TrapObject = TheObjectHeaps().bullet().Slot(i);
           TrapObjType = RTTI_BULLET;
           return;
         }
@@ -1159,7 +1157,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
         if (TheObjectHeaps().infantry().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().infantry().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Infantry = TheObjectHeaps().infantry().Slot(i);
+          TrapObject = TheObjectHeaps().infantry().Slot(i);
           TrapObjType = RTTI_INFANTRY;
           return;
         }
@@ -1167,7 +1165,7 @@ void SessionClass::Trap_Object() {
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
         if (TheObjectHeaps().unit().Slot(i)->Coord == TrapCoord ||
             TheObjectHeaps().unit().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Unit = TheObjectHeaps().unit().Slot(i);
+          TrapObject = TheObjectHeaps().unit().Slot(i);
           TrapObjType = RTTI_UNIT;
           return;
         }

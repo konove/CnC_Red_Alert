@@ -119,28 +119,27 @@ std::string TeamMission::Description(const int index) const {
 
     switch (TeamMissionNeeds(mission_)) {
       case NeedType::kMission:
-        text += MissionClass::Mission_Name(argument_.unit_mission);
+        text += MissionClass::Mission_Name(unit_mission());
         break;
 
       case NeedType::kFormation:
-        text += FormationName.at(argument_.formation);
+        text += FormationName.at(formation());
         break;
 
       case NeedType::kNumber:
-        absl::StrAppendFormat(&text, "%d", argument_.value);
+        absl::StrAppendFormat(&text, "%d", value());
         break;
 
       case NeedType::kHexNumber:
-        absl::StrAppendFormat(&text, "%x",
-                              static_cast<unsigned int>(argument_.value));
+        absl::StrAppendFormat(&text, "%x", static_cast<unsigned int>(value()));
         break;
 
       case NeedType::kQuarry:
-        text += QuarryName.at(argument_.quarry);
+        text += QuarryName.at(quarry());
         break;
 
       case NeedType::kWaypoint:
-        text += WaypointLetters(argument_.value);
+        text += WaypointLetters(value());
         break;
       case NeedType::kNone:
       case NeedType::kTheme:

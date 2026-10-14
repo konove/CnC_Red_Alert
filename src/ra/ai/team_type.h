@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <span>
 #include <string>
 #include <string_view>
@@ -75,12 +76,12 @@ class TeamMission {
   TeamMission() = default;
   // A mission with a number for its argument.
   TeamMission(const TeamMissionType mission, const int value)
-      : mission_(mission), argument_{.value = value} {}
+      : mission_(mission), argument_(value) {}
 
-  // Saved-game support. The union travels through its widest member.
+  // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(mission_, argument_.value);
+    ar(mission_, argument_);
   }
 
   // Returns the line the team editor shows for this mission: `index`, a tab,
@@ -100,29 +101,31 @@ class TeamMission {
   // names: a quarry for kAttack, a formation for kFormation, a unit mission
   // for kDo, and otherwise a number (a waypoint, cell, script line, global
   // or duration). A mission that takes no argument leaves it 0.
-  [[nodiscard]] int value() const { return argument_.value; }
-  void set_value(const int value) { argument_.value = value; }
-  [[nodiscard]] QuarryType quarry() const { return argument_.quarry; }
-  void set_quarry(const QuarryType quarry) { argument_.quarry = quarry; }
-  [[nodiscard]] FormationType formation() const { return argument_.formation; }
+  [[nodiscard]] int value() const { return argument_; }
+  void set_value(const int value) { argument_ = value; }
+  [[nodiscard]] QuarryType quarry() const {
+    return static_cast<QuarryType>(argument_);
+  }
+  void set_quarry(const QuarryType quarry) {
+    argument_ = static_cast<int>(quarry);
+  }
+  [[nodiscard]] FormationType formation() const {
+    return static_cast<FormationType>(argument_);
+  }
   void set_formation(const FormationType formation) {
-    argument_.formation = formation;
+    argument_ = static_cast<int>(formation);
   }
   [[nodiscard]] MissionType unit_mission() const {
-    return argument_.unit_mission;
+    return static_cast<MissionType>(argument_);
   }
   void set_unit_mission(const MissionType unit_mission) {
-    argument_.unit_mission = unit_mission;
+    argument_ = static_cast<int>(unit_mission);
   }
 
  private:
-  TeamMissionType mission_;
-  union {
-    FormationType formation;
-    QuarryType quarry;
-    MissionType unit_mission;
-    int value;
-  } argument_;
+  // kAttack, the zero a value-initialized script always held.
+  TeamMissionType mission_ = TeamMissionType::kAttack;
+  int32_t argument_ = 0;  // see value()
 };
 
 // One kind of member a team type asks for, and how many of it.

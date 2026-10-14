@@ -439,22 +439,6 @@ struct GlobalPacketType {
 
 static_assert(sizeof(GlobalPacketType) == 144);
 
-//...........................................................................
-// For finding sync bugs; filled in by the engine when certain conditions
-// are met; the pointers allow examination of objects in the debugger.
-//...........................................................................
-struct TrapObjectType {
-  union {
-    AircraftClass* Aircraft;
-    AnimClass* Anim;
-    BuildingClass* Building;
-    BulletClass* Bullet;
-    InfantryClass* Infantry;
-    UnitClass* Unit;
-    void* All;
-  } Ptr;
-};
-
 /*
 **	This is the identifier for a multiplayer mission. This can be used to
 **	identify the filename of the mission as well as display the mission in a
@@ -738,7 +722,8 @@ class SessionClass {
   //.....................................................................
   int32_t TrapFrame{0x7fffffff};    // frame # to start trapping 'TrapObject'
   RTTIType TrapObjType{RTTI_NONE};  // type of object to trap
-  TrapObjectType TrapObject{};  // ptr to object to trap (watch)
+  // The object being trapped, for examining in the debugger; nullptr if none.
+  ObjectClass* TrapObject = nullptr;
   Coordinate TrapCoord{};       // coord of object, 0 = ignore
   Target TrapTarget{Target{}};  // Target # of object, 0 = ignore
   CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)

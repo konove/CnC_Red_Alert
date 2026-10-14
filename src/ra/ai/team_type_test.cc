@@ -950,5 +950,16 @@ TEST(ScenarioWaypointTest, ALetterWaypointIsBelowTheReservedOnes) {
       ScenarioClass::IsLetterWaypoint(ScenarioClass::kSpecialWaypoint));
 }
 
+// A mission's argument is one number, whichever kind the mission reads it as.
+TEST(TeamMissionTest, MissionArgumentReadsBackAsEveryType) {
+  TeamMission mission(TeamMissionType::kAttack, 0);
+  mission.set_quarry(QUARRY_ANYTHING);
+  EXPECT_EQ(mission.value(), static_cast<int>(QUARRY_ANYTHING));
+  mission.set_value(3);
+  EXPECT_EQ(mission.formation(), static_cast<FormationType>(3));
+  mission.set_unit_mission(MISSION_GUARD);
+  EXPECT_EQ(mission.value(), static_cast<int>(MISSION_GUARD));
+}
+
 }  // namespace
 }  // namespace ra
