@@ -5,9 +5,12 @@
 
 #include <string_view>
 
+#include "base/enum_array.h"
+#include "base/flags.h"
 #include "base/pooled.h"
 #include "base/strings/tokenizer.h"
 #include "gtest/gtest.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team_type.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"
@@ -58,6 +61,56 @@ TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
 TEST_F(TEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
   EXPECT_EQ(Read(1, "23,9").Team, nullptr);
   EXPECT_EQ(Read(1, "23,-1").Team, nullptr);
+}
+
+// What each event can be attached to, as the scenario's trigger lists and
+// the editor read it.
+TEST(EventAttachmentTest, EachEventAttachesToWhatItWatches) {
+  constexpr TriggerAttachment kCell = TriggerAttachment::kCell;
+  constexpr TriggerAttachment kObject = TriggerAttachment::kObject;
+  constexpr TriggerAttachment kMap = TriggerAttachment::kMap;
+  constexpr TriggerAttachment kHouse = TriggerAttachment::kHouse;
+  constexpr TriggerAttachment kGeneral = TriggerAttachment::kGeneral;
+  const base::EnumArray<TriggerEventType, TriggerAttachment> expected = {
+      kCell | kObject,                             // kNone
+      kCell | kObject,                             // kPlayerEntered
+      kObject,                                     // kSpied
+      kHouse,                                      // kThieved
+      kCell | kObject,                             // kDiscovered
+      kHouse,                                      // kHouseDiscovered
+      kObject,                                     // kAttacked
+      kObject,                                     // kDestroyed
+      kCell | kObject | kMap | kHouse | kGeneral,  // kAny
+      kHouse,                                      // kUnitsDestroyed
+      kHouse,                                      // kBuildingsDestroyed
+      kHouse,                                      // kAllDestroyed
+      kHouse,                                      // kCredits
+      kGeneral,                                    // kTime
+      kGeneral,                                    // kMissionTimerExpired
+      kHouse,                                      // kBuildingsLost
+      kHouse,                                      // kUnitsLost
+      kHouse,                                      // kNoFactories
+      kHouse,                                      // kCivilianEvacuated
+      kHouse,                                      // kBuildBuilding
+      kHouse,                                      // kBuildUnit
+      kHouse,                                      // kBuildInfantry
+      kHouse,                                      // kBuildAircraft
+      kGeneral,                                    // kLeavesMap
+      kCell | kMap,                                // kEntersZone
+      kCell,                                       // kCrossHorizontal
+      kCell,                                       // kCrossVertical
+      kGeneral,                                    // kGlobalSet
+      kGeneral,                                    // kGlobalClear
+      kHouse,                                      // kFakesDestroyed
+      kHouse,                                      // kLowPower
+      kGeneral,                                    // kAllBridgesDestroyed
+      kHouse,                                      // kBuildingExists
+  };
+  for (const TriggerEventType event :
+       magic_enum::enum_values<TriggerEventType>()) {
+    SCOPED_TRACE(magic_enum::enum_name(event));
+    EXPECT_EQ(EventAttachment(event), expected.at(event));
+  }
 }
 
 }  // namespace
