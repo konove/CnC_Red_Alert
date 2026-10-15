@@ -9038,8 +9038,8 @@
         },
         {
           "path": "src/td/editor/mapedsel.cc",
-          "startLine": 571,
-          "endLine": 571,
+          "startLine": 567,
+          "endLine": 567,
           "text": "      BaseNode* node = TheWorld().base().FindNode(",
           "before": [
             "    ** in the Base's Node list.",
@@ -16442,10 +16442,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T07:23:19Z",
+      "updated": "2026-10-15T07:31:48Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "`kFakesDestroyed` now checks all five fakes: added `kStructFlagFakeYard`, `kStructFlagFakePen` and `kStructFlagFakeRadar` to `ra/core/defines.h` and the mask, with tests for each fake. No shipped Allied or Soviet campaign mission uses the event, so only custom or expansion maps can notice the change.",
@@ -16489,26 +16489,37 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T07:55:39Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Kept the original mask, as decided. The header and the `.cc` now say that shipyards and sub pens don't count, and the test checks that a house with only naval yards has \"no factories\". Of the four shipped missions that use the event, only Soviet 5 (SCU05EA) is affected: the Greek engineer reinforcements arrive while the Greek shipyard still stands.",
       "toDecide": "Keep it, or add the naval yards to the mask?",
+      "decisions": [
+        {
+          "question": "Should the \"No Factories\" trigger event count shipyards and sub pens as factories?",
+          "options": [
+            "Keep original (Recommended)",
+            "Add naval yards"
+          ],
+          "answer": "Keep original (Recommended)",
+          "time": "2026-10-15T07:54:33Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 216,
-          "endLine": 216,
+          "startLine": 228,
+          "endLine": 228,
           "text": "    case TriggerEventType::kNoFactories:",
           "before": [
-            "        return owner.Available_Money() >= value();",
-            "      });",
-            ""
+            "",
+            "    // A shipyard or sub pen does not count, as in the original: Soviet 5's",
+            "    // Greek engineer reinforcements arrive while the Greek shipyard stands."
           ],
           "after": [
             "      return HouseMeets(trigger_house, [](const HouseClass& owner) {",

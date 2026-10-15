@@ -83,7 +83,7 @@ enum class TriggerEventType {
   // The trigger's house has lost at least value() units.
   kUnitsLost,
   // The trigger's house has no construction yard, war factory, barracks,
-  // tent or airstrip left.
+  // tent or airstrip left; a shipyard or sub pen does not count.
   kNoFactories,
   // The trigger's house has evacuated a civilian.
   kCivilianEvacuated,

@@ -223,6 +223,8 @@ bool TriggerEvent::HasHappened(TriggerEventState& state,
         return owner.Available_Money() >= value();
       });
 
+    // A shipyard or sub pen does not count, as in the original: Soviet 5's
+    // Greek engineer reinforcements arrive while the Greek shipyard stands.
     case TriggerEventType::kNoFactories:
       return HouseMeets(trigger_house, [](const HouseClass& owner) {
         return (owner.BScan &

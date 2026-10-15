@@ -371,6 +371,9 @@ TEST_F(TriggerEventTest, TheTriggersHouseConditionsAreReadFromItsState) {
   EXPECT_FALSE(Check(factories));
   owner_->BScan = kStructFlagPower;
   EXPECT_TRUE(Check(factories));
+  owner_->BScan = ScanBit(static_cast<int>(STRUCT_SHIP_YARD)) |
+                  ScanBit(static_cast<int>(STRUCT_SUB_PEN));
+  EXPECT_TRUE(Check(factories));
 
   const TriggerEvent fakes = Make(TriggerEventType::kFakesDestroyed);
   owner_->BScan = kStructFlagFakeConst;
