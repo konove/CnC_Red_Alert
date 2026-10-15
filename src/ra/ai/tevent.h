@@ -32,6 +32,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/core/defines.h"
+#include "ra/core/target.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -179,6 +180,9 @@ class TriggerEvent {
   // trigger's house and `object` the object that caused the check (for the
   // entering events, the one that entered); nullptr for none. `forced` trips
   // the event without a check, for a trigger another trigger forces.
+  // Drops the event's reference to the team type `target`, which is being
+  // destroyed. Does nothing for any other target.
+  void Detach(Target target);
   bool HasHappened(TriggerEventState& state, TriggerEventType cause,
                    HousesType trigger_house, const ObjectClass* object,
                    bool forced) const;

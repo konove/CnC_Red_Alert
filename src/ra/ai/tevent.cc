@@ -135,6 +135,12 @@ void TriggerEvent::Reset(TriggerEventState& state) const {
   }
 }
 
+void TriggerEvent::Detach(const Target target) {
+  if (target.kind() == RTTI_TEAMTYPE && Team == target.AsTeamType()) {
+    Team = nullptr;
+  }
+}
+
 bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
                                HousesType trigger_house,
                                const ObjectClass* object, bool forced) const {
