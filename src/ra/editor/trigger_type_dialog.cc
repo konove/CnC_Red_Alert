@@ -69,120 +69,49 @@ using enum engine::window::KeyNumber;
 
 namespace {
 
-// An action as an entry of the scenario editor's action drop lists, which
-// sort by description and draw each entry through Draw_It().
-class ActionChoice {
+// A trigger event or action type as an entry of the scenario editor's drop
+// lists, which sort by description and draw each entry through Draw_It().
+// `Name` returns the editor's name for a type.
+template <class Type, const char* (*Name)(Type)>
+class TriggerChoice {
  public:
-  // Implicit: choice tables are brace lists of action types.
+  // Implicit: a choice table is filled from the types.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  ActionChoice(TriggerActionType action = TriggerActionType::kNone) noexcept
-      : action_(action) {}
+  TriggerChoice(Type type = Type::kNone) noexcept : type_(type) {}
 
-  // Implicit: choices compare directly against their action type.
+  // Implicit: choices compare directly against their type.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TriggerActionType() const { return action_; }
+  operator Type() const { return type_; }
   // Orders by description, ignoring case; the editor sorts its lists with it.
-  bool operator<(const ActionChoice& other) const {
+  bool operator<(const TriggerChoice& other) const {
     return std::ranges::lexicographical_compare(
         std::string_view(Description()), std::string_view(other.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
   }
 
-  // The editor's name for the action.
-  [[nodiscard]] const char* Description() const { return ActionName(action_); }
+  // The editor's name for the type.
+  [[nodiscard]] const char* Description() const { return Name(type_); }
 
   // Draws the description as a list box entry in the box at (`x`, `y`) of
   // `width` by `height` pixels, highlighted when `selected`. The index of the
   // entry in the list is not used.
-  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, FontType font, TextPrintType flags) const;
+  void Draw_It(PixelView& view, int /*index*/, int x, int y, int width,
+               int height, bool selected, FontType font,
+               TextPrintType flags) const {
+    UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font,
+                            flags, selected, kTabStops);
+  }
 
  private:
-  TriggerActionType action_;
+  // Tab stops in pixels; the names hold no tabs, so they only matter to the
+  // shared print call.
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
+
+  Type type_;
 };
 
-void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected, FontType font,
-                           TextPrintType flags) const {
-  // Tab stops in pixels; the action names hold no tabs, so they only matter to
-  // the shared print call.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
-  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
-                          selected, kTabStops);
-}
-
-// An event type as an entry of the scenario editor's event lists, which shows
-// its name and sorts by it.
-class EventChoice {
- public:
-  // Implicit, so the choice table can be a brace list of event types.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  EventChoice(TriggerEventType event = TriggerEventType::kNone) noexcept
-      : event_(event) {}
-
-  // Implicit, so an entry compares directly against an event type.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TriggerEventType() const { return event_; }
-  // Orders by description, ignoring case; the editor sorts its lists with it.
-  bool operator<(const EventChoice& other) const {
-    return std::ranges::lexicographical_compare(
-        std::string_view(Description()), std::string_view(other.Description()),
-        {}, absl::ascii_tolower, absl::ascii_tolower);
-  }
-  // The event's name in the editor.
-  [[nodiscard]] const char* Description() const { return EventName(event_); }
-  // Draws the event's name as a list box line; `index` is unused.
-  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, FontType font, TextPrintType flags) const;
-
-  TriggerEventType event_;
-};
-
-// One entry per event type, indexed by it, for the editor's event lists.
-base::EnumArray<TriggerEventType, EventChoice> event_choices = {{
-    {TriggerEventType::kNone},
-    {TriggerEventType::kPlayerEntered},
-    {TriggerEventType::kSpied},
-    {TriggerEventType::kThieved},
-    {TriggerEventType::kDiscovered},
-    {TriggerEventType::kHouseDiscovered},
-    {TriggerEventType::kAttacked},
-    {TriggerEventType::kDestroyed},
-    {TriggerEventType::kAny},
-    {TriggerEventType::kUnitsDestroyed},
-    {TriggerEventType::kBuildingsDestroyed},
-    {TriggerEventType::kAllDestroyed},
-    {TriggerEventType::kCredits},
-    {TriggerEventType::kTime},
-    {TriggerEventType::kMissionTimerExpired},
-    {TriggerEventType::kBuildingsLost},
-    {TriggerEventType::kUnitsLost},
-    {TriggerEventType::kNoFactories},
-    {TriggerEventType::kCivilianEvacuated},
-    {TriggerEventType::kBuildBuilding},
-    {TriggerEventType::kBuildUnit},
-    {TriggerEventType::kBuildInfantry},
-    {TriggerEventType::kBuildAircraft},
-    {TriggerEventType::kLeavesMap},
-    {TriggerEventType::kEntersZone},
-    {TriggerEventType::kCrossHorizontal},
-    {TriggerEventType::kCrossVertical},
-    {TriggerEventType::kGlobalSet},
-    {TriggerEventType::kGlobalClear},
-    {TriggerEventType::kFakesDestroyed},
-    {TriggerEventType::kLowPower},
-    {TriggerEventType::kAllBridgesDestroyed},
-    {TriggerEventType::kBuildingExists},
-}};
-
-void EventChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                          int width, int height, bool selected, FontType font,
-                          TextPrintType flags) const {
-  // Tab stops in pixels; the event names hold no tabs.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
-  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
-                          selected, kTabStops);
-}
+using ActionChoice = TriggerChoice<TriggerActionType, &ActionName>;
+using EventChoice = TriggerChoice<TriggerEventType, &EventName>;
 
 // Returns the name selected in `list`, or an empty view when the list has no
 // items: Current_Item() is null then, which a string_view cannot hold.
@@ -304,7 +233,10 @@ bool TriggerType::Edit() {
   // match the chosen events and actions.
   game::GadgetList gadgets;
 
-  // The two event lists, each offering every event, sorted by name.
+  // The two event lists, each offering every event, sorted by name. The lists
+  // hold pointers to the choices, so the choices are declared first and
+  // outlive them.
+  base::EnumArray<TriggerEventType, EventChoice> event_choices{};
   char event1_text[kChoiceSize] = "";
   TDropListClass<EventChoice*> event1_list(
       kEvent1List, event1_text, sizeof(event1_text), FontType::kEditor,
@@ -319,6 +251,7 @@ bool TriggerType::Edit() {
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const TriggerEventType event :
        magic_enum::enum_values<TriggerEventType>()) {
+    event_choices.at(event) = event;
     event1_list.Add_Item(&event_choices.at(event));
     event2_list.Add_Item(&event_choices.at(event));
   }
@@ -337,8 +270,7 @@ bool TriggerType::Edit() {
   TriggerActionRecord action1_record = action1->ToRecord();
   TriggerActionRecord action2_record = action2->ToRecord();
 
-  // The two action lists, likewise. The lists hold pointers to the choices,
-  // so the choices are declared first and outlive them.
+  // The two action lists, likewise.
   base::EnumArray<TriggerActionType, ActionChoice> action_choices{};
   char action1_text[kChoiceSize] = "";
   TDropListClass<ActionChoice*> action1_list(
