@@ -347,45 +347,36 @@ std::string TriggerEvent::ToIniEntry() const {
 }
 
 void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
-  std::string_view token;
-  switch (TheWorld().new_ini_format()) {
-    default:
-      Event = EventFromNumber(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team = TheObjectHeaps().team_type().SlotOrNull(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
-      set_value(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      break;
+  const auto next_number = [&tokens] {
+    return base::ParseIntegerOr<int>(tokens.Next(), 0);
+  };
+  // An empty event field reads as 0, no event.
+  Event = EventFromNumber(next_number());
 
-    case 1:
-      token = tokens.Next();
-      Event = TriggerEventType::kNone;
-      if (!token.empty()) {
-        Event = EventFromNumber(base::ParseIntegerOr<int>(token, 0));
+  const int format = TheWorld().new_ini_format();
+  if (format == 0) {
+    tokens.Next();  // Old-format field, unused.
+    tokens.Next();  // Old-format field, unused.
+    Team = TeamType::FromName(tokens.Next());
+    set_value(next_number());
+    tokens.Next();  // Old-format field, unused.
+  } else if (format == 1) {
+    // One field holds the team or the value, whichever the event takes; an
+    // empty one leaves both unset.
+    const std::string_view token = tokens.Next();
+    Team = nullptr;
+    set_value(-1);
+    if (!token.empty()) {
+      if (EventNeed(Event) == NeedType::kTeam) {
+        Team = TheObjectHeaps().team_type().SlotOrNull(
+            base::ParseIntegerOr<int>(token, 0));
+      } else {
+        set_value(base::ParseIntegerOr<int>(token, 0));
       }
-
-      token = tokens.Next();
-      Team = nullptr;
-      set_value(-1);
-      if (!token.empty()) {
-        if (EventNeed(Event) == NeedType::kTeam) {
-          Team = TheObjectHeaps().team_type().SlotOrNull(
-              base::ParseIntegerOr<int>(token, 0));
-        } else {
-          set_value(base::ParseIntegerOr<int>(token, 0));
-        }
-      }
-      break;
-
-    case 0:
-      Event = EventFromNumber(base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-      tokens.Next();  // Old-format field, unused.
-      tokens.Next();  // Old-format field, unused.
-
-      Team = TeamType::FromName(tokens.Next());
-      set_value(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      tokens.Next();  // Old-format field, unused.
-      break;
+    }
+  } else {
+    Team = TheObjectHeaps().team_type().SlotOrNull(next_number());
+    set_value(next_number());
   }
 }
 
