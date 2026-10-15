@@ -10812,16 +10812,26 @@
       "effort": "l",
       "tags": [
         "refactoring",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-15T00:45:07Z",
       "parent": "T-140",
       "source": "7eeaf347..cd29efc1",
       "toDecide": "- **A plain `/modernize-file`** on `ra/ai/tevent.{h,cc}` with the points above.\n- **One class per event**, as `docs/TRIGGER_ACTION_CLASSES_PLAN.md` did for the actions: write a plan of its own first.",
+      "decisions": [
+        {
+          "question": "Plain /modernize-file on ra/ai/tevent.{h,cc}, or one class per event with a plan first?",
+          "options": [
+            "A plain /modernize-file",
+            "One class per event"
+          ],
+          "answer": "Ran /modernize-file on src/ra/ai/tevent.cc and tevent.h (2026-10-14)",
+          "time": "2026-10-15T00:45:07Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/tevent.h",
@@ -16276,10 +16286,10 @@
         "engine",
         "crypto"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T22:08:26Z",
-      "updated": "2026-10-15T00:37:57Z",
+      "updated": "2026-10-15T00:43:54Z",
       "source": "ab9340ca2",
       "resolution": "`DigitCursor` no longer calls `base::ReadUnaligned`/`WriteUnaligned`. It copies a digit through `std::bit_cast` over a byte array, using fixed-extent spans so that the `base::At` checks compile away, and `at()` and the copies are `always_inline`. Before this, the -O2 bignum linked to the -O0 `base::CopyBytes` from `blowfish_reference_test_util.cc.o`. Debug times: 36.9 s → 4.4 s and 15.8 s → 2.9 s. In RelWithDebInfo the two tests also dropped from 8 s/6 s to 4.4 s/2.4 s.",
       "anchors": [

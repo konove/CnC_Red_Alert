@@ -360,8 +360,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
           const TeamClass* ptr = TheObjectHeaps().team().ActiveAt(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
-            //					if (ptr->Class == Team &&
-            // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
             td.IsTripped = true;
             break;
           }
@@ -416,8 +414,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         if ((hptr->ActiveBScan & ScanBit(static_cast<int>(structure()))) == 0) {
           return false;
         }
-        //				if (hptr->Get_Quantity(structure())
-        //== 0) return(false);
         break;
 
       /*
@@ -514,10 +510,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
           return false;
         }
         break;
-
-        //			case TEVENT_SPIED:
-        //				if (!hptr->IsSpied) return(false);
-        //				break;
 
       case TEVENT_THIEVED:
         if (!hptr->IsThieved) {
@@ -893,8 +885,6 @@ AttachType Attaches_To(TEventType event) {
   }
 
   switch (event) {
-      //		case TEVENT_CROSS_HORIZONTAL:
-      //		case TEVENT_CROSS_VERTICAL:
     case TEVENT_ENTERS_ZONE:
     case TEVENT_ANY:
       attach = attach | ATTACH_MAP;
@@ -952,7 +942,6 @@ AttachType Attaches_To(TEventType event) {
     case TEVENT_ALL_DESTROYED:
     case TEVENT_HOUSE_DISCOVERED:
     case TEVENT_CREDITS:
-      //		case TEVENT_ATTACKED:
     case TEVENT_THIEVED:
     case TEVENT_ANY:
     case TEVENT_FAKES_DESTROYED:
