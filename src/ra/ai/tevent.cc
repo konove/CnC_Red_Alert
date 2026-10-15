@@ -570,192 +570,33 @@ NeedType EventNeed(TriggerEventType event) {
 
 const char* EventName(TriggerEventType event) { return kEventNames.at(event); }
 
-TriggerAttachment EventAttachment(TriggerEventType event) {
-  TriggerAttachment attachment = TriggerAttachment::kNone;
+TriggerAttachment EventAttachment(const TriggerEventType event) {
+  constexpr TriggerAttachment kCell = TriggerAttachment::kCell;
+  constexpr TriggerAttachment kObject = TriggerAttachment::kObject;
+  constexpr TriggerAttachment kMap = TriggerAttachment::kMap;
+  constexpr TriggerAttachment kHouse = TriggerAttachment::kHouse;
+  constexpr TriggerAttachment kGeneral = TriggerAttachment::kGeneral;
 
   switch (event) {
+    // What is entered, crossed or seen: the cell or the object itself. An
+    // unset event leaves the trigger free to go on either.
+    case TriggerEventType::kNone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kDiscovered:
+      return kCell | kObject;
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+      return kObject;
     case TriggerEventType::kCrossHorizontal:
     case TriggerEventType::kCrossVertical:
+      return kCell;
     case TriggerEventType::kEntersZone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kNone:
-      attachment = attachment | TriggerAttachment::kCell;
-      break;
+      return kCell | kMap;
 
-    case TriggerEventType::kSpied:
+    // A house's state, checked with the house.
     case TriggerEventType::kThieved:
     case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kTime:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kAllBridgesDestroyed:
-    case TriggerEventType::kBuildingExists:
-    default:
-      break;
-  }
-
-  switch (event) {
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kNone:
-      attachment = attachment | TriggerAttachment::kObject;
-      break;
-
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kTime:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kAllBridgesDestroyed:
-    case TriggerEventType::kBuildingExists:
-    default:
-      break;
-  }
-
-  switch (event) {
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kAny:
-      attachment = attachment | TriggerAttachment::kMap;
-      break;
-
-    case TriggerEventType::kNone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kTime:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kAllBridgesDestroyed:
-    case TriggerEventType::kBuildingExists:
-    default:
-      break;
-  }
-
-  switch (event) {
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildingExists:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kFakesDestroyed:
-      attachment = attachment | TriggerAttachment::kHouse;
-      break;
-
-    case TriggerEventType::kNone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kTime:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kAllBridgesDestroyed:
-    default:
-      break;
-  }
-
-  switch (event) {
-    case TriggerEventType::kTime:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kAllBridgesDestroyed:
-    case TriggerEventType::kLeavesMap:
-      attachment = attachment | TriggerAttachment::kGeneral;
-      break;
-
-    case TriggerEventType::kNone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
     case TriggerEventType::kUnitsDestroyed:
     case TriggerEventType::kBuildingsDestroyed:
     case TriggerEventType::kAllDestroyed:
@@ -768,17 +609,27 @@ TriggerAttachment EventAttachment(TriggerEventType event) {
     case TriggerEventType::kBuildUnit:
     case TriggerEventType::kBuildInfantry:
     case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
     case TriggerEventType::kFakesDestroyed:
     case TriggerEventType::kLowPower:
     case TriggerEventType::kBuildingExists:
+      return kHouse;
+
+    // The game's state, on the list of triggers the game logic springs.
+    case TriggerEventType::kTime:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kAllBridgesDestroyed:
+      return kGeneral;
+
+    case TriggerEventType::kAny:
+      return kCell | kObject | kMap | kHouse | kGeneral;
+
     default:
       break;
   }
-
-  return attachment;
+  return TriggerAttachment::kNone;
 }
 
 }  // namespace ra
