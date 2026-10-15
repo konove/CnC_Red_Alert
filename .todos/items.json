@@ -16123,10 +16123,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T02:32:26Z",
       "source": "e3910eae2",
       "fixedIn": "c2b5018c3",
       "resolution": "`Event` and `Team` are the private `type_` and `team_type_` behind `type()`/`set_type()` and `team_type()`/`set_team_type()`; declarations in Google order.",
@@ -16390,22 +16390,34 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T05:57:45Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "`Set_Global_To()` now resets `tp->Event2` when event 1 waits for the changed global, so a paired time event restarts its countdown from the change (24 ANDed triggers in SCG05/06/09/10/11 and SCU04/07 now wait the full delay after the global changes). `AChangedGlobalRestartsTheOtherEventsCountdown` in `trigger_event_test.cc` covers both event orders.",
       "toDecide": "Fix `scenario.cc:340` to reset `tp->Event2`? It changes when a time event paired with a global fires in missions that use that pairing (none checked yet).",
+      "decisions": [
+        {
+          "question": "When event 1 of a trigger is a global and event 2 is a time delay, a change of the global should restart the delay but doesn't (scenario.cc:340; the 1996 code had the same bug). 24 ANDed triggers in the Steam missions (SCG05, SCG06, SCG09, SCG10, SCG11, SCU04, SCU07) use this pairing and today fire the moment the global changes if the delay already ran out; with the fix they fire the full delay after the change. What should happen?",
+          "options": [
+            "Fix it (Recommended): reset tp->Event2 and add a regression test",
+            "Keep 1996 behavior: drop the event-1 branch's reset, document and pin it with a test",
+            "Make it a setting: fix behind a RULES.INI/config flag"
+          ],
+          "answer": "Fix it (Recommended)",
+          "time": "2026-10-15T05:54:03Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/scenario.cc",
           "startLine": 340,
           "endLine": 340,
-          "text": "          tp->Class->event2.Reset(tp->Event1);",
+          "text": "          tp->Class->event2.Reset(tp->Event2);",
           "before": [
             "        if ((tp->Class->event1.type() == TriggerEventType::kGlobalSet ||",
             "             tp->Class->event1.type() == TriggerEventType::kGlobalClear) &&",

@@ -337,7 +337,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
         if ((tp->Class->event1.type() == TriggerEventType::kGlobalSet ||
              tp->Class->event1.type() == TriggerEventType::kGlobalClear) &&
             tp->Class->event1.value() == global) {
-          tp->Class->event2.Reset(tp->Event1);
+          tp->Class->event2.Reset(tp->Event2);
         }
         if ((tp->Class->event2.type() == TriggerEventType::kGlobalSet ||
              tp->Class->event2.type() == TriggerEventType::kGlobalClear) &&

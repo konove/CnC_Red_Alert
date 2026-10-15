@@ -23,6 +23,8 @@
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/team_type.h"
+#include "ra/ai/trigger.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"
@@ -241,6 +243,35 @@ TEST_F(TriggerEventTest, ATimeEventWaitsForItsCountdown) {
   const TriggerEvent now(TriggerEventType::kTime);
   now.Reset(state_);
   EXPECT_TRUE(Check(now));
+}
+
+// A change of the global a trigger waits for restarts the countdown of its
+// other event, whichever of the two waits for the global, so the time counts
+// from the change rather than from the start of the mission.
+TEST_F(TriggerEventTest, AChangedGlobalRestartsTheOtherEventsCountdown) {
+  TheObjectHeaps().trigger_type().Reset(4);
+  TheObjectHeaps().trigger().Reset(4);
+  TriggerEvent global(TriggerEventType::kGlobalSet);
+  global.set_value(3);
+  TriggerEvent time(TriggerEventType::kTime);
+  time.set_value(10);
+  constexpr int kTicks = 10 * (kTicksPerMinute / 10);
+
+  auto* const global_first = base::NewPooled<TriggerType>();
+  global_first->event1 = global;
+  global_first->event2 = time;
+  auto* const time_first = base::NewPooled<TriggerType>();
+  time_first->event1 = time;
+  time_first->event2 = global;
+  auto* const waits_global_first = base::NewPooled<TriggerClass>(global_first);
+  auto* const waits_time_first = base::NewPooled<TriggerClass>(time_first);
+  waits_global_first->Event2.timer.Set(0);
+  waits_time_first->Event1.timer.Set(0);
+
+  base::At(TheScenario().GlobalFlags, 3) = false;
+  TheScenario().Set_Global_To(3, true);
+  EXPECT_EQ(waits_global_first->Event2.timer.Remaining(), kTicks);
+  EXPECT_EQ(waits_time_first->Event1.timer.Remaining(), kTicks);
 }
 
 // The moment events count when the check is made for them, or for any
