@@ -27,10 +27,10 @@ class TEventTest : public GameFixture {
   }
 
   // Reads an event from `entry` in INI format `format`.
-  static TEventClass Read(const int format, const std::string_view entry) {
+  static TriggerEvent Read(const int format, const std::string_view entry) {
     TheWorld().new_ini_format() = format;
     base::Tokenizer tokens(entry);
-    TEventClass event;
+    TriggerEvent event;
     event.Read_INI(tokens);
     return event;
   }
@@ -49,7 +49,7 @@ TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
 
 // Format 1 gives a team event's team as its heap slot.
 TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
-  const TEventClass event = Read(1, "23,0");
+  const TriggerEvent event = Read(1, "23,0");
   EXPECT_EQ(event.Event, TriggerEventType::kLeavesMap);
   EXPECT_EQ(event.Team, team_type_);
 }

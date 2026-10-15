@@ -692,7 +692,7 @@ TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
 // HousesType is one byte: storing a house keeps the other three bytes of the
 // event's argument, as the store into the union it replaced did.
 TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
-  TEventClass event(TriggerEventType::kPlayerEntered);
+  TriggerEvent event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_USSR);
   EXPECT_EQ(event.value(), 0x12345600 | static_cast<uint8_t>(HOUSE_USSR));
@@ -700,7 +700,7 @@ TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
 }
 
 TEST(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
-  TEventClass event(TriggerEventType::kPlayerEntered);
+  TriggerEvent event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_NONE);
   EXPECT_EQ(event.value(), 0x123456FF);

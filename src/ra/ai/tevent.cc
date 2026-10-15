@@ -103,7 +103,7 @@ static base::EnumArray<TriggerEventType, const char*> EventText = {
     "All bridges destroyed",
     "Building exists..."};
 
-base::EnumArray<TriggerEventType, EventChoiceClass> EventChoices = {{
+base::EnumArray<TriggerEventType, EventChoice> EventChoices = {{
     {TriggerEventType::kNone},
     {TriggerEventType::kPlayerEntered},
     {TriggerEventType::kSpied},
@@ -139,25 +139,25 @@ base::EnumArray<TriggerEventType, EventChoiceClass> EventChoices = {{
     {TriggerEventType::kBuildingExists},
 }};
 
-void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                               int width, int height, bool selected,
-                               FontType font, TextPrintType flags) const {
+void EventChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                          int width, int height, bool selected, FontType font,
+                          TextPrintType flags) const {
   // Tab stops in pixels; the event names hold no tabs.
   static constexpr std::array<int, 2> kTabStops = {13, 40};
   UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
                           selected, kTabStops);
 }
 
-void TEventClass::Reset(TDEventClass& td) const {
+void TriggerEvent::Reset(TriggerEventState& td) const {
   td.IsTripped = false;
   if (Event == TriggerEventType::kTime) {
     td.EventTimer.Set(value() * (kTicksPerMinute / 10));
   }
 }
 
-bool TEventClass::operator()(TDEventClass& td, TriggerEventType event,
-                             HousesType house, const ObjectClass* object,
-                             bool forced) const {
+bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
+                              HousesType house, const ObjectClass* object,
+                              bool forced) const {
   if (forced) {
     td.IsTripped = true;
   }
@@ -464,12 +464,12 @@ bool TEventClass::operator()(TDEventClass& td, TriggerEventType event,
   return true;
 }
 
-std::string TEventClass::Build_INI_Entry() const {
+std::string TriggerEvent::Build_INI_Entry() const {
   return std::format("{},{},{}", std::to_underlying(Event),
                      TheObjectHeaps().team_type().PositionOf(Team), value());
 }
 
-void TEventClass::Read_INI(base::Tokenizer& tokens) {
+void TriggerEvent::Read_INI(base::Tokenizer& tokens) {
   std::string_view token;
   switch (TheWorld().new_ini_format()) {
     default:

@@ -17,10 +17,10 @@
 */
 
 // The event half of a scenario trigger: what a trigger waits for
-// (TriggerEventType), an event as a trigger type describes it (TEventClass),
-// the state each trigger keeps for it while it waits (TDEventClass), what an
-// event can be attached to (TriggerAttachment), and the scenario editor's list
-// entry for an event type (EventChoiceClass).
+// (TriggerEventType), an event as a trigger type describes it (TriggerEvent),
+// the state each trigger keeps for it while it waits (TriggerEventState), what
+// an event can be attached to (TriggerAttachment), and the scenario editor's
+// list entry for an event type (EventChoice).
 
 #ifndef CNC_RED_ALERT_RA_AI_TEVENT_H_
 #define CNC_RED_ALERT_RA_AI_TEVENT_H_
@@ -49,7 +49,7 @@ namespace ra {
 
 // What a trigger event waits for. Scenario INI files and saved games store the
 // number, so the order is fixed. "The event's house" is the house the event
-// names (TEventClass::house()); "the trigger's house" is the house of the
+// names (TriggerEvent::house()); "the trigger's house" is the house of the
 // trigger type the event belongs to.
 enum class TriggerEventType {
   kNone,  // Never happens; an unused second event.
@@ -124,9 +124,9 @@ NeedType Event_Needs(TriggerEventType event);
 const char* Name_From_Event(TriggerEventType event);
 
 // The state one trigger keeps for one of its events, which a trigger type's
-// TEventClass reads and writes; TriggerClass holds one for each of its two
+// TriggerEvent reads and writes; TriggerClass holds one for each of its two
 // events.
-struct TDEventClass {
+struct TriggerEventState {
   // Set when an event that happens at a moment (a structure being built, an
   // object entering a cell, a forced spring) has happened, so the event keeps
   // counting on later checks until Reset() clears it. Without it a trigger
@@ -147,16 +147,16 @@ struct TDEventClass {
 
 // One of the two events of a trigger type: which event it is and its
 // argument. Shared by every trigger of that type; the state of one trigger's
-// wait is the TDEventClass passed to Reset() and operator().
+// wait is the TriggerEventState passed to Reset() and operator().
 //
 // Example:
-//   TEventClass event(TriggerEventType::kCredits);
+//   TriggerEvent event(TriggerEventType::kCredits);
 //   event.set_value(5000);
-//   TDEventClass state;
+//   TriggerEventState state;
 //   event.Reset(state);
 //   if (event(state, TriggerEventType::kAny, HOUSE_USSR, nullptr, false)) { ...
 //   }
-class TEventClass {
+class TriggerEvent {
  public:
   // The event this is.
   TriggerEventType Event;
@@ -165,8 +165,8 @@ class TEventClass {
   // none.
   TeamType* Team = nullptr;
 
-  TEventClass() : Event(TriggerEventType::kNone) {}
-  explicit TEventClass(TriggerEventType event) : Event(event) {}
+  TriggerEvent() : Event(TriggerEventType::kNone) {}
+  explicit TriggerEvent(TriggerEventType event) : Event(event) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
@@ -176,7 +176,7 @@ class TEventClass {
   // TriggerEventType::kTime event, restarts its countdown. A trigger calls it
   // when it is made and after each spring of a persistent trigger, and the
   // scenario when a global the trigger's other event waits for changes.
-  void Reset(TDEventClass& td) const;
+  void Reset(TriggerEventState& td) const;
   // Returns whether the event has happened for the trigger whose state is
   // `td`. `event` is what caused the check: the moment events (entering,
   // being attacked, crossing a line) only count when it is this event or
@@ -185,8 +185,9 @@ class TEventClass {
   // and `object` the object that caused the check (for the entering events, the
   // one that entered); nullptr for none. `forced` trips the event without a
   // check, for a trigger another trigger forces.
-  bool operator()(TDEventClass& td, TriggerEventType event, HousesType house,
-                  const ObjectClass* object, bool forced) const;
+  bool operator()(TriggerEventState& td, TriggerEventType event,
+                  HousesType house, const ObjectClass* object,
+                  bool forced) const;
   // Reads the event fields from the trigger entry `tokens` is parsing, in the
   // scenario's INI format: from format 2 on "event,team,value" with the team
   // as its heap slot; format 1 "event,team-or-value"; format 0
@@ -263,35 +264,33 @@ TriggerAttachment Attaches_To(TriggerEventType event);
 
 // An event type as an entry of the scenario editor's event lists, which shows
 // its name and sorts by it.
-class EventChoiceClass {
+class EventChoice {
  public:
   // Implicit, so the choice table can be a brace list of event types.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  EventChoiceClass(TriggerEventType event = TriggerEventType::kNone) noexcept
+  EventChoice(TriggerEventType event = TriggerEventType::kNone) noexcept
       : Event(event) {}
 
   // Implicit, so an entry compares directly against an event type.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator TriggerEventType() const { return Event; }
-  bool operator==(const EventChoiceClass& rvalue) const {
+  bool operator==(const EventChoice& rvalue) const {
     return Event == rvalue.Event;
   }
-  bool operator!=(const EventChoiceClass& rvalue) const {
+  bool operator!=(const EventChoice& rvalue) const {
     return Event != rvalue.Event;
   }
-  bool operator>(const EventChoiceClass& rvalue) const {
-    return rvalue < *this;
-  }
+  bool operator>(const EventChoice& rvalue) const { return rvalue < *this; }
   // Orders by description, ignoring case.
-  bool operator<(const EventChoiceClass& rvalue) const {
+  bool operator<(const EventChoice& rvalue) const {
     return std::ranges::lexicographical_compare(
         std::string_view(Description()), std::string_view(rvalue.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
   }
-  bool operator<=(const EventChoiceClass& rvalue) const {
+  bool operator<=(const EventChoice& rvalue) const {
     return Event == rvalue.Event || *this < rvalue;
   }
-  bool operator>=(const EventChoiceClass& rvalue) const {
+  bool operator>=(const EventChoice& rvalue) const {
     return Event == rvalue.Event || rvalue < *this;
   }
   // The event's name in the editor.
@@ -306,10 +305,10 @@ class EventChoiceClass {
 };
 
 // One entry per event type, indexed by it, for the editor's event lists.
-extern base::EnumArray<TriggerEventType, EventChoiceClass> EventChoices;
+extern base::EnumArray<TriggerEventType, EventChoice> EventChoices;
 
-extern template void TEventClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TEventClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TriggerEvent::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerEvent::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

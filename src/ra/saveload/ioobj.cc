@@ -177,12 +177,12 @@ template void TriggerClass::Serialize(ArchiveWriter&);
 template void TriggerClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TEventClass::Serialize(Archive& ar) {
+void TriggerEvent::Serialize(Archive& ar) {
   ar(Event, game::HeapSlotPtr(Team, TheObjectHeaps().team_type()), data_);
 }
 
-template void TEventClass::Serialize(ArchiveWriter&);
-template void TEventClass::Serialize(ArchiveReader&);
+template void TriggerEvent::Serialize(ArchiveWriter&);
+template void TriggerEvent::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TriggerActionRecord::Serialize(Archive& ar) {

@@ -67,8 +67,8 @@ class TriggerClass {
   /*
   **	Record of the "already sprung" flag for the events.
   */
-  TDEventClass Event1;
-  TDEventClass Event2;
+  TriggerEventState Event1;
+  TriggerEventState Event2;
 
   /*
   **	Constructor/Destructor

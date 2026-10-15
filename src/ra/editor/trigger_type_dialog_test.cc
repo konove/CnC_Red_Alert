@@ -197,7 +197,7 @@ struct Contents {
 
 // The value of the event's data that its kind of event uses, 0 for an event
 // that takes none.
-int EventValue(const TEventClass& event) {
+int EventValue(const TriggerEvent& event) {
   const NeedType need = Event_Needs(event.Event);
   if (need == NeedType::kHouse) {
     return static_cast<int>(event.house());
@@ -254,7 +254,7 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
   }
 
   // Gives `event` the kind `type` and a value of the sort that kind takes.
-  void Fill(TEventClass& event, const TriggerEventType type) const {
+  void Fill(TriggerEvent& event, const TriggerEventType type) const {
     event.Event = type;
     const NeedType need = Event_Needs(type);
     if (need == NeedType::kHouse) {

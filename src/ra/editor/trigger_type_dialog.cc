@@ -233,13 +233,13 @@ bool TriggerType::Edit() {
 
   // The two event lists, each offering every event, sorted by name.
   char event1_text[kChoiceSize] = "";
-  TDropListClass<EventChoiceClass*> event1_list(
+  TDropListClass<EventChoice*> event1_list(
       kEvent1List, event1_text, sizeof(event1_text), FontType::kEditor,
       TPF_NOSHADOW, kEvent1X, kEvent1Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   char event2_text[kChoiceSize] = "";
-  TDropListClass<EventChoiceClass*> event2_list(
+  TDropListClass<EventChoice*> event2_list(
       kEvent2List, event2_text, sizeof(event2_text), FontType::kEditor,
       TPF_NOSHADOW, kEvent2X, kEvent2Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),

@@ -89,8 +89,8 @@ class TriggerType : public AbstractTypeClass {
 
   // The events that spring the trigger. event2 only counts when event_control
   // is not MULTI_ONLY.
-  TEventClass event1;
-  TEventClass event2;
+  TriggerEvent event1;
+  TriggerEvent event2;
   MultiStyle event_control = MULTI_ONLY;
 
   // The actions performed when the trigger springs; never null. action2 is
@@ -137,7 +137,7 @@ class TriggerType : public AbstractTypeClass {
   //   persistence,house,event control,action control,event 1,event 2,
   //   action 1,action 2
   // with each event and action a comma separated group of its own (see
-  // TEventClass::Read_INI and ReadTriggerActionRecord()). The first four are
+  // TriggerEvent::Read_INI and ReadTriggerActionRecord()). The first four are
   // enum numbers; a missing or unreadable one reads as 0. The team types and
   // trigger types its actions refer to must exist already.
   void ReadIniEntry(std::string_view name, std::string_view entry);

@@ -1868,7 +1868,7 @@ void DropUnfilledTypeReferences() {
   }
   for (int i = 0; i < trigger_types.Count(); i++) {
     TriggerType& trigger_type = *trigger_types.ActiveAt(i);
-    for (TEventClass* event : {&trigger_type.event1, &trigger_type.event2}) {
+    for (TriggerEvent* event : {&trigger_type.event1, &trigger_type.event2}) {
       DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
                      "event team");
     }

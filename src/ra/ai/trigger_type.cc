@@ -72,7 +72,7 @@ void TriggerType::operator delete(void* memory) {
 
 void TriggerType::Detach(const Target target) {
   if (target.kind() == RTTI_TEAMTYPE) {
-    for (TEventClass* event : {&event1, &event2}) {
+    for (TriggerEvent* event : {&event1, &event2}) {
       if (event->Team == target.AsTeamType()) {
         event->Team = nullptr;
       }
