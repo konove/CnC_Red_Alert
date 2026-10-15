@@ -275,24 +275,11 @@ class EventChoice {
   // Implicit, so an entry compares directly against an event type.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator TriggerEventType() const { return event_; }
-  bool operator==(const EventChoice& other) const {
-    return event_ == other.event_;
-  }
-  bool operator!=(const EventChoice& other) const {
-    return event_ != other.event_;
-  }
-  bool operator>(const EventChoice& other) const { return other < *this; }
-  // Orders by description, ignoring case.
+  // Orders by description, ignoring case; the editor sorts its lists with it.
   bool operator<(const EventChoice& other) const {
     return std::ranges::lexicographical_compare(
         std::string_view(Description()), std::string_view(other.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
-  }
-  bool operator<=(const EventChoice& other) const {
-    return event_ == other.event_ || *this < other;
-  }
-  bool operator>=(const EventChoice& other) const {
-    return event_ == other.event_ || other < *this;
   }
   // The event's name in the editor.
   [[nodiscard]] const char* Description() const { return EventName(event_); }
