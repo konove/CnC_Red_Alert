@@ -137,7 +137,7 @@ class TriggerType : public AbstractTypeClass {
   //   persistence,house,event control,action control,event 1,event 2,
   //   action 1,action 2
   // with each event and action a comma separated group of its own (see
-  // TriggerEvent::Read_INI and ReadTriggerActionRecord()). The first four are
+  // TriggerEvent::ReadIni() and ReadTriggerActionRecord()). The first four are
   // enum numbers; a missing or unreadable one reads as 0. The team types and
   // trigger types its actions refer to must exist already.
   void ReadIniEntry(std::string_view name, std::string_view entry);

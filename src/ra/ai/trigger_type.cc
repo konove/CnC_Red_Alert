@@ -113,7 +113,7 @@ std::string TriggerType::Description() const {
 
   // The first event's value, when it has one worth showing.
   std::string value_text;
-  switch (Event_Needs(event1.Event)) {
+  switch (EventNeed(event1.Event)) {
     case NeedType::kNumber:
       value_text = absl::StrCat(event1.value());
       break;
@@ -170,14 +170,14 @@ std::string TriggerType::Description() const {
   return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
                          HouseTypeClass::As_Reference(house).Suffix,
                          persistence_mark, event_mark, action_mark,
-                         Name_From_Event(event1.Event), value_text);
+                         EventName(event1.Event), value_text);
 }
 
 TriggerAttachment TriggerType::AttachesTo() const {
-  TriggerAttachment attach = ra::Attaches_To(event1.Event);
+  TriggerAttachment attach = ra::EventAttachment(event1.Event);
 
   if (event_control != MULTI_ONLY) {
-    attach = attach | ra::Attaches_To(event2.Event);
+    attach = attach | ra::EventAttachment(event2.Event);
   }
   return attach;
 }
@@ -223,8 +223,8 @@ void TriggerType::ReadIniEntry(const std::string_view name,
   action_control =
       static_cast<MultiStyle>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  event1.Read_INI(tokens);
-  event2.Read_INI(tokens);
+  event1.ReadIni(tokens);
+  event2.ReadIni(tokens);
   action1 = MakeTriggerAction(ReadTriggerActionRecord(tokens));
   action2 = MakeTriggerAction(ReadTriggerActionRecord(tokens));
 }
@@ -251,10 +251,10 @@ std::string TriggerType::ToIniEntry() const {
                   std::to_underlying(house), std::to_underlying(event_control),
                   std::to_underlying(action_control));
 
-  entry += event1.Build_INI_Entry();
+  entry += event1.ToIniEntry();
   entry += ',';
 
-  entry += event2.Build_INI_Entry();
+  entry += event2.ToIniEntry();
   entry += ',';
 
   entry += ra::ToIniEntry(action1->ToRecord());

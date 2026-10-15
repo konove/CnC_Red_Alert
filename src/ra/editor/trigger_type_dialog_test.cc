@@ -198,7 +198,7 @@ struct Contents {
 // The value of the event's data that its kind of event uses, 0 for an event
 // that takes none.
 int EventValue(const TriggerEvent& event) {
-  const NeedType need = Event_Needs(event.Event);
+  const NeedType need = EventNeed(event.Event);
   if (need == NeedType::kHouse) {
     return static_cast<int>(event.house());
   }
@@ -256,7 +256,7 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
   // Gives `event` the kind `type` and a value of the sort that kind takes.
   void Fill(TriggerEvent& event, const TriggerEventType type) const {
     event.Event = type;
-    const NeedType need = Event_Needs(type);
+    const NeedType need = EventNeed(type);
     if (need == NeedType::kHouse) {
       event.set_house(HOUSE_UKRAINE);
     } else if (need == NeedType::kTeam) {
@@ -498,7 +498,7 @@ TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
   std::vector<std::pair<std::string, TriggerEventType>> names;
   for (const TriggerEventType type :
        magic_enum::enum_values<TriggerEventType>()) {
-    names.emplace_back(EventChoices.at(type).Description(), type);
+    names.emplace_back(event_choices.at(type).Description(), type);
   }
   const TriggerEventType second = SecondByName(names);
   ASSERT_NE(second, TriggerEventType::kNone);

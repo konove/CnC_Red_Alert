@@ -246,8 +246,8 @@ bool TriggerType::Edit() {
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const TriggerEventType event :
        magic_enum::enum_values<TriggerEventType>()) {
-    event1_list.Add_Item(&EventChoices.at(event));
-    event2_list.Add_Item(&EventChoices.at(event));
+    event1_list.Add_Item(&event_choices.at(event));
+    event2_list.Add_Item(&event_choices.at(event));
   }
 
   const auto by_description = [](const auto* left, const auto* right) {
@@ -256,8 +256,8 @@ bool TriggerType::Edit() {
   event1_list.Sort(by_description);
   event2_list.Sort(by_description);
 
-  event1_list.Set_Selected_Index(&EventChoices.at(event1.Event));
-  event2_list.Set_Selected_Index(&EventChoices.at(event2.Event));
+  event1_list.Set_Selected_Index(&event_choices.at(event1.Event));
+  event2_list.Set_Selected_Index(&event_choices.at(event2.Event));
 
   // The dialog shows and edits the actions as records; OK makes the actions
   // from them.
@@ -322,7 +322,7 @@ bool TriggerType::Edit() {
                                sizeof(event1_number_text), FontType::kEditor,
                                TPF_NOSHADOW, kEvent1DataX, kEvent1DataY,
                                kDataWidth, 9, EditClass::kNumeric);
-  if (const NeedType need = Event_Needs(event1.Event);
+  if (const NeedType need = EventNeed(event1.Event);
       need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
                    static_cast<int>(event1.value()));
@@ -333,7 +333,7 @@ bool TriggerType::Edit() {
                                sizeof(event2_number_text), FontType::kEditor,
                                TPF_NOSHADOW, kEvent2DataX, kEvent2DataY,
                                kDataWidth, 9, EditClass::kNumeric);
-  if (const NeedType need = Event_Needs(event2.Event);
+  if (const NeedType need = EventNeed(event2.Event);
       need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
                    static_cast<int>(event2.value()));
@@ -624,13 +624,13 @@ bool TriggerType::Edit() {
         TextString(BuildingTypeClass::As_Reference(building).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NeedType::kStructure) {
+  if (EventNeed(event1.Event) == NeedType::kStructure) {
     event1_building_list.Set_Selected_Index(
         static_cast<int>(event1.structure()));
   } else {
     event1_building_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NeedType::kStructure) {
+  if (EventNeed(event2.Event) == NeedType::kStructure) {
     event2_building_list.Set_Selected_Index(
         static_cast<int>(event2.structure()));
   } else {
@@ -658,13 +658,13 @@ bool TriggerType::Edit() {
         TextString(InfantryTypeClass::As_Reference(infantry).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NeedType::kInfantry) {
+  if (EventNeed(event1.Event) == NeedType::kInfantry) {
     event1_infantry_list.Set_Selected_Index(
         static_cast<int>(event1.infantry()));
   } else {
     event1_infantry_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NeedType::kInfantry) {
+  if (EventNeed(event2.Event) == NeedType::kInfantry) {
     event2_infantry_list.Set_Selected_Index(
         static_cast<int>(event2.infantry()));
   } else {
@@ -692,13 +692,13 @@ bool TriggerType::Edit() {
         TextString(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NeedType::kAircraft) {
+  if (EventNeed(event1.Event) == NeedType::kAircraft) {
     event1_aircraft_list.Set_Selected_Index(
         static_cast<int>(event1.aircraft()));
   } else {
     event1_aircraft_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NeedType::kAircraft) {
+  if (EventNeed(event2.Event) == NeedType::kAircraft) {
     event2_aircraft_list.Set_Selected_Index(
         static_cast<int>(event2.aircraft()));
   } else {
@@ -726,12 +726,12 @@ bool TriggerType::Edit() {
         TextString(UnitTypeClass::As_Reference(unit).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NeedType::kUnit) {
+  if (EventNeed(event1.Event) == NeedType::kUnit) {
     event1_unit_list.Set_Selected_Index(static_cast<int>(event1.unit()));
   } else {
     event1_unit_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NeedType::kUnit) {
+  if (EventNeed(event2.Event) == NeedType::kUnit) {
     event2_unit_list.Set_Selected_Index(static_cast<int>(event2.unit()));
   } else {
     event2_unit_list.Set_Selected_Index(0);
@@ -774,12 +774,12 @@ bool TriggerType::Edit() {
         HouseTypeClass::As_Reference(house_type).IniName);
   }
 
-  if (Event_Needs(event1.Event) == NeedType::kHouse) {
+  if (EventNeed(event1.Event) == NeedType::kHouse) {
     event1_house_list.Set_Selected_Index(static_cast<int>(event1.house()));
   } else {
     event1_house_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NeedType::kHouse) {
+  if (EventNeed(event2.Event) == NeedType::kHouse) {
     event2_house_list.Set_Selected_Index(static_cast<int>(event2.house()));
   } else {
     event2_house_list.Set_Selected_Index(0);
@@ -1011,7 +1011,7 @@ bool TriggerType::Edit() {
       gadgets.Remove(event1_aircraft_list);
       gadgets.Remove(event1_unit_list);
       gadgets.Remove(event1_team_list);
-      switch (Event_Needs(*event1_list.Current_Item())) {
+      switch (EventNeed(*event1_list.Current_Item())) {
         case NeedType::kHouse:
           gadgets.AddAfter(event1_house_list, ok_button);
           break;
@@ -1067,7 +1067,7 @@ bool TriggerType::Edit() {
       gadgets.Remove(event2_unit_list);
       gadgets.Remove(event2_team_list);
       if (gadgets.Extract(kEvent2List)) {
-        switch (Event_Needs(*event2_list.Current_Item())) {
+        switch (EventNeed(*event2_list.Current_Item())) {
           case NeedType::kHouse:
             gadgets.AddAfter(event2_house_list, ok_button);
             break;
@@ -1376,7 +1376,7 @@ bool TriggerType::Edit() {
         // The first event and its data.
         event_control = event_style;
         event1.Event = *event1_list.Current_Item();
-        switch (Event_Needs(event1.Event)) {
+        switch (EventNeed(event1.Event)) {
           case NeedType::kHouse:
             event1.set_house(HousesType(event1_house_list.Current_Index()));
             break;
@@ -1429,7 +1429,7 @@ bool TriggerType::Edit() {
         // The second event and its data. They are stored even when only one
         // event is in use.
         event2.Event = *event2_list.Current_Item();
-        switch (Event_Needs(event2.Event)) {
+        switch (EventNeed(event2.Event)) {
           case NeedType::kHouse:
             event2.set_house(HousesType(event2_house_list.Current_Index()));
             break;

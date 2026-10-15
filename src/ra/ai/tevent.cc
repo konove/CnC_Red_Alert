@@ -68,7 +68,7 @@ TriggerEventType EventFromNumber(const int number) {
 }  // namespace
 
 // The scenario editor's name for each event, which its lists show and sort by.
-static base::EnumArray<TriggerEventType, const char*> EventText = {
+constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {
     "-No Event-",
     "Entered by...",
     "Spied by...",
@@ -103,7 +103,7 @@ static base::EnumArray<TriggerEventType, const char*> EventText = {
     "All bridges destroyed",
     "Building exists..."};
 
-base::EnumArray<TriggerEventType, EventChoice> EventChoices = {{
+base::EnumArray<TriggerEventType, EventChoice> event_choices = {{
     {TriggerEventType::kNone},
     {TriggerEventType::kPlayerEntered},
     {TriggerEventType::kSpied},
@@ -148,21 +148,21 @@ void EventChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                           selected, kTabStops);
 }
 
-void TriggerEvent::Reset(TriggerEventState& td) const {
-  td.IsTripped = false;
+void TriggerEvent::Reset(TriggerEventState& state) const {
+  state.is_tripped = false;
   if (Event == TriggerEventType::kTime) {
-    td.EventTimer.Set(value() * (kTicksPerMinute / 10));
+    state.timer.Set(value() * (kTicksPerMinute / 10));
   }
 }
 
-bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
-                              HousesType house, const ObjectClass* object,
-                              bool forced) const {
+bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
+                               HousesType trigger_house,
+                               const ObjectClass* object, bool forced) const {
   if (forced) {
-    td.IsTripped = true;
+    state.is_tripped = true;
   }
 
-  if (td.IsTripped) {
+  if (state.is_tripped) {
     return true;
   }
 
@@ -181,7 +181,7 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
              TheScenario().MissionTimer.IsFinished();
 
     case TriggerEventType::kTime:
-      return td.EventTimer.IsFinished();
+      return state.timer.IsFinished();
     case TriggerEventType::kNone:
     case TriggerEventType::kPlayerEntered:
     case TriggerEventType::kSpied:
@@ -232,7 +232,7 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
        Event == TriggerEventType::kCrossVertical ||
        Event == TriggerEventType::kEntersZone ||
        Event == TriggerEventType::kPlayerEntered) &&
-      (event != Event && event != TriggerEventType::kAny)) {
+      (cause != Event && cause != TriggerEventType::kAny)) {
     return false;
   }
 
@@ -245,7 +245,7 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
     if (!object || object->Owner() != this->house()) {
       return false;
     }
-    td.IsTripped = true;
+    state.is_tripped = true;
     return true;
   }
 
@@ -254,29 +254,30 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
     if (TheScenario().BridgeCount) {
       return false;
     }
-    td.IsTripped = true;
+    state.is_tripped = true;
     return true;
   }
 
   // The events below check a house's state, first the trigger's own house's.
   // An event whose house cannot be found is not checked and counts as having
   // happened.
-  const HouseClass* hptr = HouseClass::As_Pointer(house);
-  int index = 0;
-  if (hptr != nullptr) {
+  const HouseClass* const owner = HouseClass::As_Pointer(trigger_house);
+  int team_index = 0;
+  if (owner != nullptr) {
     switch (Event) {
       // A team springs the logic triggers itself once its last member has
       // left the map, just before it deletes itself, so it is still in the
       // heap here.
       case TriggerEventType::kLeavesMap:
-        for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
-          const TeamClass* ptr = TheObjectHeaps().team().ActiveAt(index);
-          if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
-            td.IsTripped = true;
+        for (team_index = 0; team_index < TheObjectHeaps().team().Count();
+             team_index++) {
+          const TeamClass* team = TheObjectHeaps().team().ActiveAt(team_index);
+          if (team->Class == Team && team->Is_Empty() && team->IsLeaveMap) {
+            state.is_tripped = true;
             break;
           }
         }
-        if (index == TheObjectHeaps().team().Count()) {
+        if (team_index == TheObjectHeaps().team().Count()) {
           return false;
         }
         break;
@@ -284,13 +285,13 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
       // The editor calls this "Credits exceed (x100)", but the value is in
       // credits.
       case TriggerEventType::kCredits:
-        if (hptr->Available_Money() < value()) {
+        if (owner->Available_Money() < value()) {
           return false;
         }
         break;
 
       case TriggerEventType::kNoFactories:
-        if (hptr->BScan &
+        if (owner->BScan &
             (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
              kStructFlagBarracks | kStructFlagConst)) {
           return false;
@@ -300,20 +301,21 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
       // Only two of the five fakes count: a fake shipyard, sub pen or radar
       // dome left standing does not stop the event.
       case TriggerEventType::kFakesDestroyed:
-        if (hptr->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
+        if (owner->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
           return false;
         }
         break;
 
       case TriggerEventType::kCivilianEvacuated:
-        if (!hptr->IsCivEvacuated) {
+        if (!owner->IsCivEvacuated) {
           return false;
         }
         break;
 
       // A structure past the 64 the scan holds never exists.
       case TriggerEventType::kBuildingExists:
-        if ((hptr->ActiveBScan & ScanBit(static_cast<int>(structure()))) == 0) {
+        if ((owner->ActiveBScan & ScanBit(static_cast<int>(structure()))) ==
+            0) {
           return false;
         }
         break;
@@ -321,41 +323,41 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
       // The house only remembers what it built last, so the building
       // events are tripped to outlast the next thing it builds.
       case TriggerEventType::kBuildBuilding:
-        if (hptr->JustBuiltStructure != structure()) {
+        if (owner->JustBuiltStructure != structure()) {
           return false;
         }
-        td.IsTripped = true;
+        state.is_tripped = true;
         break;
 
       case TriggerEventType::kBuildUnit:
-        if (hptr->JustBuiltUnit != unit()) {
+        if (owner->JustBuiltUnit != unit()) {
           return false;
         }
-        td.IsTripped = true;
+        state.is_tripped = true;
         break;
 
       case TriggerEventType::kBuildInfantry:
-        if (hptr->JustBuiltInfantry != infantry()) {
+        if (owner->JustBuiltInfantry != infantry()) {
           return false;
         }
-        td.IsTripped = true;
+        state.is_tripped = true;
         break;
 
       case TriggerEventType::kBuildAircraft:
-        if (hptr->JustBuiltAircraft != aircraft()) {
+        if (owner->JustBuiltAircraft != aircraft()) {
           return false;
         }
-        td.IsTripped = true;
+        state.is_tripped = true;
         break;
 
       case TriggerEventType::kBuildingsLost:
-        if (std::cmp_less(hptr->BuildingsLost, value())) {
+        if (std::cmp_less(owner->BuildingsLost, value())) {
           return false;
         }
         break;
 
       case TriggerEventType::kUnitsLost:
-        if (std::cmp_less(hptr->UnitsLost, value())) {
+        if (std::cmp_less(owner->UnitsLost, value())) {
           return false;
         }
         break;
@@ -387,44 +389,44 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
   }
 
   // Then the house the event names.
-  hptr = HouseClass::As_Pointer(this->house());
-  if (hptr) {
+  const HouseClass* const event_house = HouseClass::As_Pointer(house());
+  if (event_house != nullptr) {
     switch (Event) {
       case TriggerEventType::kLowPower:
-        if (hptr->Power_Fraction() >= 1) {
+        if (event_house->Power_Fraction() >= 1) {
           return false;
         }
         break;
 
       case TriggerEventType::kThieved:
-        if (!hptr->IsThieved) {
+        if (!event_house->IsThieved) {
           return false;
         }
         break;
 
       case TriggerEventType::kHouseDiscovered:
-        if (!hptr->IsDiscovered) {
+        if (!event_house->IsDiscovered) {
           return false;
         }
         break;
 
       case TriggerEventType::kBuildingsDestroyed:
-        if (hptr->ActiveBScan) {
+        if (event_house->ActiveBScan) {
           return false;
         }
         break;
 
       // Vessels and aircraft do not count.
       case TriggerEventType::kUnitsDestroyed:
-        if (hptr->ActiveUScan | hptr->ActiveIScan) {
+        if (event_house->ActiveUScan | event_house->ActiveIScan) {
           return false;
         }
         break;
 
       // Aircraft do not count.
       case TriggerEventType::kAllDestroyed:
-        if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
-            hptr->ActiveVScan) {
+        if (event_house->ActiveBScan | event_house->ActiveUScan |
+            event_house->ActiveIScan | event_house->ActiveVScan) {
           return false;
         }
         break;
@@ -464,12 +466,12 @@ bool TriggerEvent::operator()(TriggerEventState& td, TriggerEventType event,
   return true;
 }
 
-std::string TriggerEvent::Build_INI_Entry() const {
+std::string TriggerEvent::ToIniEntry() const {
   return std::format("{},{},{}", std::to_underlying(Event),
                      TheObjectHeaps().team_type().PositionOf(Team), value());
 }
 
-void TriggerEvent::Read_INI(base::Tokenizer& tokens) {
+void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
   std::string_view token;
   switch (TheWorld().new_ini_format()) {
     default:
@@ -490,7 +492,7 @@ void TriggerEvent::Read_INI(base::Tokenizer& tokens) {
       Team = nullptr;
       set_value(-1);
       if (!token.empty()) {
-        if (Event_Needs(Event) == NeedType::kTeam) {
+        if (EventNeed(Event) == NeedType::kTeam) {
           Team = TheObjectHeaps().team_type().SlotOrNull(
               base::ParseIntegerOr<int>(token, 0));
         } else {
@@ -512,7 +514,7 @@ void TriggerEvent::Read_INI(base::Tokenizer& tokens) {
   }
 }
 
-NeedType Event_Needs(TriggerEventType event) {
+NeedType EventNeed(TriggerEventType event) {
   switch (event) {
     case TriggerEventType::kThieved:
     case TriggerEventType::kPlayerEntered:
@@ -571,7 +573,7 @@ TriggerEventType Event_From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (const TriggerEventType i :
          magic_enum::enum_values<TriggerEventType>()) {
-      if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
+      if (absl::EqualsIgnoreCase(name, kEventNames.at(i))) {
         return i;
       }
     }
@@ -580,12 +582,10 @@ TriggerEventType Event_From_Name(const std::string_view name) {
   return TriggerEventType::kNone;
 }
 
-const char* Name_From_Event(TriggerEventType event) {
-  return EventText.at(event);
-}
+const char* EventName(TriggerEventType event) { return kEventNames.at(event); }
 
-TriggerAttachment Attaches_To(TriggerEventType event) {
-  TriggerAttachment attach = TriggerAttachment::kNone;
+TriggerAttachment EventAttachment(TriggerEventType event) {
+  TriggerAttachment attachment = TriggerAttachment::kNone;
 
   switch (event) {
     case TriggerEventType::kCrossHorizontal:
@@ -595,7 +595,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAny:
     case TriggerEventType::kDiscovered:
     case TriggerEventType::kNone:
-      attach = attach | TriggerAttachment::kCell;
+      attachment = attachment | TriggerAttachment::kCell;
       break;
 
     case TriggerEventType::kSpied:
@@ -636,7 +636,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAttacked:
     case TriggerEventType::kAny:
     case TriggerEventType::kNone:
-      attach = attach | TriggerAttachment::kObject;
+      attachment = attachment | TriggerAttachment::kObject;
       break;
 
     case TriggerEventType::kThieved:
@@ -672,7 +672,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
   switch (event) {
     case TriggerEventType::kEntersZone:
     case TriggerEventType::kAny:
-      attach = attach | TriggerAttachment::kMap;
+      attachment = attachment | TriggerAttachment::kMap;
       break;
 
     case TriggerEventType::kNone:
@@ -729,7 +729,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
     case TriggerEventType::kThieved:
     case TriggerEventType::kAny:
     case TriggerEventType::kFakesDestroyed:
-      attach = attach | TriggerAttachment::kHouse;
+      attachment = attachment | TriggerAttachment::kHouse;
       break;
 
     case TriggerEventType::kNone:
@@ -759,7 +759,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAny:
     case TriggerEventType::kAllBridgesDestroyed:
     case TriggerEventType::kLeavesMap:
-      attach = attach | TriggerAttachment::kGeneral;
+      attachment = attachment | TriggerAttachment::kGeneral;
       break;
 
     case TriggerEventType::kNone:
@@ -792,7 +792,7 @@ TriggerAttachment Attaches_To(TriggerEventType event) {
       break;
   }
 
-  return attach;
+  return attachment;
 }
 
 }  // namespace ra

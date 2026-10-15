@@ -164,7 +164,8 @@ bool TriggerClass::Spring(TriggerEventType event, ObjectClass* obj,
                           ra::Cell cell, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
-  const bool e1 = Class->event1(Event1, event, Class->house, obj, forced);
+  const bool e1 =
+      Class->event1.HasHappened(Event1, event, Class->house, obj, forced);
   bool e2 = false;
   bool execute = false;
 
@@ -188,13 +189,15 @@ bool TriggerClass::Spring(TriggerEventType event, ObjectClass* obj,
         break;
 
       case MULTI_AND:
-        e2 = Class->event2(Event2, event, Class->house, obj, forced);
+        e2 =
+            Class->event2.HasHappened(Event2, event, Class->house, obj, forced);
         execute = e1 && e2;
         break;
 
       case MULTI_LINKED:
       case MULTI_OR:
-        e2 = Class->event2(Event2, event, Class->house, obj, forced);
+        e2 =
+            Class->event2.HasHappened(Event2, event, Class->house, obj, forced);
         execute = e1 || e2;
         break;
       default:

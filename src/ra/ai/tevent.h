@@ -119,9 +119,9 @@ TriggerEventType Event_From_Name(std::string_view name);
 // Returns the kind of argument `event` takes, which the scenario editor
 // prompts for; NeedType::kNone when it takes none. NeedType::kTeam means the
 // event's team type, every other kind its data word.
-NeedType Event_Needs(TriggerEventType event);
+NeedType EventNeed(TriggerEventType event);
 // Returns the scenario editor's name for `event`.
-const char* Name_From_Event(TriggerEventType event);
+const char* EventName(TriggerEventType event);
 
 // The state one trigger keeps for one of its events, which a trigger type's
 // TriggerEvent reads and writes; TriggerClass holds one for each of its two
@@ -131,30 +131,31 @@ struct TriggerEventState {
   // object entering a cell, a forced spring) has happened, so the event keeps
   // counting on later checks until Reset() clears it. Without it a trigger
   // whose other event comes true later would miss the first.
-  bool IsTripped : 1 = false;
+  bool is_tripped : 1 = false;
 
   // Counts down to a TriggerEventType::kTime event; Reset() starts it.
-  engine::platform::Countdown<game::FrameTickSource> EventTimer;
+  engine::platform::Countdown<game::FrameTickSource> timer;
 
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    bool is_tripped = IsTripped;
-    ar(is_tripped, EventTimer);
-    IsTripped = is_tripped;
+    bool tripped = is_tripped;
+    ar(tripped, timer);
+    is_tripped = tripped;
   }
 };
 
 // One of the two events of a trigger type: which event it is and its
 // argument. Shared by every trigger of that type; the state of one trigger's
-// wait is the TriggerEventState passed to Reset() and operator().
+// wait is the TriggerEventState passed to Reset() and HasHappened().
 //
 // Example:
 //   TriggerEvent event(TriggerEventType::kCredits);
 //   event.set_value(5000);
 //   TriggerEventState state;
 //   event.Reset(state);
-//   if (event(state, TriggerEventType::kAny, HOUSE_USSR, nullptr, false)) { ...
+//   if (event.HasHappened(state, TriggerEventType::kAny, HOUSE_USSR, nullptr,
+//                         false)) { ...
 //   }
 class TriggerEvent {
  public:
@@ -166,78 +167,81 @@ class TriggerEvent {
   TeamType* Team = nullptr;
 
   TriggerEvent() : Event(TriggerEventType::kNone) {}
-  explicit TriggerEvent(TriggerEventType event) : Event(event) {}
+  explicit TriggerEvent(TriggerEventType type) : Event(type) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Makes `td` wait for the event again: clears its tripped flag and, for a
+  // Makes `state` wait for the event again: clears its tripped flag and, for a
   // TriggerEventType::kTime event, restarts its countdown. A trigger calls it
   // when it is made and after each spring of a persistent trigger, and the
   // scenario when a global the trigger's other event waits for changes.
-  void Reset(TriggerEventState& td) const;
+  void Reset(TriggerEventState& state) const;
   // Returns whether the event has happened for the trigger whose state is
-  // `td`. `event` is what caused the check: the moment events (entering,
+  // `state`. `cause` is what caused the check: the moment events (entering,
   // being attacked, crossing a line) only count when it is this event or
   // TriggerEventType::kAny, while the condition events (credits, globals, a
-  // house's losses) are checked whatever it is. `house` is the trigger's house
-  // and `object` the object that caused the check (for the entering events, the
-  // one that entered); nullptr for none. `forced` trips the event without a
-  // check, for a trigger another trigger forces.
-  bool operator()(TriggerEventState& td, TriggerEventType event,
-                  HousesType house, const ObjectClass* object,
-                  bool forced) const;
+  // house's losses) are checked whatever it is. `trigger_house` is the
+  // trigger's house and `object` the object that caused the check (for the
+  // entering events, the one that entered); nullptr for none. `forced` trips
+  // the event without a check, for a trigger another trigger forces.
+  bool HasHappened(TriggerEventState& state, TriggerEventType cause,
+                   HousesType trigger_house, const ObjectClass* object,
+                   bool forced) const;
   // Reads the event fields from the trigger entry `tokens` is parsing, in the
   // scenario's INI format: from format 2 on "event,team,value" with the team
   // as its heap slot; format 1 "event,team-or-value"; format 0
   // "event,-,-,team name,value,-". An event number that names no event reads
   // as TriggerEventType::kNone, and a team slot outside the heap as no team.
-  void Read_INI(base::Tokenizer& tokens);
-  // Returns the event as "event,team,value", the form Read_INI() reads from
+  void ReadIni(base::Tokenizer& tokens);
+  // Returns the event as "event,team,value", the form ReadIni() reads from
   // format 2 on, with the team as its position in the team type list (-1 for
   // none).
-  [[nodiscard]] std::string Build_INI_Entry() const;
+  [[nodiscard]] std::string ToIniEntry() const;
 
   // The event's argument. Which accessor applies depends on Event: a building,
   // unit, infantry or aircraft type for the "built" events, a house for the
   // house events, and otherwise a number (credits, minutes, a global, a
   // count). All of them share one saved word.
   [[nodiscard]] StructType structure() const {
-    return static_cast<StructType>(data_);
+    return static_cast<StructType>(argument_);
   }
   void set_structure(const StructType structure) {
-    data_ = static_cast<int32_t>(structure);
+    argument_ = static_cast<int32_t>(structure);
   }
-  [[nodiscard]] UnitType unit() const { return static_cast<UnitType>(data_); }
-  void set_unit(const UnitType unit) { data_ = static_cast<int32_t>(unit); }
+  [[nodiscard]] UnitType unit() const {
+    return static_cast<UnitType>(argument_);
+  }
+  void set_unit(const UnitType unit) { argument_ = static_cast<int32_t>(unit); }
   [[nodiscard]] InfantryType infantry() const {
-    return static_cast<InfantryType>(data_);
+    return static_cast<InfantryType>(argument_);
   }
   void set_infantry(const InfantryType infantry) {
-    data_ = static_cast<int32_t>(infantry);
+    argument_ = static_cast<int32_t>(infantry);
   }
   [[nodiscard]] AircraftType aircraft() const {
-    return static_cast<AircraftType>(data_);
+    return static_cast<AircraftType>(argument_);
   }
   void set_aircraft(const AircraftType aircraft) {
-    data_ = static_cast<int32_t>(aircraft);
+    argument_ = static_cast<int32_t>(aircraft);
   }
   // HousesType is one byte, the word's lowest. Storing one keeps the other
   // three, as the store into the union this replaced did, so the value a
   // [Trigs] entry saves does not change.
   [[nodiscard]] HousesType house() const {
-    return static_cast<HousesType>(static_cast<int8_t>(data_));
+    return static_cast<HousesType>(static_cast<int8_t>(argument_));
   }
   void set_house(const HousesType house) {
-    data_ = static_cast<int32_t>((static_cast<uint32_t>(data_) & ~0xFFU) |
-                                 static_cast<uint8_t>(house));
+    argument_ =
+        static_cast<int32_t>((static_cast<uint32_t>(argument_) & ~0xFFU) |
+                             static_cast<uint8_t>(house));
   }
-  [[nodiscard]] int32_t value() const { return data_; }
-  void set_value(const int32_t value) { data_ = value; }
+  [[nodiscard]] int32_t value() const { return argument_; }
+  void set_value(const int32_t value) { argument_ = value; }
 
  private:
-  int32_t data_ = 0;
+  int32_t argument_ = 0;
 };
 
 // What a trigger can be attached to, as bits: an event can go on several
@@ -260,7 +264,7 @@ enum class CNC_FLAG_ENUM TriggerAttachment {
 };
 
 // Returns what a trigger with `event` can be attached to.
-TriggerAttachment Attaches_To(TriggerEventType event);
+TriggerAttachment EventAttachment(TriggerEventType event);
 
 // An event type as an entry of the scenario editor's event lists, which shows
 // its name and sorts by it.
@@ -269,43 +273,41 @@ class EventChoice {
   // Implicit, so the choice table can be a brace list of event types.
   // NOLINTNEXTLINE(*-explicit-constructor)
   EventChoice(TriggerEventType event = TriggerEventType::kNone) noexcept
-      : Event(event) {}
+      : event_(event) {}
 
   // Implicit, so an entry compares directly against an event type.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TriggerEventType() const { return Event; }
-  bool operator==(const EventChoice& rvalue) const {
-    return Event == rvalue.Event;
+  operator TriggerEventType() const { return event_; }
+  bool operator==(const EventChoice& other) const {
+    return event_ == other.event_;
   }
-  bool operator!=(const EventChoice& rvalue) const {
-    return Event != rvalue.Event;
+  bool operator!=(const EventChoice& other) const {
+    return event_ != other.event_;
   }
-  bool operator>(const EventChoice& rvalue) const { return rvalue < *this; }
+  bool operator>(const EventChoice& other) const { return other < *this; }
   // Orders by description, ignoring case.
-  bool operator<(const EventChoice& rvalue) const {
+  bool operator<(const EventChoice& other) const {
     return std::ranges::lexicographical_compare(
-        std::string_view(Description()), std::string_view(rvalue.Description()),
+        std::string_view(Description()), std::string_view(other.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
   }
-  bool operator<=(const EventChoice& rvalue) const {
-    return Event == rvalue.Event || *this < rvalue;
+  bool operator<=(const EventChoice& other) const {
+    return event_ == other.event_ || *this < other;
   }
-  bool operator>=(const EventChoice& rvalue) const {
-    return Event == rvalue.Event || rvalue < *this;
+  bool operator>=(const EventChoice& other) const {
+    return event_ == other.event_ || other < *this;
   }
   // The event's name in the editor.
-  [[nodiscard]] const char* Description() const {
-    return Name_From_Event(Event);
-  }
+  [[nodiscard]] const char* Description() const { return EventName(event_); }
   // Draws the event's name as a list box line; `index` is unused.
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
-  TriggerEventType Event;
+  TriggerEventType event_;
 };
 
 // One entry per event type, indexed by it, for the editor's event lists.
-extern base::EnumArray<TriggerEventType, EventChoice> EventChoices;
+extern base::EnumArray<TriggerEventType, EventChoice> event_choices;
 
 extern template void TriggerEvent::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerEvent::Serialize<ArchiveReader>(ArchiveReader&);

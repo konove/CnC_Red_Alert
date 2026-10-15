@@ -169,12 +169,12 @@ TEST_F(TriggerTypeTest, DetachLeavesItsNamesakesAlone) {
 TEST_F(TriggerTypeTest, OneEventAttachesWhereThatEventDoes) {
   trigger_type_->event1.Event = TriggerEventType::kPlayerEntered;
   trigger_type_->event2.Event = TriggerEventType::kTime;
-  ASSERT_NE(Attaches_To(TriggerEventType::kPlayerEntered),
-            Attaches_To(TriggerEventType::kPlayerEntered) |
-                Attaches_To(TriggerEventType::kTime));
+  ASSERT_NE(EventAttachment(TriggerEventType::kPlayerEntered),
+            EventAttachment(TriggerEventType::kPlayerEntered) |
+                EventAttachment(TriggerEventType::kTime));
 
   EXPECT_EQ(trigger_type_->AttachesTo(),
-            Attaches_To(TriggerEventType::kPlayerEntered));
+            EventAttachment(TriggerEventType::kPlayerEntered));
 }
 
 TEST_F(TriggerTypeTest, TwoEventsAttachWhereEitherDoes) {
@@ -183,8 +183,8 @@ TEST_F(TriggerTypeTest, TwoEventsAttachWhereEitherDoes) {
   for (const MultiStyle control : {MULTI_AND, MULTI_OR, MULTI_LINKED}) {
     trigger_type_->event_control = control;
     EXPECT_EQ(trigger_type_->AttachesTo(),
-              Attaches_To(TriggerEventType::kPlayerEntered) |
-                  Attaches_To(TriggerEventType::kTime));
+              EventAttachment(TriggerEventType::kPlayerEntered) |
+                  EventAttachment(TriggerEventType::kTime));
   }
 }
 

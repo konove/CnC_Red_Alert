@@ -31,7 +31,7 @@ class TEventTest : public GameFixture {
     TheWorld().new_ini_format() = format;
     base::Tokenizer tokens(entry);
     TriggerEvent event;
-    event.Read_INI(tokens);
+    event.ReadIni(tokens);
     return event;
   }
 
