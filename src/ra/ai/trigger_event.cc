@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/tevent.h"
+#include "ra/ai/trigger_event.h"
 
 #include <cstdlib>
 #include <cstring>

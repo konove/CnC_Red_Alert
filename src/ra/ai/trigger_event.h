@@ -21,8 +21,8 @@
 // the state each trigger keeps for it while it waits (TriggerEventState), and
 // what an event can be attached to (TriggerAttachment).
 
-#ifndef CNC_RED_ALERT_RA_AI_TEVENT_H_
-#define CNC_RED_ALERT_RA_AI_TEVENT_H_
+#ifndef CNC_RED_ALERT_RA_AI_TRIGGER_EVENT_H_
+#define CNC_RED_ALERT_RA_AI_TRIGGER_EVENT_H_
 
 #include <cstdint>
 #include <string>
@@ -275,4 +275,4 @@ extern template void TriggerEvent::Serialize<ArchiveReader>(ArchiveReader&);
 template <>
 inline constexpr bool base::kIsFlagEnum<ra::TriggerAttachment> = true;
 
-#endif  // CNC_RED_ALERT_RA_AI_TEVENT_H_
+#endif  // CNC_RED_ALERT_RA_AI_TRIGGER_EVENT_H_

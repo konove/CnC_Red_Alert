@@ -2,7 +2,7 @@
 // reads its scenario INI fields, when it counts as having happened, and what
 // it can be attached to.
 
-#include "ra/ai/tevent.h"
+#include "ra/ai/trigger_event.h"
 
 #include <cstddef>
 #include <cstdint>
