@@ -128,7 +128,7 @@ struct TriggerEventState {
   // object entering a cell, a forced spring) has happened, so the event keeps
   // counting on later checks until Reset() clears it. Without it a trigger
   // whose other event comes true later would miss the first.
-  bool is_tripped : 1 = false;
+  bool is_tripped = false;
 
   // Counts down to a TriggerEventType::kTime event; Reset() starts it.
   engine::platform::Countdown<game::FrameTickSource> timer;
@@ -136,9 +136,7 @@ struct TriggerEventState {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    bool tripped = is_tripped;
-    ar(tripped, timer);
-    is_tripped = tripped;
+    ar(is_tripped, timer);
   }
 };
 
