@@ -78,23 +78,23 @@ class TEventTest : public GameFixture {
 // A number past the last event, in any format, reads as no event rather than
 // as one that indexes past the name table and always happens.
 TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
-  EXPECT_EQ(Read(2, "33,-1,5").Event, TriggerEventType::kNone);
-  EXPECT_EQ(Read(2, "-2,-1,5").Event, TriggerEventType::kNone);
-  EXPECT_EQ(Read(1, "99,5").Event, TriggerEventType::kNone);
-  EXPECT_EQ(Read(0, "40,0,0,None,5,0").Event, TriggerEventType::kNone);
+  EXPECT_EQ(Read(2, "33,-1,5").type(), TriggerEventType::kNone);
+  EXPECT_EQ(Read(2, "-2,-1,5").type(), TriggerEventType::kNone);
+  EXPECT_EQ(Read(1, "99,5").type(), TriggerEventType::kNone);
+  EXPECT_EQ(Read(0, "40,0,0,None,5,0").type(), TriggerEventType::kNone);
 }
 
 // Format 1 gives a team event's team as its heap slot.
 TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
   const TriggerEvent event = Read(1, "23,0");
-  EXPECT_EQ(event.Event, TriggerEventType::kLeavesMap);
-  EXPECT_EQ(event.Team, team_type_);
+  EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
+  EXPECT_EQ(event.team_type(), team_type_);
 }
 
 // A slot outside the heap reads as no team instead of failing a check.
 TEST_F(TEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
-  EXPECT_EQ(Read(1, "23,9").Team, nullptr);
-  EXPECT_EQ(Read(1, "23,-1").Team, nullptr);
+  EXPECT_EQ(Read(1, "23,9").team_type(), nullptr);
+  EXPECT_EQ(Read(1, "23,-1").team_type(), nullptr);
 }
 
 TEST_F(TEventTest, AForcedEventHasHappenedUntilReset) {
@@ -206,7 +206,7 @@ TEST_F(TEventTest, TheBridgeEventStaysTrippedOnceTheLastBridgeFalls) {
 
 TEST_F(TEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
   TriggerEvent event = Make(TriggerEventType::kLeavesMap);
-  event.Team = team_type_;
+  event.set_team_type(team_type_);
   EXPECT_FALSE(Check(event));
 
   auto* other_type = base::NewPooled<TeamType>();

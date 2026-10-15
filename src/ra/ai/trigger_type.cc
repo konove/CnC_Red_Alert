@@ -108,7 +108,7 @@ std::string TriggerType::Description() const {
 
   // The first event's value, when it has one worth showing.
   std::string value_text;
-  switch (EventNeed(event1.Event)) {
+  switch (EventNeed(event1.type())) {
     case NeedType::kNumber:
       value_text = absl::StrCat(event1.value());
       break;
@@ -165,14 +165,14 @@ std::string TriggerType::Description() const {
   return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
                          HouseTypeClass::As_Reference(house).Suffix,
                          persistence_mark, event_mark, action_mark,
-                         EventName(event1.Event), value_text);
+                         EventName(event1.type()), value_text);
 }
 
 TriggerAttachment TriggerType::AttachesTo() const {
-  TriggerAttachment attach = ra::EventAttachment(event1.Event);
+  TriggerAttachment attach = ra::EventAttachment(event1.type());
 
   if (event_control != MULTI_ONLY) {
-    attach = attach | ra::EventAttachment(event2.Event);
+    attach = attach | ra::EventAttachment(event2.type());
   }
   return attach;
 }

@@ -1479,10 +1479,10 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(index + TheMap().MapCellX, y)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->event1.Event ==
+            (trigger->Class->event1.type() ==
                  TriggerEventType::kCrossHorizontal ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event ==
+              trigger->Class->event2.type() ==
                   TriggerEventType::kCrossHorizontal))) {
           trigger->Spring(TriggerEventType::kCrossHorizontal, this,
                           Cell::Containing(Coord));
@@ -1499,9 +1499,10 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(x, index + TheMap().MapCellY)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->event1.Event == TriggerEventType::kCrossVertical ||
+            (trigger->Class->event1.type() ==
+                 TriggerEventType::kCrossVertical ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event ==
+              trigger->Class->event2.type() ==
                   TriggerEventType::kCrossVertical))) {
           trigger->Spring(TriggerEventType::kCrossVertical, this,
                           Cell::Containing(Coord));
@@ -1519,9 +1520,10 @@ bool FootClass::Per_Cell_Process(PCPType why) {
            TheWorld().map_trigger_id()++) {
         trigger =
             base::At(TheWorld().map_triggers(), TheWorld().map_trigger_id());
-        if ((trigger->Class->event1.Event == TriggerEventType::kEntersZone ||
+        if ((trigger->Class->event1.type() == TriggerEventType::kEntersZone ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event == TriggerEventType::kEntersZone)) &&
+              trigger->Class->event2.type() ==
+                  TriggerEventType::kEntersZone)) &&
             (TheMap().at(trigger->Cell).Zones.at(Techno_Type_Class()->MZone) ==
              TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone))) {
           trigger->Spring(TriggerEventType::kEntersZone, this,

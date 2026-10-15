@@ -366,9 +366,9 @@ TEST_F(TeamTypeTest, ReferencesSurviveWritingAndReadingHeapsWithHoles) {
   boats->set_trigger(flare);
   tanks->set_trigger(alarm);
   jeeps->set_trigger(siren);
-  alarm->event1.Team = jeeps;
-  siren->event1.Team = boats;
-  flare->event1.Team = tanks;
+  alarm->event1.set_team_type(jeeps);
+  siren->event1.set_team_type(boats);
+  flare->event1.set_team_type(tanks);
   alarm->action1 = MakeTriggerAction(
       {.type = TriggerActionType::kCreateTeam, .team_type = tanks});
   alarm->action2 = MakeTriggerAction(
@@ -395,9 +395,9 @@ TEST_F(TeamTypeTest, ReferencesSurviveWritingAndReadingHeapsWithHoles) {
   EXPECT_EQ(team("boats")->trigger(), trigger("flar"));
   EXPECT_EQ(team("tanks")->trigger(), trigger("alrm"));
   EXPECT_EQ(team("jeeps")->trigger(), trigger("sirn"));
-  EXPECT_EQ(trigger("alrm")->event1.Team, team("jeeps"));
-  EXPECT_EQ(trigger("sirn")->event1.Team, team("boats"));
-  EXPECT_EQ(trigger("flar")->event1.Team, team("tanks"));
+  EXPECT_EQ(trigger("alrm")->event1.team_type(), team("jeeps"));
+  EXPECT_EQ(trigger("sirn")->event1.team_type(), team("boats"));
+  EXPECT_EQ(trigger("flar")->event1.team_type(), team("tanks"));
   EXPECT_EQ(trigger("alrm")->action1->ToRecord().team_type, team("tanks"));
   EXPECT_EQ(trigger("alrm")->action2->ToRecord().trigger_type, trigger("flar"));
   EXPECT_EQ(trigger("flar")->action1->ToRecord().team_type, team("jeeps"));

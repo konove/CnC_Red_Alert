@@ -153,15 +153,8 @@ struct TriggerEventState {
 //   }
 class TriggerEvent {
  public:
-  // The event this is.
-  TriggerEventType Event = TriggerEventType::kNone;
-
-  // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
-  // none.
-  TeamType* Team = nullptr;
-
   TriggerEvent() = default;
-  explicit TriggerEvent(TriggerEventType type) : Event(type) {}
+  explicit TriggerEvent(TriggerEventType type) : type_(type) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
@@ -197,7 +190,7 @@ class TriggerEvent {
   // none).
   [[nodiscard]] std::string ToIniEntry() const;
 
-  // The event's argument. Which accessor applies depends on Event: a building,
+  // The event's argument. Which accessor applies depends on type(): a building,
   // unit, infantry or aircraft type for the "built" events, a house for the
   // house events, and otherwise a number (credits, minutes, a global, a
   // count). All of them share one saved word.
@@ -237,7 +230,18 @@ class TriggerEvent {
   [[nodiscard]] int32_t value() const { return argument_; }
   void set_value(const int32_t value) { argument_ = value; }
 
+  // The event this is.
+  [[nodiscard]] TriggerEventType type() const { return type_; }
+  void set_type(const TriggerEventType type) { type_ = type; }
+
+  // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
+  // none.
+  [[nodiscard]] TeamType* team_type() const { return team_type_; }
+  void set_team_type(TeamType* const team_type) { team_type_ = team_type; }
+
  private:
+  TriggerEventType type_ = TriggerEventType::kNone;
+  TeamType* team_type_ = nullptr;
   int32_t argument_ = 0;
 };
 

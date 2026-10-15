@@ -130,14 +130,14 @@ constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {
 
 void TriggerEvent::Reset(TriggerEventState& state) const {
   state.is_tripped = false;
-  if (Event == TriggerEventType::kTime) {
+  if (type_ == TriggerEventType::kTime) {
     state.timer.Set(value() * (kTicksPerMinute / 10));
   }
 }
 
 void TriggerEvent::Detach(const Target target) {
-  if (target.kind() == RTTI_TEAMTYPE && Team == target.AsTeamType()) {
-    Team = nullptr;
+  if (target.kind() == RTTI_TEAMTYPE && team_type_ == target.AsTeamType()) {
+    team_type_ = nullptr;
   }
 }
 
@@ -153,9 +153,9 @@ bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
   // the caller springs TriggerEventType::kAttacked from the code that does the
   // attacking. TriggerEventType::kAny lets them through as well, so a house's
   // per-frame check of a trigger counts them as having happened.
-  const bool checked_for_it = cause == Event || cause == TriggerEventType::kAny;
+  const bool checked_for_it = cause == type_ || cause == TriggerEventType::kAny;
 
-  switch (Event) {
+  switch (type_) {
     // The game-state events are true while their condition is, never tripped:
     // a global that is cleared again, or a timer that is reset, turns them
     // false.
@@ -201,7 +201,7 @@ bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
     // here. Nothing reads the house.
     case TriggerEventType::kLeavesMap:
       return HouseMeets(trigger_house, [&](const HouseClass& /*owner*/) {
-        return Trip(state, TeamHasLeftTheMap(Team));
+        return Trip(state, TeamHasLeftTheMap(team_type_));
       });
 
     // The editor calls this "Credits exceed (x100)", but the value is in
@@ -300,8 +300,9 @@ bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
 }
 
 std::string TriggerEvent::ToIniEntry() const {
-  return std::format("{},{},{}", std::to_underlying(Event),
-                     TheObjectHeaps().team_type().PositionOf(Team), value());
+  return std::format("{},{},{}", std::to_underlying(type_),
+                     TheObjectHeaps().team_type().PositionOf(team_type_),
+                     value());
 }
 
 void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
@@ -309,31 +310,31 @@ void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
     return base::ParseIntegerOr<int>(tokens.Next(), 0);
   };
   // An empty event field reads as 0, no event.
-  Event = EventFromNumber(next_number());
+  type_ = EventFromNumber(next_number());
 
   const int format = TheWorld().new_ini_format();
   if (format == 0) {
     tokens.Next();  // Old-format field, unused.
     tokens.Next();  // Old-format field, unused.
-    Team = TeamType::FromName(tokens.Next());
+    team_type_ = TeamType::FromName(tokens.Next());
     set_value(next_number());
     tokens.Next();  // Old-format field, unused.
   } else if (format == 1) {
     // One field holds the team or the value, whichever the event takes; an
     // empty one leaves both unset.
     const std::string_view token = tokens.Next();
-    Team = nullptr;
+    team_type_ = nullptr;
     set_value(-1);
     if (!token.empty()) {
-      if (EventNeed(Event) == NeedType::kTeam) {
-        Team = TheObjectHeaps().team_type().SlotOrNull(
+      if (EventNeed(type_) == NeedType::kTeam) {
+        team_type_ = TheObjectHeaps().team_type().SlotOrNull(
             base::ParseIntegerOr<int>(token, 0));
       } else {
         set_value(base::ParseIntegerOr<int>(token, 0));
       }
     }
   } else {
-    Team = TheObjectHeaps().team_type().SlotOrNull(next_number());
+    team_type_ = TheObjectHeaps().team_type().SlotOrNull(next_number());
     set_value(next_number());
   }
 }

@@ -334,13 +334,13 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
       */
       for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
         TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(index);
-        if ((tp->Class->event1.Event == TriggerEventType::kGlobalSet ||
-             tp->Class->event1.Event == TriggerEventType::kGlobalClear) &&
+        if ((tp->Class->event1.type() == TriggerEventType::kGlobalSet ||
+             tp->Class->event1.type() == TriggerEventType::kGlobalClear) &&
             tp->Class->event1.value() == global) {
           tp->Class->event2.Reset(tp->Event1);
         }
-        if ((tp->Class->event2.Event == TriggerEventType::kGlobalSet ||
-             tp->Class->event2.Event == TriggerEventType::kGlobalClear) &&
+        if ((tp->Class->event2.type() == TriggerEventType::kGlobalSet ||
+             tp->Class->event2.type() == TriggerEventType::kGlobalClear) &&
             tp->Class->event2.value() == global) {
           tp->Class->event1.Reset(tp->Event1);
         }
@@ -1869,8 +1869,9 @@ void DropUnfilledTypeReferences() {
   for (int i = 0; i < trigger_types.Count(); i++) {
     TriggerType& trigger_type = *trigger_types.ActiveAt(i);
     for (TriggerEvent* event : {&trigger_type.event1, &trigger_type.event2}) {
-      DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
-                     "event team");
+      TeamType* team = event->team_type();
+      DropIfUnfilled(team, team_types, trigger_type.Name(), "event team");
+      event->set_team_type(team);
     }
   }
 }

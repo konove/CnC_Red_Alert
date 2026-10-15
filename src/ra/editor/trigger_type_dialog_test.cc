@@ -198,7 +198,7 @@ struct Contents {
 // The value of the event's data that its kind of event uses, 0 for an event
 // that takes none.
 int EventValue(const TriggerEvent& event) {
-  const NeedType need = EventNeed(event.Event);
+  const NeedType need = EventNeed(event.type());
   if (need == NeedType::kHouse) {
     return static_cast<int>(event.house());
   }
@@ -227,10 +227,10 @@ Contents ContentsOf(const TriggerType& type) {
           .persistence = type.persistence,
           .event_control = type.event_control,
           .action_control = type.action_control,
-          .event1 = type.event1.Event,
-          .event2 = type.event2.Event,
-          .event1_team = type.event1.Team,
-          .event2_team = type.event2.Team,
+          .event1 = type.event1.type(),
+          .event2 = type.event2.type(),
+          .event1_team = type.event1.team_type(),
+          .event2_team = type.event2.team_type(),
           .event1_value = EventValue(type.event1),
           .event2_value = EventValue(type.event2),
           .action1 = type.action1->ToRecord(),
@@ -255,12 +255,12 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
 
   // Gives `event` the kind `type` and a value of the sort that kind takes.
   void Fill(TriggerEvent& event, const TriggerEventType type) const {
-    event.Event = type;
+    event.set_type(type);
     const NeedType need = EventNeed(type);
     if (need == NeedType::kHouse) {
       event.set_house(HOUSE_UKRAINE);
     } else if (need == NeedType::kTeam) {
-      event.Team = team_type_;
+      event.set_team_type(team_type_);
     } else if (need == NeedType::kStructure) {
       event.set_structure(STRUCT_POWER);
     } else if (need == NeedType::kInfantry) {
@@ -508,8 +508,8 @@ TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
   player().At(frame).Click(kOkX, kButtonsY);
 
   EXPECT_TRUE(trigger_type_->Edit());
-  EXPECT_EQ(trigger_type_->event1.Event, second);
-  EXPECT_EQ(trigger_type_->event2.Event, TriggerEventType::kNone);
+  EXPECT_EQ(trigger_type_->event1.type(), second);
+  EXPECT_EQ(trigger_type_->event2.type(), TriggerEventType::kNone);
 }
 
 TEST_F(TriggerTypeDialogDropListTest, AnActionPickedFromTheListIsStored) {

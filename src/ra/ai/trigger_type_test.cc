@@ -80,7 +80,7 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
   EXPECT_EQ(trigger_type_->persistence, TriggerType::VOLATILE);
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
-  EXPECT_EQ(trigger_type_->event1.Event, TriggerEventType::kNone);
+  EXPECT_EQ(trigger_type_->event1.type(), TriggerEventType::kNone);
   EXPECT_EQ(trigger_type_->action1->type(), TriggerActionType::kNone);
   EXPECT_EQ(trigger_type_->ID, 0);
 }
@@ -128,8 +128,8 @@ TEST_F(TriggerTypeTest, FromNameGivesNullForAnUnknownOrEmptyName) {
 }
 
 TEST_F(TriggerTypeTest, DetachClearsTheTeamTypeOfItsEventsAndActions) {
-  trigger_type_->event1.Team = team_type_;
-  trigger_type_->event2.Team = team_type_;
+  trigger_type_->event1.set_team_type(team_type_);
+  trigger_type_->event2.set_team_type(team_type_);
   trigger_type_->action1 = MakeTriggerAction(
       {.type = TriggerActionType::kCreateTeam, .team_type = team_type_});
   trigger_type_->action2 = MakeTriggerAction(
@@ -137,24 +137,24 @@ TEST_F(TriggerTypeTest, DetachClearsTheTeamTypeOfItsEventsAndActions) {
 
   trigger_type_->Detach(team_type_->As_Target());
 
-  EXPECT_EQ(trigger_type_->event1.Team, nullptr);
-  EXPECT_EQ(trigger_type_->event2.Team, nullptr);
+  EXPECT_EQ(trigger_type_->event1.team_type(), nullptr);
+  EXPECT_EQ(trigger_type_->event2.team_type(), nullptr);
   EXPECT_EQ(trigger_type_->action1->ToRecord().team_type, nullptr);
   EXPECT_EQ(trigger_type_->action2->ToRecord().team_type, nullptr);
 }
 
 TEST_F(TriggerTypeTest, DetachLeavesAnotherTeamTypeAlone) {
-  trigger_type_->event1.Team = team_type_;
-  trigger_type_->event2.Team = team_type_;
+  trigger_type_->event1.set_team_type(team_type_);
+  trigger_type_->event2.set_team_type(team_type_);
 
   trigger_type_->Detach(base::NewPooled<TeamType>()->As_Target());
 
-  EXPECT_EQ(trigger_type_->event1.Team, team_type_);
-  EXPECT_EQ(trigger_type_->event2.Team, team_type_);
+  EXPECT_EQ(trigger_type_->event1.team_type(), team_type_);
+  EXPECT_EQ(trigger_type_->event2.team_type(), team_type_);
 }
 
 TEST_F(TriggerTypeTest, DetachLeavesItsNamesakesAlone) {
-  trigger_type_->event1.Team = team_type_;
+  trigger_type_->event1.set_team_type(team_type_);
   trigger_type_->action1 =
       MakeTriggerAction({.type = TriggerActionType::kForceTrigger,
                          .trigger_type = trigger_type_});
@@ -162,13 +162,13 @@ TEST_F(TriggerTypeTest, DetachLeavesItsNamesakesAlone) {
   // A trigger type in the same slot number as the team type.
   trigger_type_->Detach(trigger_type_->As_Target());
 
-  EXPECT_EQ(trigger_type_->event1.Team, team_type_);
+  EXPECT_EQ(trigger_type_->event1.team_type(), team_type_);
   EXPECT_EQ(trigger_type_->action1->ToRecord().trigger_type, nullptr);
 }
 
 TEST_F(TriggerTypeTest, OneEventAttachesWhereThatEventDoes) {
-  trigger_type_->event1.Event = TriggerEventType::kPlayerEntered;
-  trigger_type_->event2.Event = TriggerEventType::kTime;
+  trigger_type_->event1.set_type(TriggerEventType::kPlayerEntered);
+  trigger_type_->event2.set_type(TriggerEventType::kTime);
   ASSERT_NE(EventAttachment(TriggerEventType::kPlayerEntered),
             EventAttachment(TriggerEventType::kPlayerEntered) |
                 EventAttachment(TriggerEventType::kTime));
@@ -178,8 +178,8 @@ TEST_F(TriggerTypeTest, OneEventAttachesWhereThatEventDoes) {
 }
 
 TEST_F(TriggerTypeTest, TwoEventsAttachWhereEitherDoes) {
-  trigger_type_->event1.Event = TriggerEventType::kPlayerEntered;
-  trigger_type_->event2.Event = TriggerEventType::kTime;
+  trigger_type_->event1.set_type(TriggerEventType::kPlayerEntered);
+  trigger_type_->event2.set_type(TriggerEventType::kTime);
   for (const MultiStyle control : {MULTI_AND, MULTI_OR, MULTI_LINKED}) {
     trigger_type_->event_control = control;
     EXPECT_EQ(trigger_type_->AttachesTo(),
@@ -202,11 +202,11 @@ TEST_F(TriggerTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(type->house, static_cast<HousesType>(1));
   EXPECT_EQ(type->event_control, MULTI_OR);
   EXPECT_EQ(type->action_control, MULTI_AND);
-  EXPECT_EQ(type->event1.Event, TriggerEventType::kTime);
-  EXPECT_EQ(type->event1.Team, nullptr);
+  EXPECT_EQ(type->event1.type(), TriggerEventType::kTime);
+  EXPECT_EQ(type->event1.team_type(), nullptr);
   EXPECT_EQ(type->event1.value(), 50);
-  EXPECT_EQ(type->event2.Event, TriggerEventType::kLeavesMap);
-  EXPECT_EQ(type->event2.Team, team_type_);
+  EXPECT_EQ(type->event2.type(), TriggerEventType::kLeavesMap);
+  EXPECT_EQ(type->event2.team_type(), team_type_);
   EXPECT_EQ(type->action1->type(), TriggerActionType::kCreateTeam);
   EXPECT_EQ(type->action1->ToRecord().team_type, team_type_);
   EXPECT_EQ(type->action1->ToRecord().trigger_type, nullptr);
@@ -235,7 +235,7 @@ TEST_F(TriggerTypeTest, MissingFieldsReadAsZero) {
   EXPECT_EQ(trigger_type_->house, static_cast<HousesType>(0));
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
-  EXPECT_EQ(trigger_type_->event1.Event, TriggerEventType::kNone);
+  EXPECT_EQ(trigger_type_->event1.type(), TriggerEventType::kNone);
   EXPECT_EQ(trigger_type_->action1->type(), TriggerActionType::kNone);
 }
 
@@ -462,7 +462,7 @@ TEST_F(TriggerTypeTest, TheDescriptionAddsTheNumberAnEventTakes) {
   if (!HasDescriptions()) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
-  trigger_type_->event1.Event = TriggerEventType::kCredits;
+  trigger_type_->event1.set_type(TriggerEventType::kCredits);
   trigger_type_->event1.set_value(50);
   EXPECT_EQ(
       trigger_type_->Description(),
@@ -494,7 +494,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheUnitAnEventTakes) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   SetText(UnitTypeClass::As_Reference(UNIT_JEEP).Full_Name(), "Ranger");
-  trigger_type_->event1.Event = TriggerEventType::kBuildUnit;
+  trigger_type_->event1.set_type(TriggerEventType::kBuildUnit);
   trigger_type_->event1.set_unit(UNIT_JEEP);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Ranger")) << DescriptionEnding();
@@ -505,7 +505,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheAircraftAnEventTakes) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   SetText(AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Full_Name(), "Hind");
-  trigger_type_->event1.Event = TriggerEventType::kBuildAircraft;
+  trigger_type_->event1.set_type(TriggerEventType::kBuildAircraft);
   trigger_type_->event1.set_aircraft(AIRCRAFT_HIND);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Hind")) << DescriptionEnding();
@@ -517,7 +517,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheBuildingAnEventTakes) {
   }
   SetText(BuildingTypeClass::As_Reference(STRUCT_POWER).Full_Name(),
           "Power Plant");
-  trigger_type_->event1.Event = TriggerEventType::kBuildBuilding;
+  trigger_type_->event1.set_type(TriggerEventType::kBuildBuilding);
   trigger_type_->event1.set_structure(STRUCT_POWER);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Power Plant"))
@@ -530,7 +530,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheInfantryAnEventTakes) {
   }
   SetText(InfantryTypeClass::As_Reference(INFANTRY_E1).Full_Name(),
           "Rifle Infantry");
-  trigger_type_->event1.Event = TriggerEventType::kBuildInfantry;
+  trigger_type_->event1.set_type(TriggerEventType::kBuildInfantry);
   trigger_type_->event1.set_infantry(INFANTRY_E1);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Rifle Infantry"))
@@ -550,10 +550,10 @@ TEST_F(TriggerTypeTest, ASavedHeapLoadsEveryTriggerTypeIntoItsOldSlot) {
   trigger_type_->persistence = TriggerType::PERSISTANT;
   trigger_type_->event_control = MULTI_AND;
   trigger_type_->action_control = MULTI_AND;
-  trigger_type_->event1.Event = TriggerEventType::kCredits;
+  trigger_type_->event1.set_type(TriggerEventType::kCredits);
   trigger_type_->event1.set_value(50);
-  trigger_type_->event2.Event = TriggerEventType::kLeavesMap;
-  trigger_type_->event2.Team = team_type_;
+  trigger_type_->event2.set_type(TriggerEventType::kLeavesMap);
+  trigger_type_->event2.set_team_type(team_type_);
   trigger_type_->action1 = MakeTriggerAction(
       {.type = TriggerActionType::kCreateTeam, .team_type = team_type_});
   trigger_type_->action2 = MakeTriggerAction(
@@ -579,7 +579,7 @@ TEST_F(TriggerTypeTest, ASavedHeapLoadsEveryTriggerTypeIntoItsOldSlot) {
   EXPECT_EQ(loaded->ID, 0);
   EXPECT_EQ(second->ID, 2);
   EXPECT_EQ(loaded->ToIniEntry(), entry);
-  EXPECT_EQ(loaded->event2.Team, team_type_);
+  EXPECT_EQ(loaded->event2.team_type(), team_type_);
   EXPECT_EQ(loaded->action2->ToRecord().trigger_type, second);
 }
 
