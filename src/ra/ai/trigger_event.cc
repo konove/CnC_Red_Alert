@@ -75,7 +75,17 @@ bool Trip(TriggerEventState& state, const bool happened) {
 template <class Condition>
 bool HouseMeets(const HousesType house, const Condition& condition) {
   const HouseClass* const object = HouseClass::As_Pointer(house);
-  return object == nullptr || condition(*object);
+  if (object == nullptr) {
+    // Every house is created before the triggers are read, so only a bad
+    // house number in the scenario gets here. The original skipped the check,
+    // which fires the trigger at once; that stays, but the scenario is wrong.
+    // Checked every frame, so warn once for each kind of condition.
+    DLOG_FIRST_N(WARNING, 1)
+        << "Trigger event names house " << std::to_underlying(house)
+        << ", which is not in the game; its condition counts as happened";
+    return true;
+  }
+  return condition(*object);
 }
 
 // Returns whether an emptied team of type `team_type` has left the map.

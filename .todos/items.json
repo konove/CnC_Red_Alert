@@ -16392,10 +16392,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T05:57:45Z",
+      "updated": "2026-10-15T06:01:32Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "`Set_Global_To()` now resets `tp->Event2` when event 1 waits for the changed global, so a paired time event restarts its countdown from the change (24 ANDed triggers in SCG05/06/09/10/11 and SCU04/07 now wait the full delay after the global changes). `AChangedGlobalRestartsTheOtherEventsCountdown` in `trigger_event_test.cc` covers both event orders.",
@@ -16593,16 +16593,29 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T06:11:56Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Kept the original \"not checked counts as happened\"; `HouseMeets()` now logs a `DLOG_FIRST_N` warning naming the missing house (once per kind of condition) and says why only a bad house number in the scenario can reach it. `AConditionOnAHouseNotInTheGameHasHappened` still pins the behaviour.",
       "toDecide": "Keep \"not checked counts as happened\", or make such a condition never happen?",
+      "decisions": [
+        {
+          "question": "How should a trigger condition on a house that isn't in the game (only possible with a bad house number in the scenario INI) be evaluated?",
+          "options": [
+            "Keep, warn once (Recommended)",
+            "Keep as is",
+            "Never happens",
+            "Split per event"
+          ],
+          "answer": "Keep, warn once (Recommended)",
+          "time": "2026-10-15T06:11:26Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
@@ -16616,8 +16629,8 @@
           ],
           "after": [
             "  const HouseClass* const object = HouseClass::As_Pointer(house);",
-            "  return object == nullptr || condition(*object);",
-            "}"
+            "  if (object == nullptr) {",
+            "    // Every house is created before the triggers are read, so only a bad"
           ],
           "lost": false
         }
