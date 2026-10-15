@@ -226,7 +226,7 @@ bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
   if ((Event == TriggerEventType::kAttacked ||
        Event == TriggerEventType::kDestroyed ||
        Event == TriggerEventType::kDiscovered ||
-       Event == TriggerEventType::kSpied || Event == TriggerEventType::kNone ||
+       Event == TriggerEventType::kSpied ||
        Event == TriggerEventType::kCrossHorizontal ||
        Event == TriggerEventType::kCrossVertical ||
        Event == TriggerEventType::kEntersZone ||
