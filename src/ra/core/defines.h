@@ -914,6 +914,12 @@ inline constexpr uint64_t kStructFlagFakeConst =
     base::Bit<uint64_t>(STRUCT_FAKECONST);
 inline constexpr uint64_t kStructFlagFakeWeap =
     base::Bit<uint64_t>(STRUCT_FAKEWEAP);
+inline constexpr uint64_t kStructFlagFakeYard =
+    base::Bit<uint64_t>(STRUCT_FAKE_YARD);
+inline constexpr uint64_t kStructFlagFakePen =
+    base::Bit<uint64_t>(STRUCT_FAKE_PEN);
+inline constexpr uint64_t kStructFlagFakeRadar =
+    base::Bit<uint64_t>(STRUCT_FAKE_RADAR);
 
 /**********************************************************************
 **	The overlays are enumerated here. An overlay functions similarly to

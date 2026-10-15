@@ -103,8 +103,7 @@ enum class TriggerEventType {
   kCrossVertical,
   kGlobalSet,    // Scenario global value() is set.
   kGlobalClear,  // Scenario global value() is clear.
-  // The trigger's house has no fake construction yard or fake war factory
-  // left.
+  // The trigger's house has no fake structure left.
   kFakesDestroyed,
   kLowPower,             // The event's house has less than full power.
   kAllBridgesDestroyed,  // No bridge is left on the map.

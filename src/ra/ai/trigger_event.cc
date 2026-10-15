@@ -230,12 +230,14 @@ bool TriggerEvent::HasHappened(TriggerEventState& state,
                  kStructFlagBarracks | kStructFlagConst)) == 0;
       });
 
-    // Only two of the five fakes count: a fake shipyard, sub pen or radar
-    // dome left standing does not stop the event.
+    // The original counted only the fake construction yard and war factory,
+    // so a fake shipyard, sub pen or radar dome left standing did not stop the
+    // event.
     case TriggerEventType::kFakesDestroyed:
       return HouseMeets(trigger_house, [](const HouseClass& owner) {
-        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) ==
-               0;
+        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap |
+                               kStructFlagFakeYard | kStructFlagFakePen |
+                               kStructFlagFakeRadar)) == 0;
       });
 
     case TriggerEventType::kCivilianEvacuated:

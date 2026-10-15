@@ -377,6 +377,14 @@ TEST_F(TriggerEventTest, TheTriggersHouseConditionsAreReadFromItsState) {
   EXPECT_FALSE(Check(fakes));
   owner_->BScan = kStructFlagFakeWeap;
   EXPECT_FALSE(Check(fakes));
+  owner_->BScan = kStructFlagFakeYard;
+  EXPECT_FALSE(Check(fakes));
+  owner_->BScan = kStructFlagFakePen;
+  EXPECT_FALSE(Check(fakes));
+  owner_->BScan = kStructFlagFakeRadar;
+  EXPECT_FALSE(Check(fakes));
+  owner_->BScan = kStructFlagConst | kStructFlagWeap;
+  EXPECT_TRUE(Check(fakes));
   owner_->BScan = 0;
   EXPECT_TRUE(Check(fakes));
 

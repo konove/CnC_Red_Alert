@@ -16440,31 +16440,42 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T07:23:19Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "`kFakesDestroyed` now checks all five fakes: added `kStructFlagFakeYard`, `kStructFlagFakePen` and `kStructFlagFakeRadar` to `ra/core/defines.h` and the mask, with tests for each fake. No shipped Allied or Soviet campaign mission uses the event, so only custom or expansion maps can notice the change.",
       "toDecide": "Keep the original two-fake check, or count all five fakes?",
+      "decisions": [
+        {
+          "question": "Should the fakes-destroyed trigger event count all five fake structures or keep the original two?",
+          "options": [
+            "Count all five (Recommended)",
+            "Keep the original two"
+          ],
+          "answer": "Count all five (Recommended)",
+          "time": "2026-10-15T07:21:55Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 225,
-          "endLine": 225,
+          "startLine": 236,
+          "endLine": 236,
           "text": "    case TriggerEventType::kFakesDestroyed:",
           "before": [
-            "",
-            "    // Only two of the five fakes count: a fake shipyard, sub pen or radar",
-            "    // dome left standing does not stop the event."
+            "    // The original counted only the fake construction yard and war factory,",
+            "    // so a fake shipyard, sub pen or radar dome left standing did not stop the",
+            "    // event."
           ],
           "after": [
             "      return HouseMeets(trigger_house, [](const HouseClass& owner) {",
-            "        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) ==",
-            "               0;"
+            "        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap |",
+            "                               kStructFlagFakeYard | kStructFlagFakePen |"
           ],
           "lost": false
         }
@@ -16595,10 +16606,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T06:11:56Z",
+      "updated": "2026-10-15T06:19:32Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Kept the original \"not checked counts as happened\"; `HouseMeets()` now logs a `DLOG_FIRST_N` warning naming the missing house (once per kind of condition) and says why only a bad house number in the scenario can reach it. `AConditionOnAHouseNotInTheGameHasHappened` still pins the behaviour.",
