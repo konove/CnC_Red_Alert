@@ -190,6 +190,15 @@ class TriggerEvent {
   // none).
   [[nodiscard]] std::string ToIniEntry() const;
 
+  // The event this is.
+  [[nodiscard]] TriggerEventType type() const { return type_; }
+  void set_type(const TriggerEventType type) { type_ = type; }
+
+  // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
+  // none.
+  [[nodiscard]] TeamType* team_type() const { return team_type_; }
+  void set_team_type(TeamType* const team_type) { team_type_ = team_type; }
+
   // The event's argument. Which accessor applies depends on type(): a building,
   // unit, infantry or aircraft type for the "built" events, a house for the
   // house events, and otherwise a number (credits, minutes, a global, a
@@ -229,15 +238,6 @@ class TriggerEvent {
   }
   [[nodiscard]] int32_t value() const { return argument_; }
   void set_value(const int32_t value) { argument_ = value; }
-
-  // The event this is.
-  [[nodiscard]] TriggerEventType type() const { return type_; }
-  void set_type(const TriggerEventType type) { type_ = type; }
-
-  // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
-  // none.
-  [[nodiscard]] TeamType* team_type() const { return team_type_; }
-  void set_team_type(TeamType* const team_type) { team_type_ = team_type; }
 
  private:
   TriggerEventType type_ = TriggerEventType::kNone;

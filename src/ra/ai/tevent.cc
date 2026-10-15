@@ -299,12 +299,6 @@ bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
   }
 }
 
-std::string TriggerEvent::ToIniEntry() const {
-  return std::format("{},{},{}", std::to_underlying(type_),
-                     TheObjectHeaps().team_type().PositionOf(team_type_),
-                     value());
-}
-
 void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
   const auto next_number = [&tokens] {
     return base::ParseIntegerOr<int>(tokens.Next(), 0);
@@ -337,6 +331,12 @@ void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
     team_type_ = TheObjectHeaps().team_type().SlotOrNull(next_number());
     set_value(next_number());
   }
+}
+
+std::string TriggerEvent::ToIniEntry() const {
+  return std::format("{},{},{}", std::to_underlying(type_),
+                     TheObjectHeaps().team_type().PositionOf(team_type_),
+                     value());
 }
 
 NeedType EventNeed(TriggerEventType event) {
