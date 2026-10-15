@@ -4,14 +4,20 @@
 
 #include "ra/ai/tevent.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/flags.h"
 #include "base/pooled.h"
 #include "base/strings/tokenizer.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -22,6 +28,7 @@
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
+#include "ra/objects/type.h"
 #include "ra/startup/game_test_util.h"
 
 namespace ra {
@@ -91,10 +98,93 @@ TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
   EXPECT_EQ(event.team_type(), team_type_);
 }
 
+// Format 1 gives the value in the same field; an empty field sets neither.
+TEST_F(TEventTest, FormatOneReadsTheValueOrNothing) {
+  const TriggerEvent credits = Read(1, "12,5000");
+  EXPECT_EQ(credits.type(), TriggerEventType::kCredits);
+  EXPECT_EQ(credits.value(), 5000);
+  EXPECT_EQ(credits.team_type(), nullptr);
+
+  const TriggerEvent empty = Read(1, "23,");
+  EXPECT_EQ(empty.type(), TriggerEventType::kLeavesMap);
+  EXPECT_EQ(empty.team_type(), nullptr);
+  EXPECT_EQ(empty.value(), -1);
+}
+
+// Format 0 names the team and has three fields nothing reads.
+TEST_F(TEventTest, FormatZeroReadsTheTeamByName) {
+  const TriggerEvent event = Read(0, "23,7,8,tanks,42,9");
+  EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
+  EXPECT_EQ(event.team_type(), team_type_);
+  EXPECT_EQ(event.value(), 42);
+}
+
+// From format 2 on the team is its heap slot, and ToIniEntry() writes the
+// same form back.
+TEST_F(TEventTest, TheCurrentFormatReadsBackWhatToIniEntryWrites) {
+  const TriggerEvent event = Read(2, "23,0,7");
+  EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
+  EXPECT_EQ(event.team_type(), team_type_);
+  EXPECT_EQ(event.value(), 7);
+  EXPECT_EQ(event.ToIniEntry(), "23,0,7");
+  EXPECT_EQ(TriggerEvent(TriggerEventType::kTime).ToIniEntry(), "13,-1,0");
+}
+
 // A slot outside the heap reads as no team instead of failing a check.
 TEST_F(TEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
   EXPECT_EQ(Read(1, "23,9").team_type(), nullptr);
   EXPECT_EQ(Read(1, "23,-1").team_type(), nullptr);
+}
+
+// HousesType is one byte: storing a house keeps the other three bytes of the
+// event's argument, as the store into the union it replaced did.
+TEST_F(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
+  TriggerEvent event(TriggerEventType::kPlayerEntered);
+  event.set_value(0x12345600);
+  event.set_house(HOUSE_USSR);
+  EXPECT_EQ(event.value(), 0x12345600 | static_cast<uint8_t>(HOUSE_USSR));
+  EXPECT_EQ(event.house(), HOUSE_USSR);
+}
+
+TEST_F(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
+  TriggerEvent event(TriggerEventType::kPlayerEntered);
+  event.set_value(0x12345600);
+  event.set_house(HOUSE_NONE);
+  EXPECT_EQ(event.value(), 0x123456FF);
+  EXPECT_EQ(event.house(), HOUSE_NONE);
+}
+
+TEST_F(TEventTest, DetachDropsOnlyItsOwnTeamType) {
+  TriggerEvent event(TriggerEventType::kLeavesMap);
+  event.set_team_type(team_type_);
+  event.Detach(base::NewPooled<TeamType>()->As_Target());
+  EXPECT_EQ(event.team_type(), team_type_);
+
+  event.Detach(team_type_->As_Target());
+  EXPECT_EQ(event.team_type(), nullptr);
+}
+
+// A trigger's wait survives a saved game: whether it is tripped and how much
+// of its countdown is left.
+TEST_F(TEventTest, TheStateOfAWaitIsSaved) {
+  TriggerEventState saved_state;
+  saved_state.is_tripped = true;
+  saved_state.timer.Set(450);
+  std::vector<std::byte> bytes;
+  {
+    VectorSink sink(bytes);
+    ArchiveWriter writer(sink);
+    writer(saved_state);
+  }
+
+  TriggerEventState loaded;
+  SpanSource source{std::span<const std::byte>(bytes)};
+  // NOLINTNEXTLINE(misc-const-correctness): the call operator is non-const.
+  ArchiveReader reader(source);
+  reader(loaded);
+  EXPECT_EQ(reader.error(), "");
+  EXPECT_TRUE(loaded.is_tripped);
+  EXPECT_EQ(loaded.timer.Remaining(), 450);
 }
 
 TEST_F(TEventTest, AForcedEventHasHappenedUntilReset) {
@@ -214,9 +304,25 @@ TEST_F(TEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
   other->IsLeaveMap = true;
   EXPECT_FALSE(Check(event));
 
+  InitInfantryTypes();
+  TheObjectHeaps().infantry().Reset(1);
+  // No rules are loaded, and a team takes no member that looks dead.
+  InfantryTypeClass::As_Reference(INFANTRY_E1).MaxStrength = 50;
+  team_type_->set_house(HOUSE_GREECE);
+  team_type_->AddMember(
+      {.quantity = 1, .type = &InfantryTypeClass::As_Reference(INFANTRY_E1)});
   auto* team = base::NewPooled<TeamClass>(team_type_);
   EXPECT_FALSE(Check(event));
+  auto* member = base::NewPooled<InfantryClass>(INFANTRY_E1, HOUSE_GREECE);
+  // An object that is not on the map joins a team only while a scenario is
+  // being read.
+  TheWorld().scenario_init() = 1;
+  ASSERT_TRUE(team->Add(member));
+  TheWorld().scenario_init() = 0;
   team->IsLeaveMap = true;
+  EXPECT_FALSE(Check(event));
+
+  team->Remove(member);
   EXPECT_TRUE(Check(event));
   EXPECT_TRUE(state_.is_tripped);
 }
@@ -353,6 +459,17 @@ TEST_F(TEventTest, AConditionOnAHouseNotInTheGameHasHappened) {
   TriggerEvent thieved = Make(TriggerEventType::kThieved);
   thieved.set_house(HOUSE_ENGLAND);
   EXPECT_TRUE(Check(thieved));
+}
+
+// A number that is no event, which only a damaged saved game could hold,
+// takes nothing, attaches to nothing and always counts as having happened.
+TEST_F(TEventTest, ANumberThatIsNoEventIsHandledAsItAlwaysWas) {
+  // Out of range on purpose.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  constexpr auto kNoEvent = static_cast<TriggerEventType>(99);
+  EXPECT_EQ(EventNeed(kNoEvent), NeedType::kNone);
+  EXPECT_EQ(EventAttachment(kNoEvent), TriggerAttachment::kNone);
+  EXPECT_TRUE(Check(TriggerEvent(kNoEvent)));
 }
 
 // What each event can be attached to, as the scenario's trigger lists and

@@ -7,7 +7,6 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -687,24 +686,6 @@ TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
   Draw(true, FontType::k6PointGradient);
 
   EXPECT_EQ(CountOf(game::kTransparentBlack), kWidth * kHeight);
-}
-
-// HousesType is one byte: storing a house keeps the other three bytes of the
-// event's argument, as the store into the union it replaced did.
-TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
-  TriggerEvent event(TriggerEventType::kPlayerEntered);
-  event.set_value(0x12345600);
-  event.set_house(HOUSE_USSR);
-  EXPECT_EQ(event.value(), 0x12345600 | static_cast<uint8_t>(HOUSE_USSR));
-  EXPECT_EQ(event.house(), HOUSE_USSR);
-}
-
-TEST(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
-  TriggerEvent event(TriggerEventType::kPlayerEntered);
-  event.set_value(0x12345600);
-  event.set_house(HOUSE_NONE);
-  EXPECT_EQ(event.value(), 0x123456FF);
-  EXPECT_EQ(event.house(), HOUSE_NONE);
 }
 
 }  // namespace
