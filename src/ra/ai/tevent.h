@@ -255,7 +255,6 @@ enum class CNC_FLAG_ENUM AttachType {
   // The game state, checked every frame (time, globals, the mission timer,
   // the bridges).
   ATTACH_GENERAL = 0x10,
-  ATTACH_TEAM = 0x20  // A team.
 };
 using enum AttachType;
 
