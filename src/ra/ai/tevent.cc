@@ -64,6 +64,35 @@ TriggerEventType EventFromNumber(const int number) {
   return *event;
 }
 
+// Trips `state` when `happened`, so a moment that has passed keeps counting
+// until the trigger is reset. Returns `happened`.
+bool Trip(TriggerEventState& state, const bool happened) {
+  if (happened) {
+    state.is_tripped = true;
+  }
+  return happened;
+}
+
+// Returns whether `condition` holds for the house `house`, or true when that
+// house is not in the game: such a condition is not checked.
+template <class Condition>
+bool HouseMeets(const HousesType house, const Condition& condition) {
+  const HouseClass* const object = HouseClass::As_Pointer(house);
+  return object == nullptr || condition(*object);
+}
+
+// Returns whether an emptied team of type `team_type` has left the map.
+bool TeamHasLeftTheMap(const TeamType* const team_type) {
+  const auto& teams = TheObjectHeaps().team();
+  for (int index = 0; index < teams.Count(); index++) {
+    const TeamClass* const team = teams.ActiveAt(index);
+    if (team->Class == team_type && team->Is_Empty() && team->IsLeaveMap) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // The scenario editor's name for each event, which its lists show and sort by.
@@ -157,312 +186,159 @@ void TriggerEvent::Reset(TriggerEventState& state) const {
 bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
                                HousesType trigger_house,
                                const ObjectClass* object, bool forced) const {
-  if (forced) {
+  if (forced || state.is_tripped) {
     state.is_tripped = true;
-  }
-
-  if (state.is_tripped) {
     return true;
-  }
-
-  // The game-state events are true while their condition is, never tripped:
-  // a global that is cleared again, or a timer that is reset, turns them
-  // false.
-  switch (Event) {
-    case TriggerEventType::kGlobalSet:
-      return base::At(TheScenario().GlobalFlags, value());
-
-    case TriggerEventType::kGlobalClear:
-      return !base::At(TheScenario().GlobalFlags, value());
-
-    case TriggerEventType::kMissionTimerExpired:
-      return TheScenario().MissionTimer.IsRunning() &&
-             TheScenario().MissionTimer.IsFinished();
-
-    case TriggerEventType::kTime:
-      return state.timer.IsFinished();
-    case TriggerEventType::kNone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kAllBridgesDestroyed:
-    case TriggerEventType::kBuildingExists:
-    default:
-      break;
-  }
-
-  // An unused event never happens.
-  if (Event == TriggerEventType::kNone) {
-    return false;
   }
 
   // The moment events are true merely because the check was made for them:
   // the caller springs TriggerEventType::kAttacked from the code that does the
   // attacking. TriggerEventType::kAny lets them through as well, so a house's
   // per-frame check of a trigger counts them as having happened.
-  if ((Event == TriggerEventType::kAttacked ||
-       Event == TriggerEventType::kDestroyed ||
-       Event == TriggerEventType::kDiscovered ||
-       Event == TriggerEventType::kSpied ||
-       Event == TriggerEventType::kCrossHorizontal ||
-       Event == TriggerEventType::kCrossVertical ||
-       Event == TriggerEventType::kEntersZone ||
-       Event == TriggerEventType::kPlayerEntered) &&
-      (cause != Event && cause != TriggerEventType::kAny)) {
-    return false;
-  }
+  const bool checked_for_it = cause == Event || cause == TriggerEventType::kAny;
 
-  // The entering events also need the object that entered to belong to the
-  // event's house; the trigger's own house does not matter.
-  if (Event == TriggerEventType::kPlayerEntered ||
-      Event == TriggerEventType::kCrossHorizontal ||
-      Event == TriggerEventType::kCrossVertical ||
-      Event == TriggerEventType::kEntersZone) {
-    if (!object || object->Owner() != this->house()) {
+  switch (Event) {
+    // The game-state events are true while their condition is, never tripped:
+    // a global that is cleared again, or a timer that is reset, turns them
+    // false.
+    case TriggerEventType::kGlobalSet:
+      return base::At(TheScenario().GlobalFlags, value());
+    case TriggerEventType::kGlobalClear:
+      return !base::At(TheScenario().GlobalFlags, value());
+    case TriggerEventType::kMissionTimerExpired:
+      return TheScenario().MissionTimer.IsRunning() &&
+             TheScenario().MissionTimer.IsFinished();
+    case TriggerEventType::kTime:
+      return state.timer.IsFinished();
+
+    // An unused event never happens.
+    case TriggerEventType::kNone:
       return false;
-    }
-    state.is_tripped = true;
-    return true;
+
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kSpied:
+      return checked_for_it;
+
+    // The entering events also need the object that entered to belong to the
+    // event's house; the trigger's own house does not matter.
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kEntersZone:
+      return Trip(state, checked_for_it && object != nullptr &&
+                             object->Owner() == house());
+
+    // Tripped, so the event stays true if a bridge is repaired.
+    case TriggerEventType::kAllBridgesDestroyed:
+      return Trip(state, TheScenario().BridgeCount == 0);
+
+    // The events below check a house's state, first the trigger's own
+    // house's. An event whose house cannot be found is not checked and counts
+    // as having happened.
+
+    // A team springs the logic triggers itself once its last member has left
+    // the map, just before it deletes itself, so it is still in the heap
+    // here. Nothing reads the house.
+    case TriggerEventType::kLeavesMap:
+      return HouseMeets(trigger_house, [&](const HouseClass& /*owner*/) {
+        return Trip(state, TeamHasLeftTheMap(Team));
+      });
+
+    // The editor calls this "Credits exceed (x100)", but the value is in
+    // credits.
+    case TriggerEventType::kCredits:
+      return HouseMeets(trigger_house, [this](const HouseClass& owner) {
+        return owner.Available_Money() >= value();
+      });
+
+    case TriggerEventType::kNoFactories:
+      return HouseMeets(trigger_house, [](const HouseClass& owner) {
+        return (owner.BScan &
+                (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
+                 kStructFlagBarracks | kStructFlagConst)) == 0;
+      });
+
+    // Only two of the five fakes count: a fake shipyard, sub pen or radar
+    // dome left standing does not stop the event.
+    case TriggerEventType::kFakesDestroyed:
+      return HouseMeets(trigger_house, [](const HouseClass& owner) {
+        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) ==
+               0;
+      });
+
+    case TriggerEventType::kCivilianEvacuated:
+      return HouseMeets(trigger_house, [](const HouseClass& owner) {
+        return owner.IsCivEvacuated;
+      });
+
+    // A structure past the 64 the scan holds never exists.
+    case TriggerEventType::kBuildingExists:
+      return HouseMeets(trigger_house, [this](const HouseClass& owner) {
+        return (owner.ActiveBScan & ScanBit(static_cast<int>(structure()))) !=
+               0;
+      });
+
+    // The house only remembers what it built last, so the building events
+    // are tripped to outlast the next thing it builds.
+    case TriggerEventType::kBuildBuilding:
+      return HouseMeets(trigger_house, [&](const HouseClass& owner) {
+        return Trip(state, owner.JustBuiltStructure == structure());
+      });
+    case TriggerEventType::kBuildUnit:
+      return HouseMeets(trigger_house, [&](const HouseClass& owner) {
+        return Trip(state, owner.JustBuiltUnit == unit());
+      });
+    case TriggerEventType::kBuildInfantry:
+      return HouseMeets(trigger_house, [&](const HouseClass& owner) {
+        return Trip(state, owner.JustBuiltInfantry == infantry());
+      });
+    case TriggerEventType::kBuildAircraft:
+      return HouseMeets(trigger_house, [&](const HouseClass& owner) {
+        return Trip(state, owner.JustBuiltAircraft == aircraft());
+      });
+
+    case TriggerEventType::kBuildingsLost:
+      return HouseMeets(trigger_house, [this](const HouseClass& owner) {
+        return std::cmp_greater_equal(owner.BuildingsLost, value());
+      });
+    case TriggerEventType::kUnitsLost:
+      return HouseMeets(trigger_house, [this](const HouseClass& owner) {
+        return std::cmp_greater_equal(owner.UnitsLost, value());
+      });
+
+    // Then the house the event names.
+    case TriggerEventType::kLowPower:
+      return HouseMeets(house(), [](const HouseClass& named) {
+        return named.Power_Fraction() < 1;
+      });
+    case TriggerEventType::kThieved:
+      return HouseMeets(
+          house(), [](const HouseClass& named) { return named.IsThieved; });
+    case TriggerEventType::kHouseDiscovered:
+      return HouseMeets(
+          house(), [](const HouseClass& named) { return named.IsDiscovered; });
+    case TriggerEventType::kBuildingsDestroyed:
+      return HouseMeets(house(), [](const HouseClass& named) {
+        return named.ActiveBScan == 0;
+      });
+    // Vessels and aircraft do not count.
+    case TriggerEventType::kUnitsDestroyed:
+      return HouseMeets(house(), [](const HouseClass& named) {
+        return (named.ActiveUScan | named.ActiveIScan) == 0;
+      });
+    // Aircraft do not count.
+    case TriggerEventType::kAllDestroyed:
+      return HouseMeets(house(), [](const HouseClass& named) {
+        return (named.ActiveBScan | named.ActiveUScan | named.ActiveIScan |
+                named.ActiveVScan) == 0;
+      });
+
+    case TriggerEventType::kAny:
+    default:
+      return true;
   }
-
-  // Tripped, so the event stays true if a bridge is repaired.
-  if (Event == TriggerEventType::kAllBridgesDestroyed) {
-    if (TheScenario().BridgeCount) {
-      return false;
-    }
-    state.is_tripped = true;
-    return true;
-  }
-
-  // The events below check a house's state, first the trigger's own house's.
-  // An event whose house cannot be found is not checked and counts as having
-  // happened.
-  const HouseClass* const owner = HouseClass::As_Pointer(trigger_house);
-  int team_index = 0;
-  if (owner != nullptr) {
-    switch (Event) {
-      // A team springs the logic triggers itself once its last member has
-      // left the map, just before it deletes itself, so it is still in the
-      // heap here.
-      case TriggerEventType::kLeavesMap:
-        for (team_index = 0; team_index < TheObjectHeaps().team().Count();
-             team_index++) {
-          const TeamClass* team = TheObjectHeaps().team().ActiveAt(team_index);
-          if (team->Class == Team && team->Is_Empty() && team->IsLeaveMap) {
-            state.is_tripped = true;
-            break;
-          }
-        }
-        if (team_index == TheObjectHeaps().team().Count()) {
-          return false;
-        }
-        break;
-
-      // The editor calls this "Credits exceed (x100)", but the value is in
-      // credits.
-      case TriggerEventType::kCredits:
-        if (owner->Available_Money() < value()) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kNoFactories:
-        if (owner->BScan &
-            (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
-             kStructFlagBarracks | kStructFlagConst)) {
-          return false;
-        }
-        break;
-
-      // Only two of the five fakes count: a fake shipyard, sub pen or radar
-      // dome left standing does not stop the event.
-      case TriggerEventType::kFakesDestroyed:
-        if (owner->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kCivilianEvacuated:
-        if (!owner->IsCivEvacuated) {
-          return false;
-        }
-        break;
-
-      // A structure past the 64 the scan holds never exists.
-      case TriggerEventType::kBuildingExists:
-        if ((owner->ActiveBScan & ScanBit(static_cast<int>(structure()))) ==
-            0) {
-          return false;
-        }
-        break;
-
-      // The house only remembers what it built last, so the building
-      // events are tripped to outlast the next thing it builds.
-      case TriggerEventType::kBuildBuilding:
-        if (owner->JustBuiltStructure != structure()) {
-          return false;
-        }
-        state.is_tripped = true;
-        break;
-
-      case TriggerEventType::kBuildUnit:
-        if (owner->JustBuiltUnit != unit()) {
-          return false;
-        }
-        state.is_tripped = true;
-        break;
-
-      case TriggerEventType::kBuildInfantry:
-        if (owner->JustBuiltInfantry != infantry()) {
-          return false;
-        }
-        state.is_tripped = true;
-        break;
-
-      case TriggerEventType::kBuildAircraft:
-        if (owner->JustBuiltAircraft != aircraft()) {
-          return false;
-        }
-        state.is_tripped = true;
-        break;
-
-      case TriggerEventType::kBuildingsLost:
-        if (std::cmp_less(owner->BuildingsLost, value())) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kUnitsLost:
-        if (std::cmp_less(owner->UnitsLost, value())) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kNone:
-      case TriggerEventType::kPlayerEntered:
-      case TriggerEventType::kSpied:
-      case TriggerEventType::kThieved:
-      case TriggerEventType::kDiscovered:
-      case TriggerEventType::kHouseDiscovered:
-      case TriggerEventType::kAttacked:
-      case TriggerEventType::kDestroyed:
-      case TriggerEventType::kAny:
-      case TriggerEventType::kUnitsDestroyed:
-      case TriggerEventType::kBuildingsDestroyed:
-      case TriggerEventType::kAllDestroyed:
-      case TriggerEventType::kTime:
-      case TriggerEventType::kMissionTimerExpired:
-      case TriggerEventType::kEntersZone:
-      case TriggerEventType::kCrossHorizontal:
-      case TriggerEventType::kCrossVertical:
-      case TriggerEventType::kGlobalSet:
-      case TriggerEventType::kGlobalClear:
-      case TriggerEventType::kLowPower:
-      case TriggerEventType::kAllBridgesDestroyed:
-      default:
-        break;
-    }
-  }
-
-  // Then the house the event names.
-  const HouseClass* const event_house = HouseClass::As_Pointer(house());
-  if (event_house != nullptr) {
-    switch (Event) {
-      case TriggerEventType::kLowPower:
-        if (event_house->Power_Fraction() >= 1) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kThieved:
-        if (!event_house->IsThieved) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kHouseDiscovered:
-        if (!event_house->IsDiscovered) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kBuildingsDestroyed:
-        if (event_house->ActiveBScan) {
-          return false;
-        }
-        break;
-
-      // Vessels and aircraft do not count.
-      case TriggerEventType::kUnitsDestroyed:
-        if (event_house->ActiveUScan | event_house->ActiveIScan) {
-          return false;
-        }
-        break;
-
-      // Aircraft do not count.
-      case TriggerEventType::kAllDestroyed:
-        if (event_house->ActiveBScan | event_house->ActiveUScan |
-            event_house->ActiveIScan | event_house->ActiveVScan) {
-          return false;
-        }
-        break;
-
-      case TriggerEventType::kNone:
-      case TriggerEventType::kPlayerEntered:
-      case TriggerEventType::kSpied:
-      case TriggerEventType::kDiscovered:
-      case TriggerEventType::kAttacked:
-      case TriggerEventType::kDestroyed:
-      case TriggerEventType::kAny:
-      case TriggerEventType::kCredits:
-      case TriggerEventType::kTime:
-      case TriggerEventType::kMissionTimerExpired:
-      case TriggerEventType::kBuildingsLost:
-      case TriggerEventType::kUnitsLost:
-      case TriggerEventType::kNoFactories:
-      case TriggerEventType::kCivilianEvacuated:
-      case TriggerEventType::kBuildBuilding:
-      case TriggerEventType::kBuildUnit:
-      case TriggerEventType::kBuildInfantry:
-      case TriggerEventType::kBuildAircraft:
-      case TriggerEventType::kLeavesMap:
-      case TriggerEventType::kEntersZone:
-      case TriggerEventType::kCrossHorizontal:
-      case TriggerEventType::kCrossVertical:
-      case TriggerEventType::kGlobalSet:
-      case TriggerEventType::kGlobalClear:
-      case TriggerEventType::kFakesDestroyed:
-      case TriggerEventType::kAllBridgesDestroyed:
-      case TriggerEventType::kBuildingExists:
-      default:
-        break;
-    }
-  }
-
-  return true;
 }
 
 std::string TriggerEvent::ToIniEntry() const {
