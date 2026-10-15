@@ -155,13 +155,13 @@ struct TriggerEventState {
 class TriggerEvent {
  public:
   // The event this is.
-  TriggerEventType Event;
+  TriggerEventType Event = TriggerEventType::kNone;
 
   // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
   // none.
   TeamType* Team = nullptr;
 
-  TriggerEvent() : Event(TriggerEventType::kNone) {}
+  TriggerEvent() = default;
   explicit TriggerEvent(TriggerEventType type) : Event(type) {}
 
   // Saved-game support; defined in ioobj.cc.
