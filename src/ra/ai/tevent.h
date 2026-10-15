@@ -17,10 +17,10 @@
 */
 
 // The event half of a scenario trigger: what a trigger waits for
-// (TEventType), an event as a trigger type describes it (TEventClass), the
-// state each trigger keeps for it while it waits (TDEventClass), what an event
-// can be attached to (AttachType), and the scenario editor's list entry for an
-// event type (EventChoiceClass).
+// (TriggerEventType), an event as a trigger type describes it (TEventClass),
+// the state each trigger keeps for it while it waits (TDEventClass), what an
+// event can be attached to (AttachType), and the scenario editor's list entry
+// for an event type (EventChoiceClass).
 
 #ifndef CNC_RED_ALERT_RA_AI_TEVENT_H_
 #define CNC_RED_ALERT_RA_AI_TEVENT_H_
@@ -51,78 +51,77 @@ namespace ra {
 // number, so the order is fixed. "The event's house" is the house the event
 // names (TEventClass::house()); "the trigger's house" is the house of the
 // trigger type the event belongs to.
-enum class TEventType {
-  TEVENT_NONE,  // Never happens; an unused second event.
+enum class TriggerEventType {
+  kNone,  // Never happens; an unused second event.
   // An object of the event's house enters the cell or the object the trigger
   // is attached to.
-  TEVENT_PLAYER_ENTERED,
-  TEVENT_SPIED,  // A spy enters the building.
+  kPlayerEntered,
+  kSpied,  // A spy enters the building.
   // A thief has raided, or an engineer captured, a building of the event's
   // house.
-  TEVENT_THIEVED,
-  TEVENT_DISCOVERED,        // The player first sees the object.
-  TEVENT_HOUSE_DISCOVERED,  // The player first sees the event's house.
-  TEVENT_ATTACKED,          // The object is attacked.
-  TEVENT_DESTROYED,         // The object is destroyed.
+  kThieved,
+  kDiscovered,       // The player first sees the object.
+  kHouseDiscovered,  // The player first sees the event's house.
+  kAttacked,         // The object is attacked.
+  kDestroyed,        // The object is destroyed.
   // Happens on every check of the trigger, whatever caused it, and lets the
   // object events above through too.
-  TEVENT_ANY,
+  kAny,
   // The event's house has no unit and no infantry left (vessels and aircraft
   // do not count).
-  TEVENT_UNITS_DESTROYED,
-  TEVENT_BUILDINGS_DESTROYED,  // The event's house has no building left.
+  kUnitsDestroyed,
+  kBuildingsDestroyed,  // The event's house has no building left.
   // The event's house has no building, unit, infantry or vessel left
   // (aircraft do not count).
-  TEVENT_ALL_DESTROYED,
-  TEVENT_CREDITS,  // The trigger's house has at least value() credits.
+  kAllDestroyed,
+  kCredits,  // The trigger's house has at least value() credits.
   // value() tenths of a minute have passed since the trigger was made or
   // last reset.
-  TEVENT_TIME,
-  TEVENT_MISSION_TIMER_EXPIRED,  // The running mission timer reached zero.
+  kTime,
+  kMissionTimerExpired,  // The running mission timer reached zero.
   // The trigger's house has lost at least value() buildings.
-  TEVENT_NBUILDINGS_DESTROYED,
+  kBuildingsLost,
   // The trigger's house has lost at least value() units.
-  TEVENT_NUNITS_DESTROYED,
+  kUnitsLost,
   // The trigger's house has no construction yard, war factory, barracks,
   // tent or airstrip left.
-  TEVENT_NOFACTORIES,
+  kNoFactories,
   // The trigger's house has evacuated a civilian.
-  TEVENT_EVAC_CIVILIAN,
+  kCivilianEvacuated,
   // The trigger's house has just built a structure() (unit(), infantry(),
   // aircraft()).
-  TEVENT_BUILD,
-  TEVENT_BUILD_UNIT,
-  TEVENT_BUILD_INFANTRY,
-  TEVENT_BUILD_AIRCRAFT,
+  kBuildBuilding,
+  kBuildUnit,
+  kBuildInfantry,
+  kBuildAircraft,
   // An emptied team of the event's team type has left the map.
-  TEVENT_LEAVES_MAP,
+  kLeavesMap,
   // An object of the event's house enters the zone of the trigger's cell.
-  TEVENT_ENTERS_ZONE,
+  kEntersZone,
   // An object of the event's house crosses the trigger's horizontal
   // (vertical) line.
-  TEVENT_CROSS_HORIZONTAL,
-  TEVENT_CROSS_VERTICAL,
-  TEVENT_GLOBAL_SET,    // Scenario global value() is set.
-  TEVENT_GLOBAL_CLEAR,  // Scenario global value() is clear.
+  kCrossHorizontal,
+  kCrossVertical,
+  kGlobalSet,    // Scenario global value() is set.
+  kGlobalClear,  // Scenario global value() is clear.
   // The trigger's house has no fake construction yard or fake war factory
   // left.
-  TEVENT_FAKES_DESTROYED,
-  TEVENT_LOW_POWER,              // The event's house has less than full power.
-  TEVENT_ALL_BRIDGES_DESTROYED,  // No bridge is left on the map.
+  kFakesDestroyed,
+  kLowPower,             // The event's house has less than full power.
+  kAllBridgesDestroyed,  // No bridge is left on the map.
   // The trigger's house has a working building of type structure().
-  TEVENT_BUILDING_EXISTS,
+  kBuildingExists,
 };
-using enum TEventType;
 
 // Returns the event whose editor name is `name`, ignoring case, or
-// TEVENT_NONE when no event has it.
-TEventType Event_From_Name(std::string_view name);
+// TriggerEventType::kNone when no event has it.
+TriggerEventType Event_From_Name(std::string_view name);
 // Returns the kind of argument `event` takes, which the scenario editor
 // prompts for; NeedType::kNone when it takes none. NeedType::kTeam means the
 // event's team type, every other kind its data word.
-NeedType Event_Needs(TEventType event);
+NeedType Event_Needs(TriggerEventType event);
 // Returns the scenario editor's name for `event`.
-const char* Name_From_Event(TEventType event);
+const char* Name_From_Event(TriggerEventType event);
 
 // The state one trigger keeps for one of its events, which a trigger type's
 // TEventClass reads and writes; TriggerClass holds one for each of its two
@@ -134,7 +133,7 @@ struct TDEventClass {
   // whose other event comes true later would miss the first.
   bool IsTripped : 1 = false;
 
-  // Counts down to a TEVENT_TIME event; Reset() starts it.
+  // Counts down to a TriggerEventType::kTime event; Reset() starts it.
   engine::platform::Countdown<game::FrameTickSource> EventTimer;
 
   // Saved-game support.
@@ -151,46 +150,48 @@ struct TDEventClass {
 // wait is the TDEventClass passed to Reset() and operator().
 //
 // Example:
-//   TEventClass event(TEVENT_CREDITS);
+//   TEventClass event(TriggerEventType::kCredits);
 //   event.set_value(5000);
 //   TDEventClass state;
 //   event.Reset(state);
-//   if (event(state, TEVENT_ANY, HOUSE_USSR, nullptr, false)) { ... }
+//   if (event(state, TriggerEventType::kAny, HOUSE_USSR, nullptr, false)) { ...
+//   }
 class TEventClass {
  public:
   // The event this is.
-  TEventType Event;
+  TriggerEventType Event;
 
-  // The team type a TEVENT_LEAVES_MAP event waits for; nullptr for none.
+  // The team type a TriggerEventType::kLeavesMap event waits for; nullptr for
+  // none.
   TeamType* Team = nullptr;
 
-  TEventClass() : Event(TEVENT_NONE) {}
-  explicit TEventClass(TEventType event) : Event(event) {}
+  TEventClass() : Event(TriggerEventType::kNone) {}
+  explicit TEventClass(TriggerEventType event) : Event(event) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
   // Makes `td` wait for the event again: clears its tripped flag and, for a
-  // TEVENT_TIME event, restarts its countdown. A trigger calls it when it is
-  // made and after each spring of a persistent trigger, and the scenario when
-  // a global the trigger's other event waits for changes.
+  // TriggerEventType::kTime event, restarts its countdown. A trigger calls it
+  // when it is made and after each spring of a persistent trigger, and the
+  // scenario when a global the trigger's other event waits for changes.
   void Reset(TDEventClass& td) const;
   // Returns whether the event has happened for the trigger whose state is
   // `td`. `event` is what caused the check: the moment events (entering,
   // being attacked, crossing a line) only count when it is this event or
-  // TEVENT_ANY, while the condition events (credits, globals, a house's
-  // losses) are checked whatever it is. `house` is the trigger's house and
-  // `object` the object that caused the check (for the entering events, the
+  // TriggerEventType::kAny, while the condition events (credits, globals, a
+  // house's losses) are checked whatever it is. `house` is the trigger's house
+  // and `object` the object that caused the check (for the entering events, the
   // one that entered); nullptr for none. `forced` trips the event without a
   // check, for a trigger another trigger forces.
-  bool operator()(TDEventClass& td, TEventType event, HousesType house,
+  bool operator()(TDEventClass& td, TriggerEventType event, HousesType house,
                   const ObjectClass* object, bool forced) const;
   // Reads the event fields from the trigger entry `tokens` is parsing, in the
   // scenario's INI format: from format 2 on "event,team,value" with the team
   // as its heap slot; format 1 "event,team-or-value"; format 0
   // "event,-,-,team name,value,-". An event number that names no event reads
-  // as TEVENT_NONE, and a team slot outside the heap as no team.
+  // as TriggerEventType::kNone, and a team slot outside the heap as no team.
   void Read_INI(base::Tokenizer& tokens);
   // Returns the event as "event,team,value", the form Read_INI() reads from
   // format 2 on, with the team as its position in the team type list (-1 for
@@ -259,7 +260,7 @@ enum class CNC_FLAG_ENUM AttachType {
 using enum AttachType;
 
 // Returns what a trigger with `event` can be attached to.
-AttachType Attaches_To(TEventType event);
+AttachType Attaches_To(TriggerEventType event);
 
 // An event type as an entry of the scenario editor's event lists, which shows
 // its name and sorts by it.
@@ -267,11 +268,12 @@ class EventChoiceClass {
  public:
   // Implicit, so the choice table can be a brace list of event types.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  EventChoiceClass(TEventType event = TEVENT_NONE) noexcept : Event(event) {}
+  EventChoiceClass(TriggerEventType event = TriggerEventType::kNone) noexcept
+      : Event(event) {}
 
   // Implicit, so an entry compares directly against an event type.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TEventType() const { return Event; }
+  operator TriggerEventType() const { return Event; }
   bool operator==(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event;
   }
@@ -301,11 +303,11 @@ class EventChoiceClass {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
-  TEventType Event;
+  TriggerEventType Event;
 };
 
 // One entry per event type, indexed by it, for the editor's event lists.
-extern base::EnumArray<TEventType, EventChoiceClass> EventChoices;
+extern base::EnumArray<TriggerEventType, EventChoiceClass> EventChoices;
 
 extern template void TEventClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TEventClass::Serialize<ArchiveReader>(ArchiveReader&);

@@ -80,7 +80,7 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
   EXPECT_EQ(trigger_type_->persistence, TriggerType::VOLATILE);
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
-  EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
+  EXPECT_EQ(trigger_type_->event1.Event, TriggerEventType::kNone);
   EXPECT_EQ(trigger_type_->action1->type(), TriggerActionType::kNone);
   EXPECT_EQ(trigger_type_->ID, 0);
 }
@@ -167,21 +167,24 @@ TEST_F(TriggerTypeTest, DetachLeavesItsNamesakesAlone) {
 }
 
 TEST_F(TriggerTypeTest, OneEventAttachesWhereThatEventDoes) {
-  trigger_type_->event1.Event = TEVENT_PLAYER_ENTERED;
-  trigger_type_->event2.Event = TEVENT_TIME;
-  ASSERT_NE(Attaches_To(TEVENT_PLAYER_ENTERED),
-            Attaches_To(TEVENT_PLAYER_ENTERED) | Attaches_To(TEVENT_TIME));
+  trigger_type_->event1.Event = TriggerEventType::kPlayerEntered;
+  trigger_type_->event2.Event = TriggerEventType::kTime;
+  ASSERT_NE(Attaches_To(TriggerEventType::kPlayerEntered),
+            Attaches_To(TriggerEventType::kPlayerEntered) |
+                Attaches_To(TriggerEventType::kTime));
 
-  EXPECT_EQ(trigger_type_->AttachesTo(), Attaches_To(TEVENT_PLAYER_ENTERED));
+  EXPECT_EQ(trigger_type_->AttachesTo(),
+            Attaches_To(TriggerEventType::kPlayerEntered));
 }
 
 TEST_F(TriggerTypeTest, TwoEventsAttachWhereEitherDoes) {
-  trigger_type_->event1.Event = TEVENT_PLAYER_ENTERED;
-  trigger_type_->event2.Event = TEVENT_TIME;
+  trigger_type_->event1.Event = TriggerEventType::kPlayerEntered;
+  trigger_type_->event2.Event = TriggerEventType::kTime;
   for (const MultiStyle control : {MULTI_AND, MULTI_OR, MULTI_LINKED}) {
     trigger_type_->event_control = control;
     EXPECT_EQ(trigger_type_->AttachesTo(),
-              Attaches_To(TEVENT_PLAYER_ENTERED) | Attaches_To(TEVENT_TIME));
+              Attaches_To(TriggerEventType::kPlayerEntered) |
+                  Attaches_To(TriggerEventType::kTime));
   }
 }
 
@@ -199,10 +202,10 @@ TEST_F(TriggerTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(type->house, static_cast<HousesType>(1));
   EXPECT_EQ(type->event_control, MULTI_OR);
   EXPECT_EQ(type->action_control, MULTI_AND);
-  EXPECT_EQ(type->event1.Event, TEVENT_TIME);
+  EXPECT_EQ(type->event1.Event, TriggerEventType::kTime);
   EXPECT_EQ(type->event1.Team, nullptr);
   EXPECT_EQ(type->event1.value(), 50);
-  EXPECT_EQ(type->event2.Event, TEVENT_LEAVES_MAP);
+  EXPECT_EQ(type->event2.Event, TriggerEventType::kLeavesMap);
   EXPECT_EQ(type->event2.Team, team_type_);
   EXPECT_EQ(type->action1->type(), TriggerActionType::kCreateTeam);
   EXPECT_EQ(type->action1->ToRecord().team_type, team_type_);
@@ -232,7 +235,7 @@ TEST_F(TriggerTypeTest, MissingFieldsReadAsZero) {
   EXPECT_EQ(trigger_type_->house, static_cast<HousesType>(0));
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
-  EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
+  EXPECT_EQ(trigger_type_->event1.Event, TriggerEventType::kNone);
   EXPECT_EQ(trigger_type_->action1->type(), TriggerActionType::kNone);
 }
 
@@ -459,7 +462,7 @@ TEST_F(TriggerTypeTest, TheDescriptionAddsTheNumberAnEventTakes) {
   if (!HasDescriptions()) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
-  trigger_type_->event1.Event = TEVENT_CREDITS;
+  trigger_type_->event1.Event = TriggerEventType::kCredits;
   trigger_type_->event1.set_value(50);
   EXPECT_EQ(
       trigger_type_->Description(),
@@ -491,7 +494,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheUnitAnEventTakes) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   SetText(UnitTypeClass::As_Reference(UNIT_JEEP).Full_Name(), "Ranger");
-  trigger_type_->event1.Event = TEVENT_BUILD_UNIT;
+  trigger_type_->event1.Event = TriggerEventType::kBuildUnit;
   trigger_type_->event1.set_unit(UNIT_JEEP);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Ranger")) << DescriptionEnding();
@@ -502,7 +505,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheAircraftAnEventTakes) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   SetText(AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Full_Name(), "Hind");
-  trigger_type_->event1.Event = TEVENT_BUILD_AIRCRAFT;
+  trigger_type_->event1.Event = TriggerEventType::kBuildAircraft;
   trigger_type_->event1.set_aircraft(AIRCRAFT_HIND);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Hind")) << DescriptionEnding();
@@ -514,7 +517,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheBuildingAnEventTakes) {
   }
   SetText(BuildingTypeClass::As_Reference(STRUCT_POWER).Full_Name(),
           "Power Plant");
-  trigger_type_->event1.Event = TEVENT_BUILD;
+  trigger_type_->event1.Event = TriggerEventType::kBuildBuilding;
   trigger_type_->event1.set_structure(STRUCT_POWER);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Power Plant"))
@@ -527,7 +530,7 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheInfantryAnEventTakes) {
   }
   SetText(InfantryTypeClass::As_Reference(INFANTRY_E1).Full_Name(),
           "Rifle Infantry");
-  trigger_type_->event1.Event = TEVENT_BUILD_INFANTRY;
+  trigger_type_->event1.Event = TriggerEventType::kBuildInfantry;
   trigger_type_->event1.set_infantry(INFANTRY_E1);
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Rifle Infantry"))
@@ -547,9 +550,9 @@ TEST_F(TriggerTypeTest, ASavedHeapLoadsEveryTriggerTypeIntoItsOldSlot) {
   trigger_type_->persistence = TriggerType::PERSISTANT;
   trigger_type_->event_control = MULTI_AND;
   trigger_type_->action_control = MULTI_AND;
-  trigger_type_->event1.Event = TEVENT_CREDITS;
+  trigger_type_->event1.Event = TriggerEventType::kCredits;
   trigger_type_->event1.set_value(50);
-  trigger_type_->event2.Event = TEVENT_LEAVES_MAP;
+  trigger_type_->event2.Event = TriggerEventType::kLeavesMap;
   trigger_type_->event2.Team = team_type_;
   trigger_type_->action1 = MakeTriggerAction(
       {.type = TriggerActionType::kCreateTeam, .team_type = team_type_});
@@ -689,7 +692,7 @@ TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
 // HousesType is one byte: storing a house keeps the other three bytes of the
 // event's argument, as the store into the union it replaced did.
 TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
-  TEventClass event(TEVENT_PLAYER_ENTERED);
+  TEventClass event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_USSR);
   EXPECT_EQ(event.value(), 0x12345600 | static_cast<uint8_t>(HOUSE_USSR));
@@ -697,7 +700,7 @@ TEST(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
 }
 
 TEST(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
-  TEventClass event(TEVENT_PLAYER_ENTERED);
+  TEventClass event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_NONE);
   EXPECT_EQ(event.value(), 0x123456FF);

@@ -587,7 +587,7 @@ class ForceTriggerAction final : public TriggerReferenceAction {
   bool Perform(const TriggerActionContext& /*context*/) override {
     if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type());
         forced_trigger != nullptr) {
-      forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
+      forced_trigger->Spring(TriggerEventType::kAny, nullptr, Cell{}, true);
     }
     return true;
   }

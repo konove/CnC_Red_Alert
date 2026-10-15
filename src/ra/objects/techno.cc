@@ -863,7 +863,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
         *process *	it for discovery purposes.
         */
         if (!TheWorld().scenario_init() && Trigger != nullptr) {
-          Trigger->Spring(TEVENT_DISCOVERED, this);
+          Trigger->Spring(TriggerEventType::kDiscovered, this);
         }
 
         /*
@@ -4211,7 +4211,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     *recorded as a kill as well.
     */
     if (Trigger != nullptr) {
-      Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
+      Trigger->Spring(TriggerEventType::kPlayerEntered, this);
     }
 
     /*
@@ -4412,15 +4412,15 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   **	Handle any trigger event associated with this object.
   */
   if (Trigger != nullptr && source) {
-    Trigger->Spring(TEVENT_ATTACKED, this);
+    Trigger->Spring(TriggerEventType::kAttacked, this);
   }
 
   if (Trigger != nullptr && source) {
-    Trigger->Spring(TEVENT_DISCOVERED, this);
+    Trigger->Spring(TriggerEventType::kDiscovered, this);
   }
 
   if (Trigger != nullptr) {
-    Trigger->Spring(TEVENT_DESTROYED, this);
+    Trigger->Spring(TriggerEventType::kDestroyed, this);
   }
 
   if (source != nullptr) {

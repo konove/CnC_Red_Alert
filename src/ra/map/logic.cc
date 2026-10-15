@@ -111,10 +111,10 @@ void LogicClass::AI() {
     **	Global changed trigger event might be triggered.
     */
     if (TheScenario().IsGlobalChanged) {
-      if (trig->Spring(TEVENT_GLOBAL_SET)) {
+      if (trig->Spring(TriggerEventType::kGlobalSet)) {
         continue;
       }
-      if (trig->Spring(TEVENT_GLOBAL_CLEAR)) {
+      if (trig->Spring(TriggerEventType::kGlobalClear)) {
         continue;
       }
     }
@@ -123,14 +123,14 @@ void LogicClass::AI() {
     **	Bridge change event.
     */
     if (TheScenario().IsBridgeChanged &&
-        trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
+        trig->Spring(TriggerEventType::kAllBridgesDestroyed)) {
       continue;
     }
 
     /*
     **	General time expire trigger events can be sprung without warning.
     */
-    if (trig->Spring(TEVENT_TIME)) {
+    if (trig->Spring(TriggerEventType::kTime)) {
       continue;
     }
 
@@ -140,7 +140,7 @@ void LogicClass::AI() {
     */
     if ((TheScenario().MissionTimer.IsRunning() &&
          TheScenario().MissionTimer.IsFinished()) &&
-        trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
+        trig->Spring(TriggerEventType::kMissionTimerExpired)) {
       continue;
     }
   }

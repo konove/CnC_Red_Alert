@@ -88,8 +88,9 @@ class TriggerClass {
   /*
   **	Processing routines
   */
-  bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = nullptr,
-              ra::Cell cell = ra::Cell{}, bool forced = false);
+  bool Spring(TriggerEventType event = TriggerEventType::kAny,
+              ObjectClass* object = nullptr, ra::Cell cell = ra::Cell{},
+              bool forced = false);
   void Detach(Target target, bool all = true) const;
 
   /*

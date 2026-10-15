@@ -1463,7 +1463,8 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     if (Cloak != game::CLOAKED) {
       TriggerClass* trigger = TheMap().at(Coord).Trigger;
       if (trigger != nullptr) {
-        trigger->Spring(TEVENT_PLAYER_ENTERED, this, Cell::Containing(Coord));
+        trigger->Spring(TriggerEventType::kPlayerEntered, this,
+                        Cell::Containing(Coord));
         if (!IsActive) {
           return true;
         }
@@ -1478,10 +1479,12 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(index + TheMap().MapCellX, y)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->event1.Event == TEVENT_CROSS_HORIZONTAL ||
+            (trigger->Class->event1.Event ==
+                 TriggerEventType::kCrossHorizontal ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event == TEVENT_CROSS_HORIZONTAL))) {
-          trigger->Spring(TEVENT_CROSS_HORIZONTAL, this,
+              trigger->Class->event2.Event ==
+                  TriggerEventType::kCrossHorizontal))) {
+          trigger->Spring(TriggerEventType::kCrossHorizontal, this,
                           Cell::Containing(Coord));
           if (!IsActive) {
             return true;
@@ -1496,10 +1499,12 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(x, index + TheMap().MapCellY)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->event1.Event == TEVENT_CROSS_VERTICAL ||
+            (trigger->Class->event1.Event == TriggerEventType::kCrossVertical ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event == TEVENT_CROSS_VERTICAL))) {
-          trigger->Spring(TEVENT_CROSS_VERTICAL, this, Cell::Containing(Coord));
+              trigger->Class->event2.Event ==
+                  TriggerEventType::kCrossVertical))) {
+          trigger->Spring(TriggerEventType::kCrossVertical, this,
+                          Cell::Containing(Coord));
           if (!IsActive) {
             return true;
           }
@@ -1514,12 +1519,13 @@ bool FootClass::Per_Cell_Process(PCPType why) {
            TheWorld().map_trigger_id()++) {
         trigger =
             base::At(TheWorld().map_triggers(), TheWorld().map_trigger_id());
-        if ((trigger->Class->event1.Event == TEVENT_ENTERS_ZONE ||
+        if ((trigger->Class->event1.Event == TriggerEventType::kEntersZone ||
              (trigger->Class->event_control != MULTI_ONLY &&
-              trigger->Class->event2.Event == TEVENT_ENTERS_ZONE)) &&
+              trigger->Class->event2.Event == TriggerEventType::kEntersZone)) &&
             (TheMap().at(trigger->Cell).Zones.at(Techno_Type_Class()->MZone) ==
              TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone))) {
-          trigger->Spring(TEVENT_ENTERS_ZONE, this, Cell::Containing(Coord));
+          trigger->Spring(TriggerEventType::kEntersZone, this,
+                          Cell::Containing(Coord));
           if (!IsActive) {
             return true;
           }

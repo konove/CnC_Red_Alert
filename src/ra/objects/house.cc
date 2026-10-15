@@ -1666,7 +1666,7 @@ void HouseClass::Attacked() {
          index < std::ssize(TheWorld().house_triggers().at(Class->House));
          index++) {
       base::At(TheWorld().house_triggers().at(Class->House), index)
-          ->Spring(TEVENT_ATTACKED);
+          ->Spring(TriggerEventType::kAttacked);
     }
   }
 }

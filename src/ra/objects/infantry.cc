@@ -655,7 +655,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
             if (tech->Health_Ratio() <= TheRules().EngineerCaptureLevel &&
                 iscapturable) {
               if (tech->Trigger != nullptr) {
-                tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
+                tech->Trigger->Spring(TriggerEventType::kPlayerEntered, this);
               }
               tech->House->IsThieved = true;
               tech->Captured(House);
@@ -671,14 +671,14 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
 
         } else {
           if (*this != INFANTRY_SPY && tech->Trigger != nullptr) {
-            tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
+            tech->Trigger->Spring(TriggerEventType::kPlayerEntered, this);
           }
 
           if (*this == INFANTRY_SPY) {
             const auto housespy = base::Bit<uint32_t>(House->Class->House);
 
             if (tech->Trigger != nullptr) {
-              tech->Trigger->Spring(TEVENT_SPIED, this);
+              tech->Trigger->Spring(TriggerEventType::kSpied, this);
             }
 
             if (IsOwnedByPlayer) {

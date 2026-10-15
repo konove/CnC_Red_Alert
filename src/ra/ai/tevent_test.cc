@@ -41,16 +41,16 @@ class TEventTest : public GameFixture {
 // A number past the last event, in any format, reads as no event rather than
 // as one that indexes past the name table and always happens.
 TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
-  EXPECT_EQ(Read(2, "33,-1,5").Event, TEVENT_NONE);
-  EXPECT_EQ(Read(2, "-2,-1,5").Event, TEVENT_NONE);
-  EXPECT_EQ(Read(1, "99,5").Event, TEVENT_NONE);
-  EXPECT_EQ(Read(0, "40,0,0,None,5,0").Event, TEVENT_NONE);
+  EXPECT_EQ(Read(2, "33,-1,5").Event, TriggerEventType::kNone);
+  EXPECT_EQ(Read(2, "-2,-1,5").Event, TriggerEventType::kNone);
+  EXPECT_EQ(Read(1, "99,5").Event, TriggerEventType::kNone);
+  EXPECT_EQ(Read(0, "40,0,0,None,5,0").Event, TriggerEventType::kNone);
 }
 
 // Format 1 gives a team event's team as its heap slot.
 TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
   const TEventClass event = Read(1, "23,0");
-  EXPECT_EQ(event.Event, TEVENT_LEAVES_MAP);
+  EXPECT_EQ(event.Event, TriggerEventType::kLeavesMap);
   EXPECT_EQ(event.Team, team_type_);
 }
 

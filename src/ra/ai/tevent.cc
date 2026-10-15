@@ -52,14 +52,15 @@ namespace ra {
 namespace {
 
 // Returns event number `number` from a scenario INI as an event, or
-// TEVENT_NONE when it names none. The number indexes the name table and picks
-// the check, which takes anything it does not list as having happened.
-TEventType EventFromNumber(const int number) {
-  const std::optional<TEventType> event =
-      magic_enum::enum_cast<TEventType>(number);
+// TriggerEventType::kNone when it names none. The number indexes the name table
+// and picks the check, which takes anything it does not list as having
+// happened.
+TriggerEventType EventFromNumber(const int number) {
+  const std::optional<TriggerEventType> event =
+      magic_enum::enum_cast<TriggerEventType>(number);
   if (!event.has_value()) {
     DLOG(WARNING) << "EventFromNumber: " << number << " is no event";
-    return TEVENT_NONE;
+    return TriggerEventType::kNone;
   }
   return *event;
 }
@@ -67,7 +68,7 @@ TEventType EventFromNumber(const int number) {
 }  // namespace
 
 // The scenario editor's name for each event, which its lists show and sort by.
-static base::EnumArray<TEventType, const char*> EventText = {
+static base::EnumArray<TriggerEventType, const char*> EventText = {
     "-No Event-",
     "Entered by...",
     "Spied by...",
@@ -102,40 +103,40 @@ static base::EnumArray<TEventType, const char*> EventText = {
     "All bridges destroyed",
     "Building exists..."};
 
-base::EnumArray<TEventType, EventChoiceClass> EventChoices = {{
-    {TEVENT_NONE},
-    {TEVENT_PLAYER_ENTERED},
-    {TEVENT_SPIED},
-    {TEVENT_THIEVED},
-    {TEVENT_DISCOVERED},
-    {TEVENT_HOUSE_DISCOVERED},
-    {TEVENT_ATTACKED},
-    {TEVENT_DESTROYED},
-    {TEVENT_ANY},
-    {TEVENT_UNITS_DESTROYED},
-    {TEVENT_BUILDINGS_DESTROYED},
-    {TEVENT_ALL_DESTROYED},
-    {TEVENT_CREDITS},
-    {TEVENT_TIME},
-    {TEVENT_MISSION_TIMER_EXPIRED},
-    {TEVENT_NBUILDINGS_DESTROYED},
-    {TEVENT_NUNITS_DESTROYED},
-    {TEVENT_NOFACTORIES},
-    {TEVENT_EVAC_CIVILIAN},
-    {TEVENT_BUILD},
-    {TEVENT_BUILD_UNIT},
-    {TEVENT_BUILD_INFANTRY},
-    {TEVENT_BUILD_AIRCRAFT},
-    {TEVENT_LEAVES_MAP},
-    {TEVENT_ENTERS_ZONE},
-    {TEVENT_CROSS_HORIZONTAL},
-    {TEVENT_CROSS_VERTICAL},
-    {TEVENT_GLOBAL_SET},
-    {TEVENT_GLOBAL_CLEAR},
-    {TEVENT_FAKES_DESTROYED},
-    {TEVENT_LOW_POWER},
-    {TEVENT_ALL_BRIDGES_DESTROYED},
-    {TEVENT_BUILDING_EXISTS},
+base::EnumArray<TriggerEventType, EventChoiceClass> EventChoices = {{
+    {TriggerEventType::kNone},
+    {TriggerEventType::kPlayerEntered},
+    {TriggerEventType::kSpied},
+    {TriggerEventType::kThieved},
+    {TriggerEventType::kDiscovered},
+    {TriggerEventType::kHouseDiscovered},
+    {TriggerEventType::kAttacked},
+    {TriggerEventType::kDestroyed},
+    {TriggerEventType::kAny},
+    {TriggerEventType::kUnitsDestroyed},
+    {TriggerEventType::kBuildingsDestroyed},
+    {TriggerEventType::kAllDestroyed},
+    {TriggerEventType::kCredits},
+    {TriggerEventType::kTime},
+    {TriggerEventType::kMissionTimerExpired},
+    {TriggerEventType::kBuildingsLost},
+    {TriggerEventType::kUnitsLost},
+    {TriggerEventType::kNoFactories},
+    {TriggerEventType::kCivilianEvacuated},
+    {TriggerEventType::kBuildBuilding},
+    {TriggerEventType::kBuildUnit},
+    {TriggerEventType::kBuildInfantry},
+    {TriggerEventType::kBuildAircraft},
+    {TriggerEventType::kLeavesMap},
+    {TriggerEventType::kEntersZone},
+    {TriggerEventType::kCrossHorizontal},
+    {TriggerEventType::kCrossVertical},
+    {TriggerEventType::kGlobalSet},
+    {TriggerEventType::kGlobalClear},
+    {TriggerEventType::kFakesDestroyed},
+    {TriggerEventType::kLowPower},
+    {TriggerEventType::kAllBridgesDestroyed},
+    {TriggerEventType::kBuildingExists},
 }};
 
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
@@ -149,12 +150,12 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
 
 void TEventClass::Reset(TDEventClass& td) const {
   td.IsTripped = false;
-  if (Event == TEVENT_TIME) {
+  if (Event == TriggerEventType::kTime) {
     td.EventTimer.Set(value() * (kTicksPerMinute / 10));
   }
 }
 
-bool TEventClass::operator()(TDEventClass& td, TEventType event,
+bool TEventClass::operator()(TDEventClass& td, TriggerEventType event,
                              HousesType house, const ObjectClass* object,
                              bool forced) const {
   if (forced) {
@@ -169,73 +170,78 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   // a global that is cleared again, or a timer that is reset, turns them
   // false.
   switch (Event) {
-    case TEVENT_GLOBAL_SET:
+    case TriggerEventType::kGlobalSet:
       return base::At(TheScenario().GlobalFlags, value());
 
-    case TEVENT_GLOBAL_CLEAR:
+    case TriggerEventType::kGlobalClear:
       return !base::At(TheScenario().GlobalFlags, value());
 
-    case TEVENT_MISSION_TIMER_EXPIRED:
+    case TriggerEventType::kMissionTimerExpired:
       return TheScenario().MissionTimer.IsRunning() &&
              TheScenario().MissionTimer.IsFinished();
 
-    case TEVENT_TIME:
+    case TriggerEventType::kTime:
       return td.EventTimer.IsFinished();
-    case TEventType::TEVENT_NONE:
-    case TEventType::TEVENT_PLAYER_ENTERED:
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_THIEVED:
-    case TEventType::TEVENT_DISCOVERED:
-    case TEventType::TEVENT_HOUSE_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_ANY:
-    case TEventType::TEVENT_UNITS_DESTROYED:
-    case TEventType::TEVENT_BUILDINGS_DESTROYED:
-    case TEventType::TEVENT_ALL_DESTROYED:
-    case TEventType::TEVENT_CREDITS:
-    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-    case TEventType::TEVENT_NUNITS_DESTROYED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_BUILD:
-    case TEventType::TEVENT_BUILD_UNIT:
-    case TEventType::TEVENT_BUILD_INFANTRY:
-    case TEventType::TEVENT_BUILD_AIRCRAFT:
-    case TEventType::TEVENT_LEAVES_MAP:
-    case TEventType::TEVENT_ENTERS_ZONE:
-    case TEventType::TEVENT_CROSS_HORIZONTAL:
-    case TEventType::TEVENT_CROSS_VERTICAL:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_LOW_POWER:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TriggerEventType::kNone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kAllBridgesDestroyed:
+    case TriggerEventType::kBuildingExists:
     default:
       break;
   }
 
   // An unused event never happens.
-  if (Event == TEVENT_NONE) {
+  if (Event == TriggerEventType::kNone) {
     return false;
   }
 
   // The moment events are true merely because the check was made for them:
-  // the caller springs TEVENT_ATTACKED from the code that does the attacking.
-  // TEVENT_ANY lets them through as well, so a house's per-frame check of a
-  // trigger counts them as having happened.
-  if ((Event == TEVENT_ATTACKED || Event == TEVENT_DESTROYED ||
-       Event == TEVENT_DISCOVERED || Event == TEVENT_SPIED ||
-       Event == TEVENT_NONE || Event == TEVENT_CROSS_HORIZONTAL ||
-       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE ||
-       Event == TEVENT_PLAYER_ENTERED) &&
-      (event != Event && event != TEVENT_ANY)) {
+  // the caller springs TriggerEventType::kAttacked from the code that does the
+  // attacking. TriggerEventType::kAny lets them through as well, so a house's
+  // per-frame check of a trigger counts them as having happened.
+  if ((Event == TriggerEventType::kAttacked ||
+       Event == TriggerEventType::kDestroyed ||
+       Event == TriggerEventType::kDiscovered ||
+       Event == TriggerEventType::kSpied || Event == TriggerEventType::kNone ||
+       Event == TriggerEventType::kCrossHorizontal ||
+       Event == TriggerEventType::kCrossVertical ||
+       Event == TriggerEventType::kEntersZone ||
+       Event == TriggerEventType::kPlayerEntered) &&
+      (event != Event && event != TriggerEventType::kAny)) {
     return false;
   }
 
   // The entering events also need the object that entered to belong to the
   // event's house; the trigger's own house does not matter.
-  if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
-      Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
+  if (Event == TriggerEventType::kPlayerEntered ||
+      Event == TriggerEventType::kCrossHorizontal ||
+      Event == TriggerEventType::kCrossVertical ||
+      Event == TriggerEventType::kEntersZone) {
     if (!object || object->Owner() != this->house()) {
       return false;
     }
@@ -244,7 +250,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   }
 
   // Tripped, so the event stays true if a bridge is repaired.
-  if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
+  if (Event == TriggerEventType::kAllBridgesDestroyed) {
     if (TheScenario().BridgeCount) {
       return false;
     }
@@ -262,7 +268,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       // A team springs the logic triggers itself once its last member has
       // left the map, just before it deletes itself, so it is still in the
       // heap here.
-      case TEVENT_LEAVES_MAP:
+      case TriggerEventType::kLeavesMap:
         for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
           const TeamClass* ptr = TheObjectHeaps().team().ActiveAt(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
@@ -277,13 +283,13 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
       // The editor calls this "Credits exceed (x100)", but the value is in
       // credits.
-      case TEVENT_CREDITS:
+      case TriggerEventType::kCredits:
         if (hptr->Available_Money() < value()) {
           return false;
         }
         break;
 
-      case TEVENT_NOFACTORIES:
+      case TriggerEventType::kNoFactories:
         if (hptr->BScan &
             (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
              kStructFlagBarracks | kStructFlagConst)) {
@@ -293,20 +299,20 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
       // Only two of the five fakes count: a fake shipyard, sub pen or radar
       // dome left standing does not stop the event.
-      case TEVENT_FAKES_DESTROYED:
+      case TriggerEventType::kFakesDestroyed:
         if (hptr->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
           return false;
         }
         break;
 
-      case TEVENT_EVAC_CIVILIAN:
+      case TriggerEventType::kCivilianEvacuated:
         if (!hptr->IsCivEvacuated) {
           return false;
         }
         break;
 
       // A structure past the 64 the scan holds never exists.
-      case TEVENT_BUILDING_EXISTS:
+      case TriggerEventType::kBuildingExists:
         if ((hptr->ActiveBScan & ScanBit(static_cast<int>(structure()))) == 0) {
           return false;
         }
@@ -314,67 +320,67 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
       // The house only remembers what it built last, so the building
       // events are tripped to outlast the next thing it builds.
-      case TEVENT_BUILD:
+      case TriggerEventType::kBuildBuilding:
         if (hptr->JustBuiltStructure != structure()) {
           return false;
         }
         td.IsTripped = true;
         break;
 
-      case TEVENT_BUILD_UNIT:
+      case TriggerEventType::kBuildUnit:
         if (hptr->JustBuiltUnit != unit()) {
           return false;
         }
         td.IsTripped = true;
         break;
 
-      case TEVENT_BUILD_INFANTRY:
+      case TriggerEventType::kBuildInfantry:
         if (hptr->JustBuiltInfantry != infantry()) {
           return false;
         }
         td.IsTripped = true;
         break;
 
-      case TEVENT_BUILD_AIRCRAFT:
+      case TriggerEventType::kBuildAircraft:
         if (hptr->JustBuiltAircraft != aircraft()) {
           return false;
         }
         td.IsTripped = true;
         break;
 
-      case TEVENT_NBUILDINGS_DESTROYED:
+      case TriggerEventType::kBuildingsLost:
         if (std::cmp_less(hptr->BuildingsLost, value())) {
           return false;
         }
         break;
 
-      case TEVENT_NUNITS_DESTROYED:
+      case TriggerEventType::kUnitsLost:
         if (std::cmp_less(hptr->UnitsLost, value())) {
           return false;
         }
         break;
 
-      case TEventType::TEVENT_NONE:
-      case TEventType::TEVENT_PLAYER_ENTERED:
-      case TEventType::TEVENT_SPIED:
-      case TEventType::TEVENT_THIEVED:
-      case TEventType::TEVENT_DISCOVERED:
-      case TEventType::TEVENT_HOUSE_DISCOVERED:
-      case TEventType::TEVENT_ATTACKED:
-      case TEventType::TEVENT_DESTROYED:
-      case TEventType::TEVENT_ANY:
-      case TEventType::TEVENT_UNITS_DESTROYED:
-      case TEventType::TEVENT_BUILDINGS_DESTROYED:
-      case TEventType::TEVENT_ALL_DESTROYED:
-      case TEventType::TEVENT_TIME:
-      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-      case TEventType::TEVENT_ENTERS_ZONE:
-      case TEventType::TEVENT_CROSS_HORIZONTAL:
-      case TEventType::TEVENT_CROSS_VERTICAL:
-      case TEventType::TEVENT_GLOBAL_SET:
-      case TEventType::TEVENT_GLOBAL_CLEAR:
-      case TEventType::TEVENT_LOW_POWER:
-      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+      case TriggerEventType::kNone:
+      case TriggerEventType::kPlayerEntered:
+      case TriggerEventType::kSpied:
+      case TriggerEventType::kThieved:
+      case TriggerEventType::kDiscovered:
+      case TriggerEventType::kHouseDiscovered:
+      case TriggerEventType::kAttacked:
+      case TriggerEventType::kDestroyed:
+      case TriggerEventType::kAny:
+      case TriggerEventType::kUnitsDestroyed:
+      case TriggerEventType::kBuildingsDestroyed:
+      case TriggerEventType::kAllDestroyed:
+      case TriggerEventType::kTime:
+      case TriggerEventType::kMissionTimerExpired:
+      case TriggerEventType::kEntersZone:
+      case TriggerEventType::kCrossHorizontal:
+      case TriggerEventType::kCrossVertical:
+      case TriggerEventType::kGlobalSet:
+      case TriggerEventType::kGlobalClear:
+      case TriggerEventType::kLowPower:
+      case TriggerEventType::kAllBridgesDestroyed:
       default:
         break;
     }
@@ -384,72 +390,72 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   hptr = HouseClass::As_Pointer(this->house());
   if (hptr) {
     switch (Event) {
-      case TEVENT_LOW_POWER:
+      case TriggerEventType::kLowPower:
         if (hptr->Power_Fraction() >= 1) {
           return false;
         }
         break;
 
-      case TEVENT_THIEVED:
+      case TriggerEventType::kThieved:
         if (!hptr->IsThieved) {
           return false;
         }
         break;
 
-      case TEVENT_HOUSE_DISCOVERED:
+      case TriggerEventType::kHouseDiscovered:
         if (!hptr->IsDiscovered) {
           return false;
         }
         break;
 
-      case TEVENT_BUILDINGS_DESTROYED:
+      case TriggerEventType::kBuildingsDestroyed:
         if (hptr->ActiveBScan) {
           return false;
         }
         break;
 
       // Vessels and aircraft do not count.
-      case TEVENT_UNITS_DESTROYED:
+      case TriggerEventType::kUnitsDestroyed:
         if (hptr->ActiveUScan | hptr->ActiveIScan) {
           return false;
         }
         break;
 
       // Aircraft do not count.
-      case TEVENT_ALL_DESTROYED:
+      case TriggerEventType::kAllDestroyed:
         if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
             hptr->ActiveVScan) {
           return false;
         }
         break;
 
-      case TEventType::TEVENT_NONE:
-      case TEventType::TEVENT_PLAYER_ENTERED:
-      case TEventType::TEVENT_SPIED:
-      case TEventType::TEVENT_DISCOVERED:
-      case TEventType::TEVENT_ATTACKED:
-      case TEventType::TEVENT_DESTROYED:
-      case TEventType::TEVENT_ANY:
-      case TEventType::TEVENT_CREDITS:
-      case TEventType::TEVENT_TIME:
-      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-      case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-      case TEventType::TEVENT_NUNITS_DESTROYED:
-      case TEventType::TEVENT_NOFACTORIES:
-      case TEventType::TEVENT_EVAC_CIVILIAN:
-      case TEventType::TEVENT_BUILD:
-      case TEventType::TEVENT_BUILD_UNIT:
-      case TEventType::TEVENT_BUILD_INFANTRY:
-      case TEventType::TEVENT_BUILD_AIRCRAFT:
-      case TEventType::TEVENT_LEAVES_MAP:
-      case TEventType::TEVENT_ENTERS_ZONE:
-      case TEventType::TEVENT_CROSS_HORIZONTAL:
-      case TEventType::TEVENT_CROSS_VERTICAL:
-      case TEventType::TEVENT_GLOBAL_SET:
-      case TEventType::TEVENT_GLOBAL_CLEAR:
-      case TEventType::TEVENT_FAKES_DESTROYED:
-      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-      case TEventType::TEVENT_BUILDING_EXISTS:
+      case TriggerEventType::kNone:
+      case TriggerEventType::kPlayerEntered:
+      case TriggerEventType::kSpied:
+      case TriggerEventType::kDiscovered:
+      case TriggerEventType::kAttacked:
+      case TriggerEventType::kDestroyed:
+      case TriggerEventType::kAny:
+      case TriggerEventType::kCredits:
+      case TriggerEventType::kTime:
+      case TriggerEventType::kMissionTimerExpired:
+      case TriggerEventType::kBuildingsLost:
+      case TriggerEventType::kUnitsLost:
+      case TriggerEventType::kNoFactories:
+      case TriggerEventType::kCivilianEvacuated:
+      case TriggerEventType::kBuildBuilding:
+      case TriggerEventType::kBuildUnit:
+      case TriggerEventType::kBuildInfantry:
+      case TriggerEventType::kBuildAircraft:
+      case TriggerEventType::kLeavesMap:
+      case TriggerEventType::kEntersZone:
+      case TriggerEventType::kCrossHorizontal:
+      case TriggerEventType::kCrossVertical:
+      case TriggerEventType::kGlobalSet:
+      case TriggerEventType::kGlobalClear:
+      case TriggerEventType::kFakesDestroyed:
+      case TriggerEventType::kAllBridgesDestroyed:
+      case TriggerEventType::kBuildingExists:
       default:
         break;
     }
@@ -475,7 +481,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
 
     case 1:
       token = tokens.Next();
-      Event = TEVENT_NONE;
+      Event = TriggerEventType::kNone;
       if (!token.empty()) {
         Event = EventFromNumber(base::ParseIntegerOr<int>(token, 0));
       }
@@ -506,279 +512,282 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
   }
 }
 
-NeedType Event_Needs(TEventType event) {
+NeedType Event_Needs(TriggerEventType event) {
   switch (event) {
-    case TEVENT_THIEVED:
-    case TEVENT_PLAYER_ENTERED:
-    case TEVENT_CROSS_HORIZONTAL:
-    case TEVENT_CROSS_VERTICAL:
-    case TEVENT_ENTERS_ZONE:
-    case TEVENT_HOUSE_DISCOVERED:
-    case TEVENT_BUILDINGS_DESTROYED:
-    case TEVENT_UNITS_DESTROYED:
-    case TEVENT_ALL_DESTROYED:
-    case TEVENT_LOW_POWER:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kLowPower:
       return NeedType::kHouse;
 
-    case TEVENT_NUNITS_DESTROYED:
-    case TEVENT_NBUILDINGS_DESTROYED:
-    case TEVENT_CREDITS:
-    case TEVENT_TIME:
-    case TEVENT_GLOBAL_SET:
-    case TEVENT_GLOBAL_CLEAR:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
       return NeedType::kNumber;
 
-    case TEVENT_BUILDING_EXISTS:
-    case TEVENT_BUILD:
+    case TriggerEventType::kBuildingExists:
+    case TriggerEventType::kBuildBuilding:
       return NeedType::kStructure;
 
-    case TEVENT_BUILD_UNIT:
+    case TriggerEventType::kBuildUnit:
       return NeedType::kUnit;
 
-    case TEVENT_BUILD_INFANTRY:
+    case TriggerEventType::kBuildInfantry:
       return NeedType::kInfantry;
 
-    case TEVENT_BUILD_AIRCRAFT:
+    case TriggerEventType::kBuildAircraft:
       return NeedType::kAircraft;
 
-    case TEVENT_LEAVES_MAP:
+    case TriggerEventType::kLeavesMap:
       return NeedType::kTeam;
 
-    case TEventType::TEVENT_NONE:
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_ANY:
-    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TriggerEventType::kNone:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kAllBridgesDestroyed:
     default:
       break;
   }
   return NeedType::kNone;
 }
 
-TEventType Event_From_Name(const std::string_view name) {
+TriggerEventType Event_From_Name(const std::string_view name) {
   if (!name.empty()) {
-    for (const TEventType i : magic_enum::enum_values<TEventType>()) {
+    for (const TriggerEventType i :
+         magic_enum::enum_values<TriggerEventType>()) {
       if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
         return i;
       }
     }
   }
 
-  return TEVENT_NONE;
+  return TriggerEventType::kNone;
 }
 
-const char* Name_From_Event(TEventType event) { return EventText.at(event); }
+const char* Name_From_Event(TriggerEventType event) {
+  return EventText.at(event);
+}
 
-AttachType Attaches_To(TEventType event) {
+AttachType Attaches_To(TriggerEventType event) {
   AttachType attach = ATTACH_NONE;
 
   switch (event) {
-    case TEVENT_CROSS_HORIZONTAL:
-    case TEVENT_CROSS_VERTICAL:
-    case TEVENT_ENTERS_ZONE:
-    case TEVENT_PLAYER_ENTERED:
-    case TEVENT_ANY:
-    case TEVENT_DISCOVERED:
-    case TEVENT_NONE:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kNone:
       attach = attach | ATTACH_CELL;
       break;
 
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_THIEVED:
-    case TEventType::TEVENT_HOUSE_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_UNITS_DESTROYED:
-    case TEventType::TEVENT_BUILDINGS_DESTROYED:
-    case TEventType::TEVENT_ALL_DESTROYED:
-    case TEventType::TEVENT_CREDITS:
-    case TEventType::TEVENT_TIME:
-    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-    case TEventType::TEVENT_NUNITS_DESTROYED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_BUILD:
-    case TEventType::TEVENT_BUILD_UNIT:
-    case TEventType::TEVENT_BUILD_INFANTRY:
-    case TEventType::TEVENT_BUILD_AIRCRAFT:
-    case TEventType::TEVENT_LEAVES_MAP:
-    case TEventType::TEVENT_GLOBAL_SET:
-    case TEventType::TEVENT_GLOBAL_CLEAR:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_LOW_POWER:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kAllBridgesDestroyed:
+    case TriggerEventType::kBuildingExists:
     default:
       break;
   }
 
   switch (event) {
-    case TEVENT_SPIED:
-    case TEVENT_PLAYER_ENTERED:
-    case TEVENT_DISCOVERED:
-    case TEVENT_DESTROYED:
-    case TEVENT_ATTACKED:
-    case TEVENT_ANY:
-    case TEVENT_NONE:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kNone:
       attach = attach | ATTACH_OBJECT;
       break;
 
-    case TEventType::TEVENT_THIEVED:
-    case TEventType::TEVENT_HOUSE_DISCOVERED:
-    case TEventType::TEVENT_UNITS_DESTROYED:
-    case TEventType::TEVENT_BUILDINGS_DESTROYED:
-    case TEventType::TEVENT_ALL_DESTROYED:
-    case TEventType::TEVENT_CREDITS:
-    case TEventType::TEVENT_TIME:
-    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-    case TEventType::TEVENT_NUNITS_DESTROYED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_BUILD:
-    case TEventType::TEVENT_BUILD_UNIT:
-    case TEventType::TEVENT_BUILD_INFANTRY:
-    case TEventType::TEVENT_BUILD_AIRCRAFT:
-    case TEventType::TEVENT_LEAVES_MAP:
-    case TEventType::TEVENT_ENTERS_ZONE:
-    case TEventType::TEVENT_CROSS_HORIZONTAL:
-    case TEventType::TEVENT_CROSS_VERTICAL:
-    case TEventType::TEVENT_GLOBAL_SET:
-    case TEventType::TEVENT_GLOBAL_CLEAR:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_LOW_POWER:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kAllBridgesDestroyed:
+    case TriggerEventType::kBuildingExists:
     default:
       break;
   }
 
   switch (event) {
-    case TEVENT_ENTERS_ZONE:
-    case TEVENT_ANY:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kAny:
       attach = attach | ATTACH_MAP;
       break;
 
-    case TEventType::TEVENT_NONE:
-    case TEventType::TEVENT_PLAYER_ENTERED:
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_THIEVED:
-    case TEventType::TEVENT_DISCOVERED:
-    case TEventType::TEVENT_HOUSE_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_UNITS_DESTROYED:
-    case TEventType::TEVENT_BUILDINGS_DESTROYED:
-    case TEventType::TEVENT_ALL_DESTROYED:
-    case TEventType::TEVENT_CREDITS:
-    case TEventType::TEVENT_TIME:
-    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-    case TEventType::TEVENT_NUNITS_DESTROYED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_BUILD:
-    case TEventType::TEVENT_BUILD_UNIT:
-    case TEventType::TEVENT_BUILD_INFANTRY:
-    case TEventType::TEVENT_BUILD_AIRCRAFT:
-    case TEventType::TEVENT_LEAVES_MAP:
-    case TEventType::TEVENT_CROSS_HORIZONTAL:
-    case TEventType::TEVENT_CROSS_VERTICAL:
-    case TEventType::TEVENT_GLOBAL_SET:
-    case TEventType::TEVENT_GLOBAL_CLEAR:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_LOW_POWER:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TriggerEventType::kNone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kAllBridgesDestroyed:
+    case TriggerEventType::kBuildingExists:
     default:
       break;
   }
 
   switch (event) {
-    case TEVENT_LOW_POWER:
-    case TEVENT_EVAC_CIVILIAN:
-    case TEVENT_BUILDING_EXISTS:
-    case TEVENT_BUILD:
-    case TEVENT_BUILD_UNIT:
-    case TEVENT_BUILD_INFANTRY:
-    case TEVENT_BUILD_AIRCRAFT:
-    case TEVENT_NOFACTORIES:
-    case TEVENT_BUILDINGS_DESTROYED:
-    case TEVENT_NBUILDINGS_DESTROYED:
-    case TEVENT_UNITS_DESTROYED:
-    case TEVENT_NUNITS_DESTROYED:
-    case TEVENT_ALL_DESTROYED:
-    case TEVENT_HOUSE_DISCOVERED:
-    case TEVENT_CREDITS:
-    case TEVENT_THIEVED:
-    case TEVENT_ANY:
-    case TEVENT_FAKES_DESTROYED:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildingExists:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kFakesDestroyed:
       attach = attach | ATTACH_HOUSE;
       break;
 
-    case TEventType::TEVENT_NONE:
-    case TEventType::TEVENT_PLAYER_ENTERED:
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_TIME:
-    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
-    case TEventType::TEVENT_LEAVES_MAP:
-    case TEventType::TEVENT_ENTERS_ZONE:
-    case TEventType::TEVENT_CROSS_HORIZONTAL:
-    case TEventType::TEVENT_CROSS_VERTICAL:
-    case TEventType::TEVENT_GLOBAL_SET:
-    case TEventType::TEVENT_GLOBAL_CLEAR:
-    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TriggerEventType::kNone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kLeavesMap:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kAllBridgesDestroyed:
     default:
       break;
   }
 
   switch (event) {
-    case TEVENT_TIME:
-    case TEVENT_GLOBAL_SET:
-    case TEVENT_GLOBAL_CLEAR:
-    case TEVENT_MISSION_TIMER_EXPIRED:
-    case TEVENT_ANY:
-    case TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEVENT_LEAVES_MAP:
+    case TriggerEventType::kTime:
+    case TriggerEventType::kGlobalSet:
+    case TriggerEventType::kGlobalClear:
+    case TriggerEventType::kMissionTimerExpired:
+    case TriggerEventType::kAny:
+    case TriggerEventType::kAllBridgesDestroyed:
+    case TriggerEventType::kLeavesMap:
       attach = attach | ATTACH_GENERAL;
       break;
 
-    case TEventType::TEVENT_NONE:
-    case TEventType::TEVENT_PLAYER_ENTERED:
-    case TEventType::TEVENT_SPIED:
-    case TEventType::TEVENT_THIEVED:
-    case TEventType::TEVENT_DISCOVERED:
-    case TEventType::TEVENT_HOUSE_DISCOVERED:
-    case TEventType::TEVENT_ATTACKED:
-    case TEventType::TEVENT_DESTROYED:
-    case TEventType::TEVENT_UNITS_DESTROYED:
-    case TEventType::TEVENT_BUILDINGS_DESTROYED:
-    case TEventType::TEVENT_ALL_DESTROYED:
-    case TEventType::TEVENT_CREDITS:
-    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
-    case TEventType::TEVENT_NUNITS_DESTROYED:
-    case TEventType::TEVENT_NOFACTORIES:
-    case TEventType::TEVENT_EVAC_CIVILIAN:
-    case TEventType::TEVENT_BUILD:
-    case TEventType::TEVENT_BUILD_UNIT:
-    case TEventType::TEVENT_BUILD_INFANTRY:
-    case TEventType::TEVENT_BUILD_AIRCRAFT:
-    case TEventType::TEVENT_ENTERS_ZONE:
-    case TEventType::TEVENT_CROSS_HORIZONTAL:
-    case TEventType::TEVENT_CROSS_VERTICAL:
-    case TEventType::TEVENT_FAKES_DESTROYED:
-    case TEventType::TEVENT_LOW_POWER:
-    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TriggerEventType::kNone:
+    case TriggerEventType::kPlayerEntered:
+    case TriggerEventType::kSpied:
+    case TriggerEventType::kThieved:
+    case TriggerEventType::kDiscovered:
+    case TriggerEventType::kHouseDiscovered:
+    case TriggerEventType::kAttacked:
+    case TriggerEventType::kDestroyed:
+    case TriggerEventType::kUnitsDestroyed:
+    case TriggerEventType::kBuildingsDestroyed:
+    case TriggerEventType::kAllDestroyed:
+    case TriggerEventType::kCredits:
+    case TriggerEventType::kBuildingsLost:
+    case TriggerEventType::kUnitsLost:
+    case TriggerEventType::kNoFactories:
+    case TriggerEventType::kCivilianEvacuated:
+    case TriggerEventType::kBuildBuilding:
+    case TriggerEventType::kBuildUnit:
+    case TriggerEventType::kBuildInfantry:
+    case TriggerEventType::kBuildAircraft:
+    case TriggerEventType::kEntersZone:
+    case TriggerEventType::kCrossHorizontal:
+    case TriggerEventType::kCrossVertical:
+    case TriggerEventType::kFakesDestroyed:
+    case TriggerEventType::kLowPower:
+    case TriggerEventType::kBuildingExists:
     default:
       break;
   }

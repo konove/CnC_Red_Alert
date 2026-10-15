@@ -1533,7 +1533,7 @@ game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
     **	Handle any trigger event associated with this object.
     */
     if (source && Trigger != nullptr && result != game::RESULT_DESTROYED) {
-      Trigger->Spring(TEVENT_ATTACKED, this);
+      Trigger->Spring(TriggerEventType::kAttacked, this);
     }
 
     /*

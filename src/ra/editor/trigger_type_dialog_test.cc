@@ -185,8 +185,8 @@ struct Contents {
   TriggerType::Persistence persistence;
   MultiStyle event_control;
   MultiStyle action_control;
-  TEventType event1;
-  TEventType event2;
+  TriggerEventType event1;
+  TriggerEventType event2;
   const TeamType* event1_team;
   const TeamType* event2_team;
   int event1_value;
@@ -254,7 +254,7 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
   }
 
   // Gives `event` the kind `type` and a value of the sort that kind takes.
-  void Fill(TEventClass& event, const TEventType type) const {
+  void Fill(TEventClass& event, const TriggerEventType type) const {
     event.Event = type;
     const NeedType need = Event_Needs(type);
     if (need == NeedType::kHouse) {
@@ -313,7 +313,8 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
 };
 
 TEST_F(TriggerTypeDialogRoundTripTest, EveryKindOfEventComesBackAsItWas) {
-  for (const TEventType type : magic_enum::enum_values<TEventType>()) {
+  for (const TriggerEventType type :
+       magic_enum::enum_values<TriggerEventType>()) {
     SCOPED_TRACE(magic_enum::enum_name(type));
     Fill(trigger_type_->event1, type);
     Fill(trigger_type_->event2, type);
@@ -494,12 +495,13 @@ class TriggerTypeDialogDropListTest : public TriggerTypeDialogTest {
 };
 
 TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
-  std::vector<std::pair<std::string, TEventType>> names;
-  for (const TEventType type : magic_enum::enum_values<TEventType>()) {
+  std::vector<std::pair<std::string, TriggerEventType>> names;
+  for (const TriggerEventType type :
+       magic_enum::enum_values<TriggerEventType>()) {
     names.emplace_back(EventChoices.at(type).Description(), type);
   }
-  const TEventType second = SecondByName(names);
-  ASSERT_NE(second, TEVENT_NONE);
+  const TriggerEventType second = SecondByName(names);
+  ASSERT_NE(second, TriggerEventType::kNone);
 
   const int frame =
       PickSecondRow(3, kChoiceX, kEvent1Y, kChoiceWidth, kChoiceListTop);
@@ -507,7 +509,7 @@ TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
 
   EXPECT_TRUE(trigger_type_->Edit());
   EXPECT_EQ(trigger_type_->event1.Event, second);
-  EXPECT_EQ(trigger_type_->event2.Event, TEVENT_NONE);
+  EXPECT_EQ(trigger_type_->event2.Event, TriggerEventType::kNone);
 }
 
 TEST_F(TriggerTypeDialogDropListTest, AnActionPickedFromTheListIsStored) {

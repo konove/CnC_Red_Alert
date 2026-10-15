@@ -160,8 +160,8 @@ void TriggerClass::Init() { TheObjectHeaps().trigger().FreeAll(); }
  * HISTORY: * 05/31/1996 JLB : Created. * 08/13/1996 JLB : Linked triggers
  *supported.                                               *
  *=============================================================================================*/
-bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
-                          bool forced) {
+bool TriggerClass::Spring(TriggerEventType event, ObjectClass* obj,
+                          ra::Cell cell, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
   const bool e1 = Class->event1(Event1, event, Class->house, obj, forced);

@@ -514,7 +514,7 @@ void TeamClass::AI() {
           for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
                index++) {
             TriggerClass* trig = base::At(TheWorld().logic_triggers(), index);
-            if (trig->Spring(TEVENT_LEAVES_MAP)) {
+            if (trig->Spring(TriggerEventType::kLeavesMap)) {
               index--;
               if (std::ssize(TheWorld().logic_triggers()) == 0) {
                 break;
@@ -661,7 +661,7 @@ void TeamClass::AI() {
       for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
            index++) {
         TriggerClass* trig = base::At(TheWorld().logic_triggers(), index);
-        if (trig->Spring(TEVENT_LEAVES_MAP)) {
+        if (trig->Spring(TriggerEventType::kLeavesMap)) {
           index--;
           if (std::ssize(TheWorld().logic_triggers()) == 0) {
             break;
