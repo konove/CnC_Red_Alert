@@ -18,7 +18,6 @@
 
 #include "ra/ai/tevent.h"
 
-#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -33,7 +32,6 @@
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -44,7 +42,6 @@
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
@@ -130,51 +127,6 @@ constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {
     "Low Power...",
     "All bridges destroyed",
     "Building exists..."};
-
-base::EnumArray<TriggerEventType, EventChoice> event_choices = {{
-    {TriggerEventType::kNone},
-    {TriggerEventType::kPlayerEntered},
-    {TriggerEventType::kSpied},
-    {TriggerEventType::kThieved},
-    {TriggerEventType::kDiscovered},
-    {TriggerEventType::kHouseDiscovered},
-    {TriggerEventType::kAttacked},
-    {TriggerEventType::kDestroyed},
-    {TriggerEventType::kAny},
-    {TriggerEventType::kUnitsDestroyed},
-    {TriggerEventType::kBuildingsDestroyed},
-    {TriggerEventType::kAllDestroyed},
-    {TriggerEventType::kCredits},
-    {TriggerEventType::kTime},
-    {TriggerEventType::kMissionTimerExpired},
-    {TriggerEventType::kBuildingsLost},
-    {TriggerEventType::kUnitsLost},
-    {TriggerEventType::kNoFactories},
-    {TriggerEventType::kCivilianEvacuated},
-    {TriggerEventType::kBuildBuilding},
-    {TriggerEventType::kBuildUnit},
-    {TriggerEventType::kBuildInfantry},
-    {TriggerEventType::kBuildAircraft},
-    {TriggerEventType::kLeavesMap},
-    {TriggerEventType::kEntersZone},
-    {TriggerEventType::kCrossHorizontal},
-    {TriggerEventType::kCrossVertical},
-    {TriggerEventType::kGlobalSet},
-    {TriggerEventType::kGlobalClear},
-    {TriggerEventType::kFakesDestroyed},
-    {TriggerEventType::kLowPower},
-    {TriggerEventType::kAllBridgesDestroyed},
-    {TriggerEventType::kBuildingExists},
-}};
-
-void EventChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                          int width, int height, bool selected, FontType font,
-                          TextPrintType flags) const {
-  // Tab stops in pixels; the event names hold no tabs.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
-  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
-                          selected, kTabStops);
-}
 
 void TriggerEvent::Reset(TriggerEventState& state) const {
   state.is_tripped = false;

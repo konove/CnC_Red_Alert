@@ -111,6 +111,79 @@ void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                           selected, kTabStops);
 }
 
+// An event type as an entry of the scenario editor's event lists, which shows
+// its name and sorts by it.
+class EventChoice {
+ public:
+  // Implicit, so the choice table can be a brace list of event types.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  EventChoice(TriggerEventType event = TriggerEventType::kNone) noexcept
+      : event_(event) {}
+
+  // Implicit, so an entry compares directly against an event type.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator TriggerEventType() const { return event_; }
+  // Orders by description, ignoring case; the editor sorts its lists with it.
+  bool operator<(const EventChoice& other) const {
+    return std::ranges::lexicographical_compare(
+        std::string_view(Description()), std::string_view(other.Description()),
+        {}, absl::ascii_tolower, absl::ascii_tolower);
+  }
+  // The event's name in the editor.
+  [[nodiscard]] const char* Description() const { return EventName(event_); }
+  // Draws the event's name as a list box line; `index` is unused.
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, FontType font, TextPrintType flags) const;
+
+  TriggerEventType event_;
+};
+
+// One entry per event type, indexed by it, for the editor's event lists.
+base::EnumArray<TriggerEventType, EventChoice> event_choices = {{
+    {TriggerEventType::kNone},
+    {TriggerEventType::kPlayerEntered},
+    {TriggerEventType::kSpied},
+    {TriggerEventType::kThieved},
+    {TriggerEventType::kDiscovered},
+    {TriggerEventType::kHouseDiscovered},
+    {TriggerEventType::kAttacked},
+    {TriggerEventType::kDestroyed},
+    {TriggerEventType::kAny},
+    {TriggerEventType::kUnitsDestroyed},
+    {TriggerEventType::kBuildingsDestroyed},
+    {TriggerEventType::kAllDestroyed},
+    {TriggerEventType::kCredits},
+    {TriggerEventType::kTime},
+    {TriggerEventType::kMissionTimerExpired},
+    {TriggerEventType::kBuildingsLost},
+    {TriggerEventType::kUnitsLost},
+    {TriggerEventType::kNoFactories},
+    {TriggerEventType::kCivilianEvacuated},
+    {TriggerEventType::kBuildBuilding},
+    {TriggerEventType::kBuildUnit},
+    {TriggerEventType::kBuildInfantry},
+    {TriggerEventType::kBuildAircraft},
+    {TriggerEventType::kLeavesMap},
+    {TriggerEventType::kEntersZone},
+    {TriggerEventType::kCrossHorizontal},
+    {TriggerEventType::kCrossVertical},
+    {TriggerEventType::kGlobalSet},
+    {TriggerEventType::kGlobalClear},
+    {TriggerEventType::kFakesDestroyed},
+    {TriggerEventType::kLowPower},
+    {TriggerEventType::kAllBridgesDestroyed},
+    {TriggerEventType::kBuildingExists},
+}};
+
+void EventChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                          int width, int height, bool selected, FontType font,
+                          TextPrintType flags) const {
+  // Tab stops in pixels; the event names hold no tabs.
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
+  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
+                          selected, kTabStops);
+}
+
 // Returns the name selected in `list`, or an empty view when the list has no
 // items: Current_Item() is null then, which a string_view cannot hold.
 std::string_view SelectedName(

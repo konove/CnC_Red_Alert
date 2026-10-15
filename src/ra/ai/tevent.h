@@ -18,24 +18,20 @@
 
 // The event half of a scenario trigger: what a trigger waits for
 // (TriggerEventType), an event as a trigger type describes it (TriggerEvent),
-// the state each trigger keeps for it while it waits (TriggerEventState), what
-// an event can be attached to (TriggerAttachment), and the scenario editor's
-// list entry for an event type (EventChoice).
+// the state each trigger keeps for it while it waits (TriggerEventState), and
+// what an event can be attached to (TriggerAttachment).
 
 #ifndef CNC_RED_ALERT_RA_AI_TEVENT_H_
 #define CNC_RED_ALERT_RA_AI_TEVENT_H_
 
-#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
 
-#include "absl/strings/ascii.h"
 #include "base/attributes.h"
 #include "base/enum_array.h"
 #include "base/flags.h"
 #include "base/strings/tokenizer.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/ai/team_type.h"
@@ -260,36 +256,6 @@ enum class CNC_FLAG_ENUM TriggerAttachment {
 
 // Returns what a trigger with `event` can be attached to.
 TriggerAttachment EventAttachment(TriggerEventType event);
-
-// An event type as an entry of the scenario editor's event lists, which shows
-// its name and sorts by it.
-class EventChoice {
- public:
-  // Implicit, so the choice table can be a brace list of event types.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  EventChoice(TriggerEventType event = TriggerEventType::kNone) noexcept
-      : event_(event) {}
-
-  // Implicit, so an entry compares directly against an event type.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TriggerEventType() const { return event_; }
-  // Orders by description, ignoring case; the editor sorts its lists with it.
-  bool operator<(const EventChoice& other) const {
-    return std::ranges::lexicographical_compare(
-        std::string_view(Description()), std::string_view(other.Description()),
-        {}, absl::ascii_tolower, absl::ascii_tolower);
-  }
-  // The event's name in the editor.
-  [[nodiscard]] const char* Description() const { return EventName(event_); }
-  // Draws the event's name as a list box line; `index` is unused.
-  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, FontType font, TextPrintType flags) const;
-
-  TriggerEventType event_;
-};
-
-// One entry per event type, indexed by it, for the editor's event lists.
-extern base::EnumArray<TriggerEventType, EventChoice> event_choices;
 
 extern template void TriggerEvent::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerEvent::Serialize<ArchiveReader>(ArchiveReader&);

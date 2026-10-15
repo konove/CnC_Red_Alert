@@ -498,7 +498,7 @@ TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
   std::vector<std::pair<std::string, TriggerEventType>> names;
   for (const TriggerEventType type :
        magic_enum::enum_values<TriggerEventType>()) {
-    names.emplace_back(event_choices.at(type).Description(), type);
+    names.emplace_back(EventName(type), type);
   }
   const TriggerEventType second = SecondByName(names);
   ASSERT_NE(second, TriggerEventType::kNone);
