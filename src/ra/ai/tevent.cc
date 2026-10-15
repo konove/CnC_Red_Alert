@@ -25,6 +25,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -44,6 +45,21 @@
 #include "ra/ui/ui_skin.h"
 
 namespace ra {
+
+namespace {
+
+// Returns event number `number` from a scenario INI as an event, or
+// TEVENT_NONE when it names none. The number indexes the name table and picks
+// the check, which takes anything it does not list as having happened.
+TEventType EventFromNumber(const int number) {
+  if (number < 0 || number >= static_cast<int>(TEVENT_COUNT)) {
+    DLOG(WARNING) << "EventFromNumber: " << number << " is no event";
+    return TEVENT_NONE;
+  }
+  return static_cast<TEventType>(number);
+}
+
+}  // namespace
 
 // The scenario editor's name for each event, which its lists show and sort by.
 static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
@@ -450,8 +466,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
   std::string_view token;
   switch (TheWorld().new_ini_format()) {
     default:
-      Event =
-          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Event = EventFromNumber(base::ParseIntegerOr<int>(tokens.Next(), 0));
       Team = TheObjectHeaps().team_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
       set_value(base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -461,7 +476,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       token = tokens.Next();
       Event = TEVENT_NONE;
       if (!token.empty()) {
-        Event = static_cast<TEventType>(base::ParseIntegerOr<int>(token, 0));
+        Event = EventFromNumber(base::ParseIntegerOr<int>(token, 0));
       }
 
       token = tokens.Next();
@@ -478,8 +493,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       break;
 
     case 0:
-      Event =
-          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Event = EventFromNumber(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       tokens.Next();  // Old-format field, unused.
       tokens.Next();  // Old-format field, unused.

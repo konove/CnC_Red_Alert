@@ -131,6 +131,16 @@ add_gtest(
     LIBS absl::strings
 )
 
+# Reads and checks trigger events in a real Game.
+add_gtest(
+    NAME ra_tevent_test
+    SOURCES ai/tevent_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_tevent_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_tevent_test)
+apply_language_setting(ra_tevent_test)
+
 # Reads, writes, saves, detaches and draws trigger types in a real Game.
 add_gtest(
     NAME ra_trigger_type_test
