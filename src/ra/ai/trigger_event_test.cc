@@ -36,7 +36,7 @@ namespace ra {
 namespace {
 
 // A Game with one team type, in slot 0 of a four-slot heap.
-class TEventTest : public GameFixture {
+class TriggerEventTest : public GameFixture {
  protected:
   void SetUp() override {
     TheObjectHeaps().team().Reset(4);
@@ -84,7 +84,7 @@ class TEventTest : public GameFixture {
 
 // A number past the last event, in any format, reads as no event rather than
 // as one that indexes past the name table and always happens.
-TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
+TEST_F(TriggerEventTest, ANumberThatIsNoEventReadsAsNone) {
   EXPECT_EQ(Read(2, "33,-1,5").type(), TriggerEventType::kNone);
   EXPECT_EQ(Read(2, "-2,-1,5").type(), TriggerEventType::kNone);
   EXPECT_EQ(Read(1, "99,5").type(), TriggerEventType::kNone);
@@ -92,14 +92,14 @@ TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
 }
 
 // Format 1 gives a team event's team as its heap slot.
-TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
+TEST_F(TriggerEventTest, FormatOneReadsTheTeamSlot) {
   const TriggerEvent event = Read(1, "23,0");
   EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
   EXPECT_EQ(event.team_type(), team_type_);
 }
 
 // Format 1 gives the value in the same field; an empty field sets neither.
-TEST_F(TEventTest, FormatOneReadsTheValueOrNothing) {
+TEST_F(TriggerEventTest, FormatOneReadsTheValueOrNothing) {
   const TriggerEvent credits = Read(1, "12,5000");
   EXPECT_EQ(credits.type(), TriggerEventType::kCredits);
   EXPECT_EQ(credits.value(), 5000);
@@ -112,7 +112,7 @@ TEST_F(TEventTest, FormatOneReadsTheValueOrNothing) {
 }
 
 // Format 0 names the team and has three fields nothing reads.
-TEST_F(TEventTest, FormatZeroReadsTheTeamByName) {
+TEST_F(TriggerEventTest, FormatZeroReadsTheTeamByName) {
   const TriggerEvent event = Read(0, "23,7,8,tanks,42,9");
   EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
   EXPECT_EQ(event.team_type(), team_type_);
@@ -121,7 +121,7 @@ TEST_F(TEventTest, FormatZeroReadsTheTeamByName) {
 
 // From format 2 on the team is its heap slot, and ToIniEntry() writes the
 // same form back.
-TEST_F(TEventTest, TheCurrentFormatReadsBackWhatToIniEntryWrites) {
+TEST_F(TriggerEventTest, TheCurrentFormatReadsBackWhatToIniEntryWrites) {
   const TriggerEvent event = Read(2, "23,0,7");
   EXPECT_EQ(event.type(), TriggerEventType::kLeavesMap);
   EXPECT_EQ(event.team_type(), team_type_);
@@ -131,14 +131,14 @@ TEST_F(TEventTest, TheCurrentFormatReadsBackWhatToIniEntryWrites) {
 }
 
 // A slot outside the heap reads as no team instead of failing a check.
-TEST_F(TEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
+TEST_F(TriggerEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
   EXPECT_EQ(Read(1, "23,9").team_type(), nullptr);
   EXPECT_EQ(Read(1, "23,-1").team_type(), nullptr);
 }
 
 // HousesType is one byte: storing a house keeps the other three bytes of the
 // event's argument, as the store into the union it replaced did.
-TEST_F(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
+TEST_F(TriggerEventTest, AHouseEventReplacesOnlyTheLowByte) {
   TriggerEvent event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_USSR);
@@ -146,7 +146,7 @@ TEST_F(TEventTest, AHouseEventReplacesOnlyTheLowByte) {
   EXPECT_EQ(event.house(), HOUSE_USSR);
 }
 
-TEST_F(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
+TEST_F(TriggerEventTest, NoHouseSetsTheLowByteToAllOnes) {
   TriggerEvent event(TriggerEventType::kPlayerEntered);
   event.set_value(0x12345600);
   event.set_house(HOUSE_NONE);
@@ -154,7 +154,7 @@ TEST_F(TEventTest, NoHouseSetsTheLowByteToAllOnes) {
   EXPECT_EQ(event.house(), HOUSE_NONE);
 }
 
-TEST_F(TEventTest, DetachDropsOnlyItsOwnTeamType) {
+TEST_F(TriggerEventTest, DetachDropsOnlyItsOwnTeamType) {
   TriggerEvent event(TriggerEventType::kLeavesMap);
   event.set_team_type(team_type_);
   event.Detach(base::NewPooled<TeamType>()->As_Target());
@@ -166,7 +166,7 @@ TEST_F(TEventTest, DetachDropsOnlyItsOwnTeamType) {
 
 // A trigger's wait survives a saved game: whether it is tripped and how much
 // of its countdown is left.
-TEST_F(TEventTest, TheStateOfAWaitIsSaved) {
+TEST_F(TriggerEventTest, TheStateOfAWaitIsSaved) {
   TriggerEventState saved_state;
   saved_state.is_tripped = true;
   saved_state.timer.Set(450);
@@ -187,7 +187,7 @@ TEST_F(TEventTest, TheStateOfAWaitIsSaved) {
   EXPECT_EQ(loaded.timer.Remaining(), 450);
 }
 
-TEST_F(TEventTest, AForcedEventHasHappenedUntilReset) {
+TEST_F(TriggerEventTest, AForcedEventHasHappenedUntilReset) {
   const TriggerEvent event = Make(TriggerEventType::kCredits, 1000);
   EXPECT_FALSE(Check(event));
 
@@ -199,18 +199,18 @@ TEST_F(TEventTest, AForcedEventHasHappenedUntilReset) {
   EXPECT_FALSE(Check(event));
 }
 
-TEST_F(TEventTest, NoEventNeverHappensUnlessForced) {
+TEST_F(TriggerEventTest, NoEventNeverHappensUnlessForced) {
   const TriggerEvent event = Make(TriggerEventType::kNone);
   EXPECT_FALSE(Check(event, TriggerEventType::kNone));
   EXPECT_FALSE(Check(event, TriggerEventType::kAny));
   EXPECT_TRUE(Check(event, TriggerEventType::kAny, nullptr, true));
 }
 
-TEST_F(TEventTest, AnyEventAlwaysHappens) {
+TEST_F(TriggerEventTest, AnyEventAlwaysHappens) {
   EXPECT_TRUE(Check(Make(TriggerEventType::kAny), TriggerEventType::kTime));
 }
 
-TEST_F(TEventTest, AGlobalEventFollowsItsGlobal) {
+TEST_F(TriggerEventTest, AGlobalEventFollowsItsGlobal) {
   const TriggerEvent set = Make(TriggerEventType::kGlobalSet, 3);
   const TriggerEvent clear = Make(TriggerEventType::kGlobalClear, 3);
   base::At(TheScenario().GlobalFlags, 3) = true;
@@ -223,7 +223,7 @@ TEST_F(TEventTest, AGlobalEventFollowsItsGlobal) {
   EXPECT_FALSE(state_.is_tripped);
 }
 
-TEST_F(TEventTest, TheMissionTimerEventNeedsARunningTimerAtZero) {
+TEST_F(TriggerEventTest, TheMissionTimerEventNeedsARunningTimerAtZero) {
   const TriggerEvent event = Make(TriggerEventType::kMissionTimerExpired);
   TheScenario().MissionTimer.Set(0);
   EXPECT_TRUE(Check(event));
@@ -235,7 +235,7 @@ TEST_F(TEventTest, TheMissionTimerEventNeedsARunningTimerAtZero) {
   EXPECT_FALSE(Check(event));
 }
 
-TEST_F(TEventTest, ATimeEventWaitsForItsCountdown) {
+TEST_F(TriggerEventTest, ATimeEventWaitsForItsCountdown) {
   EXPECT_FALSE(Check(Make(TriggerEventType::kTime, 10)));
   EXPECT_EQ(state_.timer.Remaining(), 10 * (kTicksPerMinute / 10));
   const TriggerEvent now(TriggerEventType::kTime);
@@ -245,7 +245,7 @@ TEST_F(TEventTest, ATimeEventWaitsForItsCountdown) {
 
 // The moment events count when the check is made for them, or for any
 // event, and are not remembered.
-TEST_F(TEventTest, AMomentEventHappensWhenCheckedForIt) {
+TEST_F(TriggerEventTest, AMomentEventHappensWhenCheckedForIt) {
   for (const TriggerEventType type :
        {TriggerEventType::kAttacked, TriggerEventType::kDestroyed,
         TriggerEventType::kDiscovered, TriggerEventType::kSpied}) {
@@ -260,7 +260,7 @@ TEST_F(TEventTest, AMomentEventHappensWhenCheckedForIt) {
 
 // The entering events also need an object of the house the event names, and
 // stay tripped once it has entered.
-TEST_F(TEventTest, AnEnteringEventNeedsAnObjectOfItsHouse) {
+TEST_F(TriggerEventTest, AnEnteringEventNeedsAnObjectOfItsHouse) {
   InitInfantryTypes();
   TheObjectHeaps().infantry().Reset(2);
   const auto* greek = base::NewPooled<InfantryClass>(INFANTRY_E1, HOUSE_GREECE);
@@ -283,7 +283,7 @@ TEST_F(TEventTest, AnEnteringEventNeedsAnObjectOfItsHouse) {
   }
 }
 
-TEST_F(TEventTest, TheBridgeEventStaysTrippedOnceTheLastBridgeFalls) {
+TEST_F(TriggerEventTest, TheBridgeEventStaysTrippedOnceTheLastBridgeFalls) {
   const TriggerEvent event = Make(TriggerEventType::kAllBridgesDestroyed);
   TheScenario().BridgeCount = 1;
   EXPECT_FALSE(Check(event));
@@ -294,7 +294,7 @@ TEST_F(TEventTest, TheBridgeEventStaysTrippedOnceTheLastBridgeFalls) {
   EXPECT_TRUE(Check(event));
 }
 
-TEST_F(TEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
+TEST_F(TriggerEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
   TriggerEvent event = Make(TriggerEventType::kLeavesMap);
   event.set_team_type(team_type_);
   EXPECT_FALSE(Check(event));
@@ -328,7 +328,7 @@ TEST_F(TEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
 }
 
 // The trigger's house: what it has, has built and has lost.
-TEST_F(TEventTest, TheTriggersHouseConditionsAreReadFromItsState) {
+TEST_F(TriggerEventTest, TheTriggersHouseConditionsAreReadFromItsState) {
   const TriggerEvent credits = Make(TriggerEventType::kCredits, 500);
   owner_->Credits = 499;
   EXPECT_FALSE(Check(credits));
@@ -376,7 +376,7 @@ TEST_F(TEventTest, TheTriggersHouseConditionsAreReadFromItsState) {
 
 // What the house has just built changes with the next thing it builds, so the
 // building events stay tripped.
-TEST_F(TEventTest, ABuildEventStaysTrippedOnceTheTypeIsBuilt) {
+TEST_F(TriggerEventTest, ABuildEventStaysTrippedOnceTheTypeIsBuilt) {
   TriggerEvent building = Make(TriggerEventType::kBuildBuilding);
   building.set_structure(STRUCT_WEAP);
   EXPECT_FALSE(Check(building));
@@ -406,7 +406,7 @@ TEST_F(TEventTest, ABuildEventStaysTrippedOnceTheTypeIsBuilt) {
 
 // The house the event names: its power, what was stolen from it, whether it
 // has been seen and what it has left.
-TEST_F(TEventTest, TheNamedHousesConditionsAreReadFromItsState) {
+TEST_F(TriggerEventTest, TheNamedHousesConditionsAreReadFromItsState) {
   const TriggerEvent power = Make(TriggerEventType::kLowPower);
   named_->Power = 100;
   named_->Drain = 100;
@@ -451,7 +451,7 @@ TEST_F(TEventTest, TheNamedHousesConditionsAreReadFromItsState) {
 
 // A condition whose house is not in the game is not checked and counts as
 // having happened.
-TEST_F(TEventTest, AConditionOnAHouseNotInTheGameHasHappened) {
+TEST_F(TriggerEventTest, AConditionOnAHouseNotInTheGameHasHappened) {
   const TriggerEvent credits = Make(TriggerEventType::kCredits, 500);
   EXPECT_TRUE(credits.HasHappened(state_, TriggerEventType::kAny, HOUSE_ENGLAND,
                                   nullptr, false));
@@ -463,7 +463,7 @@ TEST_F(TEventTest, AConditionOnAHouseNotInTheGameHasHappened) {
 
 // A number that is no event, which only a damaged saved game could hold,
 // takes nothing, attaches to nothing and always counts as having happened.
-TEST_F(TEventTest, ANumberThatIsNoEventIsHandledAsItAlwaysWas) {
+TEST_F(TriggerEventTest, ANumberThatIsNoEventIsHandledAsItAlwaysWas) {
   // Out of range on purpose.
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   constexpr auto kNoEvent = static_cast<TriggerEventType>(99);
