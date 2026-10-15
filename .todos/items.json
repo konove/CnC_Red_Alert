@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 453,
+  "nextId": 464,
   "items": [
     {
       "id": "T-2",
@@ -1823,8 +1823,15 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-140",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-15T01:59:37Z",
+          "text": "Trigger *events* now read a number that names no event as none (8bff3a07f, `EventFromNumber()` in `ra/ai/trigger_event.cc`). The actions still `static_cast` theirs, and `TriggerType::ReadIniEntry()` casts persistence, house and the two controls unchecked; a generic `ParseEnumOr<E>(token, fallback)` in `base/strings/number_parse.h` would serve all of them."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_action.cc",
@@ -10404,29 +10411,30 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-139",
       "source": "7e448b91..57fdf1fc",
+      "resolution": "`TriggerEvent::Detach(Target)` clears the event's team type; `TriggerType::Detach()` is four symmetric calls.",
       "anchors": [
         {
-          "path": "src/ra/ai/tevent.h",
-          "startLine": 145,
-          "endLine": 145,
-          "text": "struct TEventClass {",
+          "path": "src/ra/ai/trigger_event.h",
+          "startLine": 178,
+          "endLine": 178,
+          "text": "  void Detach(Target target);",
           "before": [
-            "**\tThis elaborates the information necessary to trigger",
-            "**\tan event.",
-            "*/"
+            "  // the event without a check, for a trigger another trigger forces.",
+            "  // Drops the event's reference to the team type `target`, which is being",
+            "  // destroyed. Does nothing for any other target."
           ],
           "after": [
-            "  /*",
-            "  **\tThis is the event that will controls how this event gets triggered.",
-            "  */"
+            "  bool HasHappened(TriggerEventState& state, TriggerEventType cause,",
+            "                   HousesType trigger_house, const ObjectClass* object,",
+            "                   bool forced) const;"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -10482,9 +10490,16 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-139",
       "source": "7e448b91..57fdf1fc",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-15T01:59:37Z",
+          "text": "The event and action choices are now one `TriggerChoice` (`ra/editor/trigger_type_dialog.cc:89`, df62e5293). The case-insensitive less-than still appears there and in `ra/editor/mapeddlg.cc:2696`, `ra/editor/mapedtm.cc:294` and `ra/wol/rawolapi.cc:519`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/editor/trigger_type_dialog.cc",
@@ -10492,9 +10507,9 @@
           "endLine": 87,
           "text": "    return std::ranges::lexicographical_compare(",
           "before": [
-            "  operator TriggerActionType() const { return action_; }",
+            "  operator Type() const { return type_; }",
             "  // Orders by description, ignoring case; the editor sorts its lists with it.",
-            "  bool operator<(const ActionChoice& other) const {"
+            "  bool operator<(const TriggerChoice& other) const {"
           ],
           "after": [
             "        std::string_view(Description()), std::string_view(other.Description()),",
@@ -10593,14 +10608,21 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-139",
       "source": "7e448b91..57fdf1fc",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-15T01:59:37Z",
+          "text": "`TriggerEvent::ToIniEntry()` (`ra/ai/trigger_event.cc:339`, was `TEventClass::Build_INI_Entry`) formats with `std::format` too and returns its string since 877fbaddb."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_type.cc",
-          "startLine": 252,
-          "endLine": 252,
+          "startLine": 242,
+          "endLine": 242,
           "text": "std::string TriggerType::ToIniEntry() const {",
           "before": [
             "  }",
@@ -10814,12 +10836,14 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-15T00:45:07Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-140",
       "source": "7eeaf347..cd29efc1",
+      "fixedIn": "e8da958c5",
+      "resolution": "Ran `/modernize-file`: the files are `ra/ai/trigger_event.{h,cc}` with `TriggerEvent`, `TriggerEventType`, `TriggerEventState` and `TriggerAttachment`; `EventChoice` moved to the trigger dialog and shares `TriggerChoice` with the actions; `ToIniEntry()` returns its string. Leftovers are under T-453.",
       "toDecide": "- **A plain `/modernize-file`** on `ra/ai/tevent.{h,cc}` with the points above.\n- **One class per event**, as `docs/TRIGGER_ACTION_CLASSES_PLAN.md` did for the actions: write a plan of its own first.",
       "decisions": [
         {
@@ -10834,21 +10858,21 @@
       ],
       "anchors": [
         {
-          "path": "src/ra/ai/tevent.h",
-          "startLine": 145,
-          "endLine": 145,
-          "text": "struct TEventClass {",
+          "path": "src/ra/ai/trigger_event.h",
+          "startLine": 154,
+          "endLine": 154,
+          "text": "class TriggerEvent {",
           "before": [
-            "**\tThis elaborates the information necessary to trigger",
-            "**\tan event.",
-            "*/"
+            "//   if (event.HasHappened(state, TriggerEventType::kAny, HOUSE_USSR, nullptr,",
+            "//                         false)) { ...",
+            "//   }"
           ],
           "after": [
-            "  /*",
-            "  **\tThis is the event that will controls how this event gets triggered.",
-            "  */"
+            " public:",
+            "  TriggerEvent() = default;",
+            "  explicit TriggerEvent(const TriggerEventType type) : type_(type) {}"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -10988,9 +11012,16 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-15T01:59:37Z",
       "parent": "T-140",
       "source": "7eeaf347..cd29efc1",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-15T01:59:37Z",
+          "text": "`TriggerEvent::Reset()` (`ra/ai/trigger_event.cc:134`) also computes the tenth-of-a-minute unit as `kTicksPerMinute / 10`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_action.cc",
@@ -16092,28 +16123,30 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-15T01:59:37Z",
       "source": "e3910eae2",
+      "fixedIn": "c2b5018c3",
+      "resolution": "`Event` and `Team` are the private `type_` and `team_type_` behind `type()`/`set_type()` and `team_type()`/`set_team_type()`; declarations in Google order.",
       "anchors": [
         {
-          "path": "src/ra/ai/tevent.h",
-          "startLine": 159,
-          "endLine": 159,
-          "text": "class TEventClass {",
+          "path": "src/ra/ai/trigger_event.h",
+          "startLine": 154,
+          "endLine": 154,
+          "text": "class TriggerEvent {",
           "before": [
-            "//   event.Reset(state);",
-            "//   if (event(state, TriggerEventType::kAny, HOUSE_USSR, nullptr, false)) { ...",
+            "//   if (event.HasHappened(state, TriggerEventType::kAny, HOUSE_USSR, nullptr,",
+            "//                         false)) { ...",
             "//   }"
           ],
           "after": [
             " public:",
-            "  // The event this is.",
-            "  TriggerEventType Event;"
+            "  TriggerEvent() = default;",
+            "  explicit TriggerEvent(const TriggerEventType type) : type_(type) {}"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -16324,6 +16357,473 @@
             "    Reference& operator=(const Reference& other) {"
           ],
           "lost": true
+        }
+      ]
+    },
+    {
+      "id": "T-453",
+      "title": "Leftovers from the ra/ai/trigger_event modernization",
+      "details": "What the `/modernize-file` run on `ra/ai/tevent.{h,cc}` (now `ra/ai/trigger_event.{h,cc}`) found and did not change: simulation behaviour that is the user's call, and follow-ups that reach outside the two files.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:58:57Z",
+      "updated": "2026-10-15T01:58:57Z",
+      "source": "41772da62..e8da958c5",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-454",
+      "title": "Restart the right trigger's timer when a global changes",
+      "details": "`ScenarioClass::Set_Global_To()` resets a trigger's *other* event when one of its events waits for the global that changed. When event 2 is the global it calls `event1.Reset(tp->Event1)`, which is right; when event 1 is the global it calls `event2.Reset(tp->Event1)` (line 340): event 2's description is applied to event 1's state.\n\nEffect: a trigger with event 1 = global set/clear and event 2 = elapsed time never restarts its countdown when the global changes (`Event2.timer` is untouched), and event 1's tripped flag is cleared instead. Fix: `tp->Event2`. One token, but it changes how such missions play (a timer that used to keep running would restart), so it needs a decision; TD has no globals of this kind.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Fix `scenario.cc:340` to reset `tp->Event2`? It changes when a time event paired with a global fires in missions that use that pairing (none checked yet).",
+      "anchors": [
+        {
+          "path": "src/ra/ai/scenario.cc",
+          "startLine": 340,
+          "endLine": 340,
+          "text": "          tp->Class->event2.Reset(tp->Event1);",
+          "before": [
+            "        if ((tp->Class->event1.type() == TriggerEventType::kGlobalSet ||",
+            "             tp->Class->event1.type() == TriggerEventType::kGlobalClear) &&",
+            "            tp->Class->event1.value() == global) {"
+          ],
+          "after": [
+            "        }",
+            "        if ((tp->Class->event2.type() == TriggerEventType::kGlobalSet ||",
+            "             tp->Class->event2.type() == TriggerEventType::kGlobalClear) &&"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-455",
+      "title": "Decide whether the fakes-destroyed event should count all five fakes",
+      "details": "`TriggerEventType::kFakesDestroyed` (\"Destroyed, Fakes, All...\") checks only `kStructFlagFakeConst | kStructFlagFakeWeap`. Red Alert also has STRUCT_FAKE_YARD, STRUCT_FAKE_PEN and STRUCT_FAKE_RADAR (`ra/core/defines.h:815-817`), so a fake shipyard, sub pen or radar dome left standing does not stop the event. Original behaviour; adding the three bits changes when such a trigger springs.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Keep the original two-fake check, or count all five fakes?",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 225,
+          "endLine": 225,
+          "text": "    case TriggerEventType::kFakesDestroyed:",
+          "before": [
+            "",
+            "    // Only two of the five fakes count: a fake shipyard, sub pen or radar",
+            "    // dome left standing does not stop the event."
+          ],
+          "after": [
+            "      return HouseMeets(trigger_house, [](const HouseClass& owner) {",
+            "        return (owner.BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) ==",
+            "               0;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-456",
+      "title": "Decide whether the no-factories event should count shipyards and sub pens",
+      "details": "`TriggerEventType::kNoFactories` (\"No Factories left\") checks the construction yard, war factory, barracks, tent and airstrip; a house with only a shipyard or sub pen counts as having no factories. Original behaviour.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Keep it, or add the naval yards to the mask?",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 216,
+          "endLine": 216,
+          "text": "    case TriggerEventType::kNoFactories:",
+          "before": [
+            "        return owner.Available_Money() >= value();",
+            "      });",
+            ""
+          ],
+          "after": [
+            "      return HouseMeets(trigger_house, [](const HouseClass& owner) {",
+            "        return (owner.BScan &",
+            "                (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-457",
+      "title": "Decide what the credits event's \"x100\" means",
+      "details": "The editor names `TriggerEventType::kCredits` \"Credits exceed (x100)...\" (`kEventNames`), but `HasHappened()` compares `Available_Money()` against the plain value. Either the label is wrong (fix the string; editor only) or the value was meant to be hundreds (multiplying changes every shipped scenario that uses it). Checking the shipped scenarios' credit triggers would tell which.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "editor",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Fix the editor label, or scale the value by 100?",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 211,
+          "endLine": 211,
+          "text": "    case TriggerEventType::kCredits:",
+          "before": [
+            "",
+            "    // The editor calls this \"Credits exceed (x100)\", but the value is in",
+            "    // credits."
+          ],
+          "after": [
+            "      return HouseMeets(trigger_house, [this](const HouseClass& owner) {",
+            "        return owner.Available_Money() >= value();",
+            "      });"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-458",
+      "title": "Decide whether a house's per-frame trigger check should count the moment events",
+      "details": "`HouseClass::AI()` springs every house-attached trigger with `TriggerEventType::kAny` each frame (`house.cc:1112`), and `HasHappened()` lets `kAny` through for the moment events (attacked, destroyed, discovered, spied). So a trigger whose event 1 is \"attacked\" and whose event 2 attaches it to a house (credits, buildings lost, ...) counts \"attacked\" as having happened every frame, without an attack. Original behaviour: `kAny` is both an event type and the generic cause.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Keep it, or stop `kAny` as a *cause* from satisfying the moment events (behaviour change for such triggers)?",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 158,
+          "endLine": 158,
+          "text": "  const bool checked_for_it = cause == type_ || cause == TriggerEventType::kAny;",
+          "before": [
+            "  // the caller springs TriggerEventType::kAttacked from the code that does the",
+            "  // attacking. TriggerEventType::kAny lets them through as well, so a house's",
+            "  // per-frame check of a trigger counts them as having happened."
+          ],
+          "after": [
+            "",
+            "  switch (type_) {",
+            "    // The game-state events are true while their condition is, never tripped:"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-459",
+      "title": "Decide whether a condition on a house not in the game should count as happened",
+      "details": "`HouseMeets()` returns true when `HouseClass::As_Pointer()` finds no house: a credits, losses or built event on a trigger whose house is not in the game, or a thieved/low power/destroyed event naming such a house, counts as having happened at once. Original behaviour (the house switches were skipped); `TriggerEventTest.AConditionOnAHouseNotInTheGameHasHappened` pins it.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "toDecide": "Keep \"not checked counts as happened\", or make such a condition never happen?",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 76,
+          "endLine": 76,
+          "text": "bool HouseMeets(const HousesType house, const Condition& condition) {",
+          "before": [
+            "// Returns whether `condition` holds for the house `house`, or true when that",
+            "// house is not in the game: such a condition is not checked.",
+            "template <class Condition>"
+          ],
+          "after": [
+            "  const HouseClass* const object = HouseClass::As_Pointer(house);",
+            "  return object == nullptr || condition(*object);",
+            "}"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-460",
+      "title": "Check team slots against the heap while the trigger events are read",
+      "details": "Team types are read before trigger types (`scenario.cc`), so `TriggerEvent::ReadIni()` could reject an unfilled team slot as it reads it, as `ReadTriggerActionRecord()` does with its file-local `FilledSlotOrNull()`. Move `FilledSlotOrNull()` into `game::ObjectHeap` beside `SlotOrNull()`, use it in both readers, and delete the event loop from `DropUnfilledTypeReferences()` (only the team type's trigger still needs that post-pass). About 30 lines over game/core, trigger_action, trigger_event and scenario; no behaviour change.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 333,
+          "endLine": 333,
+          "text": "    team_type_ = TheObjectHeaps().team_type().SlotOrNull(next_number());",
+          "before": [
+            "      }",
+            "    }",
+            "  } else {"
+          ],
+          "after": [
+            "    set_value(next_number());",
+            "  }",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/trigger_action.cc",
+          "startLine": 148,
+          "endLine": 148,
+          "text": "T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,",
+          "before": [
+            "// is none or the scenario never filled the slot: an empty slot would read as a",
+            "// zeroed object. `field` names the reference for the log.",
+            "template <class T>"
+          ],
+          "after": [
+            "                    const std::string_view field) {",
+            "  if (heap.IsAllocated(slot_index)) {",
+            "    return heap.Slot(slot_index);"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/scenario.cc",
+          "startLine": 1871,
+          "endLine": 1871,
+          "text": "    for (TriggerEvent* event : {&trigger_type.event1, &trigger_type.event2}) {",
+          "before": [
+            "  }",
+            "  for (int i = 0; i < trigger_types.Count(); i++) {",
+            "    TriggerType& trigger_type = *trigger_types.ActiveAt(i);"
+          ],
+          "after": [
+            "      TeamType* team = event->team_type();",
+            "      DropIfUnfilled(team, team_types, trigger_type.Name(), \"event team\");",
+            "      event->set_team_type(team);"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-461",
+      "title": "Share the low-byte rule between TriggerEvent::house() and the actions",
+      "details": "`TriggerEvent::house()` reads the low byte of its argument word as a `HousesType`; `trigger_action.cc` has `LowByte()`/`LowByteAs<>()` for the same rule, with the same reason (the old union, shipped scenarios that rely on it). One shared helper (e.g. in `ra/core/`) for both; `set_house()` keeps its own byte-preserving store.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.h",
+          "startLine": 231,
+          "endLine": 231,
+          "text": "  [[nodiscard]] HousesType house() const {",
+          "before": [
+            "  // HousesType is one byte, the word's lowest. Storing one keeps the other",
+            "  // three, as the store into the union this replaced did, so the value a",
+            "  // [Trigs] entry saves does not change."
+          ],
+          "after": [
+            "    return static_cast<HousesType>(static_cast<int8_t>(argument_));",
+            "  }",
+            "  void set_house(const HousesType house) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/trigger_action.cc",
+          "startLine": 169,
+          "endLine": 169,
+          "text": "constexpr Enum LowByteAs(const int value) {",
+          "before": [
+            "",
+            "// Returns the one-byte enum a record's `value` means, which is its low byte.",
+            "template <class Enum>"
+          ],
+          "after": [
+            "  return static_cast<Enum>(LowByte(value));",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-462",
+      "title": "Consider one per-event table for the event names, needs and attachments",
+      "details": "Each event is described three times: `kEventNames`, the `EventNeed()` switch and the `EventAttachment()` switch. One `constexpr base::EnumArray<TriggerEventType, EventInfo>` of `{name, need, attachment}` rows would make the three functions lookups. Not done in the run to keep the event side parallel to the actions' `ActionName()`/`ActionNeed()`; if done, do both. An out-of-range number would then fail the bounds check instead of returning none (only a damaged save could hold one).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 96,
+          "endLine": 96,
+          "text": "constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {",
+          "before": [
+            "}  // namespace",
+            "",
+            "// The scenario editor's name for each event, which its lists show and sort by."
+          ],
+          "after": [
+            "    \"-No Event-\",",
+            "    \"Entered by...\",",
+            "    \"Spied by...\","
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-463",
+      "title": "Give TriggerType::Draw_It() the trigger dialog's tab stops",
+      "details": "`TriggerType::Draw_It()` keeps its own `kTabStops = {13, 40}`, the third copy before the run merged the event and action choices into `TriggerChoice` in the dialog. One named constant for the editor's two-column list layout would serve both.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "editor",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T01:59:37Z",
+      "parent": "T-453",
+      "source": "41772da62..e8da958c5",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_type.cc",
+          "startLine": 270,
+          "endLine": 270,
+          "text": "  static constexpr std::array<int, 2> kTabStops = {13, 40};",
+          "before": [
+            "    return;",
+            "  }",
+            "  // Tab stops in pixels: Description() puts a tab after the name."
+          ],
+          "after": [
+            "  UiSkin::Draw_List_Entry(view, Description().c_str(), x, y, width, height,",
+            "                          font, flags, selected, kTabStops);",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/editor/trigger_type_dialog.cc",
+          "startLine": 107,
+          "endLine": 107,
+          "text": "  // shared print call.",
+          "before": [
+            "",
+            " private:",
+            "  // Tab stops in pixels; the names hold no tabs, so they only matter to the"
+          ],
+          "after": [
+            "  static constexpr std::array<int, 2> kTabStops = {13, 40};",
+            "",
+            "  Type type_;"
+          ],
+          "lost": false
         }
       ]
     }
