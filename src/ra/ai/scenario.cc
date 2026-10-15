@@ -586,13 +586,13 @@ void Fill_In_Data() {
 
     DCHECK(tp != nullptr);
 
-    if (base::Any(tp->AttachesTo() & ATTACH_MAP)) {
+    if (base::Any(tp->AttachesTo() & TriggerAttachment::kMap)) {
       TheWorld().map_triggers().push_back(Find_Or_Make(tp));
     }
-    if (base::Any(tp->AttachesTo() & ATTACH_GENERAL)) {
+    if (base::Any(tp->AttachesTo() & TriggerAttachment::kGeneral)) {
       TheWorld().logic_triggers().push_back(Find_Or_Make(tp));
     }
-    if (base::Any(tp->AttachesTo() & ATTACH_HOUSE)) {
+    if (base::Any(tp->AttachesTo() & TriggerAttachment::kHouse)) {
       TheWorld().house_triggers().at(tp->house).push_back(Find_Or_Make(tp));
     }
   }

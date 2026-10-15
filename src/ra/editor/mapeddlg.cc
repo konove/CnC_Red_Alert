@@ -2571,7 +2571,8 @@ int MapEditClass::Load_Scenario() {
     **	ground or on a game object.
     */
     if (CurTrigger &&
-        !base::Any(CurTrigger->AttachesTo() & (ATTACH_OBJECT | ATTACH_CELL))) {
+        !base::Any(CurTrigger->AttachesTo() &
+                   (TriggerAttachment::kObject | TriggerAttachment::kCell))) {
       CurTrigger = nullptr;
     }
   }

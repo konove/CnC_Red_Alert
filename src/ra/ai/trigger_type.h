@@ -158,7 +158,7 @@ class TriggerType : public AbstractTypeClass {
 
   // Returns what triggers of this type can be attached to: the union of what
   // its events allow, the second event counting only when it is in use.
-  [[nodiscard]] AttachType AttachesTo() const;
+  [[nodiscard]] TriggerAttachment AttachesTo() const;
 
   // Returns the trigger type named `name`, ignoring case, or nullptr when
   // there is none or `name` is empty.

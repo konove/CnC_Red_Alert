@@ -173,8 +173,8 @@ std::string TriggerType::Description() const {
                          Name_From_Event(event1.Event), value_text);
 }
 
-AttachType TriggerType::AttachesTo() const {
-  AttachType attach = ra::Attaches_To(event1.Event);
+TriggerAttachment TriggerType::AttachesTo() const {
+  TriggerAttachment attach = ra::Attaches_To(event1.Event);
 
   if (event_control != MULTI_ONLY) {
     attach = attach | ra::Attaches_To(event2.Event);

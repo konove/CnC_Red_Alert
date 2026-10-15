@@ -584,8 +584,8 @@ const char* Name_From_Event(TriggerEventType event) {
   return EventText.at(event);
 }
 
-AttachType Attaches_To(TriggerEventType event) {
-  AttachType attach = ATTACH_NONE;
+TriggerAttachment Attaches_To(TriggerEventType event) {
+  TriggerAttachment attach = TriggerAttachment::kNone;
 
   switch (event) {
     case TriggerEventType::kCrossHorizontal:
@@ -595,7 +595,7 @@ AttachType Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAny:
     case TriggerEventType::kDiscovered:
     case TriggerEventType::kNone:
-      attach = attach | ATTACH_CELL;
+      attach = attach | TriggerAttachment::kCell;
       break;
 
     case TriggerEventType::kSpied:
@@ -636,7 +636,7 @@ AttachType Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAttacked:
     case TriggerEventType::kAny:
     case TriggerEventType::kNone:
-      attach = attach | ATTACH_OBJECT;
+      attach = attach | TriggerAttachment::kObject;
       break;
 
     case TriggerEventType::kThieved:
@@ -672,7 +672,7 @@ AttachType Attaches_To(TriggerEventType event) {
   switch (event) {
     case TriggerEventType::kEntersZone:
     case TriggerEventType::kAny:
-      attach = attach | ATTACH_MAP;
+      attach = attach | TriggerAttachment::kMap;
       break;
 
     case TriggerEventType::kNone:
@@ -729,7 +729,7 @@ AttachType Attaches_To(TriggerEventType event) {
     case TriggerEventType::kThieved:
     case TriggerEventType::kAny:
     case TriggerEventType::kFakesDestroyed:
-      attach = attach | ATTACH_HOUSE;
+      attach = attach | TriggerAttachment::kHouse;
       break;
 
     case TriggerEventType::kNone:
@@ -759,7 +759,7 @@ AttachType Attaches_To(TriggerEventType event) {
     case TriggerEventType::kAny:
     case TriggerEventType::kAllBridgesDestroyed:
     case TriggerEventType::kLeavesMap:
-      attach = attach | ATTACH_GENERAL;
+      attach = attach | TriggerAttachment::kGeneral;
       break;
 
     case TriggerEventType::kNone:

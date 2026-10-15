@@ -1641,8 +1641,8 @@ void MapEditClass::Place_Trigger(int x, int y) {
   /*
   **	Assign trigger to an object
   */
-  const AttachType a1 = CurTrigger->AttachesTo();
-  if (object && base::Any(a1 & ATTACH_OBJECT)) {
+  const TriggerAttachment a1 = CurTrigger->AttachesTo();
+  if (object && base::Any(a1 & TriggerAttachment::kObject)) {
     if (CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);
       if (tt) {
@@ -1653,7 +1653,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
     /*
     **	Assign trigger to a cell
     */
-    if (base::Any(a1 & ATTACH_CELL) && CurTrigger) {
+    if (base::Any(a1 & TriggerAttachment::kCell) && CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);
       TheMap().at(cell).Trigger = tt;
     }

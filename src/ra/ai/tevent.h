@@ -19,8 +19,8 @@
 // The event half of a scenario trigger: what a trigger waits for
 // (TriggerEventType), an event as a trigger type describes it (TEventClass),
 // the state each trigger keeps for it while it waits (TDEventClass), what an
-// event can be attached to (AttachType), and the scenario editor's list entry
-// for an event type (EventChoiceClass).
+// event can be attached to (TriggerAttachment), and the scenario editor's list
+// entry for an event type (EventChoiceClass).
 
 #ifndef CNC_RED_ALERT_RA_AI_TEVENT_H_
 #define CNC_RED_ALERT_RA_AI_TEVENT_H_
@@ -244,23 +244,22 @@ class TEventClass {
 // allows. The scenario puts a trigger with the map, general or house bit on
 // the list that checks it; the editor places one with the cell or object bit
 // on what the player clicks.
-enum class CNC_FLAG_ENUM AttachType {
-  ATTACH_NONE = 0x00,  // Attaches to nothing (an orphan trigger type).
-  ATTACH_CELL = 0x01,  // A cell.
+enum class CNC_FLAG_ENUM TriggerAttachment {
+  kNone = 0x00,  // Attaches to nothing (an orphan trigger type).
+  kCell = 0x01,  // A cell.
   // An object, usually a building or a vehicle.
-  ATTACH_OBJECT = 0x02,
+  kObject = 0x02,
   // The whole map, checked whenever an object moves (the zone event).
-  ATTACH_MAP = 0x04,
+  kMap = 0x04,
   // The trigger's house, checked every frame with the house's other triggers.
-  ATTACH_HOUSE = 0x08,
+  kHouse = 0x08,
   // The game state, checked every frame (time, globals, the mission timer,
   // the bridges).
-  ATTACH_GENERAL = 0x10,
+  kGeneral = 0x10,
 };
-using enum AttachType;
 
 // Returns what a trigger with `event` can be attached to.
-AttachType Attaches_To(TriggerEventType event);
+TriggerAttachment Attaches_To(TriggerEventType event);
 
 // An event type as an entry of the scenario editor's event lists, which shows
 // its name and sorts by it.
@@ -315,6 +314,6 @@ extern template void TEventClass::Serialize<ArchiveReader>(ArchiveReader&);
 }  // namespace ra
 
 template <>
-inline constexpr bool base::kIsFlagEnum<ra::AttachType> = true;
+inline constexpr bool base::kIsFlagEnum<ra::TriggerAttachment> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TEVENT_H_
