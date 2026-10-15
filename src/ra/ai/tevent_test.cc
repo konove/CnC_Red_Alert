@@ -475,12 +475,12 @@ TEST_F(TEventTest, ANumberThatIsNoEventIsHandledAsItAlwaysWas) {
 // What each event can be attached to, as the scenario's trigger lists and
 // the editor read it.
 TEST(EventAttachmentTest, EachEventAttachesToWhatItWatches) {
-  constexpr TriggerAttachment kCell = TriggerAttachment::kCell;
-  constexpr TriggerAttachment kObject = TriggerAttachment::kObject;
-  constexpr TriggerAttachment kMap = TriggerAttachment::kMap;
-  constexpr TriggerAttachment kHouse = TriggerAttachment::kHouse;
-  constexpr TriggerAttachment kGeneral = TriggerAttachment::kGeneral;
-  const base::EnumArray<TriggerEventType, TriggerAttachment> expected = {
+  constexpr auto kCell = TriggerAttachment::kCell;
+  constexpr auto kObject = TriggerAttachment::kObject;
+  constexpr auto kMap = TriggerAttachment::kMap;
+  constexpr auto kHouse = TriggerAttachment::kHouse;
+  constexpr auto kGeneral = TriggerAttachment::kGeneral;
+  constexpr base::EnumArray<TriggerEventType, TriggerAttachment> expected = {
       kCell | kObject,                             // kNone
       kCell | kObject,                             // kPlayerEntered
       kObject,                                     // kSpied

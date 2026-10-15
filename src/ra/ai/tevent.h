@@ -154,7 +154,7 @@ struct TriggerEventState {
 class TriggerEvent {
  public:
   TriggerEvent() = default;
-  explicit TriggerEvent(TriggerEventType type) : type_(type) {}
+  explicit TriggerEvent(const TriggerEventType type) : type_(type) {}
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>

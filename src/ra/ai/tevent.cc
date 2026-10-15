@@ -141,9 +141,11 @@ void TriggerEvent::Detach(const Target target) {
   }
 }
 
-bool TriggerEvent::HasHappened(TriggerEventState& state, TriggerEventType cause,
-                               HousesType trigger_house,
-                               const ObjectClass* object, bool forced) const {
+bool TriggerEvent::HasHappened(TriggerEventState& state,
+                               const TriggerEventType cause,
+                               const HousesType trigger_house,
+                               const ObjectClass* object,
+                               const bool forced) const {
   if (forced || state.is_tripped) {
     state.is_tripped = true;
     return true;
@@ -339,7 +341,7 @@ std::string TriggerEvent::ToIniEntry() const {
                      value());
 }
 
-NeedType EventNeed(TriggerEventType event) {
+NeedType EventNeed(const TriggerEventType event) {
   switch (event) {
     case TriggerEventType::kThieved:
     case TriggerEventType::kPlayerEntered:
@@ -394,14 +396,16 @@ NeedType EventNeed(TriggerEventType event) {
   return NeedType::kNone;
 }
 
-const char* EventName(TriggerEventType event) { return kEventNames.at(event); }
+const char* EventName(const TriggerEventType event) {
+  return kEventNames.at(event);
+}
 
 TriggerAttachment EventAttachment(const TriggerEventType event) {
-  constexpr TriggerAttachment kCell = TriggerAttachment::kCell;
-  constexpr TriggerAttachment kObject = TriggerAttachment::kObject;
-  constexpr TriggerAttachment kMap = TriggerAttachment::kMap;
-  constexpr TriggerAttachment kHouse = TriggerAttachment::kHouse;
-  constexpr TriggerAttachment kGeneral = TriggerAttachment::kGeneral;
+  constexpr auto kCell = TriggerAttachment::kCell;
+  constexpr auto kObject = TriggerAttachment::kObject;
+  constexpr auto kMap = TriggerAttachment::kMap;
+  constexpr auto kHouse = TriggerAttachment::kHouse;
+  constexpr auto kGeneral = TriggerAttachment::kGeneral;
 
   switch (event) {
     // What is entered, crossed or seen: the cell or the object itself. An
