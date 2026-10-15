@@ -7,19 +7,26 @@
 #define CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_REFERENCE_TEST_UTIL_H_
 
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <span>
 #include <type_traits>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
-#include "base/unaligned.h"
 
 // Preserves the allocation's bounds while a legacy arithmetic loop walks in
 // either direction. Reads and writes copy the value representation, so viewing
 // 32-bit digits as 16-bit halves does not violate alignment or aliasing rules.
 // The -1 position is a reverse-loop sentinel; it can never be dereferenced.
+//
+// The digit accesses are inlined and copy bytes in a loop, rather than calling
+// base::ReadUnaligned/WriteUnaligned: the bignum is compiled at -O2 in Debug
+// builds, and a call it makes to a header template out of line links to
+// whichever copy comes first, often an -O0 one from another test file, which
+// made PkDifferentialTest four times slower than in an optimized build.
 template <typename T>
 class DigitCursor {
  public:
@@ -35,7 +42,7 @@ class DigitCursor {
     explicit Reference(std::span<std::byte> bytes) : bytes_(bytes) {}
     // A digit reference participates in arithmetic exactly like its value.
     // NOLINTNEXTLINE(*-explicit-constructor)
-    operator Value() const { return base::ReadUnaligned<Value>(bytes_); }
+    operator Value() const { return Load(bytes_); }
     Reference(const Reference&) = default;
     Reference(Reference&&) = default;
     ~Reference() = default;
@@ -43,7 +50,7 @@ class DigitCursor {
       return *this = static_cast<Value>(other);
     }
     Reference& operator=(Value value) {
-      base::WriteUnaligned(bytes_, value);
+      Store(bytes_, value);
       return *this;
     }
     Reference& operator=(const Reference& other) {
@@ -123,14 +130,14 @@ class DigitCursor {
   [[nodiscard]] auto operator*() const { return (*this).at(0); }
   // Returns a digit relative to this cursor, checked against the original
   // storage. Negative offsets are valid when they remain inside that storage.
-  [[nodiscard]] auto at(std::ptrdiff_t offset) const {
+  [[nodiscard, gnu::always_inline]] auto at(std::ptrdiff_t offset) const {
     CHECK_GE(offset, -position_);
     CHECK_LT(offset, Count() - position_);
     const auto index = position_ + offset;
     const auto bytes =
         bytes_.subspan(base::ToSize(index) * sizeof(Value), sizeof(Value));
     if constexpr (std::is_const_v<T>) {
-      return base::ReadUnaligned<Value>(bytes);
+      return Load(bytes);
     } else {
       return Reference(bytes);
     }
@@ -193,6 +200,26 @@ class DigitCursor {
  private:
   template <typename>
   friend class DigitCursor;
+  using Representation = std::array<std::byte, sizeof(Value)>;
+  // Copy a digit from or to the first sizeof(Value) bytes, which at() has
+  // checked are there. The fixed extents let the compiler drop base::At's
+  // checks.
+  [[gnu::always_inline]] static Value Load(std::span<const std::byte> bytes) {
+    const auto source = bytes.first<sizeof(Value)>();
+    Representation representation{};
+    for (std::size_t i = 0; i < representation.size(); ++i) {
+      base::At(representation, i) = base::At(source, i);
+    }
+    return std::bit_cast<Value>(representation);
+  }
+  [[gnu::always_inline]] static void Store(std::span<std::byte> bytes,
+                                           Value value) {
+    const auto destination = bytes.first<sizeof(Value)>();
+    const auto representation = std::bit_cast<Representation>(value);
+    for (std::size_t i = 0; i < representation.size(); ++i) {
+      base::At(destination, i) = base::At(representation, i);
+    }
+  }
   [[nodiscard]] std::ptrdiff_t Count() const {
     return static_cast<std::ptrdiff_t>(bytes_.size() / sizeof(Value));
   }

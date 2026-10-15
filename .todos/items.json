@@ -10627,10 +10627,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-14T22:18:44Z",
+      "updated": "2026-10-15T00:30:50Z",
       "parent": "T-139",
       "source": "7e448b91..57fdf1fc",
       "resolution": "`TeamClass::Detach()` and `TeamType::Detach()` take only the target now; the tracker calls them without `all`, as it does `TriggerType::Detach()`.",
@@ -10639,7 +10639,7 @@
           "path": "src/ra/ai/team_type.cc",
           "startLine": 393,
           "endLine": 393,
-          "text": "void TeamType::Detach(const Target target, bool /*unused*/) {",
+          "text": "void TeamType::Detach(const Target target) {",
           "before": [
             "  }",
             "}",
@@ -10650,13 +10650,13 @@
             "      trigger_ == target.AsTriggerType()) {",
             "    trigger_ = nullptr;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/ai/team.cc",
-          "startLine": 1376,
-          "endLine": 1376,
-          "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
+          "startLine": 1373,
+          "endLine": 1373,
+          "text": "void TeamClass::Detach(ra::Target target) {",
           "before": [
             " *                                                                                             *",
             " * HISTORY: * 12/29/1994 JLB : Created. *",
@@ -10667,13 +10667,13 @@
             "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
             ""
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/objects/tracker.cc",
           "startLine": 93,
           "endLine": 96,
-          "text": "      TheObjectHeaps().team().ActiveAt(index)->Detach(target, all);\n    }\n    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {\n      TheObjectHeaps().team_type().ActiveAt(index)->Detach(target, all);",
+          "text": "      TheObjectHeaps().team().ActiveAt(index)->Detach(target);\n    }\n    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {\n      TheObjectHeaps().team_type().ActiveAt(index)->Detach(target);",
           "before": [
             "      TheObjectHeaps().house().ActiveAt(index)->Detach(target, all);",
             "    }",
@@ -10684,7 +10684,7 @@
             "    for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {",
             "      TheObjectHeaps().unit().ActiveAt(index)->Detach(target, all);"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -16276,11 +16276,12 @@
         "engine",
         "crypto"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T22:08:26Z",
-      "updated": "2026-10-14T22:08:26Z",
+      "updated": "2026-10-15T00:37:57Z",
       "source": "ab9340ca2",
+      "resolution": "`DigitCursor` no longer calls `base::ReadUnaligned`/`WriteUnaligned`. It copies a digit through `std::bit_cast` over a byte array, using fixed-extent spans so that the `base::At` checks compile away, and `at()` and the copies are `always_inline`. Before this, the -O2 bignum linked to the -O0 `base::CopyBytes` from `blowfish_reference_test_util.cc.o`. Debug times: 36.9 s → 4.4 s and 15.8 s → 2.9 s. In RelWithDebInfo the two tests also dropped from 8 s/6 s to 4.4 s/2.4 s.",
       "anchors": [
         {
           "path": "src/engine/crypto/CMakeLists.txt",
@@ -16312,7 +16313,7 @@
             "    }",
             "    Reference& operator=(const Reference& other) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }
