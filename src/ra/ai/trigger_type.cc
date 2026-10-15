@@ -251,10 +251,10 @@ std::string TriggerType::ToIniEntry() const {
                   std::to_underlying(house), std::to_underlying(event_control),
                   std::to_underlying(action_control));
 
-  event1.Build_INI_Entry(entry);
+  entry += event1.Build_INI_Entry();
   entry += ',';
 
-  event2.Build_INI_Entry(entry);
+  entry += event2.Build_INI_Entry();
   entry += ',';
 
   entry += ra::ToIniEntry(action1->ToRecord());

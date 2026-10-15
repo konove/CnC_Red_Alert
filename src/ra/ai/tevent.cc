@@ -18,6 +18,7 @@
 
 #include "ra/ai/tevent.h"
 
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -138,7 +139,7 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                FontType font, TextPrintType flags) const {
   // Tab stops in pixels; the event names hold no tabs.
-  static constexpr int kTabStops[] = {13, 40};
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
   UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
                           selected, kTabStops);
 }
@@ -457,9 +458,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   return true;
 }
 
-void TEventClass::Build_INI_Entry(std::string& buffer) const {
-  buffer += std::format("{},{},{}", std::to_underlying(Event),
-                        TheObjectHeaps().team_type().PositionOf(Team), value());
+std::string TEventClass::Build_INI_Entry() const {
+  return std::format("{},{},{}", std::to_underlying(Event),
+                     TheObjectHeaps().team_type().PositionOf(Team), value());
 }
 
 void TEventClass::Read_INI(base::Tokenizer& tokens) {

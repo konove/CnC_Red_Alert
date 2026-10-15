@@ -195,10 +195,10 @@ class TEventClass {
   // "event,-,-,team name,value,-". An event number that names no event reads
   // as TEVENT_NONE, and a team slot outside the heap as no team.
   void Read_INI(base::Tokenizer& tokens);
-  // Appends the event to `buffer` as "event,team,value", the form Read_INI()
-  // reads from format 2 on, with the team as its position in the team type
-  // list (-1 for none).
-  void Build_INI_Entry(std::string& buffer) const;
+  // Returns the event as "event,team,value", the form Read_INI() reads from
+  // format 2 on, with the team as its position in the team type list (-1 for
+  // none).
+  [[nodiscard]] std::string Build_INI_Entry() const;
 
   // The event's argument. Which accessor applies depends on Event: a building,
   // unit, infantry or aircraft type for the "built" events, a house for the
