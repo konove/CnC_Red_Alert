@@ -28,7 +28,6 @@
 #include <utility>
 
 #include "absl/log/log.h"
-#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
@@ -567,19 +566,6 @@ NeedType EventNeed(TriggerEventType event) {
       break;
   }
   return NeedType::kNone;
-}
-
-TriggerEventType Event_From_Name(const std::string_view name) {
-  if (!name.empty()) {
-    for (const TriggerEventType i :
-         magic_enum::enum_values<TriggerEventType>()) {
-      if (absl::EqualsIgnoreCase(name, kEventNames.at(i))) {
-        return i;
-      }
-    }
-  }
-
-  return TriggerEventType::kNone;
 }
 
 const char* EventName(TriggerEventType event) { return kEventNames.at(event); }

@@ -113,9 +113,6 @@ enum class TriggerEventType {
   kBuildingExists,
 };
 
-// Returns the event whose editor name is `name`, ignoring case, or
-// TriggerEventType::kNone when no event has it.
-TriggerEventType Event_From_Name(std::string_view name);
 // Returns the kind of argument `event` takes, which the scenario editor
 // prompts for; NeedType::kNone when it takes none. NeedType::kTeam means the
 // event's team type, every other kind its data word.
