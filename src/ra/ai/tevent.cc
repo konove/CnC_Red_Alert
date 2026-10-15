@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -35,6 +36,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/core/object_heap.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/team_type.h"
@@ -53,87 +55,88 @@ namespace {
 // TEVENT_NONE when it names none. The number indexes the name table and picks
 // the check, which takes anything it does not list as having happened.
 TEventType EventFromNumber(const int number) {
-  if (number < 0 || number >= static_cast<int>(TEVENT_COUNT)) {
+  const std::optional<TEventType> event =
+      magic_enum::enum_cast<TEventType>(number);
+  if (!event.has_value()) {
     DLOG(WARNING) << "EventFromNumber: " << number << " is no event";
     return TEVENT_NONE;
   }
-  return static_cast<TEventType>(number);
+  return *event;
 }
 
 }  // namespace
 
 // The scenario editor's name for each event, which its lists show and sort by.
-static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
-    EventText = {"-No Event-",
-                 "Entered by...",
-                 "Spied by...",
-                 "Thieved by...",
-                 "Discovered by player",
-                 "House Discovered...",
-                 "Attacked by anybody",
-                 "Destroyed by anybody",
-                 "Any Event",
-                 "Destroyed, Units, All...",
-                 "Destroyed, Buildings, All...",
-                 "Destroyed, All...",
-                 "Credits exceed (x100)...",
-                 "Elapsed Time (1/10th min)...",
-                 "Mission Timer Expired",
-                 "Destroyed, Buildings, #...",
-                 "Destroyed, Units, #...",
-                 "No Factories left",
-                 "Civilians Evacuated",
-                 "Build Building Type...",
-                 "Build Unit Type...",
-                 "Build Infantry Type...",
-                 "Build Aircraft Type...",
-                 "Leaves map (team)...",
-                 "Zone Entry by...",
-                 "Crosses Horizontal Line...",
-                 "Crosses Vertical Line...",
-                 "Global is set...",
-                 "Global is clear...",
-                 "Destroyed, Fakes, All...",
-                 "Low Power...",
-                 "All bridges destroyed",
-                 "Building exists..."};
+static base::EnumArray<TEventType, const char*> EventText = {
+    "-No Event-",
+    "Entered by...",
+    "Spied by...",
+    "Thieved by...",
+    "Discovered by player",
+    "House Discovered...",
+    "Attacked by anybody",
+    "Destroyed by anybody",
+    "Any Event",
+    "Destroyed, Units, All...",
+    "Destroyed, Buildings, All...",
+    "Destroyed, All...",
+    "Credits exceed (x100)...",
+    "Elapsed Time (1/10th min)...",
+    "Mission Timer Expired",
+    "Destroyed, Buildings, #...",
+    "Destroyed, Units, #...",
+    "No Factories left",
+    "Civilians Evacuated",
+    "Build Building Type...",
+    "Build Unit Type...",
+    "Build Infantry Type...",
+    "Build Aircraft Type...",
+    "Leaves map (team)...",
+    "Zone Entry by...",
+    "Crosses Horizontal Line...",
+    "Crosses Vertical Line...",
+    "Global is set...",
+    "Global is clear...",
+    "Destroyed, Fakes, All...",
+    "Low Power...",
+    "All bridges destroyed",
+    "Building exists..."};
 
-base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
-    EventChoices = {{
-        {TEVENT_NONE},
-        {TEVENT_PLAYER_ENTERED},
-        {TEVENT_SPIED},
-        {TEVENT_THIEVED},
-        {TEVENT_DISCOVERED},
-        {TEVENT_HOUSE_DISCOVERED},
-        {TEVENT_ATTACKED},
-        {TEVENT_DESTROYED},
-        {TEVENT_ANY},
-        {TEVENT_UNITS_DESTROYED},
-        {TEVENT_BUILDINGS_DESTROYED},
-        {TEVENT_ALL_DESTROYED},
-        {TEVENT_CREDITS},
-        {TEVENT_TIME},
-        {TEVENT_MISSION_TIMER_EXPIRED},
-        {TEVENT_NBUILDINGS_DESTROYED},
-        {TEVENT_NUNITS_DESTROYED},
-        {TEVENT_NOFACTORIES},
-        {TEVENT_EVAC_CIVILIAN},
-        {TEVENT_BUILD},
-        {TEVENT_BUILD_UNIT},
-        {TEVENT_BUILD_INFANTRY},
-        {TEVENT_BUILD_AIRCRAFT},
-        {TEVENT_LEAVES_MAP},
-        {TEVENT_ENTERS_ZONE},
-        {TEVENT_CROSS_HORIZONTAL},
-        {TEVENT_CROSS_VERTICAL},
-        {TEVENT_GLOBAL_SET},
-        {TEVENT_GLOBAL_CLEAR},
-        {TEVENT_FAKES_DESTROYED},
-        {TEVENT_LOW_POWER},
-        {TEVENT_ALL_BRIDGES_DESTROYED},
-        {TEVENT_BUILDING_EXISTS},
-    }};
+base::EnumArray<TEventType, EventChoiceClass> EventChoices = {{
+    {TEVENT_NONE},
+    {TEVENT_PLAYER_ENTERED},
+    {TEVENT_SPIED},
+    {TEVENT_THIEVED},
+    {TEVENT_DISCOVERED},
+    {TEVENT_HOUSE_DISCOVERED},
+    {TEVENT_ATTACKED},
+    {TEVENT_DESTROYED},
+    {TEVENT_ANY},
+    {TEVENT_UNITS_DESTROYED},
+    {TEVENT_BUILDINGS_DESTROYED},
+    {TEVENT_ALL_DESTROYED},
+    {TEVENT_CREDITS},
+    {TEVENT_TIME},
+    {TEVENT_MISSION_TIMER_EXPIRED},
+    {TEVENT_NBUILDINGS_DESTROYED},
+    {TEVENT_NUNITS_DESTROYED},
+    {TEVENT_NOFACTORIES},
+    {TEVENT_EVAC_CIVILIAN},
+    {TEVENT_BUILD},
+    {TEVENT_BUILD_UNIT},
+    {TEVENT_BUILD_INFANTRY},
+    {TEVENT_BUILD_AIRCRAFT},
+    {TEVENT_LEAVES_MAP},
+    {TEVENT_ENTERS_ZONE},
+    {TEVENT_CROSS_HORIZONTAL},
+    {TEVENT_CROSS_VERTICAL},
+    {TEVENT_GLOBAL_SET},
+    {TEVENT_GLOBAL_CLEAR},
+    {TEVENT_FAKES_DESTROYED},
+    {TEVENT_LOW_POWER},
+    {TEVENT_ALL_BRIDGES_DESTROYED},
+    {TEVENT_BUILDING_EXISTS},
+}};
 
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
@@ -207,7 +210,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     case TEventType::TEVENT_LOW_POWER:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
     case TEventType::TEVENT_BUILDING_EXISTS:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -373,7 +375,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       case TEventType::TEVENT_GLOBAL_CLEAR:
       case TEventType::TEVENT_LOW_POWER:
       case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-      case TEventType::TEVENT_COUNT:
       default:
         break;
     }
@@ -449,7 +450,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       case TEventType::TEVENT_FAKES_DESTROYED:
       case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
       case TEventType::TEVENT_BUILDING_EXISTS:
-      case TEventType::TEVENT_COUNT:
       default:
         break;
     }
@@ -555,7 +555,6 @@ NeedType Event_Needs(TEventType event) {
     case TEventType::TEVENT_EVAC_CIVILIAN:
     case TEventType::TEVENT_FAKES_DESTROYED:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -564,7 +563,7 @@ NeedType Event_Needs(TEventType event) {
 
 TEventType Event_From_Name(const std::string_view name) {
   if (!name.empty()) {
-    for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
+    for (const TEventType i : magic_enum::enum_values<TEventType>()) {
       if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
         return i;
       }
@@ -616,7 +615,6 @@ AttachType Attaches_To(TEventType event) {
     case TEventType::TEVENT_LOW_POWER:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
     case TEventType::TEVENT_BUILDING_EXISTS:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -658,7 +656,6 @@ AttachType Attaches_To(TEventType event) {
     case TEventType::TEVENT_LOW_POWER:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
     case TEventType::TEVENT_BUILDING_EXISTS:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -700,7 +697,6 @@ AttachType Attaches_To(TEventType event) {
     case TEventType::TEVENT_LOW_POWER:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
     case TEventType::TEVENT_BUILDING_EXISTS:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -742,7 +738,6 @@ AttachType Attaches_To(TEventType event) {
     case TEventType::TEVENT_GLOBAL_SET:
     case TEventType::TEVENT_GLOBAL_CLEAR:
     case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -784,7 +779,6 @@ AttachType Attaches_To(TEventType event) {
     case TEventType::TEVENT_FAKES_DESTROYED:
     case TEventType::TEVENT_LOW_POWER:
     case TEventType::TEVENT_BUILDING_EXISTS:
-    case TEventType::TEVENT_COUNT:
     default:
       break;
   }

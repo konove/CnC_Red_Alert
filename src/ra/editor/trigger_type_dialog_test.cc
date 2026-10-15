@@ -314,10 +314,6 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
 
 TEST_F(TriggerTypeDialogRoundTripTest, EveryKindOfEventComesBackAsItWas) {
   for (const TEventType type : magic_enum::enum_values<TEventType>()) {
-    // The enum's end marker is no event.
-    if (type == TEVENT_COUNT) {
-      continue;
-    }
     SCOPED_TRACE(magic_enum::enum_name(type));
     Fill(trigger_type_->event1, type);
     Fill(trigger_type_->event2, type);
@@ -500,9 +496,7 @@ class TriggerTypeDialogDropListTest : public TriggerTypeDialogTest {
 TEST_F(TriggerTypeDialogDropListTest, AnEventPickedFromTheListIsStored) {
   std::vector<std::pair<std::string, TEventType>> names;
   for (const TEventType type : magic_enum::enum_values<TEventType>()) {
-    if (type != TEVENT_COUNT) {
-      names.emplace_back(EventChoices.at(type).Description(), type);
-    }
+    names.emplace_back(EventChoices.at(type).Description(), type);
   }
   const TEventType second = SecondByName(names);
   ASSERT_NE(second, TEVENT_NONE);

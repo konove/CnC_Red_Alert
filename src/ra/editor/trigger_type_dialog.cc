@@ -244,7 +244,7 @@ bool TriggerType::Edit() {
       TPF_NOSHADOW, kEvent2X, kEvent2Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
+  for (const TEventType event : magic_enum::enum_values<TEventType>()) {
     event1_list.Add_Item(&EventChoices.at(event));
     event2_list.Add_Item(&EventChoices.at(event));
   }
