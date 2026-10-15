@@ -484,7 +484,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       set_value(-1);
       if (!token.empty()) {
         if (Event_Needs(Event) == NeedType::kTeam) {
-          Team = TheObjectHeaps().team_type().Slot(
+          Team = TheObjectHeaps().team_type().SlotOrNull(
               base::ParseIntegerOr<int>(token, 0));
         } else {
           set_value(base::ParseIntegerOr<int>(token, 0));

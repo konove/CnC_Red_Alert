@@ -16100,18 +16100,18 @@
       "anchors": [
         {
           "path": "src/ra/ai/tevent.h",
-          "startLine": 145,
-          "endLine": 145,
+          "startLine": 160,
+          "endLine": 160,
           "text": "class TEventClass {",
           "before": [
-            "**\tThis elaborates the information necessary to trigger",
-            "**\tan event.",
-            "*/"
+            "//   TDEventClass state;",
+            "//   event.Reset(state);",
+            "//   if (event(state, TEVENT_ANY, HOUSE_USSR, nullptr, false)) { ... }"
           ],
           "after": [
             " public:",
-            "  /*",
-            "  **\tThis is the event that will controls how this event gets triggered."
+            "  // The event this is.",
+            "  TEventType Event;"
           ],
           "lost": false
         }

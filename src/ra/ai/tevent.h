@@ -193,7 +193,7 @@ class TEventClass {
   // scenario's INI format: from format 2 on "event,team,value" with the team
   // as its heap slot; format 1 "event,team-or-value"; format 0
   // "event,-,-,team name,value,-". An event number that names no event reads
-  // as TEVENT_NONE.
+  // as TEVENT_NONE, and a team slot outside the heap as no team.
   void Read_INI(base::Tokenizer& tokens);
   // Appends the event to `buffer` as "event,team,value", the form Read_INI()
   // reads from format 2 on, with the team as its position in the team type

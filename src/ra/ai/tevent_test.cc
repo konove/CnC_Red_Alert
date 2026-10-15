@@ -47,6 +47,19 @@ TEST_F(TEventTest, ANumberThatIsNoEventReadsAsNone) {
   EXPECT_EQ(Read(0, "40,0,0,None,5,0").Event, TEVENT_NONE);
 }
 
+// Format 1 gives a team event's team as its heap slot.
+TEST_F(TEventTest, FormatOneReadsTheTeamSlot) {
+  const TEventClass event = Read(1, "23,0");
+  EXPECT_EQ(event.Event, TEVENT_LEAVES_MAP);
+  EXPECT_EQ(event.Team, team_type_);
+}
+
+// A slot outside the heap reads as no team instead of failing a check.
+TEST_F(TEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
+  EXPECT_EQ(Read(1, "23,9").Team, nullptr);
+  EXPECT_EQ(Read(1, "23,-1").Team, nullptr);
+}
+
 }  // namespace
 
 }  // namespace ra
