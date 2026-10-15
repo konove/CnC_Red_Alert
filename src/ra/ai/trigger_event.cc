@@ -116,7 +116,7 @@ constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {
     "Destroyed, Units, All...",
     "Destroyed, Buildings, All...",
     "Destroyed, All...",
-    "Credits exceed (x100)...",
+    "Credits exceed...",
     "Elapsed Time (1/10th min)...",
     "Mission Timer Expired",
     "Destroyed, Buildings, #...",
@@ -216,8 +216,6 @@ bool TriggerEvent::HasHappened(TriggerEventState& state,
         return Trip(state, TeamHasLeftTheMap(team_type_));
       });
 
-    // The editor calls this "Credits exceed (x100)", but the value is in
-    // credits.
     case TriggerEventType::kCredits:
       return HouseMeets(trigger_house, [this](const HouseClass& owner) {
         return owner.Available_Money() >= value();

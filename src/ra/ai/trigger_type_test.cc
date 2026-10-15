@@ -463,9 +463,8 @@ TEST_F(TriggerTypeTest, TheDescriptionAddsTheNumberAnEventTakes) {
   }
   trigger_type_->event1.set_type(TriggerEventType::kCredits);
   trigger_type_->event1.set_value(50);
-  EXPECT_EQ(
-      trigger_type_->Description(),
-      DescriptionPrefix(*trigger_type_, "V..") + "Credits exceed (x100)...50");
+  EXPECT_EQ(trigger_type_->Description(),
+            DescriptionPrefix(*trigger_type_, "V..") + "Credits exceed...50");
 }
 
 // The events that are about a kind of object show its name, which comes from

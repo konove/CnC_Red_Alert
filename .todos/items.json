@@ -16491,10 +16491,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T07:55:39Z",
+      "updated": "2026-10-15T07:57:12Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Kept the original mask, as decided. The header and the `.cc` now say that shipyards and sub pens don't count, and the test checks that a house with only naval yards has \"no factories\". Of the four shipped missions that use the event, only Soviet 5 (SCU05EA) is affected: the Greek engineer reinforcements arrive while the Greek shipyard still stands.",
@@ -16539,26 +16539,38 @@
       "tags": [
         "bugs",
         "ra",
-        "editor",
-        "needs-decision"
+        "editor"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-15T08:05:01Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Renamed the editor label to \"Credits exceed...\", since the value is in plain credits: the only shipped use, Allied 14's trigger `0+` at 2300, is 500 above Greece's starting 1800. Removed the comment about the mismatch and updated the description golden test.",
       "toDecide": "Fix the editor label, or scale the value by 100?",
+      "decisions": [
+        {
+          "question": "The Credits trigger event compares plain credits, but the editor label says \"(x100)\". Which one is right?",
+          "options": [
+            "Fix the label (Recommended)",
+            "Scale the value by 100",
+            "Leave both as they are"
+          ],
+          "answer": "Fix the label (Recommended)",
+          "time": "2026-10-15T08:04:23Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 211,
-          "endLine": 211,
+          "startLine": 219,
+          "endLine": 219,
           "text": "    case TriggerEventType::kCredits:",
           "before": [
-            "",
-            "    // The editor calls this \"Credits exceed (x100)\", but the value is in",
-            "    // credits."
+            "        return Trip(state, TeamHasLeftTheMap(team_type_));",
+            "      });",
+            ""
           ],
           "after": [
             "      return HouseMeets(trigger_house, [this](const HouseClass& owner) {",
