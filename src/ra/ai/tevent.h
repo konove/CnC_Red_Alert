@@ -26,22 +26,24 @@
 
 #include <cstdint>
 #include <string>
-#include <string_view>
 
 #include "base/attributes.h"
-#include "base/enum_array.h"
 #include "base/flags.h"
-#include "base/strings/tokenizer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "ra/ai/team_type.h"
 #include "ra/core/defines.h"
-#include "ra/objects/object.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace base {
+class Tokenizer;
+}  // namespace base
+
 namespace ra {
+
+class ObjectClass;
+class TeamType;
 
 // What a trigger event waits for. Scenario INI files and saved games store the
 // number, so the order is fixed. "The event's house" is the house the event
