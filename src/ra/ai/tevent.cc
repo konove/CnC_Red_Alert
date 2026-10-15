@@ -16,35 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/TEVENT.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : TEVENT.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 11/28/95 *
- *                                                                                             *
- *                  Last Update : July 29, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Attaches_To -- Determines what event can be attached to. *
- *   EventChoiceClass::Draw_It -- Displays the event choice class as a text
- *string.            * Event_From_Name -- retrieves EventType for given name *
- *   Event_Needs -- Returns with what this event type needs for data. *
- *   Name_From_Event -- retrieves name for EventType *
- *   TEventClass::Build_INI_Entry -- Builds the ini text for this event. *
- *   TEventClass::Read_INI -- Parses the INI text for this event's data. *
- *   TEventClass::Reset -- Reset the trigger for a subsequent "spring". *
- *   TEventClass::operator () -- Action operator to see if event is satisfied. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "ra/ai/tevent.h"
 
 #include <cstdlib>
@@ -74,10 +45,7 @@
 
 namespace ra {
 
-/*
-**	This is the text name for all of the trigger events. These are used by
-*the scenario editor
-*/
+// The scenario editor's name for each event, which its lists show and sort by.
 static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
     EventText = {"-No Event-",
                  "Entered by...",
@@ -113,10 +81,6 @@ static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
                  "All bridges destroyed",
                  "Building exists..."};
 
-/*
-**	This is an ordinal list of trigger events. This list
-**	is used when generating the trigger dialog box.
-*/
 base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
     EventChoices = {{
         {TEVENT_NONE},
@@ -154,21 +118,6 @@ base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
         {TEVENT_BUILDING_EXISTS},
     }};
 
-/***********************************************************************************************
- * EventChoiceClass::Draw_It -- Displays the event choice class as a text
- *string.              *
- *                                                                                             *
- *    This utility routine is used by the list box display code to print the
- *text line that    * describes the event choice action. *
- *                                                                                             *
- * INPUT:   see below... *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/29/1996 JLB : Created. *
- *=============================================================================================*/
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                FontType font, TextPrintType flags) const {
@@ -178,20 +127,6 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                           selected, kTabStops);
 }
 
-/***********************************************************************************************
- * TEventClass::Reset -- Reset the trigger for a subsequent "spring". *
- *                                                                                             *
- *    This will reset the trigger event so that it may be "sprung" again.
- *Typically, this      * occurs for persistent triggers. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 void TEventClass::Reset(TDEventClass& td) const {
   td.IsTripped = false;
   if (Event == TEVENT_TIME) {
@@ -199,42 +134,9 @@ void TEventClass::Reset(TDEventClass& td) const {
   }
 }
 
-/***********************************************************************************************
- * TEventClass::operator () -- Action operator to see if event is satisfied. *
- *                                                                                             *
- *    This routine is called to see if the event has been satisfied. Typically,
- *when the       * necessary trigger events have been satisfied, then the
- *trigger is sprung. For some       * events, the act of calling this routine is
- *tacit proof enough that the event has         * occurred. For most other
- *events, the success condition must be explicitly checked.       *
- *                                                                                             *
- * INPUT:   event -- The event that has occurred according to the context from
- *which this      * routine was called. In the case of no specific event having
- *occurred,     * then TEVENT_ANY will be passed in. *
- *                                                                                             *
- *          house -- The house that this event is tied to. *
- *                                                                                             *
- *          object-- The object that this event might apply to. For object
- *triggering          * events, this will point to the perpetrator object. *
- *                                                                                             *
- *          forced-- If this event is forced by some outside action, this flag
- *will be true.   * Forcing only occurs as an explicit action from another
- *trigger.           *
- *                                                                                             *
- * OUTPUT:  Was this event satisfied? A satisfied event will probably spring the
- *trigger       * it is attached to. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 bool TEventClass::operator()(TDEventClass& td, TEventType event,
                              HousesType house, const ObjectClass* object,
                              bool forced) const {
-  /*
-  **	If this trigger event has been forced, then no further checks are
-  *required. *	Force the trigger to be tripped.
-  */
   if (forced) {
     td.IsTripped = true;
   }
@@ -243,11 +145,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     return true;
   }
 
-  /*
-  **	Triggers based on the game's global environment such as time or
-  **	global flags are triggered only when the appropriate condition
-  **	is true.
-  */
+  // The game-state events are true while their condition is, never tripped:
+  // a global that is cleared again, or a timer that is reset, turns them
+  // false.
   switch (Event) {
     case TEVENT_GLOBAL_SET:
       return base::At(TheScenario().GlobalFlags, value());
@@ -295,20 +195,15 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       break;
   }
 
-  /*
-  **	Don't trigger this event if the parameters mean nothing. Typical of
-  **	this would be for events related to time or other outside influences.
-  */
+  // An unused event never happens.
   if (Event == TEVENT_NONE) {
     return false;
   }
 
-  /*
-  **	If this is not the event for this trigger, just return. This is only
-  **	necessary to check for those trigger events that are presumed to be
-  **	true just by the fact that this routine is called with the appropriate
-  **	event identifier.
-  */
+  // The moment events are true merely because the check was made for them:
+  // the caller springs TEVENT_ATTACKED from the code that does the attacking.
+  // TEVENT_ANY lets them through as well, so a house's per-frame check of a
+  // trigger counts them as having happened.
   if ((Event == TEVENT_ATTACKED || Event == TEVENT_DESTROYED ||
        Event == TEVENT_DISCOVERED || Event == TEVENT_SPIED ||
        Event == TEVENT_NONE || Event == TEVENT_CROSS_HORIZONTAL ||
@@ -318,11 +213,8 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     return false;
   }
 
-  /*
-  **	The cell entry trigger event is only tripped when an object of the
-  **	matching ownership has entered the cell in question. All other
-  **	conditions will not trigger the event.
-  */
+  // The entering events also need the object that entered to belong to the
+  // event's house; the trigger's own house does not matter.
   if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
     if (!object || object->Owner() != this->house()) {
@@ -332,9 +224,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     return true;
   }
 
-  /*
-  **	Check for all bridges destroyed condition.
-  */
+  // Tripped, so the event stays true if a bridge is repaired.
   if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
     if (TheScenario().BridgeCount) {
       return false;
@@ -343,19 +233,16 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     return true;
   }
 
-  /*
-  **	The following trigger events are not considered to have sprung
-  **	merely by fact that this routine has been called. These trigger
-  **	events must be verified manually by examining the house that
-  **	they are assigned to.
-  */
+  // The events below check a house's state, first the trigger's own house's.
+  // An event whose house cannot be found is not checked and counts as having
+  // happened.
   const HouseClass* hptr = HouseClass::As_Pointer(house);
   int index = 0;
   if (hptr != nullptr) {
     switch (Event) {
-      /*
-      **	Check to see if a team of the appropriate type has left the map.
-      */
+      // A team springs the logic triggers itself once its last member has
+      // left the map, just before it deletes itself, so it is still in the
+      // heap here.
       case TEVENT_LEAVES_MAP:
         for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
           const TeamClass* ptr = TheObjectHeaps().team().ActiveAt(index);
@@ -369,18 +256,14 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         }
         break;
 
-      /*
-      **	Credits must be equal or greater to the value specified.
-      */
+      // The editor calls this "Credits exceed (x100)", but the value is in
+      // credits.
       case TEVENT_CREDITS:
         if (hptr->Available_Money() < value()) {
           return false;
         }
         break;
 
-      /*
-      **	Ensure that there are no more factories left.
-      */
       case TEVENT_NOFACTORIES:
         if (hptr->BScan &
             (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
@@ -389,36 +272,29 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         }
         break;
 
-      /*
-      **	Ensure that there are no fake structures left.
-      */
+      // Only two of the five fakes count: a fake shipyard, sub pen or radar
+      // dome left standing does not stop the event.
       case TEVENT_FAKES_DESTROYED:
         if (hptr->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
           return false;
         }
         break;
 
-      /*
-      **	A civilian must have been evacuated.
-      */
       case TEVENT_EVAC_CIVILIAN:
         if (!hptr->IsCivEvacuated) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that the structure has been built.
-      */
+      // A structure past the 64 the scan holds never exists.
       case TEVENT_BUILDING_EXISTS:
         if ((hptr->ActiveBScan & ScanBit(static_cast<int>(structure()))) == 0) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that the structure has been built.
-      */
+      // The house only remembers what it built last, so the building
+      // events are tripped to outlast the next thing it builds.
       case TEVENT_BUILD:
         if (hptr->JustBuiltStructure != structure()) {
           return false;
@@ -426,9 +302,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         td.IsTripped = true;
         break;
 
-      /*
-      **	Verify that the unit has been built.
-      */
       case TEVENT_BUILD_UNIT:
         if (hptr->JustBuiltUnit != unit()) {
           return false;
@@ -436,9 +309,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         td.IsTripped = true;
         break;
 
-      /*
-      **	Verify that the infantry has been built.
-      */
       case TEVENT_BUILD_INFANTRY:
         if (hptr->JustBuiltInfantry != infantry()) {
           return false;
@@ -446,9 +316,6 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         td.IsTripped = true;
         break;
 
-      /*
-      **	Verify that the aircraft has been built.
-      */
       case TEVENT_BUILD_AIRCRAFT:
         if (hptr->JustBuiltAircraft != aircraft()) {
           return false;
@@ -456,19 +323,12 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         td.IsTripped = true;
         break;
 
-      /*
-      **	Verify that the specified number of buildings have been
-      *destroyed.
-      */
       case TEVENT_NBUILDINGS_DESTROYED:
         if (std::cmp_less(hptr->BuildingsLost, value())) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that the specified number of units have been destroyed.
-      */
       case TEVENT_NUNITS_DESTROYED:
         if (std::cmp_less(hptr->UnitsLost, value())) {
           return false;
@@ -502,6 +362,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
     }
   }
 
+  // Then the house the event names.
   hptr = HouseClass::As_Pointer(this->house());
   if (hptr) {
     switch (Event) {
@@ -517,37 +378,26 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         }
         break;
 
-      /*
-      **	Verify that the house has been discovered.
-      */
       case TEVENT_HOUSE_DISCOVERED:
         if (!hptr->IsDiscovered) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that all buildings have been destroyed.
-      */
       case TEVENT_BUILDINGS_DESTROYED:
         if (hptr->ActiveBScan) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that all units have been destroyed -- with some
-      **	exceptions.
-      */
+      // Vessels and aircraft do not count.
       case TEVENT_UNITS_DESTROYED:
         if (hptr->ActiveUScan | hptr->ActiveIScan) {
           return false;
         }
         break;
 
-      /*
-      **	Verify that all buildings and units have been destroyed.
-      */
+      // Aircraft do not count.
       case TEVENT_ALL_DESTROYED:
         if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
             hptr->ActiveVScan) {
@@ -591,42 +441,11 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   return true;
 }
 
-/***********************************************************************************************
- * TEventClass::Build_INI_Entry -- Builds the ini text for this event. *
- *                                                                                             *
- *    This routine will build the ini text for this trigger event. The ini text
- *is appended    * to the string buffer specified. This routine is used to build
- *the complete trigger       * ini text for writing out to the INI scenario
- *file.                                       *
- *                                                                                             *
- * INPUT:   ptr   -- Pointer to the string buffer that will hold the event INI
- *data.           *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 void TEventClass::Build_INI_Entry(std::string& buffer) const {
   buffer += std::format("{},{},{}", std::to_underlying(Event),
                         TheObjectHeaps().team_type().PositionOf(Team), value());
 }
 
-/***********************************************************************************************
- * TEventClass::Read_INI -- Parses the INI text for this event's data. *
- *                                                                                             *
- *    This routine is used to parse the INI data line to fetch the event's data
- *from it.       *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 void TEventClass::Read_INI(base::Tokenizer& tokens) {
   std::string_view token;
   switch (TheWorld().new_ini_format()) {
@@ -672,22 +491,6 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
   }
 }
 
-/***********************************************************************************************
- * Event_Needs -- Returns with what this event type needs for data. *
- *                                                                                             *
- *    This routine will examine the specified event type and return a code that
- *indicates      * the type of data that must be supplied to this event. Some
- *events require no data and    * these will return NeedType::kNone. *
- *                                                                                             *
- * INPUT:   event -- The event type to examine. *
- *                                                                                             *
- * OUTPUT:  Returns with the type of additional data that is needed by this
- *event.             *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 NeedType Event_Needs(TEventType event) {
   switch (event) {
     case TEVENT_THIEVED:
@@ -744,17 +547,6 @@ NeedType Event_Needs(TEventType event) {
   return NeedType::kNone;
 }
 
-/***********************************************************************************************
- * Event_From_Name -- retrieves EventType for given name *
- *                                                                                             *
- * INPUT: * name      name to get event for *
- *                                                                                             *
- * OUTPUT: * EventType for given name *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 11/29/1994 BR : Created. *
- *=============================================================================================*/
 TEventType Event_From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
@@ -767,36 +559,8 @@ TEventType Event_From_Name(const std::string_view name) {
   return TEVENT_NONE;
 }
 
-/***********************************************************************************************
- * Name_From_Event -- retrieves name for EventType *
- *                                                                                             *
- * INPUT: * event      EventType to get name for *
- *                                                                                             *
- * OUTPUT: * name for EventType *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 11/29/1994 BR : Created. *
- *=============================================================================================*/
 const char* Name_From_Event(TEventType event) { return EventText.at(event); }
 
-/***********************************************************************************************
- * Attaches_To -- Determines what event can be attached to. *
- *                                                                                             *
- *    This routine is used to determine what this event type can be attached to
- *in the game.   * Some events are specifically tied to cells or game object.
- *This routine will indicate    * this requirement. *
- *                                                                                             *
- * INPUT:   event -- The event type to examine. *
- *                                                                                             *
- * OUTPUT:  Returns with the attachable characteristics for this event type.
- *These             * characteristics are represented by a composite bit field.
- *Some events can be       * attached to multiple objects. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/28/1995 JLB : Created. *
- *=============================================================================================*/
 AttachType Attaches_To(TEventType event) {
   AttachType attach = ATTACH_NONE;
 
