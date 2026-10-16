@@ -12416,15 +12416,28 @@
         "refactoring",
         "engine",
         "rust",
-        "cleanup",
-        "needs-decision"
+        "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T07:25:39Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T06:58:05Z",
       "source": "d3623d18..f8694ec5",
+      "resolution": "Deleted the C++ reference kernels, their seven differential tests, `kernel_bench` and `base/lcg_test_util.h` (about 6,200 lines). Before deleting, moved what only the differential tests covered into the tests that stay: the overlap death tests, the in-place ADPCM layouts, VQ entries with a high byte and past the codebook, long XOR-delta commands, and Blowfish keys of every length (1–24 are Eric Young's set_key vectors) plus re-keying. The PK vector is now an expected-value test. Each `docs/RUST_*_PLAN.md` records the last `kernel_bench` run and the deletion.",
       "toDecide": "When has the migration settled enough to drop the references? They cost build time and strict-check time on every full build, and they are the only thing that would show a regression against the original C++ if a Rust kernel is changed. Say when (for example after the branch `rust-migration` is merged and the real-device sound check is done) and an agent can do the deletion.",
+      "decisions": [
+        {
+          "question": "When should the C++ reference kernels (~6,200 lines, kernel_bench, the differential tests) be deleted?",
+          "options": [
+            "Now (Recommended)",
+            "After the listen check",
+            "After T-359 too",
+            "Keep them for good"
+          ],
+          "answer": "Now (Recommended)",
+          "time": "2026-10-16T06:51:48Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -16175,11 +16188,13 @@
         "cleanup",
         "dead-code"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T06:50:49Z",
       "source": "f54d2a2fe",
+      "fixedIn": "9c8f5cd15",
+      "resolution": "Deleted TD's `size_of` macro, plus the `Debug_GlobalPacketType()` declaration in wol_gsup.cc with its commented-out definition and calls.",
       "anchors": [
         {
           "path": "src/td/core/defines.h",
@@ -16227,11 +16242,13 @@
         "testing",
         "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T06:50:51Z",
       "source": "fe5ac844e",
+      "fixedIn": "be350d5e4",
+      "resolution": "The fixture-mode limit in both smoke scripts went from 60 s to 110 s, just under the ctest TIMEOUT of 120 s. RUN_SERIAL was rejected because it would hold up the whole run. The failure did not reproduce: under `ctest -j 22` in build-debug the test passed in about 5 s in four runs.",
       "anchors": [
         {
           "path": "src/ra/CMakeLists.txt",
@@ -16262,11 +16279,13 @@
         "tools",
         "bugs"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T06:50:53Z",
       "source": "ef9634cc4",
+      "fixedIn": "ff87c6b47",
+      "resolution": "strict_tu.py builds `build.ninja` before querying, so a glob or CMakeLists change re-runs CMake first (about 40 ms when nothing changed). Verified with a new src/base file that was not yet configured.",
       "anchors": [
         {
           "path": "tools/strict_tu.py",
@@ -16283,11 +16302,13 @@
       "tags": [
         "tools"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T06:50:55Z",
       "source": "fe5ac844e",
+      "fixedIn": "99e45ad9e",
+      "resolution": "The root CMakeLists.txt sets `CMAKE_EXPORT_COMPILE_COMMANDS ON` for every build dir. build-strict/compile_commands.json has 1003 entries and none of them contains `__run_co_compile`.",
       "anchors": [
         {
           "path": "CMakeLists.txt",
@@ -16351,7 +16372,7 @@
           "after": [
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/engine/crypto/digit_cursor_reference_test_util.h",

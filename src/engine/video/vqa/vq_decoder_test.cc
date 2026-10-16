@@ -1,9 +1,12 @@
 #include "engine/video/vqa/vq_decoder.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <vector>
 
 #include "base/numeric.h"
 #include "gtest/gtest.h"
@@ -91,5 +94,31 @@ TEST(VqDecoderTest, RejectsTruncatedBuffersAndInvalidDimensions) {
                 4);
   EXPECT_EQ(output.front(), 0xa5);
   EXPECT_EQ(output.back(), 0xa5);
+}
+
+// Entry 257 needs its high byte; entry 258 is past the end of a codebook of
+// 258 blocks, and stops the decode before it.
+TEST(VqDecoderTest, EntriesTakeTheirHighByteAndStopPastTheCodebook) {
+  constexpr std::size_t kBlockBytes = 8;
+  std::vector<unsigned char> codebook(258 * kBlockBytes);
+  std::ranges::fill(std::span(codebook).subspan(257 * kBlockBytes), 0x42);
+  // Low bytes, then high bytes: entries 257, 258, 0.
+  const std::array<unsigned char, 6> pointers{0x01, 0x02, 0x00,
+                                              0x01, 0x01, 0x00};
+  std::array<unsigned char, 24> output{};
+  output.fill(0xa5);
+  DecodeVqFrame(BlockShape::k4x2, codebook, pointers, output, 3, 1, 12);
+  for (std::size_t i = 0; i < output.size(); ++i) {
+    EXPECT_EQ(output.at(i), i % 12 < 4 ? 0x42 : 0xa5) << "at " << i;
+  }
+}
+
+TEST(VqDecoderDeathTest, RejectsAnImageThatHoldsItsPointers) {
+  std::vector<uint8_t> buffer(64);
+  const std::vector<uint8_t> codebook(16);
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(DecodeVqFrame(BlockShape::k4x2, codebook,
+                             std::span(buffer).first(8), buffer, 2, 2, 8),
+               "its own codebook or pointers");
 }
 }  // namespace

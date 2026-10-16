@@ -1,8 +1,10 @@
 #include "engine/video/vqa/adpcm_decoders.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/numeric.h"
 #include "base/unaligned.h"
@@ -63,6 +65,47 @@ TEST(ImaAdpcmDecoderTest, RefusesASourceTooShortToFillDest) {
 
   EXPECT_FALSE(decoder.Decode(source, dest));
   EXPECT_EQ(dest, (std::array<uint8_t, 8>{}));
+}
+
+// The movie loader's layout: the stream at the end of the buffer it decodes
+// into, which the output never catches up with.
+TEST(ImaAdpcmDecoderTest, DecodesAStreamAtTheEndOfItsDestination) {
+  std::vector<uint8_t> buffer(400);
+  for (std::size_t i = 300; i < buffer.size(); ++i) {
+    buffer.at(i) = static_cast<uint8_t>((i * 37) + 11);
+  }
+  const std::vector<uint8_t> source(buffer.begin() + 300, buffer.end());
+  std::vector<uint8_t> want(buffer.size());
+  ImaAdpcmDecoder separate;
+  ASSERT_TRUE(separate.Decode(source, want));
+
+  ImaAdpcmDecoder in_place;
+  ASSERT_TRUE(in_place.Decode(std::span(buffer).subspan(300), buffer));
+  EXPECT_EQ(buffer, want);
+}
+
+// When the output overtakes the stream, later codes are read from the samples
+// already written over it, as the C++ decoder did.
+TEST(ImaAdpcmDecoderTest, ReadsWhatItWroteWhenTheOutputOvertakesTheStream) {
+  std::array<uint8_t, 8> buffer{0x07, 0x70};
+  ImaAdpcmDecoder decoder;
+
+  ASSERT_TRUE(decoder.Decode(std::span(buffer).first(2), buffer));
+  // 0x07 gives 13 and 15, written as 0d 00 0f 00, so the second code byte is
+  // 0x00, not 0x70: code 0 at step 14 adds 1, then at step 13 adds 1.
+  EXPECT_EQ(SampleAt(buffer, 0), 13);
+  EXPECT_EQ(SampleAt(buffer, 1), 15);
+  EXPECT_EQ(SampleAt(buffer, 2), 16);
+  EXPECT_EQ(SampleAt(buffer, 3), 17);
+}
+
+TEST(ImaAdpcmDeathTest, RejectsAStreamOverlappingTheFront) {
+  std::vector<uint8_t> buffer(32);
+  ImaAdpcmDecoder decoder;
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(decoder.Decode(std::span<const uint8_t>(buffer).first(8),
+                              std::span(buffer).subspan(4, 16)),
+               "overlaps the front");
 }
 
 }  // namespace

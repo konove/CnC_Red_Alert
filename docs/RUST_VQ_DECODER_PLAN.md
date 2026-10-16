@@ -43,6 +43,11 @@ bytes for every input and no caller changed.
 
 ## Outcome
 
+The C++ reference (`vq_decoder_reference_test_util`), `VqDecoderDifferentialTest` and `kernel_bench`
+were deleted on 2026-10-15 (T-360). Their last run, that day: Rust 4,698 MB/s, C++ 2,026 MB/s. The
+death test moved to `vq_decoder_test.cc`, with a new case for an entry that needs its high byte and
+one past the end of the codebook.
+
 Every existing test passes unchanged. `kernel_bench` at `RelWithDebInfo` (GCC 13 for the C++
 reference), a 320x200 frame of 4x2 blocks: Rust 4,551 MB/s, C++ 2,300 MB/s (+98%).
 

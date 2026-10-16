@@ -45,6 +45,11 @@ with the same target bytes for every delta and no caller changed.
 
 ## Outcome
 
+The C++ reference (`xor_delta_reference_test_util`), `XorDeltaDifferentialTest` and `kernel_bench`
+were deleted on 2026-10-15 (T-360). Their last run, that day: contiguous Rust 19,181 MB/s, C++ 2,590
+MB/s; rows 15,919 MB/s and 2,465 MB/s. The overlap death test moved to `xor_delta_test.cc`, with new
+hand-written cases for long commands' high byte and for rows of no width or too short a stride.
+
 Every existing test passes unchanged and `tools/ui_check.py` reports no changed screenshot in either
 game. `kernel_bench` at `RelWithDebInfo` (GCC 13 for the C++ reference), a 320x200 frame of mixed
 commands:

@@ -56,6 +56,12 @@ as before, with no caller changed.
 
 ## Outcome
 
+The C++ references (`aud_decoder_reference_test_util`, `adpcm_decoders_reference_test_util`), their
+differential tests and `kernel_bench` were deleted on 2026-10-15 (T-360). Their last run, that day:
+.AUD block 821 against 793 MB/s, movie chunk 812 against 763, Westwood 931 against 935. The in-place
+layouts and the overlap death test moved to `adpcm_decoders_test.cc`: a stream at the end of its
+destination, and an output that overtakes the stream and reads back what it wrote.
+
 Every existing test passes unchanged. `kernel_bench` at `RelWithDebInfo` (GCC 13 for the C++
 reference), megabytes of decoded sound from 64 KiB of random input:
 

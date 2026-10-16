@@ -1,6 +1,8 @@
 // SHA-1 through SHAEngine, which pads and buffers around Sha1Compress()
 // (engine/crypto/sha1_compress.h).
 
+#include "engine/crypto/sha1_compress.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -66,6 +68,13 @@ TEST(Sha1CompressTest, ChunkedHashingMatchesOneShot) {
     }
     EXPECT_EQ(chunked.Digest(), expected) << "chunk " << chunk;
   }
+}
+
+TEST(Sha1CompressDeathTest, RejectsAPartialBlock) {
+  engine::crypto::Sha1State state{};
+  const std::vector<std::byte> blocks(engine::crypto::kSha1BlockSize + 1);
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(engine::crypto::Sha1Compress(state, blocks), "");
 }
 
 }  // namespace

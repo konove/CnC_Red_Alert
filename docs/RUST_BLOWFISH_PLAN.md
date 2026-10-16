@@ -60,6 +60,13 @@ public functions, their return values and the copy-through behavior without a ke
 
 ## Outcome
 
+The C++ reference (`blowfish_reference_test_util`), `BlowfishDifferentialTest` and `kernel_bench`
+were deleted on 2026-10-15 (T-360). Their last run, that day: encrypt and decrypt 381 against 281
+MB/s (+36%), key set-up 215 against 212. Before the deletion the reference encrypted one block under
+keys of every length from 1 to 56 bytes; lengths 1 to 24 matched Eric Young's published set_key
+vectors, and all 56 are now expected values in `blowfish_test.cc`, beside new tests of re-keying and
+of the two death tests.
+
 Every existing test passes unchanged. `kernel_bench` at `RelWithDebInfo` (GCC 13 for the C++
 reference), 64 KiB in place with a 56-byte key:
 

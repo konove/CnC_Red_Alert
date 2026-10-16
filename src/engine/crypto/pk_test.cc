@@ -4,9 +4,13 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
+#include <string_view>
 #include <vector>
 
+#include "absl/log/check.h"
+#include "absl/strings/numbers.h"
 #include "engine/crypto/random_source.h"
 #include "gtest/gtest.h"
 
@@ -168,8 +172,55 @@ TEST(PKeyTest, DecryptsInTheBufferTheBlocksAreIn) {
   // Each decrypted block is shorter than its source, so the output trails the
   // input through the one buffer.
   ASSERT_EQ(slow.Decrypt(buffer, buffer), plain_size * 2);
-  EXPECT_TRUE(
-      std::ranges::equal(std::span(buffer).first(plain.size()), plain));
+  EXPECT_TRUE(std::ranges::equal(std::span(buffer).first(plain.size()), plain));
+}
+
+// The bytes a string of hex digits spells, two digits each.
+std::vector<std::byte> FromHex(const std::string_view hex) {
+  std::vector<std::byte> bytes;
+  for (std::size_t at = 0; at + 1 < hex.size(); at += 2) {
+    int value = 0;
+    CHECK(absl::SimpleHexAtoi(hex.substr(at, 2), &value));
+    bytes.push_back(static_cast<std::byte>(value));
+  }
+  return bytes;
+}
+
+// `digits` as a DER integer, the length in its short form or as one byte.
+std::vector<std::byte> DerInteger(const std::vector<std::byte>& digits) {
+  std::vector<std::byte> der{std::byte{2}};
+  if (digits.size() >= 128) {
+    der.push_back(std::byte{0x81});
+  }
+  der.push_back(static_cast<std::byte>(digits.size()));
+  der.insert(der.end(), digits.begin(), digits.end());
+  return der;
+}
+
+// A block whose power the C++ bignum PKey once used got wrong (see
+// docs/RUST_PK_PLAN.md). The expected power is Python's pow(block, exponent,
+// modulus), the block and the power least significant byte first.
+TEST(PKeyTest, EncryptsABlockTheOldBignumGotWrong) {
+  const auto modulus = FromHex(
+      "6c02fff5c8a3ed65eda64b082d7ffe720ce029784cbf302df34fb7e54404a334c39217ef"
+      "35ee77299d4b68363f1dccaa9f19c95a8131c258ea9b");
+  const auto exponent = FromHex(
+      "1dca79d49e733fb8328911bcdc409433e00caab2c2a1790b47f46454713810e086e15f43"
+      "0aa47752bf73bb");
+  const auto block = FromHex(
+      "cb5c98225686f8d8943e04ce87b760577565f108e2fcdab390717f6e85f7848c0402cea2"
+      "91478082f1b8fe42268bec3576342fef6565ea45b5");
+  const auto power = FromHex(
+      "b2a0129f56ef872ba5423c1e0a803ee5fe80211443a68a52e10dd4af7222e07558d71e4f"
+      "7c65927f7aed3448a0c30965815bc7a0bbc55dc0a000");
+  PKey key;
+  key.Decode_Modulus(DerInteger(modulus));
+  key.Decode_Exponent(DerInteger(exponent));
+  ASSERT_EQ(key.Plain_Block_Size(), std::ssize(block));
+
+  std::vector<std::byte> got(power.size());
+  ASSERT_EQ(key.Encrypt(block, got), std::ssize(power));
+  EXPECT_EQ(got, power);
 }
 
 TEST(PKeyDeathTest, RejectsPrimesOutOfRange) {

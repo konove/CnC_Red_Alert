@@ -56,6 +56,10 @@ run in Rust. `SHAEngine` keeps padding and partial blocks and does not change.
 
 ## Outcome
 
+The C++ reference (`sha1_compress_reference_test_util`), `Sha1CompressDifferentialTest` and
+`kernel_bench` were deleted on 2026-10-15 (T-360). Their last run, that day: 2,700 MB/s Rust, 2,705
+C++. The partial-block death test moved to `sha1_compress_test.cc`.
+
 `sha1_compress_test`'s other tests pass unchanged. `kernel_bench` at `RelWithDebInfo` (GCC 13 for
 the C++ reference), 64 KiB of random blocks, both sides using the SHA extensions: 2,703 MB/s each.
 

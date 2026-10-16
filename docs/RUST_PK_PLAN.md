@@ -121,6 +121,12 @@ modulus and compare the refusal value; powers are mostly exercised through `Encr
 
 ## Outcome
 
+The C++ bignum (`mp_reference_test_util`, `int_reference_test_util.h`,
+`digit_cursor_reference_test_util.h`), the old `PKey` (`pk_reference_test_util`),
+`PkDifferentialTest` and `kernel_bench` were deleted on 2026-10-15 (T-360). Their last run, that
+day: fast exponent 7.03 against 1.19 MB/s, slow exponent 1.14 against 0.03. The block the C++ got
+wrong is now a plain expected-value test in `pk_test.cc`, `EncryptsABlockTheOldBignumGotWrong`.
+
 `kernel_bench` at `RelWithDebInfo` (GCC 13 for the C++ reference), a pair of 256-bit primes, in
 megabytes of plain text:
 
