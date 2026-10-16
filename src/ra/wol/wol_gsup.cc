@@ -117,8 +117,6 @@ static bool operator==(const GlobalPacketType::ScenarioInfoData& gp1,
                        const GlobalPacketType::ScenarioInfoData& gp2);
 static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);
 
-void Debug_GlobalPacketType(const GlobalPacketType& gp1);
-
 //***********************************************************************************************
 /*	Game startup logic:
 When a guest joins the channel, the host sends all current setup info.
@@ -2485,17 +2483,6 @@ bool WOL_GameSetupDialog::bParamsUnfresh() {
   GAMEPARAMS GParamsNow{};
   SetGParamsToCurrent(GParamsNow);
 
-  //	if( !( GParamsNow == GParamsLastSent ) )
-  //	{
-  //		debugprint( "---- Params Unfresh: OLD...\n" );
-  //		Debug_GlobalPacketType( GParamsLastSent.GPacket );
-  //		debugprint( "-------------------  NEW...\n" );
-  //		Debug_GlobalPacketType( GParamsNow.GPacket );
-  //		debugprint( "old bAftermathUnits = %i\n",
-  // GParamsLastSent.bAftermathUnits ); 		debugprint( "new
-  // bAftermathUnits = %i\n", GParamsNow.bAftermathUnits );
-  //	}
-
   return !(GParamsNow == GParamsLastSent);
 }
 
@@ -2907,68 +2894,6 @@ bool operator==(const GlobalPacketType::ScenarioInfoData& gp1,
 
   return false;
 }
-
-//***********************************************************************************************
-/*
-void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
-//	ajw  debugging
-{
-        if( *gp1.Scenario )
-//		debugprint( "Scenario = %s\n", (char*)gp1.Scenario
-); else
-//		debugprint( "!Scenario string is null\n" );
-        if( *gp1.ShortFileName )
-//		debugprint( "ShortFileName = %s\n",
-(char*)gp1.ShortFileName ); else
-//		debugprint( "!ShortFileName string is null\n" );
-        //	Remember ShortFileName is not null-terminated...
-        if( *gp1.FileDigest )
-//		debugprint( "FileDigest = %.32s\n",
-(char*)gp1.FileDigest ); else
-//		debugprint( "!FileDigest string is null\n" );
-
-//	debugprint(	"FileLength = %i\n"
-                                "OfficialScenario = %i\n"
-                                "Credits = %i\n"
-                                "IsBases = %i\n"
-                                "IsTiberium = %i\n"
-                                "IsGoodies = %i\n"
-                                "BuildLevel = %i\n"
-                                "UnitCount = %i\n"
-                                "AIPlayers = %i\n"
-                                "Seed = %i\n"
-                                "Special.IsShadowGrow = %i\n"
-                                "Special.IsSpeedBuild = %i\n"
-                                "Special.IsFromInstall = %i\n"
-                                "Special.IsCaptureTheFlag = %i\n"
-                                "Special.IsInert = %i\n"
-                                "Special.IsThreePoint = %i\n"
-                                "Special.IsTGrowth = %i\n"
-                                "Special.IsTSpread = %i\n"
-                                "GameSpeed = %i\n"
-                                "Version = %i\n",
-                                gp1.FileLength,
-                                gp1.OfficialScenario,
-                                gp1.Credits,
-                                gp1.IsBases,
-                                gp1.IsTiberium,
-                                gp1.IsGoodies,
-                                gp1.BuildLevel,
-                                gp1.UnitCount,
-                                gp1.AIPlayers,
-                                gp1.Seed,
-                                gp1.Special.shadow_grows,
-                                gp1.Special.speed_build,
-                                gp1.Special.from_install,
-                                gp1.Special.capture_the_flag,
-                                gp1.Special.inert_weapons,
-                                gp1.Special.three_point_turns,
-                                gp1.Special.ore_grows,
-                                gp1.Special.ore_spreads,
-                                gp1.GameSpeed,
-                                gp1.Version );
-}
-*/
 
 //***********************************************************************************************
 PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap) {

@@ -2517,8 +2517,6 @@ inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 
 #define TOTAL_CRATE_TYPES 15
 
-#define size_of(typ, id) sizeof(std::declval<typ>().id)
-
 }  // namespace td
 
 // Enums that loops walk with ++ and --.
