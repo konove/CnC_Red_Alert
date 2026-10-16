@@ -39,29 +39,29 @@ class FlasherClass {
  public:
   // The longest flash, in frames. A save holds the count in one byte, as an
   // int8_t.
-  static constexpr int kMaxCount = 127;
+  static constexpr int kMaxFrames = 127;
 
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(FlashCount, IsBlushing);
+    ar(frames_left_, brightened_);
     if constexpr (Archive::kIsReading) {
       // A negative count, a byte past 127, is a damaged save.
-      if (FlashCount < 0) {
+      if (frames_left_ < 0) {
         ar.Fail("invalid flash count");
         *this = FlasherClass();
       }
     }
   }
 
-  // Starts flashing for `count` calls of Process(), replacing what was left
-  // of an earlier flash. A count past kMaxCount flashes for kMaxCount; a
-  // count of 0 or less stops the flash.
-  void Start(int count) {
-    FlashCount = static_cast<int8_t>(std::clamp(count, 0, kMaxCount));
-    if (FlashCount == 0) {
+  // Starts flashing for `frames` calls of Process(), replacing what was left
+  // of an earlier flash. More than kMaxFrames flashes for kMaxFrames; 0 or
+  // less stops the flash.
+  void Start(int frames) {
+    frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
+    if (frames_left_ == 0) {
       // Process() only clears the flag while it counts down.
-      IsBlushing = false;
+      brightened_ = false;
     }
   }
 
@@ -71,17 +71,18 @@ class FlasherClass {
   bool Process();
 
   // Whether the object is to be drawn brightened on this frame.
-  [[nodiscard]] bool IsBrightened() const { return IsBlushing; }
+  [[nodiscard]] bool IsBrightened() const { return brightened_; }
 
  private:
   // The Process() calls left in the flash. It counts down to zero and stops
-  // there; Process() brightens the object whenever the count it leaves is odd.
-  int8_t FlashCount{0};
+  // there; Process() brightens the object whenever the number it leaves is
+  // odd.
+  int8_t frames_left_{0};
 
   // Whether the object is drawn brightened, as feedback to the player that
   // it was targeted: true on every other frame of the flash, false once the
   // flash is over.
-  bool IsBlushing{false};
+  bool brightened_{false};
 };
 
 }  // namespace game
