@@ -36,8 +36,6 @@ TypeTally::TypeTally(int type_count) : counts_(base::ToSize(type_count)) {}
 
 void TypeTally::Increment(int type) { counts_.at(base::ToSize(type))++; }
 
-void TypeTally::Decrement(int type) { counts_.at(base::ToSize(type))--; }
-
 void TypeTally::Clear() { std::ranges::fill(counts_, 0); }
 
 int TypeTally::Count(int type) const { return counts_.at(base::ToSize(type)); }
