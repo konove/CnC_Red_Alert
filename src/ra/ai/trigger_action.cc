@@ -101,46 +101,61 @@ void DestroyObjectsAttachedTo(Heap& heap, const TriggerClass* trigger) {
   }
 }
 
-// The scenario editor's name for each action. A name ending in "..." tells the
-// designer the action takes a value (see ActionNeed()).
-constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
-    "-No Action-",
-    "Winner is...",
-    "Loser is...",
-    "Production Begins",
-    "Create Team...",
-    "Destroy All Teams",
-    "All to Hunt...",
-    "Reinforcement (team)...",
-    "Drop Zone Flare (waypoint)...",
-    "Fire Sale...",
-    "Play Movie...",
-    "Text Trigger (ID num)...",
-    "Destroy Trigger...",
-    "Autocreate Begins...",
-    "~don't use~",
-    "Allow Win",
-    "Reveal all map",
-    "Reveal around waypoint...",
-    "Reveal zone of waypoint...",
-    "Play sound effect...",
-    "Play music theme...",
-    "Play speech...",
-    "Force Trigger...",
-    "Timer Start",
-    "Timer Stop",
-    "Timer Extend (1/10th min)...",
-    "Timer Shorten (1/10th min)...",
-    "Timer Set (1/10th min)...",
-    "Global Set...",
-    "Global Clear...",
-    "Auto Base Building...",
-    "Grow shroud one 'step'",
-    "Destroy attached building",
-    "Add 1-time special weapon...",
-    "Add repeating special weapon...",
-    "Preferred target...",
-    "Launch Nukes"};
+// What the scenario editor knows about one action.
+struct ActionInfo {
+  // The editor's name. A name ending in "..." tells the designer the action
+  // takes a value.
+  const char* name;
+  NeedType need;  // The value the editor prompts for.
+};
+
+constexpr base::EnumArray<TriggerActionType, ActionInfo> kActions = {{
+    {"-No Action-", NeedType::kNone},
+    {"Winner is...", NeedType::kHouse},
+    {"Loser is...", NeedType::kHouse},
+    {"Production Begins", NeedType::kHouse},
+    {"Create Team...", NeedType::kTeam},
+    {"Destroy All Teams", NeedType::kTeam},
+    {"All to Hunt...", NeedType::kHouse},
+    {"Reinforcement (team)...", NeedType::kTeam},
+    {"Drop Zone Flare (waypoint)...", NeedType::kWaypoint},
+    {"Fire Sale...", NeedType::kHouse},
+    {"Play Movie...", NeedType::kMovie},
+    {"Text Trigger (ID num)...", NeedType::kNumber},
+    {"Destroy Trigger...", NeedType::kTrigger},
+    {"Autocreate Begins...", NeedType::kHouse},
+    {"~don't use~", NeedType::kNone},
+    {"Allow Win", NeedType::kNone},
+    {"Reveal all map", NeedType::kNone},
+    {"Reveal around waypoint...", NeedType::kWaypoint},
+    {"Reveal zone of waypoint...", NeedType::kWaypoint},
+    {"Play sound effect...", NeedType::kSound},
+    {"Play music theme...", NeedType::kTheme},
+    {"Play speech...", NeedType::kSpeech},
+    {"Force Trigger...", NeedType::kTrigger},
+    {"Timer Start", NeedType::kNone},
+    {"Timer Stop", NeedType::kNone},
+    {"Timer Extend (1/10th min)...", NeedType::kNumber},
+    {"Timer Shorten (1/10th min)...", NeedType::kNumber},
+    {"Timer Set (1/10th min)...", NeedType::kNumber},
+    {"Global Set...", NeedType::kNumber},
+    {"Global Clear...", NeedType::kNumber},
+    {"Auto Base Building...", NeedType::kBool},
+    {"Grow shroud one 'step'", NeedType::kNone},
+    {"Destroy attached building", NeedType::kNone},
+    {"Add 1-time special weapon...", NeedType::kSpecial},
+    {"Add repeating special weapon...", NeedType::kSpecial},
+    {"Preferred target...", NeedType::kQuarry},
+    {"Launch Nukes", NeedType::kNone},
+}};
+
+// Returns the row of `action`, or kNone's for a number that is no action: an
+// old-format scenario can hold one, which MakeTriggerAction() keeps as a
+// NoAction.
+const ActionInfo& InfoOf(const TriggerActionType action) {
+  return kActions.at(
+      magic_enum::enum_contains(action) ? action : TriggerActionType::kNone);
+}
 
 // Returns the type in slot `slot_index` of `heap`, or nullptr when the index is
 // none (-1) or names no type, which it logs: every type the scenario has is
@@ -907,76 +922,11 @@ class PreferredTargetAction final : public TriggerAction {
 }  // namespace
 
 const char* ActionName(const TriggerActionType action) {
-  return kActionNames.at(action);
+  return InfoOf(action).name;
 }
 
 NeedType ActionNeed(const TriggerActionType action) {
-  switch (action) {
-    case TriggerActionType::kOneSpecial:
-    case TriggerActionType::kFullSpecial:
-      return NeedType::kSpecial;
-
-    case TriggerActionType::kFireSale:
-    case TriggerActionType::kWin:
-    case TriggerActionType::kLose:
-    case TriggerActionType::kAllHunt:
-    case TriggerActionType::kBeginProduction:
-    case TriggerActionType::kAutocreate:
-      return NeedType::kHouse;
-
-    case TriggerActionType::kBaseBuilding:
-      return NeedType::kBool;
-
-    case TriggerActionType::kCreateTeam:
-    case TriggerActionType::kDestroyTeam:
-    case TriggerActionType::kReinforcements:
-      return NeedType::kTeam;
-
-    case TriggerActionType::kForceTrigger:
-    case TriggerActionType::kDestroyTrigger:
-      return NeedType::kTrigger;
-
-    case TriggerActionType::kDropZoneFlare:
-    case TriggerActionType::kRevealSome:
-    case TriggerActionType::kRevealZone:
-      return NeedType::kWaypoint;
-
-    case TriggerActionType::kPlayMusic:
-      return NeedType::kTheme;
-
-    case TriggerActionType::kPlayMovie:
-      return NeedType::kMovie;
-
-    case TriggerActionType::kPlaySound:
-      return NeedType::kSound;
-
-    case TriggerActionType::kPlaySpeech:
-      return NeedType::kSpeech;
-
-    case TriggerActionType::kTextTrigger:
-    case TriggerActionType::kAddTimer:
-    case TriggerActionType::kSubTimer:
-    case TriggerActionType::kSetTimer:
-    case TriggerActionType::kSetGlobal:
-    case TriggerActionType::kClearGlobal:
-      return NeedType::kNumber;
-
-    case TriggerActionType::kPreferredTarget:
-      return NeedType::kQuarry;
-
-    case TriggerActionType::kNone:
-    case TriggerActionType::kWinLose:
-    case TriggerActionType::kAllowWin:
-    case TriggerActionType::kRevealAll:
-    case TriggerActionType::kStartTimer:
-    case TriggerActionType::kStopTimer:
-    case TriggerActionType::kCreepShadow:
-    case TriggerActionType::kDestroyObject:
-    case TriggerActionType::kLaunchNukes:
-    default:
-      break;
-  }
-  return NeedType::kNone;
+  return InfoOf(action).need;
 }
 
 TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {

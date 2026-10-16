@@ -100,43 +100,74 @@ bool TeamHasLeftTheMap(const TeamType* const team_type) {
   return false;
 }
 
-}  // namespace
+// What the scenario editor and the scenario know about one event.
+struct EventInfo {
+  // The editor's name, which its lists show and sort by. A name ending in
+  // "..." tells the designer the event takes an argument.
+  const char* name;
+  NeedType need;  // The argument the editor prompts for.
+  // What a trigger with the event can be attached to: what is entered,
+  // crossed or seen goes on the cell or the object itself, a house's state on
+  // the house, and the game's state on the list the game logic springs.
+  TriggerAttachment attachment;
+};
 
-// The scenario editor's name for each event, which its lists show and sort by.
-constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {
-    "-No Event-",
-    "Entered by...",
-    "Spied by...",
-    "Thieved by...",
-    "Discovered by player",
-    "House Discovered...",
-    "Attacked by anybody",
-    "Destroyed by anybody",
-    "Any Event",
-    "Destroyed, Units, All...",
-    "Destroyed, Buildings, All...",
-    "Destroyed, All...",
-    "Credits exceed...",
-    "Elapsed Time (1/10th min)...",
-    "Mission Timer Expired",
-    "Destroyed, Buildings, #...",
-    "Destroyed, Units, #...",
-    "No Factories left",
-    "Civilians Evacuated",
-    "Build Building Type...",
-    "Build Unit Type...",
-    "Build Infantry Type...",
-    "Build Aircraft Type...",
-    "Leaves map (team)...",
-    "Zone Entry by...",
-    "Crosses Horizontal Line...",
-    "Crosses Vertical Line...",
-    "Global is set...",
-    "Global is clear...",
-    "Destroyed, Fakes, All...",
-    "Low Power...",
-    "All bridges destroyed",
-    "Building exists..."};
+constexpr auto kCell = TriggerAttachment::kCell;
+constexpr auto kObject = TriggerAttachment::kObject;
+constexpr auto kMap = TriggerAttachment::kMap;
+constexpr auto kHouse = TriggerAttachment::kHouse;
+constexpr auto kGeneral = TriggerAttachment::kGeneral;
+
+constexpr base::EnumArray<TriggerEventType, EventInfo> kEvents = {{
+    // kNone leaves the trigger free to go on a cell or an object.
+    {"-No Event-", NeedType::kNone, kCell | kObject},
+    {"Entered by...", NeedType::kHouse, kCell | kObject},
+    {"Spied by...", NeedType::kNone, kObject},
+    {"Thieved by...", NeedType::kHouse, kHouse},
+    {"Discovered by player", NeedType::kNone, kCell | kObject},
+    {"House Discovered...", NeedType::kHouse, kHouse},
+    {"Attacked by anybody", NeedType::kNone, kObject},
+    {"Destroyed by anybody", NeedType::kNone, kObject},
+    {"Any Event", NeedType::kNone, kCell | kObject | kMap | kHouse | kGeneral},
+    {"Destroyed, Units, All...", NeedType::kHouse, kHouse},
+    {"Destroyed, Buildings, All...", NeedType::kHouse, kHouse},
+    {"Destroyed, All...", NeedType::kHouse, kHouse},
+    {"Credits exceed...", NeedType::kNumber, kHouse},
+    {"Elapsed Time (1/10th min)...", NeedType::kNumber, kGeneral},
+    {"Mission Timer Expired", NeedType::kNone, kGeneral},
+    {"Destroyed, Buildings, #...", NeedType::kNumber, kHouse},
+    {"Destroyed, Units, #...", NeedType::kNumber, kHouse},
+    {"No Factories left", NeedType::kNone, kHouse},
+    {"Civilians Evacuated", NeedType::kNone, kHouse},
+    {"Build Building Type...", NeedType::kStructure, kHouse},
+    {"Build Unit Type...", NeedType::kUnit, kHouse},
+    {"Build Infantry Type...", NeedType::kInfantry, kHouse},
+    {"Build Aircraft Type...", NeedType::kAircraft, kHouse},
+    {"Leaves map (team)...", NeedType::kTeam, kGeneral},
+    {"Zone Entry by...", NeedType::kHouse, kCell | kMap},
+    {"Crosses Horizontal Line...", NeedType::kHouse, kCell},
+    {"Crosses Vertical Line...", NeedType::kHouse, kCell},
+    {"Global is set...", NeedType::kNumber, kGeneral},
+    {"Global is clear...", NeedType::kNumber, kGeneral},
+    {"Destroyed, Fakes, All...", NeedType::kNone, kHouse},
+    {"Low Power...", NeedType::kHouse, kHouse},
+    {"All bridges destroyed", NeedType::kNone, kGeneral},
+    {"Building exists...", NeedType::kStructure, kHouse},
+}};
+
+// Returns the row of `event`. A number that is no event, which only a damaged
+// saved game can hold (ReadIni() reads one as kNone), takes nothing and
+// attaches to nothing.
+const EventInfo& InfoOf(const TriggerEventType event) {
+  static constexpr EventInfo kNoEvent = {
+      .name = "-No Event-",
+      .need = NeedType::kNone,
+      .attachment = TriggerAttachment::kNone,
+  };
+  return magic_enum::enum_contains(event) ? kEvents.at(event) : kNoEvent;
+}
+
+}  // namespace
 
 void TriggerEvent::Reset(TriggerEventState& state) const {
   state.is_tripped = false;
@@ -365,125 +396,14 @@ std::string TriggerEvent::ToIniEntry() const {
                      value());
 }
 
-NeedType EventNeed(const TriggerEventType event) {
-  switch (event) {
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-    case TriggerEventType::kEntersZone:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kLowPower:
-      return NeedType::kHouse;
-
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kTime:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-      return NeedType::kNumber;
-
-    case TriggerEventType::kBuildingExists:
-    case TriggerEventType::kBuildBuilding:
-      return NeedType::kStructure;
-
-    case TriggerEventType::kBuildUnit:
-      return NeedType::kUnit;
-
-    case TriggerEventType::kBuildInfantry:
-      return NeedType::kInfantry;
-
-    case TriggerEventType::kBuildAircraft:
-      return NeedType::kAircraft;
-
-    case TriggerEventType::kLeavesMap:
-      return NeedType::kTeam;
-
-    case TriggerEventType::kNone:
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kDiscovered:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-    case TriggerEventType::kAny:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kAllBridgesDestroyed:
-    default:
-      break;
-  }
-  return NeedType::kNone;
-}
+NeedType EventNeed(const TriggerEventType event) { return InfoOf(event).need; }
 
 const char* EventName(const TriggerEventType event) {
-  return kEventNames.at(event);
+  return InfoOf(event).name;
 }
 
 TriggerAttachment EventAttachment(const TriggerEventType event) {
-  constexpr auto kCell = TriggerAttachment::kCell;
-  constexpr auto kObject = TriggerAttachment::kObject;
-  constexpr auto kMap = TriggerAttachment::kMap;
-  constexpr auto kHouse = TriggerAttachment::kHouse;
-  constexpr auto kGeneral = TriggerAttachment::kGeneral;
-
-  switch (event) {
-    // What is entered, crossed or seen: the cell or the object itself. An
-    // unset event leaves the trigger free to go on either.
-    case TriggerEventType::kNone:
-    case TriggerEventType::kPlayerEntered:
-    case TriggerEventType::kDiscovered:
-      return kCell | kObject;
-    case TriggerEventType::kSpied:
-    case TriggerEventType::kAttacked:
-    case TriggerEventType::kDestroyed:
-      return kObject;
-    case TriggerEventType::kCrossHorizontal:
-    case TriggerEventType::kCrossVertical:
-      return kCell;
-    case TriggerEventType::kEntersZone:
-      return kCell | kMap;
-
-    // A house's state, checked with the house.
-    case TriggerEventType::kThieved:
-    case TriggerEventType::kHouseDiscovered:
-    case TriggerEventType::kUnitsDestroyed:
-    case TriggerEventType::kBuildingsDestroyed:
-    case TriggerEventType::kAllDestroyed:
-    case TriggerEventType::kCredits:
-    case TriggerEventType::kBuildingsLost:
-    case TriggerEventType::kUnitsLost:
-    case TriggerEventType::kNoFactories:
-    case TriggerEventType::kCivilianEvacuated:
-    case TriggerEventType::kBuildBuilding:
-    case TriggerEventType::kBuildUnit:
-    case TriggerEventType::kBuildInfantry:
-    case TriggerEventType::kBuildAircraft:
-    case TriggerEventType::kFakesDestroyed:
-    case TriggerEventType::kLowPower:
-    case TriggerEventType::kBuildingExists:
-      return kHouse;
-
-    // The game's state, on the list of triggers the game logic springs.
-    case TriggerEventType::kTime:
-    case TriggerEventType::kMissionTimerExpired:
-    case TriggerEventType::kLeavesMap:
-    case TriggerEventType::kGlobalSet:
-    case TriggerEventType::kGlobalClear:
-    case TriggerEventType::kAllBridgesDestroyed:
-      return kGeneral;
-
-    case TriggerEventType::kAny:
-      return kCell | kObject | kMap | kHouse | kGeneral;
-
-    default:
-      break;
-  }
-  return TriggerAttachment::kNone;
+  return InfoOf(event).attachment;
 }
 
 }  // namespace ra
