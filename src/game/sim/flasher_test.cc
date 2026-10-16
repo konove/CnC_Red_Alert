@@ -36,7 +36,7 @@ TEST(FlasherTest, IsBrightenedOnEveryOtherFrame) {
   Flasher flasher;
   flasher.Start(5);
   EXPECT_FALSE(flasher.IsBrightened());  // Not before the first Process().
-  const std::array<bool, 5> expected{false, true, false, true, false};
+  constexpr std::array<bool, 5> expected{false, true, false, true, false};
   for (const bool brightened : expected) {
     flasher.Process();
     EXPECT_EQ(flasher.IsBrightened(), brightened);
@@ -102,7 +102,7 @@ TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
 }
 
 TEST(FlasherTest, ACountThatDoesNotFitFailsTheLoadAndStopsTheFlash) {
-  const std::array<uint8_t, 2> bytes{128, 1};
+  constexpr std::array<uint8_t, 2> bytes{128, 1};
   SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   Flasher flasher;

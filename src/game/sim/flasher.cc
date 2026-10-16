@@ -28,7 +28,7 @@
 
 namespace game {
 
-void Flasher::Start(int frames) {
+void Flasher::Start(const int frames) {
   frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
   if (frames_left_ == 0) {
     // Process() only clears the flag while it counts down.
