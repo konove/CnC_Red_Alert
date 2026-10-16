@@ -34,8 +34,8 @@ namespace game {
 // frames: what drives an object's smoke, walking, flapping and rocket flames,
 // a cloak fading in and out, and a factory's progress. The owner decides what
 // a stage means (usually a shape number) and when to wrap it; the stage
-// itself only ever counts up. The countdown runs on the game's frame clock, so a stage
-// keeps time even in a frame where AI() is not called.
+// itself only ever counts up. The countdown runs on the game's frame clock, so
+// a stage keeps time even in a frame where AI() is not called.
 //
 // Example:
 //   StageCounter animation;
@@ -67,7 +67,7 @@ class StageCounter {
   // to redraw. However late it is called, it moves on one stage and counts the
   // next one from now: frames that passed without it are not caught up.
   bool AI() {
-    if (countdown_.IsFinished() && frames_per_stage_ != 0) {
+    if (frames_per_stage_ != 0 && countdown_.IsFinished()) {
       stage_++;
       countdown_.Set(frames_per_stage_);
       return true;
