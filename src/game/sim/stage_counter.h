@@ -62,16 +62,12 @@ class StageCounter {
     countdown_.Set(frames);
     frames_per_stage_ = frames;
   }
-  // Returns whether AI(), called in this frame, will move on a stage.
-  [[nodiscard]] bool IsAboutToChange() const {
-    return countdown_.IsFinished() && frames_per_stage_ != 0;
-  }
   // Moves on a stage when the countdown has run out, and restarts it. Call it
   // once a game frame. Returns whether the stage changed, so the owner knows
   // to redraw. However late it is called, it moves on one stage and counts the
   // next one from now: frames that passed without it are not caught up.
   bool AI() {
-    if (IsAboutToChange()) {
+    if (countdown_.IsFinished() && frames_per_stage_ != 0) {
       stage_++;
       countdown_.Set(frames_per_stage_);
       return true;

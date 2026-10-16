@@ -34,7 +34,6 @@ TEST_F(StageCounterTest, ANewCounterStandsStill) {
   StageCounter counter;
   EXPECT_EQ(counter.stage(), 0);
   EXPECT_EQ(counter.frames_per_stage(), 0);
-  EXPECT_FALSE(counter.IsAboutToChange());
   for (int frame = 0; frame < 5; ++frame) {
     EXPECT_FALSE(Tick(counter));
   }
@@ -49,10 +48,7 @@ TEST_F(StageCounterTest, MovesOnAStageEveryFramesPerStage) {
   for (int stage = 8; stage <= 9; ++stage) {
     EXPECT_FALSE(Tick(counter));
     EXPECT_FALSE(Tick(counter));
-    EXPECT_FALSE(counter.IsAboutToChange());
-    Skip(1);
-    EXPECT_TRUE(counter.IsAboutToChange());
-    EXPECT_TRUE(counter.AI());
+    EXPECT_TRUE(Tick(counter));
     EXPECT_EQ(counter.stage(), stage);
   }
 }
@@ -80,7 +76,6 @@ TEST_F(StageCounterTest, SettingFramesPerStageRestartsTheCountdown) {
   EXPECT_TRUE(Tick(counter));
   counter.SetFramesPerStage(0);
   Skip(100);
-  EXPECT_FALSE(counter.IsAboutToChange());
   EXPECT_FALSE(counter.AI());
   EXPECT_EQ(counter.stage(), 1);
 }
