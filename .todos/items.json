@@ -15811,12 +15811,20 @@
         "cmake",
         "strict-build"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T06:38:41Z",
-      "updated": "2026-10-14T06:38:41Z",
+      "updated": "2026-10-16T22:02:31Z",
       "blockedBy": [
         "T-161"
+      ],
+      "resolution": "Annotated every pointer in `ra/core/target.h` `absl_nullable` and swept all RA TUs in deep mode: one finding (a doubled `AsTechno()` call in Techno AI, fixed), no noise, but the checker ignores member calls through nullable pointers, so it sees few of the 155 call sites. Recommendation (comment): keep this header, do not mandate it tree-wide; the sanitizer was skipped since it needs `absl_nonnull`.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-16T22:02:31Z",
+          "text": "Pilot results, 2026-10-16, `ra/core/target.h` (17 pointers: `Of()`'s parameter and every `As*()` decoder, all documented nullable; 155 decoder calls in `src/ra`).\n\n- Deep-mode sweep of all 232 RA TUs (`-*,clang-analyzer-nullability.*`, 4 min at -P 14): **1 finding**, `techno.cc` Techno AI's `TarCom.AsTechno() && TarCom.AsTechno()->House` — a check on one call, a dereference of another. Real in the analyzer's terms, harmless in practice; fixed by calling once.\n- **Large blind spot:** a probe shows `NullableDereferenced` fires for field reads (`Find(k)->field`, via a local too, and `*Find(k)` bound to a reference) but **not for member calls**, virtual or not (`Find(k)->Method()`). In this tree nearly every use of a decoded pointer is a call (`dest.AsBuilding()->Docking_Coord()`, `target.AsObject()->Class_Of()`, ...), so most of the 155 sites are invisible to the checker. The ~15 direct `As*()->` sites are all kind-guarded and the checker reported none of the method-call ones.\n- No noise: zero false positives, and `-Wnullability-completeness` / `-Wnullable-to-nonnull-conversion` stayed quiet because the whole header is annotated and nothing is `_Nonnull` yet. The conversion warning only bites once `absl_nonnull` parameters appear (probe confirmed it flags even a checked `if (p) Use(p)`).\n- `-fsanitize=nullability` was not added: it checks only `_Nonnull` returns, parameters and assignments, so with `absl_nullable` alone it has nothing to trap.\n\nConclusion: cheap and noise-free per header, but low yield in a method-call-heavy codebase; not worth a CLAUDE.md rule on its own. It pays only with `absl_nonnull` on parameters (NullablePassedToNonnull plus the sanitizer), which brings the conversion-warning cost."
+        }
       ]
     },
     {

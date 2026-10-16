@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "absl/base/nullability.h"
 #include "ra/core/cell.h"
 #include "ra/core/coordinate.h"
 #include "ra/core/rtti.h"
@@ -103,7 +104,7 @@ class Target {
 
   // The object's kind and heap index, or Target{} for nullptr. Equal to
   // object->As_Target() otherwise.
-  static Target Of(const AbstractClass* object);
+  static Target Of(const AbstractClass* absl_nullable object);
 
   // Returns the packed word, as saved, sent, logged and CRC'd.
   [[nodiscard]] constexpr int32_t packed() const noexcept { return word_; }
@@ -154,41 +155,41 @@ class Target {
   // Returns the live infantry, unit, vessel, building, aircraft, terrain,
   // bullet or animation this target names, or nullptr for any other kind or
   // an object that is no longer active.
-  [[nodiscard]] ObjectClass* AsObject() const;
+  [[nodiscard]] ObjectClass* absl_nullable AsObject() const;
 
   // AsObject() narrowed to a TechnoClass: nullptr unless the object is a
   // live techno.
-  [[nodiscard]] TechnoClass* AsTechno() const;
+  [[nodiscard]] TechnoClass* absl_nullable AsTechno() const;
 
   // Returns the heap slot of the terrain, smudge, overlay, bullet,
   // animation, unit, vessel, building, infantry or aircraft this target
   // names, whether or not it still holds an active object; nullptr for any
   // other kind. Unlike AsObject() this includes smudges and overlays and
   // does not look at IsActive.
-  [[nodiscard]] ObjectClass* AsObjectInSlot() const;
+  [[nodiscard]] ObjectClass* absl_nullable AsObjectInSlot() const;
 
   // Returns the heap slot of the unit, vessel, building, infantry or
   // aircraft this target names, whether or not it still holds an active
   // object; nullptr for any other kind.
-  [[nodiscard]] TechnoClass* AsTechnoInSlot() const;
+  [[nodiscard]] TechnoClass* absl_nullable AsTechnoInSlot() const;
 
   // Each returns the heap slot this target names when it is of that kind,
   // without looking at IsActive, or nullptr for any other kind.
-  [[nodiscard]] AircraftClass* AsAircraft() const;
-  [[nodiscard]] AnimClass* AsAnimation() const;
-  [[nodiscard]] BuildingClass* AsBuilding() const;
-  [[nodiscard]] BulletClass* AsBullet() const;
-  [[nodiscard]] InfantryClass* AsInfantry() const;
-  [[nodiscard]] TeamClass* AsTeam() const;
-  [[nodiscard]] TeamType* AsTeamType() const;
-  [[nodiscard]] TriggerClass* AsTrigger() const;
-  [[nodiscard]] TriggerType* AsTriggerType() const;
-  [[nodiscard]] UnitClass* AsUnit() const;
-  [[nodiscard]] VesselClass* AsVessel() const;
+  [[nodiscard]] AircraftClass* absl_nullable AsAircraft() const;
+  [[nodiscard]] AnimClass* absl_nullable AsAnimation() const;
+  [[nodiscard]] BuildingClass* absl_nullable AsBuilding() const;
+  [[nodiscard]] BulletClass* absl_nullable AsBullet() const;
+  [[nodiscard]] InfantryClass* absl_nullable AsInfantry() const;
+  [[nodiscard]] TeamClass* absl_nullable AsTeam() const;
+  [[nodiscard]] TeamType* absl_nullable AsTeamType() const;
+  [[nodiscard]] TriggerClass* absl_nullable AsTrigger() const;
+  [[nodiscard]] TriggerType* absl_nullable AsTriggerType() const;
+  [[nodiscard]] UnitClass* absl_nullable AsUnit() const;
+  [[nodiscard]] VesselClass* absl_nullable AsVessel() const;
 
   // Returns the infantry, unit, vessel, aircraft or building type this
   // target names, or nullptr for any other kind.
-  [[nodiscard]] const TechnoTypeClass* AsTechnoType() const;
+  [[nodiscard]] const TechnoTypeClass* absl_nullable AsTechnoType() const;
 
   // Returns where this target is: for a cell target, the center of its
   // 16-lepton unit, reading the sub-cell encoding; for an object, its

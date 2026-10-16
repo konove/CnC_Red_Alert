@@ -2673,8 +2673,8 @@ void TechnoClass::AI() {
   **	If for some strange reason, the computer is firing upon itself, then
   **	tell it not to.
   */
-  if (!House->IsHuman && TarCom.AsTechno() &&
-      TarCom.AsTechno()->House->Is_Ally(this)) {
+  if (const TechnoClass* const target = TarCom.AsTechno();
+      !House->IsHuman && target != nullptr && target->House->Is_Ally(this)) {
     Assign_Target(Target{});
   }
 
