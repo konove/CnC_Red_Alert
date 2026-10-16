@@ -163,9 +163,11 @@ bool TriggerEvent::HasHappened(TriggerEventState& state,
 
   // The moment events are true merely because the check was made for them:
   // the caller springs TriggerEventType::kAttacked from the code that does the
-  // attacking. TriggerEventType::kAny lets them through as well, so a house's
-  // per-frame check of a trigger counts them as having happened.
-  const bool checked_for_it = cause == type_ || cause == TriggerEventType::kAny;
+  // attacking. The original let TriggerEventType::kAny through as well, so a
+  // house's per-frame check (HouseClass::AI()) counted "attacked" as having
+  // happened every frame for a trigger whose other event is a house's; no
+  // shipped scenario has such a trigger.
+  const bool checked_for_it = cause == type_;
 
   switch (type_) {
     // The game-state events are true while their condition is, never tripped:

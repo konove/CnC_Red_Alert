@@ -64,8 +64,8 @@ enum class TriggerEventType {
   kHouseDiscovered,  // The player first sees the event's house.
   kAttacked,         // The object is attacked.
   kDestroyed,        // The object is destroyed.
-  // Happens on every check of the trigger, whatever caused it, and lets the
-  // object events above through too.
+  // Happens on every check of the trigger, whatever caused it. As a check's
+  // cause, it is the per-frame check of a house's triggers.
   kAny,
   // The event's house has no unit and no infantry left (vessels and aircraft
   // do not count).
@@ -165,17 +165,17 @@ class TriggerEvent {
   // when it is made and after each spring of a persistent trigger, and the
   // scenario when a global the trigger's other event waits for changes.
   void Reset(TriggerEventState& state) const;
-  // Returns whether the event has happened for the trigger whose state is
-  // `state`. `cause` is what caused the check: the moment events (entering,
-  // being attacked, crossing a line) only count when it is this event or
-  // TriggerEventType::kAny, while the condition events (credits, globals, a
-  // house's losses) are checked whatever it is. `trigger_house` is the
-  // trigger's house and `object` the object that caused the check (for the
-  // entering events, the one that entered); nullptr for none. `forced` trips
-  // the event without a check, for a trigger another trigger forces.
   // Drops the event's reference to the team type `target`, which is being
   // destroyed. Does nothing for any other target.
   void Detach(Target target);
+  // Returns whether the event has happened for the trigger whose state is
+  // `state`. `cause` is what caused the check: the moment events (entering,
+  // being attacked, crossing a line) only count when it is this event, while
+  // the condition events (credits, globals, a house's losses) are checked
+  // whatever it is. `trigger_house` is the trigger's house and `object` the
+  // object that caused the check (for the entering events, the one that
+  // entered); nullptr for none. `forced` trips the event without a check, for
+  // a trigger another trigger forces.
   bool HasHappened(TriggerEventState& state, TriggerEventType cause,
                    HousesType trigger_house, const ObjectClass* object,
                    bool forced) const;

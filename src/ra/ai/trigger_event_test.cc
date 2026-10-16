@@ -282,8 +282,8 @@ TEST_F(TriggerEventTest, AChangedGlobalRestartsTheOtherEventsCountdown) {
   EXPECT_EQ(waits_time_first->Event1.timer.Remaining(), kTicks);
 }
 
-// The moment events count when the check is made for them, or for any
-// event, and are not remembered.
+// The moment events count only when the check is made for them, and are not
+// remembered. A house's per-frame check (TriggerEventType::kAny) is not one.
 TEST_F(TriggerEventTest, AMomentEventHappensWhenCheckedForIt) {
   for (const TriggerEventType type :
        {TriggerEventType::kAttacked, TriggerEventType::kDestroyed,
@@ -291,7 +291,7 @@ TEST_F(TriggerEventTest, AMomentEventHappensWhenCheckedForIt) {
     SCOPED_TRACE(magic_enum::enum_name(type));
     const TriggerEvent event = Make(type);
     EXPECT_TRUE(Check(event, type));
-    EXPECT_TRUE(Check(event, TriggerEventType::kAny));
+    EXPECT_FALSE(Check(event, TriggerEventType::kAny));
     EXPECT_FALSE(Check(event, TriggerEventType::kTime));
     EXPECT_FALSE(state_.is_tripped);
   }
