@@ -16,51 +16,20 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FLASHER.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FLASHER.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : May 28, 1994 *
- *                                                                                             *
- *                  Last Update : October 17, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * FlasherClass::Process -- Performs the logic processing for the
- *   flashing ability. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: FlasherClass's countdown.
+//
+// Originally FLASHER.CPP by Joe L. Bostic, started May 28, 1994; made
+// independent of the object it flashes on June 20, 1994.
 
 #include "game/sim/flasher.h"
 
 namespace game {
 
-/***********************************************************************************************
- * FlasherClass::Process -- Performs the logic processing for the flashing
- *ability.            *
- *                                                                                             *
- *    The ability for an object to flash is controlled by this logic processing
- *routine. It    * should be called once per game tick per unit. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Should the associated object be redrawn? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. * 06/20/1994 JLB : Is now independent of
- *object it represents.                              *
- *=============================================================================================*/
 bool FlasherClass::Process() {
   if (FlashCount) {
     FlashCount--;
+    // The parity of what is left decides the frame, so a count of 1 ends the
+    // flash on an unbrightened frame.
     IsBlushing = false;
 
     if (FlashCount & 0x01) {

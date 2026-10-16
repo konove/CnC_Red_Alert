@@ -16,26 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FLASHER.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FLASHER.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : May 28, 1994 *
- *                                                                                             *
- *                  Last Update : May 28, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: FlasherClass, the flash that shows an object has been picked as a
+// target.
+//
+// Originally FLASHER.H by Joe L. Bostic, started May 28, 1994.
 
 #ifndef CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 #define CNC_RED_ALERT_GAME_SIM_FLASHER_H_
@@ -59,7 +43,8 @@ class FlasherClass {
     bool is_blushing = IsBlushing;
     ar(flash_count, is_blushing);
     if constexpr (Archive::kIsReading) {
-      // FlashCount is a 7-bit field; a larger count is a damaged save.
+      // FlashCount is a 7-bit field; a larger count is a damaged save, and
+      // storing it would silently drop its high bit.
       if (flash_count > 127) {
         ar.Fail("invalid flash count");
         return;
@@ -71,28 +56,27 @@ class FlasherClass {
 
   // Starts flashing for `count` calls of Process(), replacing what was left
   // of an earlier flash. Only the low seven bits of `count` are kept.
+  // TODO: A count of 128 or more wraps (RA's C4 flash with a C4Delay of
+  // 0.285 minutes or more), and a count that wraps to 0 while the object is
+  // brightened leaves it brightened until the next Start().
   void Start(int count) { FlashCount = static_cast<uint8_t>(count) & 0x7F; }
 
-  // Steps the flash by one game frame. Returns true when the object has to
-  // be redrawn: on every frame of the flash, the one that ends it included.
+  // Steps the flash by one game frame; the owner calls it once a frame.
+  // Returns true when the object has to be redrawn: on every frame of the
+  // flash, the one that ends it included.
   bool Process();
 
   // Whether the object is to be drawn brightened on this frame.
   [[nodiscard]] bool IsBrightened() const { return IsBlushing; }
 
  private:
-  /*
-  **	When this object is targeted, it will flash a number of times. This is
-  *the *	flash control number. It counts down to zero and then stops. Odd
-  *values *	cause the object to be rendered in a lighter color.
-  */
+  // The Process() calls left in the flash. It counts down to zero and stops
+  // there; Process() brightens the object whenever the count it leaves is odd.
   uint8_t FlashCount : 7 {0};
 
-  /*
-  **	When an object is targeted, it flashes several times to give visual
-  *feedback *	to the player. Every other game "frame", this flag is true until
-  *the flashing *	is determined to be completed.
-  */
+  // Whether the object is drawn brightened, as feedback to the player that
+  // it was targeted: true on every other frame of the flash, false once the
+  // flash is over.
   bool IsBlushing : 1 {false};
 };
 
