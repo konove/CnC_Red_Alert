@@ -101,13 +101,16 @@ TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
   EXPECT_FALSE(loaded.Process());
 }
 
-TEST(FlasherTest, ACountThatDoesNotFitFailsTheLoad) {
-  const std::array<uint8_t, 2> bytes{128, 0};
+TEST(FlasherTest, ACountThatDoesNotFitFailsTheLoadAndStopsTheFlash) {
+  const std::array<uint8_t, 2> bytes{128, 1};
   SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   Flasher flasher;
+  flasher.Start(4);
   reader(flasher);
   EXPECT_FALSE(reader.ok());
+  EXPECT_FALSE(flasher.IsBrightened());
+  EXPECT_FALSE(flasher.Process());
 }
 
 }  // namespace
