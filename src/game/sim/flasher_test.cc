@@ -64,6 +64,17 @@ TEST(FlasherTest, CutsALongCountToTheLongestFlash) {
   EXPECT_FALSE(flasher.Process());
 }
 
+TEST(FlasherTest, StartingWithNothingStopsABrightenedFlash) {
+  FlasherClass flasher;
+  flasher.Start(4);
+  flasher.Process();
+  ASSERT_TRUE(flasher.IsBrightened());
+  flasher.Start(0);
+  EXPECT_FALSE(flasher.IsBrightened());
+  EXPECT_FALSE(flasher.Process());
+  EXPECT_FALSE(flasher.IsBrightened());
+}
+
 TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
   FlasherClass flasher;
   flasher.Start(4);

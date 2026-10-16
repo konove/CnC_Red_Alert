@@ -59,11 +59,14 @@ class FlasherClass {
   }
 
   // Starts flashing for `count` calls of Process(), replacing what was left
-  // of an earlier flash. A count past kMaxCount flashes for kMaxCount.
-  // TODO: Start(0) while the object is brightened leaves it brightened until
-  // the next Start().
+  // of an earlier flash. A count past kMaxCount flashes for kMaxCount; a
+  // count of 0 or less stops the flash.
   void Start(int count) {
     FlashCount = static_cast<uint8_t>(std::clamp(count, 0, kMaxCount));
+    if (FlashCount == 0) {
+      // Process() only clears the flag while it counts down.
+      IsBlushing = false;
+    }
   }
 
   // Steps the flash by one game frame; the owner calls it once a frame.
