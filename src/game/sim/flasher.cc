@@ -30,20 +30,15 @@ namespace game {
 
 void Flasher::Start(const int frames) {
   frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
-  if (frames_left_ == 0) {
-    // Process() only clears the flag while it counts down.
-    brightened_ = false;
-  }
 }
 
 bool Flasher::Process() {
   if (frames_left_ == 0) {
     return false;
   }
-  --frames_left_;
   // The parity of what is left decides the frame, so a count of 1 ends the
   // flash on an unbrightened frame.
-  brightened_ = frames_left_ % 2 != 0;
+  --frames_left_;
   return true;
 }
 

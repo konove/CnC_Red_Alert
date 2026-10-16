@@ -43,7 +43,11 @@ class Flasher {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(frames_left_, brightened_);
+    // The save still holds the brightened flag after the count. It is derived
+    // from the count now, so a load ignores it, which also clears the flag an
+    // older Start() could leave set with no frames left.
+    bool brightened = IsBrightened();
+    ar(frames_left_, brightened);
     if constexpr (Archive::kIsReading) {
       // A negative count, a byte past 127, is a damaged save.
       if (frames_left_ < 0) {
@@ -63,19 +67,15 @@ class Flasher {
   // flash, the one that ends it included.
   bool Process();
 
-  // Whether the object is to be drawn brightened on this frame.
-  [[nodiscard]] bool IsBrightened() const { return brightened_; }
+  // Whether the object is to be drawn brightened on this frame, as feedback
+  // to the player that it was targeted: while the count left is odd, so on
+  // every other frame of the flash and never once it is over.
+  [[nodiscard]] bool IsBrightened() const { return frames_left_ % 2 != 0; }
 
  private:
   // The Process() calls left in the flash. It counts down to zero and stops
-  // there; Process() brightens the object whenever the number it leaves is
-  // odd.
+  // there.
   int8_t frames_left_{0};
-
-  // Whether the object is drawn brightened, as feedback to the player that
-  // it was targeted: true on every other frame of the flash, false once the
-  // flash is over.
-  bool brightened_{false};
 };
 
 }  // namespace game

@@ -16982,10 +16982,10 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:28:56Z",
-      "updated": "2026-10-16T07:28:56Z",
+      "updated": "2026-10-16T07:32:04Z",
       "source": "1c8b7143c..961c1ada8",
       "anchors": [
         {
@@ -17002,16 +17002,27 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:33:49Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "toDecide": "Keep Start()'s `if (frames_left_ == 0)` as it is, make Start() always clear the flag, or derive the flag from the count and drop the member?",
+      "decisions": [
+        {
+          "question": "T-465: how should Flasher keep its brightened flag?",
+          "options": [
+            "Derive it",
+            "Always clear in Start()",
+            "Keep as is"
+          ],
+          "answer": "Derive it",
+          "time": "2026-10-16T07:33:49Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/flasher.cc",
@@ -17028,7 +17039,7 @@
             "bool Flasher::Process() {",
             "  if (frames_left_ == 0) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17040,16 +17051,26 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:33:50Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "toDecide": "Keep `game::Flasher`, or rename it (and the files) to `TargetFlash`?",
+      "decisions": [
+        {
+          "question": "T-466: keep the type name game::Flasher or rename it?",
+          "options": [
+            "Keep game::Flasher",
+            "Rename to TargetFlash"
+          ],
+          "answer": "Rename to TargetFlash",
+          "time": "2026-10-16T07:33:50Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/flasher.h",
@@ -17080,10 +17101,10 @@
         "cleanup",
         "game"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:33:49Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "anchors": [
@@ -17102,7 +17123,7 @@
             "",
             "  // Starts flashing for `frames` calls of Process(), replacing what was left"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17117,10 +17138,10 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:33:49Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "anchors": [
@@ -17205,10 +17226,10 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:33:49Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "anchors": [

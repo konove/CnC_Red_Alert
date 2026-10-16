@@ -35,7 +35,8 @@ TEST(FlasherTest, ReportsAChangeOnAsManyFramesAsTheCount) {
 TEST(FlasherTest, IsBrightenedOnEveryOtherFrame) {
   Flasher flasher;
   flasher.Start(5);
-  EXPECT_FALSE(flasher.IsBrightened());  // Not before the first Process().
+  // An odd count is brightened at once, before the first Process().
+  EXPECT_TRUE(flasher.IsBrightened());
   constexpr std::array<bool, 5> expected{false, true, false, true, false};
   for (const bool brightened : expected) {
     flasher.Process();
@@ -99,6 +100,19 @@ TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
   EXPECT_TRUE(loaded.Process());
   EXPECT_TRUE(loaded.Process());
   EXPECT_FALSE(loaded.Process());
+}
+
+TEST(FlasherTest, ALoadIgnoresAFlagSetWithNoFramesLeft) {
+  // Before Start(0) cleared the flag, a count that wrapped to 0 on a
+  // brightened frame left it set, and a save made then holds this pair.
+  constexpr std::array<uint8_t, 2> bytes{0, 1};
+  SpanSource source(std::as_bytes(std::span(bytes)));
+  ArchiveReader reader(source);
+  Flasher flasher;
+  reader(flasher);
+  ASSERT_TRUE(reader.ok());
+  EXPECT_FALSE(flasher.IsBrightened());
+  EXPECT_FALSE(flasher.Process());
 }
 
 TEST(FlasherTest, ACountThatDoesNotFitFailsTheLoadAndStopsTheFlash) {
