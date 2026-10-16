@@ -37,24 +37,20 @@ namespace game {
 //   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }
 class FlasherClass {
  public:
-  // The longest flash, in frames: the most FlashCount's seven bits hold.
+  // The longest flash, in frames. A save holds the count in one byte, as an
+  // int8_t.
   static constexpr int kMaxCount = 127;
 
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    uint8_t flash_count = FlashCount;
-    bool is_blushing = IsBlushing;
-    ar(flash_count, is_blushing);
+    ar(FlashCount, IsBlushing);
     if constexpr (Archive::kIsReading) {
-      // FlashCount is a 7-bit field; a larger count is a damaged save, and
-      // storing it would silently drop its high bit.
-      if (flash_count > kMaxCount) {
+      // A negative count, a byte past 127, is a damaged save.
+      if (FlashCount < 0) {
         ar.Fail("invalid flash count");
-        return;
+        *this = FlasherClass();
       }
-      FlashCount = flash_count;
-      IsBlushing = is_blushing;
     }
   }
 
@@ -62,7 +58,7 @@ class FlasherClass {
   // of an earlier flash. A count past kMaxCount flashes for kMaxCount; a
   // count of 0 or less stops the flash.
   void Start(int count) {
-    FlashCount = static_cast<uint8_t>(std::clamp(count, 0, kMaxCount));
+    FlashCount = static_cast<int8_t>(std::clamp(count, 0, kMaxCount));
     if (FlashCount == 0) {
       // Process() only clears the flag while it counts down.
       IsBlushing = false;
@@ -80,12 +76,12 @@ class FlasherClass {
  private:
   // The Process() calls left in the flash. It counts down to zero and stops
   // there; Process() brightens the object whenever the count it leaves is odd.
-  uint8_t FlashCount : 7 {0};
+  int8_t FlashCount{0};
 
   // Whether the object is drawn brightened, as feedback to the player that
   // it was targeted: true on every other frame of the flash, false once the
   // flash is over.
-  bool IsBlushing : 1 {false};
+  bool IsBlushing{false};
 };
 
 }  // namespace game
