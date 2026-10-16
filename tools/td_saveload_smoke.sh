@@ -66,7 +66,9 @@ if [ "$LOAD_FIXTURE" = 1 ]; then
     exit 1
   fi
   # A good load reaches frame 120 in a few seconds.
-  TIMEOUT=60
+  # A Debug build under a busy parallel ctest has needed over 60 s, so allow
+  # up to just under the 120 s the save_fixture ctest gives the whole script.
+  TIMEOUT=110
   cp "$SAVED_FIXTURE" SAVEGAME.099
   run fixture.log -LOADGAME99 -QUITFRAME120 || { echo 'FAIL: fixture save did not load and run to frame 120'; exit 1; }
   states=$(sed -n 's/^.*] \(frame .*\)/\1/p' fixture.log | awk '$2 == 120' | wc -l)

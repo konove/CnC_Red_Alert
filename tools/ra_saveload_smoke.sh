@@ -65,7 +65,9 @@ if [ "$LOAD_FIXTURE" = 1 ]; then
     exit 1
   fi
   # A good load reaches END_AT in about five seconds.
-  TIMEOUT=60
+  # A Debug build under a busy parallel ctest has needed over 60 s, so allow
+  # up to just under the 120 s the save_fixture ctest gives the whole script.
+  TIMEOUT=110
   cp "$FIXTURE" "SAVEGAME.0$SLOT"
   run "-LOADGAME$SLOT" "-QUITFRAME$END_AT" > "$WORK/fixture.log"
   rm -f "SAVEGAME.0$SLOT"

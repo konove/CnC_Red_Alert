@@ -62,6 +62,7 @@ if (UNIX)
     add_test(NAME td_save_fixture_test
             COMMAND "${CMAKE_SOURCE_DIR}/tools/td_saveload_smoke.sh"
             --load-fixture $<TARGET_FILE:tdsdl>)
+    # The script's own limit on the load stays just under this TIMEOUT.
     set_tests_properties(td_save_fixture_test
             PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120)
 endif ()
