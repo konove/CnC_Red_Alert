@@ -32,6 +32,11 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Tree-wide clang-tidy and -W sweeps read compile_commands.json. Unlike
+# `ninja -t compdb`, it holds the plain compiler command, without the
+# `cmake -E __run_co_compile` wrapper the strict checks put around it.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Option to enable strict checks (clang-tidy + extra warnings)
 # Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..
 # Declared before Speedup so it can skip the clang-tidy cache when the checks
