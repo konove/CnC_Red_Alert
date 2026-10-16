@@ -285,6 +285,12 @@ class ObjectHeap : private ObjectHeapBase {
     }
     return Slot(slot_index);
   }
+  // SlotOrNull() for a slot that holds an object: nullptr as well when slot
+  // `slot_index` is free, which would read as a zeroed object. For a
+  // reference read once every object it can name exists.
+  T* FilledSlotOrNull(const int slot_index) {
+    return IsAllocated(slot_index) ? Slot(slot_index) : nullptr;
+  }
 };
 
 template <class T>

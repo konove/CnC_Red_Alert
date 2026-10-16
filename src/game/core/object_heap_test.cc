@@ -168,6 +168,17 @@ TEST(HeapTest, SlotAtNamesEverySlotAndNothingOutside) {
   EXPECT_EQ(heap.SlotOrNull(3), nullptr);
 }
 
+TEST(HeapTest, FilledSlotOrNullNamesOnlyAllocatedSlots) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(3);
+  const Widget* live = Allocate(heap, 7);
+
+  EXPECT_EQ(heap.FilledSlotOrNull(0), live);
+  EXPECT_EQ(heap.FilledSlotOrNull(2), nullptr);
+  EXPECT_EQ(heap.FilledSlotOrNull(-1), nullptr);
+  EXPECT_EQ(heap.FilledSlotOrNull(3), nullptr);
+}
+
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
   ObjectHeap<Widget> heap;
   heap.Reset(4);

@@ -1852,11 +1852,12 @@ void DropIfUnfilled(T*& ref, game::ObjectHeap<T>& heap, std::string_view owner,
   }
 }
 
-// Scenario INI files name team and trigger types by slot index, and each
-// reference is set to its slot while parsing, before the type in it may have
-// been read. Once every type is read, a reference to a slot that is still
-// empty would read a zeroed object, so it is dropped instead. (A trigger
-// action is read after every type exists and checks its own slots.)
+// Scenario INI files name trigger types by slot index, and a team type's
+// trigger is set to its slot while the team types are parsed, before the
+// trigger types are read. Once they are, a reference to a slot that is still
+// empty would read a zeroed object, so it is dropped instead. (The trigger
+// events and actions are read after every team type exists and check their own
+// slots.)
 void DropUnfilledTypeReferences() {
   auto& team_types = TheObjectHeaps().team_type();
   auto& trigger_types = TheObjectHeaps().trigger_type();
@@ -1865,14 +1866,6 @@ void DropUnfilledTypeReferences() {
     TriggerType* trigger = team_type.trigger();
     DropIfUnfilled(trigger, trigger_types, team_type.Name(), "trigger");
     team_type.set_trigger(trigger);
-  }
-  for (int i = 0; i < trigger_types.Count(); i++) {
-    TriggerType& trigger_type = *trigger_types.ActiveAt(i);
-    for (TriggerEvent* event : {&trigger_type.event1, &trigger_type.event2}) {
-      TeamType* team = event->team_type();
-      DropIfUnfilled(team, team_types, trigger_type.Name(), "event team");
-      event->set_team_type(team);
-    }
   }
 }
 

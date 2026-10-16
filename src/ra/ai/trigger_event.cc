@@ -317,6 +317,17 @@ void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
   const auto next_number = [&tokens] {
     return base::ParseIntegerOr<int>(tokens.Next(), 0);
   };
+  // The team types are read before the trigger types, so a slot that holds no
+  // team type names one the scenario does not have.
+  const auto team_in_slot = [](const int slot_index) {
+    TeamType* const team_type =
+        TheObjectHeaps().team_type().FilledSlotOrNull(slot_index);
+    if (team_type == nullptr && slot_index != -1) {
+      DLOG(WARNING) << "TriggerEvent::ReadIni: team slot " << slot_index
+                    << " holds no team type";
+    }
+    return team_type;
+  };
   // An empty event field reads as 0, no event.
   type_ = EventFromNumber(next_number());
 
@@ -335,14 +346,13 @@ void TriggerEvent::ReadIni(base::Tokenizer& tokens) {
     set_value(-1);
     if (!token.empty()) {
       if (EventNeed(type_) == NeedType::kTeam) {
-        team_type_ = TheObjectHeaps().team_type().SlotOrNull(
-            base::ParseIntegerOr<int>(token, 0));
+        team_type_ = team_in_slot(base::ParseIntegerOr<int>(token, 0));
       } else {
         set_value(base::ParseIntegerOr<int>(token, 0));
       }
     }
   } else {
-    team_type_ = TheObjectHeaps().team_type().SlotOrNull(next_number());
+    team_type_ = team_in_slot(next_number());
     set_value(next_number());
   }
 }

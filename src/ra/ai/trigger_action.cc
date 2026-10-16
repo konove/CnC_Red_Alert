@@ -142,21 +142,18 @@ constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
     "Preferred target...",
     "Launch Nukes"};
 
-// Returns the object in slot `slot_index` of `heap`, or nullptr when the index
-// is none or the scenario never filled the slot: an empty slot would read as a
-// zeroed object. `field` names the reference for the log.
+// Returns the type in slot `slot_index` of `heap`, or nullptr when the index is
+// none (-1) or names no type, which it logs: every type the scenario has is
+// read by the time its actions are. `field` names the reference for the log.
 template <class T>
-T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,
-                    const std::string_view field) {
-  if (heap.IsAllocated(slot_index)) {
-    return heap.Slot(slot_index);
-  }
-  if (heap.SlotOrNull(slot_index) != nullptr) {
+T* TypeInSlot(game::ObjectHeap<T>& heap, const int slot_index,
+              const std::string_view field) {
+  T* const type = heap.FilledSlotOrNull(slot_index);
+  if (type == nullptr && slot_index != -1) {
     DLOG(WARNING) << "ReadTriggerActionRecord: action " << field
-                  << " names slot " << slot_index
-                  << ", which the scenario never filled";
+                  << " names slot " << slot_index << ", which holds no type";
   }
-  return nullptr;
+  return type;
 }
 
 // Returns the sound a record's `value` means: the value, or its low byte when
@@ -992,11 +989,11 @@ TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
     // Format 2 and later: the team and the trigger are heap slots
     // (ToIniEntry() writes this form).
     record.team_type =
-        FilledSlotOrNull(TheObjectHeaps().team_type(),
-                         base::ParseIntegerOr<int>(tokens.Next(), 0), "team");
-    record.trigger_type = FilledSlotOrNull(
-        TheObjectHeaps().trigger_type(),
-        base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
+        TypeInSlot(TheObjectHeaps().team_type(),
+                   base::ParseIntegerOr<int>(tokens.Next(), 0), "team");
+    record.trigger_type =
+        TypeInSlot(TheObjectHeaps().trigger_type(),
+                   base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
   } else {
     // The shipped scenarios: the team and the trigger are given by name.
     record.team_type = TeamType::FromName(tokens.Next());

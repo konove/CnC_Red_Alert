@@ -138,6 +138,14 @@ TEST_F(TriggerEventTest, FormatOneReadsASlotOutsideTheHeapAsNoTeam) {
   EXPECT_EQ(Read(1, "23,-1").team_type(), nullptr);
 }
 
+// The team types are read first, so a slot inside the heap that holds none
+// names a team type the scenario does not have, and reads as no team instead
+// of as a zeroed one.
+TEST_F(TriggerEventTest, ASlotThatHoldsNoTeamTypeReadsAsNoTeam) {
+  EXPECT_EQ(Read(1, "23,2").team_type(), nullptr);
+  EXPECT_EQ(Read(2, "23,2,0").team_type(), nullptr);
+}
+
 // HousesType is one byte: storing a house keeps the other three bytes of the
 // event's argument, as the store into the union it replaced did.
 TEST_F(TriggerEventTest, AHouseEventReplacesOnlyTheLowByte) {
