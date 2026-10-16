@@ -563,7 +563,7 @@ void ObjectClass::Look(bool /*unused*/) {}
 void ObjectClass::Active_Click_With(ActionType /*unused*/,
                                     ObjectClass* /*unused*/) {}
 void ObjectClass::Active_Click_With(ActionType /*unused*/, Cell /*unused*/) {}
-void ObjectClass::Clicked_As_Target(int /*unused*/) {}
+void ObjectClass::Clicked_As_Target(int /*frames*/) {}
 bool ObjectClass::In_Range(Coordinate /*unused*/, int /*unused*/) const {
   return false;
 }

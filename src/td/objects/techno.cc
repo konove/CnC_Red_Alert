@@ -1755,7 +1755,8 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  *a result of the player       * clicking on this object in order to make it the
  *target of a move or attack.              *
  *                                                                                             *
- * INPUT:   count -- The number of times the object should flash. *
+ * INPUT:   frames -- The number of game frames the object should flash for, *
+ *                   at most TargetFlash::kMaxFrames.                          *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -1763,7 +1764,7 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Clicked_As_Target(int count) { target_flash_.Start(count); }
+void TechnoClass::Clicked_As_Target(int frames) { target_flash_.Start(frames); }
 
 /***********************************************************************************************
  * TechnoClass::AI -- Handles AI processing for techno object. *

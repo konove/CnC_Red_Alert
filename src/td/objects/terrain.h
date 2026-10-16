@@ -140,7 +140,7 @@ class TerrainClass final : public ObjectClass {
   /*
   **	User I/O.
   */
-  void Clicked_As_Target(int /*unused*/) override {}
+  void Clicked_As_Target(int /*frames*/) override {}
 
   /*
   **	Combat related.

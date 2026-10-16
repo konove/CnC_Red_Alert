@@ -17200,7 +17200,7 @@
             "  virtual void Response_Select();",
             "  virtual void Response_Move();"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/techno.cc",
