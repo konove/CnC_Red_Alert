@@ -43,7 +43,7 @@ namespace game {
 //   if (animation.AI()) { /* the stage went up: redraw */ }
 class StageCounter {
  public:
-  StageCounter() : countdown_(0) {}
+  StageCounter() = default;
 
   // Saved-game support. The countdown is saved as the frames it has left, so
   // a loaded counter carries on where it was whatever frame the loading game
