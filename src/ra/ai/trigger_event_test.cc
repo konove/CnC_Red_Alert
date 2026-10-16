@@ -338,18 +338,21 @@ TEST_F(TriggerEventTest, TheLeavesMapEventWaitsForAnEmptyTeamOfItsTypeToLeave) {
   event.set_team_type(team_type_);
   EXPECT_FALSE(Check(event));
 
-  auto* other_type = base::NewPooled<TeamType>();
-  auto* other = base::NewPooled<TeamClass>(other_type);
-  other->IsLeaveMap = true;
-  EXPECT_FALSE(Check(event));
-
   InitInfantryTypes();
   TheObjectHeaps().infantry().Reset(1);
   // No rules are loaded, and a team takes no member that looks dead.
   InfantryTypeClass::As_Reference(INFANTRY_E1).MaxStrength = 50;
+  // A team cannot be made of a type that lists no members.
+  const TeamMember e1{.quantity = 1,
+                      .type = &InfantryTypeClass::As_Reference(INFANTRY_E1)};
+  auto* other_type = base::NewPooled<TeamType>();
+  other_type->AddMember(e1);
+  auto* other = base::NewPooled<TeamClass>(other_type);
+  other->IsLeaveMap = true;
+  EXPECT_FALSE(Check(event));
+
   team_type_->set_house(HOUSE_GREECE);
-  team_type_->AddMember(
-      {.quantity = 1, .type = &InfantryTypeClass::As_Reference(INFANTRY_E1)});
+  team_type_->AddMember(e1);
   auto* team = base::NewPooled<TeamClass>(team_type_);
   EXPECT_FALSE(Check(event));
   auto* member = base::NewPooled<InfantryClass>(INFANTRY_E1, HOUSE_GREECE);

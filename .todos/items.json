@@ -16069,10 +16069,10 @@
         "td",
         "debugging"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-16T04:05:26Z",
+      "updated": "2026-10-16T06:16:39Z",
       "source": "1e4e02862..5877f6df4",
       "resolution": "Deleted the sync-bug trap in both games: `Trap_Object()`, the object it stored (RA `Session::TrapObject`, TD `trap_object`), the fields that only fed it (RA `TrapFrame/TrapObjType/TrapCoord/TrapTarget/TrapCell`, TD `DebugState::trap_frame/trap_object_type/trap_coord/trap_this`) and their `[SyncBug]` INI reads. `PrintCRC` (RA) and `CheckHeap` (TD) stay; `tools/net_check.py` covers desync hunting.",
       "toDecide": "Trap_Object() finds the object the [SyncBug] settings name and stores it in RA's Session::TrapObject / TD's file-static trap_object, which nothing reads: it was there to be watched in a debugger (TD's needs [[maybe_unused]]). Options: (a) log what it finds with DLOG so the trap is useful without a debugger, (b) delete the trap object and the search that fills it, (c) keep it as is.",
@@ -16196,7 +16196,7 @@
             "}  // namespace td",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/wol/wol_gsup.cc",
@@ -16213,7 +16213,7 @@
             "//***********************************************************************************************",
             "/*\tGame startup logic:"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -16246,7 +16246,7 @@
           "after": [
             "            COMMAND \"${CMAKE_SOURCE_DIR}/tools/ra_saveload_smoke.sh\"",
             "            --load-fixture $<TARGET_FILE:rasdl>)",
-            "    set_tests_properties(ra_save_fixture_test"
+            "    # The script's own limit on the load stays just under this TIMEOUT."
           ],
           "lost": false
         }
