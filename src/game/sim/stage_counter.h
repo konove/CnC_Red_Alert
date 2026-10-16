@@ -30,16 +30,16 @@
 
 namespace game {
 
-// An animation stage that counts up by one every `rate` game frames: what
-// drives an object's smoke, walking, flapping and rocket flames, a cloak
-// fading in and out, and a factory's progress. The owner decides what a stage
-// means (usually a shape number) and when to wrap it; the stage itself only
-// ever counts up. The countdown runs on the game's frame clock, so a stage
+// An animation stage that counts up by one every `frames_per_stage` game
+// frames: what drives an object's smoke, walking, flapping and rocket flames,
+// a cloak fading in and out, and a factory's progress. The owner decides what
+// a stage means (usually a shape number) and when to wrap it; the stage
+// itself only ever counts up. The countdown runs on the game's frame clock, so a stage
 // keeps time even in a frame where AI() is not called.
 //
 // Example:
 //   StageCounter animation;
-//   animation.SetRate(3);
+//   animation.SetFramesPerStage(3);
 //   if (animation.AI()) { /* the stage went up: redraw */ }
 class StageCounter {
  public:
@@ -50,21 +50,21 @@ class StageCounter {
   // is at; the game clock must be restored before this is read.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(stage_, countdown_, rate_);
+    ar(stage_, countdown_, frames_per_stage_);
   }
 
   [[nodiscard]] int stage() const { return stage_; }
-  [[nodiscard]] int rate() const { return rate_; }
+  [[nodiscard]] int frames_per_stage() const { return frames_per_stage_; }
   void set_stage(const int stage) { stage_ = stage; }
   // Sets the game frames a stage lasts and restarts the countdown to the next
   // one; 0 stops the animation.
-  void SetRate(const int rate) {
-    countdown_.Set(rate);
-    rate_ = rate;
+  void SetFramesPerStage(const int frames) {
+    countdown_.Set(frames);
+    frames_per_stage_ = frames;
   }
   // Returns whether AI(), called in this frame, will move on a stage.
   [[nodiscard]] bool IsAboutToChange() const {
-    return countdown_.IsFinished() && rate_ != 0;
+    return countdown_.IsFinished() && frames_per_stage_ != 0;
   }
   // Moves on a stage when the countdown has run out, and restarts it. Call it
   // once a game frame. Returns whether the stage changed, so the owner knows
@@ -73,7 +73,7 @@ class StageCounter {
   bool AI() {
     if (IsAboutToChange()) {
       stage_++;
-      countdown_.Set(rate_);
+      countdown_.Set(frames_per_stage_);
       return true;
     }
     return false;
@@ -89,7 +89,7 @@ class StageCounter {
 
   // The game frames a stage lasts, which the countdown is restarted with; 0
   // when the stage is not animating.
-  int32_t rate_{0};
+  int32_t frames_per_stage_{0};
 };
 
 }  // namespace game

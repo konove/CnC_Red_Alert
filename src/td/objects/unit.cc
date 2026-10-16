@@ -470,8 +470,8 @@ void UnitClass::AI() {
   ** stages here
   */
   if (Class->IsAnimating) {
-    if (!animation().rate()) {
-      animation().SetRate(2);
+    if (!animation().frames_per_stage()) {
+      animation().SetFramesPerStage(2);
     }
     animation().AI();
     if (animation().stage() >=
@@ -487,8 +487,8 @@ void UnitClass::AI() {
   if ((Class->IsPieceOfEight && TheSpecialFlags().jurassic &&
        TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
-    if (!animation().rate()) {
-      animation().SetRate(TheOptions().Normalize_Delay(2));
+    if (!animation().frames_per_stage()) {
+      animation().SetFramesPerStage(TheOptions().Normalize_Delay(2));
       animation().set_stage(0);
     }
     animation().AI();
@@ -496,7 +496,7 @@ void UnitClass::AI() {
         (IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12)) {
       animation().set_stage(0);
       if (IsFiring) {
-        animation().SetRate(0);
+        animation().SetFramesPerStage(0);
         IsFiring = false;
       }
     }
@@ -544,7 +544,7 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
 game::FireErrorType UnitClass::Ready_To_Fire(Target target, int which) {
   if (Class->IsFireAnim && !IsFiring &&
       Turret_Can_Fire(target, which) == game::FIRE_OK) {
-    animation().SetRate(TheOptions().Normalize_Delay(2));
+    animation().SetFramesPerStage(TheOptions().Normalize_Delay(2));
     animation().set_stage(0);
     IsFiring = true;
     return game::FIRE_BUSY;
@@ -773,7 +773,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     /*
     **	Units default to no special animation.
     */
-    animation().SetRate(0);
+    animation().SetFramesPerStage(0);
     animation().set_stage(0);
 
     /*
@@ -789,7 +789,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	Start the gunboat animating when it is unlimboed.
     */
     if (*this == UNIT_GUNBOAT) {
-      animation().SetRate(2);
+      animation().SetFramesPerStage(2);
       animation().set_stage(0);
     }
     return true;
@@ -1153,7 +1153,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    animation().SetRate(TheOptions().Normalize_Delay(3));
+    animation().SetFramesPerStage(TheOptions().Normalize_Delay(3));
   }
 
   /*
@@ -2297,7 +2297,7 @@ bool UnitClass::Harvesting() {
         std::min(reducer, UnitTypeClass::kStepCount - Tiberium));
     Tiberium += reducer;
     animation().set_stage(0);
-    animation().SetRate(2);
+    animation().SetFramesPerStage(2);
 
   } else {
     /*
@@ -2307,7 +2307,7 @@ bool UnitClass::Harvesting() {
     **	a better suited logic processor.
     */
     animation().set_stage(0);
-    animation().SetRate(0);
+    animation().SetFramesPerStage(0);
     return false;
   }
   return true;
@@ -2542,7 +2542,7 @@ int UnitClass::Mission_Harvest() {
       IsHarvesting = false;
       if (Goto_Tiberium()) {
         IsHarvesting = true;
-        animation().SetRate(2);
+        animation().SetFramesPerStage(2);
         animation().set_stage(0);
         mission_state().set_step(kHarvesting);
         return 1;

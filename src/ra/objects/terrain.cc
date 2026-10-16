@@ -261,7 +261,7 @@ TerrainClass::TerrainClass(TerrainType type, Cell cell)
     delete this;
   }
 
-  animation_.SetRate(0);  // turn off animation
+  animation_.SetFramesPerStage(0);  // turn off animation
 }
 
 /***********************************************************************************************
@@ -593,7 +593,7 @@ void TerrainClass::Start_To_Crumble() {
 
   if (!IsCrumbling) {
     IsCrumbling = true;
-    animation_.SetRate(2);
+    animation_.SetFramesPerStage(2);
     animation_.set_stage(0);
   }
 }

@@ -309,7 +309,7 @@ void FactoryClass::AI() {
         */
         if (progress_.stage() == kStepCount) {
           IsSuspended = true;
-          progress_.SetRate(0);
+          progress_.SetFramesPerStage(0);
           Get_House()->Spend_Money(Balance);
           Balance = 0;
         }
@@ -377,7 +377,7 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   */
   IsDifferent = true;
   IsSuspended = true;
-  progress_.SetRate(0);
+  progress_.SetFramesPerStage(0);
   progress_.set_stage(0);
 
   /*
@@ -426,7 +426,7 @@ bool FactoryClass::Set(const int& type, HouseClass& house) {
   */
   IsDifferent = true;
   IsSuspended = true;
-  progress_.SetRate(0);
+  progress_.SetFramesPerStage(0);
   progress_.set_stage(0);
 
   /*
@@ -464,7 +464,7 @@ void FactoryClass::Set(TechnoClass& object) {
   Object = &object;
   House = Object->House->Class->House;
   Balance = 0;
-  progress_.SetRate(0);
+  progress_.SetFramesPerStage(0);
   progress_.set_stage(kStepCount);
   IsDifferent = true;
   IsSuspended = true;
@@ -491,7 +491,7 @@ bool FactoryClass::Suspend() {
   Validate();
   if (!IsSuspended) {
     IsSuspended = true;
-    progress_.SetRate(0);
+    progress_.SetFramesPerStage(0);
     return true;
   }
   return false;
@@ -534,7 +534,7 @@ bool FactoryClass::Start() {
     rate /= kStepCount;
     rate = std::clamp(rate, 1, 255);
 
-    progress_.SetRate(rate);
+    progress_.SetFramesPerStage(rate);
     IsSuspended = false;
     return true;
   }
@@ -585,7 +585,7 @@ bool FactoryClass::Abandon() {
     /*
     **	Set the factory back to the idle and empty state.
     */
-    progress_.SetRate(0);
+    progress_.SetFramesPerStage(0);
     progress_.set_stage(0);
     IsSuspended = true;
     IsDifferent = true;
@@ -729,7 +729,7 @@ bool FactoryClass::Completed() {
     IsSuspended = true;
     IsDifferent = true;
     progress_.set_stage(0);
-    progress_.SetRate(0);
+    progress_.SetFramesPerStage(0);
     return true;
   }
 
@@ -738,7 +738,7 @@ bool FactoryClass::Completed() {
     IsSuspended = true;
     IsDifferent = true;
     progress_.set_stage(0);
-    progress_.SetRate(0);
+    progress_.SetFramesPerStage(0);
     return true;
   }
   return false;

@@ -2770,7 +2770,7 @@ void TechnoClass::Cloaking_AI() {
         case game::UNCLOAKING:
           Mark(MARK_CHANGE);
           if (Visual_Character(true) == game::VISUAL_NORMAL) {
-            CloakingDevice.SetRate(0);
+            CloakingDevice.SetFramesPerStage(0);
             CloakingDevice.set_stage(0);  // re-start the stage counter
             Cloak = game::UNCLOAKED;
             CloakDelay.Set(TheRules().CloakDelay * kTicksPerMinute);
@@ -2785,8 +2785,8 @@ void TechnoClass::Cloaking_AI() {
         */
         case game::CLOAKING:
           Mark(MARK_CHANGE);
-          if (!CloakingDevice.rate()) {
-            CloakingDevice.SetRate(1);
+          if (!CloakingDevice.frames_per_stage()) {
+            CloakingDevice.SetFramesPerStage(1);
           }
           switch (Visual_Character(true)) {
             /*
@@ -2801,7 +2801,7 @@ void TechnoClass::Cloaking_AI() {
 
             case game::VISUAL_HIDDEN:
               Cloak = game::CLOAKED;
-              CloakingDevice.SetRate(0);
+              CloakingDevice.SetFramesPerStage(0);
               CloakingDevice.set_stage(0);
               Mark(MARK_CHANGE);
 
@@ -2879,7 +2879,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   *start cloaking.
   */
   if (Cloak == game::CLOAKED ||
-      (Cloak == game::CLOAKING && CloakingDevice.rate())) {
+      (Cloak == game::CLOAKING && CloakingDevice.frames_per_stage())) {
     return false;
   }
 
@@ -3561,7 +3561,7 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
       const bool gonnadraw = Electric_Zap(target, which);
       if (What_Am_I() != RTTI_INFANTRY) {
         animation().set_stage(0);
-        animation().SetRate(0);
+        animation().SetFramesPerStage(0);
       }
       if (Ammo <= 1 && What_Am_I() == RTTI_BUILDING) {
         dynamic_cast<BuildingClass*>(this)->IsCharged = false;
@@ -4611,7 +4611,7 @@ void TechnoClass::Do_Uncloak() {
     }
     Cloak = game::UNCLOAKING;
     CloakingDevice.set_stage(0);
-    CloakingDevice.SetRate(1);
+    CloakingDevice.SetFramesPerStage(1);
     if (What_Am_I() == RTTI_VESSEL) {
       PlaySoundEffectAt(VOC_SUBSHOW, Coord);
     } else {
@@ -4645,7 +4645,7 @@ void TechnoClass::Do_Cloak() {
 
     Cloak = game::CLOAKING;
     CloakingDevice.set_stage(0);
-    CloakingDevice.SetRate(1);
+    CloakingDevice.SetFramesPerStage(1);
     if (What_Am_I() == RTTI_VESSEL) {
       PlaySoundEffectAt(VOC_SUBSHOW, Coord);
     } else {

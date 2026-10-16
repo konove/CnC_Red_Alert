@@ -503,9 +503,9 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
     Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
-    animation_.SetRate(TheOptions().Normalize_Delay(Class->Delay));
+    animation_.SetFramesPerStage(TheOptions().Normalize_Delay(Class->Delay));
   } else {
-    animation_.SetRate(Class->Delay);
+    animation_.SetFramesPerStage(Class->Delay);
   }
   animation_.set_stage(0);
 
@@ -757,9 +757,10 @@ void AnimClass::AI() {
             Loops = static_cast<unsigned char>(Class->Loops);
             Accum = Fixed(0);
             if (Class->IsNormalized) {
-              animation_.SetRate(TheOptions().Normalize_Delay(Class->Delay));
+              animation_.SetFramesPerStage(
+                  TheOptions().Normalize_Delay(Class->Delay));
             } else {
-              animation_.SetRate(Class->Delay);
+              animation_.SetFramesPerStage(Class->Delay);
             }
             animation_.set_stage(Class->Start);
             Start();

@@ -393,7 +393,7 @@ bool AircraftClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	Start rotor animation.
     */
     if (!Class->IsFixedWing) {
-      animation().SetRate(1);
+      animation().SetFramesPerStage(1);
       animation().set_stage(0);
     }
 

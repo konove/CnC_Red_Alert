@@ -338,7 +338,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    animation().SetRate(TheOptions().Normalize_Delay(3));
+    animation().SetFramesPerStage(TheOptions().Normalize_Delay(3));
   }
 
   /*
@@ -961,7 +961,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     /*
     **	Units default to no special animation.
     */
-    animation().SetRate(0);
+    animation().SetFramesPerStage(0);
     animation().set_stage(0);
 
     return true;
@@ -2398,7 +2398,7 @@ bool UnitClass::Harvesting() {
         break;
     }
     animation().set_stage(0);
-    animation().SetRate(TheRules().OreDumpRate);
+    animation().SetFramesPerStage(TheRules().OreDumpRate);
 
   } else {
     /*
@@ -2408,7 +2408,7 @@ bool UnitClass::Harvesting() {
     **	a better suited logic processor.
     */
     animation().set_stage(0);
-    animation().SetRate(0);
+    animation().SetFramesPerStage(0);
     return false;
   }
   return true;
@@ -2452,7 +2452,7 @@ int UnitClass::Mission_Unload() {
       if (!IsDumping) {
         IsDumping = true;
         animation().set_stage(0);
-        animation().SetRate(TheRules().OreDumpRate);
+        animation().SetFramesPerStage(TheRules().OreDumpRate);
         break;
       }
       if (animation().stage() <
@@ -2757,7 +2757,7 @@ int UnitClass::Mission_Unload() {
           PlaySoundEffectAt(VOC_BUZZY1, Center_Coord());
         }
         animation().set_stage(0);
-        animation().SetRate(TheRules().OreDumpRate * 2);
+        animation().SetFramesPerStage(TheRules().OreDumpRate * 2);
         IsDumping = true;
 
         auto* crew =
@@ -2915,7 +2915,7 @@ int UnitClass::Mission_Harvest() {
       if (Goto_Tiberium(TheRules().TiberiumLongScan /
                         game::kCellWidthLeptons)) {
         IsHarvesting = true;
-        animation().SetRate(2);
+        animation().SetFramesPerStage(2);
         animation().set_stage(0);
         mission_state().set_step(kHarvesting);
         return 1;
@@ -2950,9 +2950,9 @@ int UnitClass::Mission_Harvest() {
     **	Harvest at current location until full or Tiberium exhausted.
     */
     case kHarvesting:
-      if (animation().rate() == 0) {
+      if (animation().frames_per_stage() == 0) {
         animation().set_stage(0);
-        animation().SetRate(TheRules().OreDumpRate);
+        animation().SetFramesPerStage(TheRules().OreDumpRate);
       }
 
       if (animation().stage() <

@@ -487,7 +487,7 @@ TechnoClass::TechnoClass()
       Ammo(-1),
       PurchasePrice(0) {
   CloakingDevice.set_stage(1);
-  CloakingDevice.SetRate(0);
+  CloakingDevice.SetFramesPerStage(0);
 
   PrimaryFacing.SnapTo(game::Direction::kNorth);
 }
@@ -869,7 +869,7 @@ TechnoClass::TechnoClass(HousesType house)
       Ammo(-1),
       PurchasePrice(0) {
   CloakingDevice.set_stage(1);
-  CloakingDevice.SetRate(0);
+  CloakingDevice.SetFramesPerStage(0);
 
   PrimaryFacing.SnapTo(game::Direction::kNorth);
 
@@ -1823,7 +1823,7 @@ void TechnoClass::AI() {
         case game::UNCLOAKING:
           Mark(MARK_CHANGE);
           if (Visual_Character(true) == game::VISUAL_NORMAL) {
-            CloakingDevice.SetRate(UNCLOAK_VIS_TIME);
+            CloakingDevice.SetFramesPerStage(UNCLOAK_VIS_TIME);
             CloakingDevice.set_stage(0);  // re-start the stage counter
             Cloak = game::UNCLOAKED;
           }
@@ -1856,7 +1856,7 @@ void TechnoClass::AI() {
 
             case game::VISUAL_HIDDEN:
               Cloak = game::CLOAKED;
-              CloakingDevice.SetRate(0);
+              CloakingDevice.SetFramesPerStage(0);
 
               /*
               **	Special check to ensure that if the unit is carring a
@@ -3252,7 +3252,7 @@ void TechnoClass::Do_Uncloak() {
     Sound_Effect(VOC_CLOAK, Coord);
     Cloak = game::UNCLOAKING;
     CloakingDevice.set_stage(0);
-    CloakingDevice.SetRate(1);
+    CloakingDevice.SetFramesPerStage(1);
   }
 }
 
@@ -3275,7 +3275,7 @@ void TechnoClass::Do_Cloak() {
     Detach_All(false);
     Cloak = game::CLOAKING;
     CloakingDevice.set_stage(0);
-    CloakingDevice.SetRate(1);
+    CloakingDevice.SetFramesPerStage(1);
   }
 }
 
@@ -3298,7 +3298,7 @@ void TechnoClass::Do_Shimmer() {
   if (IsCloakable && Cloak == game::CLOAKED) {
     Cloak = game::CLOAKING;
     CloakingDevice.set_stage(MAX_UNCLOAK_STAGE / 2);
-    CloakingDevice.SetRate(1);
+    CloakingDevice.SetFramesPerStage(1);
   }
 }
 

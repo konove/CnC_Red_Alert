@@ -1335,9 +1335,9 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-        animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
+        animation().SetFramesPerStage(TheOptions().Normalize_Delay(ctrl->Rate));
       } else {
-        animation().SetRate(ctrl->Rate);
+        animation().SetFramesPerStage(ctrl->Rate);
       }
       animation().set_stage(ctrl->Start);
     }
@@ -1801,7 +1801,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         PlaySoundEffectAt(VOC_CRUMBLE, Coord);
         if (mission_state().current() == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
-          animation().SetRate(0);
+          animation().SetFramesPerStage(0);
         } else {
           CountDown.Set(8);
         }
@@ -3515,7 +3515,7 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
     if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
-    animation().SetRate(rate);
+    animation().SetFramesPerStage(rate);
     animation().set_stage(ctrl->Start);
   }
 }
@@ -6210,14 +6210,14 @@ void BuildingClass::Charging_AI() {
           if (animation().stage() >= 9) {
             IsCharged = true;
             IsCharging = false;
-            animation().SetRate(0);
+            animation().SetFramesPerStage(0);
           }
           //					}
         } else if (Arm.IsFinished()) {
           IsCharged = false;
           IsCharging = true;
           animation().set_stage(0);
-          animation().SetRate(3);
+          animation().SetFramesPerStage(3);
           PlaySoundEffectAt(VOC_TESLA_POWER_UP, Coord);
         }
       }
@@ -6227,7 +6227,7 @@ void BuildingClass::Charging_AI() {
         IsCharging = false;
         IsCharged = false;
         animation().set_stage(0);
-        animation().SetRate(0);
+        animation().SetFramesPerStage(0);
       }
     }
   }
@@ -6371,7 +6371,7 @@ void BuildingClass::Animation_AI() {
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == game::BSTATE_NONE || animation().rate() == 0) {
+      if (BState == game::BSTATE_NONE || animation().frames_per_stage() == 0) {
         IsReadyToCommence = true;
       }
     }
@@ -6386,9 +6386,9 @@ void BuildingClass::Animation_AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-      animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
+      animation().SetFramesPerStage(TheOptions().Normalize_Delay(ctrl->Rate));
     } else {
-      animation().SetRate(ctrl->Rate);
+      animation().SetFramesPerStage(ctrl->Rate);
     }
     animation().set_stage(ctrl->Start);
     Mark(MARK_CHANGE);

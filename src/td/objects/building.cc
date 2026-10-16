@@ -1091,7 +1091,7 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
           IsCharging = false;
           IsCharged = false;
           animation().set_stage(0);
-          animation().SetRate(0);
+          animation().SetFramesPerStage(0);
 
           if (TheMap().Push_Onto_TacMap(source, dest) &&
               TheGameState().special_dialog() == SDLG_NONE) {
@@ -1190,7 +1190,7 @@ void BuildingClass::AI() {
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == game::BSTATE_NONE || animation().rate() == 0) {
+      if (BState == game::BSTATE_NONE || animation().frames_per_stage() == 0) {
         IsReadyToCommence = true;
       }
     }
@@ -1205,9 +1205,9 @@ void BuildingClass::AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-      animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
+      animation().SetFramesPerStage(TheOptions().Normalize_Delay(ctrl->Rate));
     } else {
-      animation().SetRate(ctrl->Rate);
+      animation().SetFramesPerStage(ctrl->Rate);
     }
     animation().set_stage(ctrl->Start);
     Mark(MARK_CHANGE);
@@ -1271,9 +1271,9 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-        animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
+        animation().SetFramesPerStage(TheOptions().Normalize_Delay(ctrl->Rate));
       } else {
-        animation().SetRate(ctrl->Rate);
+        animation().SetFramesPerStage(ctrl->Rate);
       }
       animation().set_stage(ctrl->Start);
     }
@@ -1318,14 +1318,14 @@ void BuildingClass::AI() {
             if (animation().stage() >= 4) {
               IsCharged = true;
               IsCharging = false;
-              animation().SetRate(0);
+              animation().SetFramesPerStage(0);
             }
           }
         } else {
           IsCharged = false;
           IsCharging = true;
           animation().set_stage(0);
-          animation().SetRate(OBELISK_ANIMATION_RATE);
+          animation().SetFramesPerStage(OBELISK_ANIMATION_RATE);
           Sound_Effect(VOC_LASER_POWER, Coord);
         }
       }
@@ -1335,7 +1335,7 @@ void BuildingClass::AI() {
         IsCharging = false;
         IsCharged = false;
         animation().set_stage(0);
-        animation().SetRate(0);
+        animation().SetFramesPerStage(0);
       }
     }
   }
@@ -1859,7 +1859,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         Sound_Effect(VOC_CRUMBLE, Coord);
         if (mission_state().current() == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
-          animation().SetRate(0);
+          animation().SetFramesPerStage(0);
         } else {
           CountDown.Set(8);
         }
@@ -3466,7 +3466,7 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
     if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
-    animation().SetRate(rate);
+    animation().SetFramesPerStage(rate);
     animation().set_stage(ctrl->Start);
   }
 }
@@ -4401,7 +4401,7 @@ int BuildingClass::Mission_Attack() {
       case kSamUnderground:
         IsReadyToCommence = true;
         if (TarCom) {
-          animation().SetRate(2);
+          animation().SetFramesPerStage(2);
           animation().set_stage(0);
           mission_state().set_step(kSamRising);
           return 1;
@@ -4415,7 +4415,7 @@ int BuildingClass::Mission_Attack() {
       */
       case kSamRising:
         if (animation().stage() == 15) {
-          animation().SetRate(0);
+          animation().SetFramesPerStage(0);
           PrimaryFacing.SnapTo(game::Direction::kNorth);
           if (!TarCom) {
             mission_state().set_step(kSamLowering);
@@ -4522,7 +4522,7 @@ int BuildingClass::Mission_Attack() {
       case kSamLocking:
         if (!PrimaryFacing.IsRotating()) {
           if (PrimaryFacing.current() == game::Direction::kNorth) {
-            animation().SetRate(2);
+            animation().SetFramesPerStage(2);
             animation().set_stage(48);
             mission_state().set_step(kSamLowering);
           } else {
@@ -4536,13 +4536,13 @@ int BuildingClass::Mission_Attack() {
       */
       case kSamLowering:
         if (animation().stage() >= 63) {
-          animation().SetRate(0);
+          animation().SetFramesPerStage(0);
           animation().set_stage(0);
           mission_state().set_step(kSamUnderground);
           return kTicksPerSecond;
         }
-        if (animation().rate() == 0) {
-          animation().SetRate(2);
+        if (animation().frames_per_stage() == 0) {
+          animation().SetFramesPerStage(2);
         }
         return 1;
 

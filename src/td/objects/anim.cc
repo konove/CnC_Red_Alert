@@ -742,9 +742,9 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
                      int loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
   if (Class->IsNormalized) {
-    animation_.SetRate(TheOptions().Normalize_Delay(Class->Delay));
+    animation_.SetFramesPerStage(TheOptions().Normalize_Delay(Class->Delay));
   } else {
-    animation_.SetRate(Class->Delay);
+    animation_.SetFramesPerStage(Class->Delay);
   }
   animation_.set_stage(0);
 
@@ -975,9 +975,10 @@ void AnimClass::AI() {
             Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
-              animation_.SetRate(TheOptions().Normalize_Delay(Class->Delay));
+              animation_.SetFramesPerStage(
+                  TheOptions().Normalize_Delay(Class->Delay));
             } else {
-              animation_.SetRate(Class->Delay);
+              animation_.SetFramesPerStage(Class->Delay);
             }
             animation_.set_stage(Class->Start);
           } else {

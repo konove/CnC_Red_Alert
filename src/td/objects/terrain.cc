@@ -320,7 +320,7 @@ TerrainClass::TerrainClass(TerrainType type, Cell cell)
     delete this;
   }
 
-  animation_.SetRate(0);  // turn off animation
+  animation_.SetFramesPerStage(0);  // turn off animation
 }
 
 /***********************************************************************************************
@@ -580,7 +580,7 @@ void TerrainClass::AI() {
       if (!IsBarnacled) {
         if (animation_.stage() == BARNACLE_STAGE) {
           IsBarnacled = true;
-          animation_.SetRate(0);  // turn off animation
+          animation_.SetFramesPerStage(0);  // turn off animation
         }
       } else {
         /*
@@ -593,13 +593,13 @@ void TerrainClass::AI() {
             animation_.set_stage(FIRST_SPORE_STAGE);
             if (Random() & 1) {
               IsSporing = false;
-              animation_.SetRate(0);
+              animation_.SetFramesPerStage(0);
             }
           }
         } else {
           if (Random() == 255) {  // is it time to start sporing?
             IsSporing = true;
-            animation_.SetRate(TheOptions().Normalize_Delay(1));
+            animation_.SetFramesPerStage(TheOptions().Normalize_Delay(1));
           }
         }
       }
@@ -608,7 +608,7 @@ void TerrainClass::AI() {
       if (Random_Picky(1, 5000, nullptr, 0) == 1) {
         IsBlossoming = true;
         animation_.set_stage(1);
-        animation_.SetRate(TheOptions().Normalize_Delay(1));
+        animation_.SetFramesPerStage(TheOptions().Normalize_Delay(1));
       }
     }
   }
@@ -663,7 +663,7 @@ void TerrainClass::Start_To_Crumble() {
   Validate();
   if (!IsCrumbling) {
     IsCrumbling = true;
-    animation_.SetRate(2);
+    animation_.SetFramesPerStage(2);
     animation_.set_stage(0);
   }
 }

@@ -1020,7 +1020,7 @@ void InfantryClass::AI() {
   **	Special hack to make sure that if this infantry is in firing animation,
   *but the *	stage class isn't set, then abort the firing flag.
   */
-  if (IsFiring && !animation().rate()) {
+  if (IsFiring && !animation().frames_per_stage()) {
     IsFiring = false;
   }
 
@@ -2185,10 +2185,10 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      animation().SetRate(
+      animation().SetFramesPerStage(
           TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate));
     } else {
-      animation().SetRate(MasterDoControls.at(Doing).Rate);
+      animation().SetFramesPerStage(MasterDoControls.at(Doing).Rate);
     }
     animation().set_stage(0);
 

@@ -33,7 +33,7 @@ class StageCounterTest : public testing::Test {
 TEST_F(StageCounterTest, ANewCounterStandsStill) {
   StageCounter counter;
   EXPECT_EQ(counter.stage(), 0);
-  EXPECT_EQ(counter.rate(), 0);
+  EXPECT_EQ(counter.frames_per_stage(), 0);
   EXPECT_FALSE(counter.IsAboutToChange());
   for (int frame = 0; frame < 5; ++frame) {
     EXPECT_FALSE(Tick(counter));
@@ -41,11 +41,11 @@ TEST_F(StageCounterTest, ANewCounterStandsStill) {
   EXPECT_EQ(counter.stage(), 0);
 }
 
-TEST_F(StageCounterTest, CountsAStageEveryRateFrames) {
+TEST_F(StageCounterTest, MovesOnAStageEveryFramesPerStage) {
   StageCounter counter;
   counter.set_stage(7);
-  counter.SetRate(3);
-  EXPECT_EQ(counter.rate(), 3);
+  counter.SetFramesPerStage(3);
+  EXPECT_EQ(counter.frames_per_stage(), 3);
   for (int stage = 8; stage <= 9; ++stage) {
     EXPECT_FALSE(Tick(counter));
     EXPECT_FALSE(Tick(counter));
@@ -59,7 +59,7 @@ TEST_F(StageCounterTest, CountsAStageEveryRateFrames) {
 
 TEST_F(StageCounterTest, KeepsTimeThroughFramesWithoutItsLogic) {
   StageCounter counter;
-  counter.SetRate(4);
+  counter.SetFramesPerStage(4);
   Skip(10);
   // However late, the stage moves on by one and the countdown starts anew.
   EXPECT_TRUE(counter.AI());
@@ -71,14 +71,14 @@ TEST_F(StageCounterTest, KeepsTimeThroughFramesWithoutItsLogic) {
   EXPECT_EQ(counter.stage(), 2);
 }
 
-TEST_F(StageCounterTest, SettingTheRateRestartsTheCountdown) {
+TEST_F(StageCounterTest, SettingFramesPerStageRestartsTheCountdown) {
   StageCounter counter;
-  counter.SetRate(2);
+  counter.SetFramesPerStage(2);
   EXPECT_FALSE(Tick(counter));
-  counter.SetRate(2);
+  counter.SetFramesPerStage(2);
   EXPECT_FALSE(Tick(counter));
   EXPECT_TRUE(Tick(counter));
-  counter.SetRate(0);
+  counter.SetFramesPerStage(0);
   Skip(100);
   EXPECT_FALSE(counter.IsAboutToChange());
   EXPECT_FALSE(counter.AI());
@@ -88,7 +88,7 @@ TEST_F(StageCounterTest, SettingTheRateRestartsTheCountdown) {
 TEST_F(StageCounterTest, ASavedCounterCarriesOnWhereItWas) {
   StageCounter counter;
   counter.set_stage(12);
-  counter.SetRate(3);
+  counter.SetFramesPerStage(3);
   EXPECT_FALSE(Tick(counter));
   std::array<std::byte, 64> bytes{};
   SpanSink sink(bytes);
@@ -104,7 +104,7 @@ TEST_F(StageCounterTest, ASavedCounterCarriesOnWhereItWas) {
   loaded.Serialize(reader);
   ASSERT_TRUE(reader.ok());
   EXPECT_EQ(loaded.stage(), 12);
-  EXPECT_EQ(loaded.rate(), 3);
+  EXPECT_EQ(loaded.frames_per_stage(), 3);
   EXPECT_FALSE(Tick(loaded));
   EXPECT_TRUE(Tick(loaded));
   EXPECT_EQ(loaded.stage(), 13);
