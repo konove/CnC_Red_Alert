@@ -24,8 +24,6 @@
 #include "game/sim/utracker.h"
 
 #include <algorithm>
-#include <array>
-#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -48,12 +46,11 @@ std::vector<std::byte> TypeTally::NetworkBytes() const {
   std::vector<std::byte> bytes;
   bytes.reserve(counts_.size() * sizeof(int32_t));
   for (const int32_t count : counts_) {
-    auto value = static_cast<uint32_t>(count);
-    if constexpr (std::endian::native == std::endian::little) {
-      value = std::byteswap(value);
-    }
-    const auto big_endian = std::bit_cast<std::array<std::byte, 4>>(value);
-    bytes.insert(bytes.end(), big_endian.begin(), big_endian.end());
+    const auto value = static_cast<uint32_t>(count);
+    bytes.push_back(static_cast<std::byte>(value >> 24U));
+    bytes.push_back(static_cast<std::byte>(value >> 16U));
+    bytes.push_back(static_cast<std::byte>(value >> 8U));
+    bytes.push_back(static_cast<std::byte>(value));
   }
   return bytes;
 }
