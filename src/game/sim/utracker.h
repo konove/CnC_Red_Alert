@@ -25,11 +25,9 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
 #define CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <span>
 #include <vector>
-
-#include "absl/base/attributes.h"
 
 namespace game {
 
@@ -37,18 +35,15 @@ namespace game {
 // buildings, vessels, crates), indexed by the type's enum value. Each house of
 // an internet game owns a set of them (HouseClass::Init_Trackers()), the game
 // counts into them as things are built and destroyed, and the Westwood Online
-// statistics packet sends each set as a raw array of 32-bit big-endian
-// counts. To_Network_Format() and To_PC_Format() switch the stored counts
-// between the two byte orders in place, around the packing of that array.
+// statistics packet sends each set as an array of 32-bit big-endian counts.
 //
 // Example:
 //   TypeTally destroyed(unit_type_count);
 //   destroyed.Increment(static_cast<int>(UNIT_HTANK));
-//   destroyed.To_Network_Format();
-//   packet.Add_Field("UNK1", std::as_bytes(destroyed.Get_All_Totals()));
+//   packet.Add_Field("UNK1", destroyed.NetworkBytes());
 class TypeTally {
  public:
-  // Creates `type_count` counters, all zero, in host byte order.
+  // Creates `type_count` counters, all zero.
   explicit TypeTally(int type_count);
   ~TypeTally();
   TypeTally(const TypeTally&) = delete;
@@ -57,37 +52,25 @@ class TypeTally {
   TypeTally& operator=(TypeTally&&) = delete;
 
   // Adds or takes one from the count of `type`, which must be below the
-  // type count (std::out_of_range otherwise). Only meaningful while the
-  // counts are in host byte order.
+  // type count (std::out_of_range otherwise).
   void Increment(int type);
   void Decrement(int type);
-  // Sets every count to zero, in host byte order.
+  // Sets every count to zero.
   void Clear();
 
-  // Returns the count of `type`, as stored: byte-swapped while the counts
-  // are in network format.
+  // Returns the count of `type`.
   [[nodiscard]] int Count(int type) const;
-  // Returns every count, one per type and in whichever byte order they are in
-  // now; the statistics packet sends these bytes as they are.
-  [[nodiscard]] std::span<const int32_t> Get_All_Totals() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // Returns every count, in type order, as a 32-bit big-endian integer: the
+  // layout the statistics packet sends.
+  [[nodiscard]] std::vector<std::byte> NetworkBytes() const;
   // Returns the number of counters: the number of types this tracks.
   [[nodiscard]] int Get_Unit_Count() const { return UnitCount; }
-
-  // Converts the counts to network (big-endian) byte order for sending, and
-  // back to host order. Each does nothing when the counts are already in its
-  // order, so a pair of calls may be repeated.
-  void To_Network_Format();
-  void To_PC_Format();
 
  private:
   // One count per type, indexed by the type's enum value.
   std::vector<int32_t> counts_;
   // The number of counts in counts_.
   int UnitCount;
-  // True while counts_ holds network (big-endian) byte order, false while
-  // it holds host order.
-  bool InNetworkFormat{false};
 };
 
 }  // namespace game

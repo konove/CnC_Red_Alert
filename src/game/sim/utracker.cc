@@ -24,17 +24,13 @@
 #include "game/sim/utracker.h"
 
 #include <algorithm>
+#include <array>
+#include <bit>
+#include <cstddef>
 #include <cstdint>
-#include <span>
+#include <vector>
 
 #include "base/numeric.h"
-
-// htonl() and ntohl(), for the byte order the statistics packet sends.
-#ifdef _WIN32
-#include <winsock.h>
-#else
-#include <arpa/inet.h>
-#endif
 
 namespace game {
 
@@ -49,34 +45,22 @@ void TypeTally::Increment(int type) { counts_.at(base::ToSize(type))++; }
 
 void TypeTally::Decrement(int type) { counts_.at(base::ToSize(type))--; }
 
-std::span<const int32_t> TypeTally::Get_All_Totals() const { return counts_; }
+void TypeTally::Clear() { std::ranges::fill(counts_, 0); }
 
 int TypeTally::Count(int type) const { return counts_.at(base::ToSize(type)); }
 
-// Zero is zero in either byte order, so the counts are back in host order.
-void TypeTally::Clear() {
-  std::ranges::fill(counts_, 0);
-  InNetworkFormat = false;
-}
-
-void TypeTally::To_Network_Format() {
-  if (!InNetworkFormat) {
-    for (int i = 0; i < UnitCount; i++) {
-      counts_.at(base::ToSize(i)) = static_cast<int32_t>(
-          htonl(static_cast<uint32_t>(counts_.at(base::ToSize(i)))));
+std::vector<std::byte> TypeTally::NetworkBytes() const {
+  std::vector<std::byte> bytes;
+  bytes.reserve(counts_.size() * sizeof(int32_t));
+  for (const int32_t count : counts_) {
+    auto value = static_cast<uint32_t>(count);
+    if constexpr (std::endian::native == std::endian::little) {
+      value = std::byteswap(value);
     }
+    const auto big_endian = std::bit_cast<std::array<std::byte, 4>>(value);
+    bytes.insert(bytes.end(), big_endian.begin(), big_endian.end());
   }
-  InNetworkFormat = true;
-}
-
-void TypeTally::To_PC_Format() {
-  if (InNetworkFormat) {
-    for (int i = 0; i < UnitCount; i++) {
-      counts_.at(base::ToSize(i)) = static_cast<int32_t>(
-          ntohl(static_cast<uint32_t>(counts_.at(base::ToSize(i)))));
-    }
-  }
-  InNetworkFormat = false;
+  return bytes;
 }
 
 }  // namespace game

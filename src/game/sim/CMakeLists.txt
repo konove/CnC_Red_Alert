@@ -24,10 +24,6 @@ target_sources(game_sim PUBLIC
 target_link_libraries(game_sim
         PUBLIC game_core
 )
-if (WIN32)
-    # utracker.cc converts counts to network byte order with htonl().
-    target_link_libraries(game_sim PRIVATE wsock32)
-endif ()
 
 # Tests
 include(Testing)

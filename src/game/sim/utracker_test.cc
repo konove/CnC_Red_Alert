@@ -1,21 +1,19 @@
 #include "game/sim/utracker.h"
 
+#include <cstddef>
+#include <vector>
+
 #include "gtest/gtest.h"
 
 namespace game {
 
 namespace {
 
-TEST(TypeTallyTest, NetworkRoundTripPreservesEveryCounter) {
+TEST(TypeTallyTest, CountsUpAndDownAndClears) {
   TypeTally tally(3);
-  EXPECT_EQ(tally.Get_All_Totals().size(), 3);
   tally.Increment(0);
   tally.Increment(2);
   tally.Increment(2);
-  tally.To_Network_Format();
-  tally.To_Network_Format();
-  tally.To_PC_Format();
-  tally.To_PC_Format();
   EXPECT_EQ(tally.Count(0), 1);
   EXPECT_EQ(tally.Count(1), 0);
   EXPECT_EQ(tally.Count(2), 2);
@@ -26,17 +24,18 @@ TEST(TypeTallyTest, NetworkRoundTripPreservesEveryCounter) {
   EXPECT_EQ(tally.Count(2), 0);
 }
 
-// The RA statistics clear the bought counts while they are still in network
-// format and count the units left into them; those must be swapped again.
-TEST(TypeTallyTest, ClearReturnsToHostFormat) {
-  TypeTally tally(1);
-  tally.Increment(0);
-  tally.To_Network_Format();
-  tally.Clear();
-  tally.Increment(0);
-  tally.To_Network_Format();
-  tally.To_PC_Format();
-  EXPECT_EQ(tally.Count(0), 1);
+// The statistics server reads each count as a 32-bit big-endian integer.
+TEST(TypeTallyTest, NetworkBytesAreBigEndian) {
+  TypeTally tally(2);
+  for (int i = 0; i < 258; ++i) {
+    tally.Increment(1);
+  }
+  tally.Decrement(0);
+  EXPECT_EQ(
+      tally.NetworkBytes(),
+      (std::vector<std::byte>{std::byte{0xFF}, std::byte{0xFF}, std::byte{0xFF},
+                              std::byte{0xFF}, std::byte{0x00}, std::byte{0x00},
+                              std::byte{0x01}, std::byte{0x02}}));
 }
 
 }  // namespace
