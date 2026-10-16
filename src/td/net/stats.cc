@@ -478,10 +478,10 @@ void Send_Statistics_Packet() {
         ** Clear out the counts and use the space to count up the current number
         *of units/buildings
         */
-        player->InfantryTotals->Clear_Unit_Total();
-        player->AircraftTotals->Clear_Unit_Total();
-        player->UnitTotals->Clear_Unit_Total();
-        player->BuildingTotals->Clear_Unit_Total();
+        player->InfantryTotals->Clear();
+        player->AircraftTotals->Clear();
+        player->UnitTotals->Clear();
+        player->BuildingTotals->Clear();
 
         /*
         ** Number of units remaining to player
@@ -489,8 +489,7 @@ void Send_Statistics_Packet() {
         for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
           const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
           if (unit->House == player) {
-            player->UnitTotals->Increment_Unit_Total(
-                static_cast<int>(unit->Class->Type));
+            player->UnitTotals->Increment(static_cast<int>(unit->Class->Type));
           }
         }
 
@@ -499,7 +498,7 @@ void Send_Statistics_Packet() {
           const InfantryClass* infantry =
               TheObjectHeaps().infantry().ActiveAt(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
-            player->InfantryTotals->Increment_Unit_Total(
+            player->InfantryTotals->Increment(
                 static_cast<int>(infantry->Class->Type));
           }
         }
@@ -510,7 +509,7 @@ void Send_Statistics_Packet() {
               TheObjectHeaps().aircraft().ActiveAt(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
-            player->AircraftTotals->Increment_Unit_Total(
+            player->AircraftTotals->Increment(
                 static_cast<int>(aircraft->Class->Type));
           }
         }
@@ -520,7 +519,7 @@ void Send_Statistics_Packet() {
           const BuildingClass* building =
               TheObjectHeaps().building().ActiveAt(index);
           if (building->House == player) {
-            player->BuildingTotals->Increment_Unit_Total(
+            player->BuildingTotals->Increment(
                 static_cast<int>(building->Class->Type));
           }
         }

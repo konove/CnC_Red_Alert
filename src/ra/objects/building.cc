@@ -2118,7 +2118,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   }
 
   //	if (Session.Type == GAME_INTERNET) {
-  //		House->BuildingTotals->Increment_Unit_Total( (int) type);
+  //		House->BuildingTotals->Increment( (int) type);
   //	}
 }
 
@@ -3738,8 +3738,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     *internet stats purposes.
     */
     if (TheSession().Type == GAME_INTERNET) {
-      newowner->CapturedBuildings->Increment_Unit_Total(
-          static_cast<int>(Class->Type));
+      newowner->CapturedBuildings->Increment(static_cast<int>(Class->Type));
     }
 
     House->Adjust_Power(-Power_Output());

@@ -306,28 +306,28 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  std::unique_ptr<game::UnitTrackerClass> AircraftTotals;
-  std::unique_ptr<game::UnitTrackerClass> InfantryTotals;
-  std::unique_ptr<game::UnitTrackerClass> UnitTotals;
-  std::unique_ptr<game::UnitTrackerClass> BuildingTotals;
+  std::unique_ptr<game::TypeTally> AircraftTotals;
+  std::unique_ptr<game::TypeTally> InfantryTotals;
+  std::unique_ptr<game::TypeTally> UnitTotals;
+  std::unique_ptr<game::TypeTally> BuildingTotals;
 
   /*
   ** Total number of units destroyed by this house
   */
-  std::unique_ptr<game::UnitTrackerClass> DestroyedAircraft;
-  std::unique_ptr<game::UnitTrackerClass> DestroyedInfantry;
-  std::unique_ptr<game::UnitTrackerClass> DestroyedUnits;
-  std::unique_ptr<game::UnitTrackerClass> DestroyedBuildings;
+  std::unique_ptr<game::TypeTally> DestroyedAircraft;
+  std::unique_ptr<game::TypeTally> DestroyedInfantry;
+  std::unique_ptr<game::TypeTally> DestroyedUnits;
+  std::unique_ptr<game::TypeTally> DestroyedBuildings;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  std::unique_ptr<game::UnitTrackerClass> CapturedBuildings;
+  std::unique_ptr<game::TypeTally> CapturedBuildings;
 
   /*
   ** Total number of crates found by this house
   */
-  std::unique_ptr<game::UnitTrackerClass> TotalCrates;
+  std::unique_ptr<game::TypeTally> TotalCrates;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value

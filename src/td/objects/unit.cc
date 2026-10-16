@@ -1160,7 +1160,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   ** Keep count of the number of units created.
   */
   if (TheSession().type() == GAME_INTERNET) {
-    House->UnitTotals->Increment_Unit_Total(static_cast<int>(classid));
+    House->UnitTotals->Increment(static_cast<int>(classid));
   }
 }
 

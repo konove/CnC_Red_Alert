@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: UnitTrackerClass, the per-type counts behind the internet game
+// File: TypeTally, the per-type counts behind the internet game
 // statistics.
 //
 // Originally UTRACKER.CPP by Steve Tall, June 3-7, 1996.
@@ -38,50 +38,42 @@
 
 namespace game {
 
-UnitTrackerClass::UnitTrackerClass(int unit_count)
-    : UnitTotals(base::ToSize(unit_count)), UnitCount(unit_count) {
-  Clear_Unit_Total();
+TypeTally::TypeTally(int type_count)
+    : counts_(base::ToSize(type_count)), UnitCount(type_count) {
+  Clear();
 }
 
-UnitTrackerClass::~UnitTrackerClass() = default;
+TypeTally::~TypeTally() = default;
 
-void UnitTrackerClass::Increment_Unit_Total(int unit_type) {
-  UnitTotals.at(base::ToSize(unit_type))++;
-}
+void TypeTally::Increment(int type) { counts_.at(base::ToSize(type))++; }
 
-void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
-  UnitTotals.at(base::ToSize(unit_type))--;
-}
+void TypeTally::Decrement(int type) { counts_.at(base::ToSize(type))--; }
 
-std::span<const int32_t> UnitTrackerClass::Get_All_Totals() const {
-  return UnitTotals;
-}
+std::span<const int32_t> TypeTally::Get_All_Totals() const { return counts_; }
 
-int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
-  return UnitTotals.at(base::ToSize(unit_type));
-}
+int TypeTally::Count(int type) const { return counts_.at(base::ToSize(type)); }
 
 // Zero is zero in either byte order, so the counts are back in host order.
-void UnitTrackerClass::Clear_Unit_Total() {
-  std::ranges::fill(UnitTotals, 0);
+void TypeTally::Clear() {
+  std::ranges::fill(counts_, 0);
   InNetworkFormat = false;
 }
 
-void UnitTrackerClass::To_Network_Format() {
+void TypeTally::To_Network_Format() {
   if (!InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals.at(base::ToSize(i)) = static_cast<int32_t>(
-          htonl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
+      counts_.at(base::ToSize(i)) = static_cast<int32_t>(
+          htonl(static_cast<uint32_t>(counts_.at(base::ToSize(i)))));
     }
   }
   InNetworkFormat = true;
 }
 
-void UnitTrackerClass::To_PC_Format() {
+void TypeTally::To_PC_Format() {
   if (InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals.at(base::ToSize(i)) = static_cast<int32_t>(
-          ntohl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
+      counts_.at(base::ToSize(i)) = static_cast<int32_t>(
+          ntohl(static_cast<uint32_t>(counts_.at(base::ToSize(i)))));
     }
   }
   InNetworkFormat = false;

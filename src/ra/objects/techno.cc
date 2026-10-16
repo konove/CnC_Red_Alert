@@ -4450,9 +4450,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
 
         if (source != nullptr) {
           if (TheSession().Type == GAME_INTERNET) {
-            source->House->DestroyedBuildings->Increment_Unit_Total(
-                static_cast<int>(
-                    dynamic_cast<BuildingClass*>(this)->Class->Type));
+            source->House->DestroyedBuildings->Increment(static_cast<int>(
+                dynamic_cast<BuildingClass*>(this)->Class->Type));
           }
           source->House->BuildingsKilled.at(Owner())++;
         }
@@ -4469,7 +4468,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     }
     case RTTI_AIRCRAFT:
       if (source != nullptr && TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedAircraft->Increment_Unit_Total(
+        source->House->DestroyedAircraft->Increment(
             static_cast<int>(dynamic_cast<AircraftClass*>(this)->Class->Type));
         total_recorded++;
       }
@@ -4477,7 +4476,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_INFANTRY:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedInfantry->Increment_Unit_Total(
+        source->House->DestroyedInfantry->Increment(
             static_cast<int>(dynamic_cast<InfantryClass*>(this)->Class->Type));
         total_recorded++;
       }
@@ -4485,7 +4484,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_UNIT:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedUnits->Increment_Unit_Total(
+        source->House->DestroyedUnits->Increment(
             static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
         total_recorded++;
       }
@@ -4493,7 +4492,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_VESSEL:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedUnits->Increment_Unit_Total(
+        source->House->DestroyedUnits->Increment(
             static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));
       }
 

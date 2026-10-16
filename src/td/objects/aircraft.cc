@@ -304,7 +304,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   ** automatically, not bought.
   */
   if (classid != AIRCRAFT_CARGO && TheSession().type() == GAME_INTERNET) {
-    House->AircraftTotals->Increment_Unit_Total(static_cast<int>(classid));
+    House->AircraftTotals->Increment(static_cast<int>(classid));
   }
 }
 

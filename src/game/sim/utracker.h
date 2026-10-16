@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: UnitTrackerClass, a player's per-type counts of the units and
+// File: TypeTally, a player's per-type counts of the units and
 // buildings it built, lost, destroyed or captured, for the statistics an
 // internet game reports when it ends.
 //
@@ -42,31 +42,31 @@ namespace game {
 // between the two byte orders in place, around the packing of that array.
 //
 // Example:
-//   UnitTrackerClass destroyed(unit_type_count);
-//   destroyed.Increment_Unit_Total(static_cast<int>(UNIT_HTANK));
+//   TypeTally destroyed(unit_type_count);
+//   destroyed.Increment(static_cast<int>(UNIT_HTANK));
 //   destroyed.To_Network_Format();
 //   packet.Add_Field("UNK1", std::as_bytes(destroyed.Get_All_Totals()));
-class UnitTrackerClass {
+class TypeTally {
  public:
-  // Creates `unit_count` counters, all zero, in host byte order.
-  explicit UnitTrackerClass(int unit_count);
-  ~UnitTrackerClass();
-  UnitTrackerClass(const UnitTrackerClass&) = delete;
-  UnitTrackerClass& operator=(const UnitTrackerClass&) = delete;
-  UnitTrackerClass(UnitTrackerClass&&) = delete;
-  UnitTrackerClass& operator=(UnitTrackerClass&&) = delete;
+  // Creates `type_count` counters, all zero, in host byte order.
+  explicit TypeTally(int type_count);
+  ~TypeTally();
+  TypeTally(const TypeTally&) = delete;
+  TypeTally& operator=(const TypeTally&) = delete;
+  TypeTally(TypeTally&&) = delete;
+  TypeTally& operator=(TypeTally&&) = delete;
 
-  // Adds or takes one from the count of `unit_type`, which must be below the
-  // unit count (std::out_of_range otherwise). Only meaningful while the
+  // Adds or takes one from the count of `type`, which must be below the
+  // type count (std::out_of_range otherwise). Only meaningful while the
   // counts are in host byte order.
-  void Increment_Unit_Total(int unit_type);
-  void Decrement_Unit_Total(int unit_type);
+  void Increment(int type);
+  void Decrement(int type);
   // Sets every count to zero, in host byte order.
-  void Clear_Unit_Total();
+  void Clear();
 
-  // Returns the count of `unit_type`, as stored: byte-swapped while the counts
+  // Returns the count of `type`, as stored: byte-swapped while the counts
   // are in network format.
-  [[nodiscard]] int Get_Unit_Total(int unit_type) const;
+  [[nodiscard]] int Count(int type) const;
   // Returns every count, one per type and in whichever byte order they are in
   // now; the statistics packet sends these bytes as they are.
   [[nodiscard]] std::span<const int32_t> Get_All_Totals() const
@@ -82,10 +82,10 @@ class UnitTrackerClass {
 
  private:
   // One count per type, indexed by the type's enum value.
-  std::vector<int32_t> UnitTotals;
-  // The number of counts in UnitTotals.
+  std::vector<int32_t> counts_;
+  // The number of counts in counts_.
   int UnitCount;
-  // True while UnitTotals holds network (big-endian) byte order, false while
+  // True while counts_ holds network (big-endian) byte order, false while
   // it holds host order.
   bool InNetworkFormat{false};
 };

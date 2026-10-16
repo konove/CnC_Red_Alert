@@ -600,7 +600,7 @@ void HouseClass::Serialize(Archive& ar) {
      VScan, ActiveVScan, OldVScan, CreditsSpent, HarvestedCredits,
      StolenBuildingsCredits, CurUnits, CurBuildings, CurInfantry, CurVessels,
      CurAircraft, Tiberium, Credits, Capacity);
-  // The UnitTrackerClass statistics are runtime-only; Init_Trackers()
+  // The TypeTally statistics are runtime-only; Init_Trackers()
   // recreates them on the shell object before Serialize() runs.
   ar(AircraftFactories, InfantryFactories, UnitFactories, VesselFactories,
      BuildingFactories, Power, Drain, AircraftFactory, InfantryFactory,
