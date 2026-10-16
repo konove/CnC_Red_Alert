@@ -16,33 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Command & Conquer                        *
- *                                                                         *
- *                    File Name : UTRACKER.CPP                             *
- *                                                                         *
- *                   Programmer : Steve Tall                               *
- *                                                                         *
- *                   Start Date : June 3rd, 1996                           *
- *                                                                         *
- *                  Last Update : June 7th, 1996 [ST]                      *
- *                                                                         *
- *-------------------------------------------------------------------------*
- *  The UnitTracker class exists to track the various statistics           *
- *   required for internet games.                                          *
- *                                                                         *
- *                                                                         *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
- *                                                                         *
- *  Functions:                                                             *
- *                                                                         *
- *                                                                         *
- *                                                                         *
- *                                                                         *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// File: UnitTrackerClass, the per-type counts behind the internet game
+// statistics.
+//
+// Originally UTRACKER.CPP by Steve Tall, June 3-7, 1996.
 
 #include "game/sim/utracker.h"
 
@@ -52,9 +29,7 @@
 
 #include "base/numeric.h"
 
-/*
-** Define host to network to host functions for DOS
-*/
+// htonl() and ntohl(), for the byte order the statistics packet sends.
 #ifdef _WIN32
 #include <winsock.h>
 #else
@@ -63,122 +38,32 @@
 
 namespace game {
 
-/***********************************************************************************************
- * UTC::UnitTrackerClass -- Class constructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Number of unit types to reserve space for *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:10AM ST : Created *
- *=============================================================================================*/
 UnitTrackerClass::UnitTrackerClass(int unit_count)
     : UnitTotals(base::ToSize(unit_count)), UnitCount(unit_count) {
-  Clear_Unit_Total();      // Clear each entry
+  Clear_Unit_Total();
 }
 
-/***********************************************************************************************
- * UTC::~UnitTrackerClass -- Class destructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:10AM ST : Created *
- *=============================================================================================*/
 UnitTrackerClass::~UnitTrackerClass() = default;
 
-/***********************************************************************************************
- * UTC::Increment_Unit_Total -- Increment the total for the specefied unit *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Unit number *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:12AM ST : Created *
- *=============================================================================================*/
 void UnitTrackerClass::Increment_Unit_Total(int unit_type) {
   UnitTotals.at(base::ToSize(unit_type))++;
 }
 
-/***********************************************************************************************
- * UTC::Decrement_Unit_Total -- Decrement the total for the specefied unit *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Unit number *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:13AM ST : Created *
- *=============================================================================================*/
 void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
   UnitTotals.at(base::ToSize(unit_type))--;
 }
 
-/***********************************************************************************************
- * UTC::Get_All_Totals -- Returns a pointer to the start of the unit totals list
- **
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Ptr to unit totals list *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:13AM ST : Created *
- *=============================================================================================*/
 std::span<int32_t> UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
 
 int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
   return UnitTotals.at(base::ToSize(unit_type));
 }
 
-/***********************************************************************************************
- * UTC::Clear_Unit_Total -- Clear out all the unit totals *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:14AM ST : Created *
- *=============================================================================================*/
+// TODO: Zero is zero in either byte order, yet InNetworkFormat keeps saying
+// "network": the next To_Network_Format() then skips the swap, and the counts
+// made since go out in host order (the RA vessels-left statistic).
 void UnitTrackerClass::Clear_Unit_Total() { std::ranges::fill(UnitTotals, 0); }
 
-/***********************************************************************************************
- * UTC::To_Network_Format -- Changes all unit totals to network format for the
- *internet        *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:15AM ST : Created *
- *=============================================================================================*/
 void UnitTrackerClass::To_Network_Format() {
   if (!InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
@@ -186,23 +71,9 @@ void UnitTrackerClass::To_Network_Format() {
           htonl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
-  InNetworkFormat = 1;  // Flag that data is now in network format
+  InNetworkFormat = 1;
 }
 
-/***********************************************************************************************
- * UTC::To_PC_Format -- Changes all unit totals to PC format from network format
- **
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 0:15AM ST : Created *
- *=============================================================================================*/
 void UnitTrackerClass::To_PC_Format() {
   if (InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
@@ -210,7 +81,7 @@ void UnitTrackerClass::To_PC_Format() {
           ntohl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
-  InNetworkFormat = 0;  // Flag that data is now in PC format
+  InNetworkFormat = 0;
 }
 
 }  // namespace game
