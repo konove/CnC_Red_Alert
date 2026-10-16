@@ -23,7 +23,18 @@
 
 #include "game/sim/flasher.h"
 
+#include <algorithm>
+#include <cstdint>
+
 namespace game {
+
+void Flasher::Start(int frames) {
+  frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
+  if (frames_left_ == 0) {
+    // Process() only clears the flag while it counts down.
+    brightened_ = false;
+  }
+}
 
 bool Flasher::Process() {
   if (frames_left_ == 0) {

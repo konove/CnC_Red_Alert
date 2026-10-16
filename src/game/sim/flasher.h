@@ -24,7 +24,6 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 #define CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 
-#include <algorithm>
 #include <cstdint>
 
 namespace game {
@@ -57,13 +56,7 @@ class Flasher {
   // Starts flashing for `frames` calls of Process(), replacing what was left
   // of an earlier flash. More than kMaxFrames flashes for kMaxFrames; 0 or
   // less stops the flash.
-  void Start(int frames) {
-    frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
-    if (frames_left_ == 0) {
-      // Process() only clears the flag while it counts down.
-      brightened_ = false;
-    }
-  }
+  void Start(int frames);
 
   // Steps the flash by one game frame; the owner calls it once a frame.
   // Returns true when the object has to be redrawn: on every frame of the
