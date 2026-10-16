@@ -59,6 +59,7 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
+#include "ra/core/low_byte.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/data/rules.h"
@@ -156,18 +157,6 @@ T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,
                   << ", which the scenario never filled";
   }
   return nullptr;
-}
-
-// Returns the low byte of `value` as a number. The original game kept the
-// one-byte values (house, special weapon, movie, speech, flag) in a union with
-// the int the scenario stores, and the shipped scenarios rely on it: SCG12EA's
-// nuke is special weapon -255 and SCG10EA's "lch3" plays movie -170.
-constexpr int LowByte(const int value) { return static_cast<int8_t>(value); }
-
-// Returns the one-byte enum a record's `value` means, which is its low byte.
-template <class Enum>
-constexpr Enum LowByteAs(const int value) {
-  return static_cast<Enum>(LowByte(value));
 }
 
 // Returns the sound a record's `value` means: the value, or its low byte when

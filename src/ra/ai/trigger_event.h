@@ -32,6 +32,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/core/defines.h"
+#include "ra/core/low_byte.h"
 #include "ra/core/target.h"
 
 class ArchiveReader;
@@ -224,11 +225,11 @@ class TriggerEvent {
   void set_aircraft(const AircraftType aircraft) {
     argument_ = static_cast<int32_t>(aircraft);
   }
-  // HousesType is one byte, the word's lowest. Storing one keeps the other
-  // three, as the store into the union this replaced did, so the value a
-  // [Trigs] entry saves does not change.
+  // HousesType is one byte, the word's lowest (see ra/core/low_byte.h).
+  // Storing one keeps the other three, as the store into the union this
+  // replaced did, so the value a [Trigs] entry saves does not change.
   [[nodiscard]] HousesType house() const {
-    return static_cast<HousesType>(static_cast<int8_t>(argument_));
+    return LowByteAs<HousesType>(argument_);
   }
   void set_house(const HousesType house) {
     argument_ =
