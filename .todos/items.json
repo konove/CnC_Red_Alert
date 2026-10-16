@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 464,
+  "nextId": 470,
   "items": [
     {
       "id": "T-2",
@@ -16967,6 +16967,282 @@
             "",
             "  // Prints a text label, unclipped or clipped to `width` pixels.",
             "  static void Print_Label(PixelView& view, const char* text, int x, int y,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-464",
+      "title": "Leftovers from the game/sim/flasher modernization",
+      "details": "What the /modernize-file run on src/game/sim/flasher.{h,cc} and flasher_test.cc left open. The run fixed two Start() bugs (a count past 127 wrapped; Start(0) on a brightened frame left the object brightened), replaced the 7-bit/1-bit fields with int8_t + bool (same save bytes), renamed FlasherClass to game::Flasher and its members, moved Start() into the .cc and took the files to 100% coverage and a clean IDE.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:28:56Z",
+      "updated": "2026-10-16T07:28:56Z",
+      "source": "1c8b7143c..961c1ada8",
+      "anchors": [
+        {
+          "path": "src/game/sim/flasher.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-465",
+      "title": "Decide whether Flasher::Start() should always clear the brightened flag",
+      "details": "Start() clears `brightened_` only when the count it sets is 0 (c777f3554), because Process() is otherwise the flag's only writer. Two simpler shapes, both of which change what is drawn for one frame:\n\n- **Always clear it in Start()**: drops the `if`. A restart on a brightened frame (Start(n>0) mid-flash) reads unbrightened until the next Process() instead of staying brightened.\n- **Derive it**: `IsBrightened()` returns `frames_left_ % 2 != 0` and the member goes; Serialize() still writes a derived bool byte so the save format is unchanged. Differs from today between Start() and the first Process(): Start(7) is brightened at once instead of after the first frame, and `IsBrightenedOnEveryOtherFrame` pins the current behaviour.\n\nOnly drawing changes, not the simulation.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:29:12Z",
+      "parent": "T-464",
+      "source": "1c8b7143c..961c1ada8",
+      "toDecide": "Keep Start()'s `if (frames_left_ == 0)` as it is, make Start() always clear the flag, or derive the flag from the count and drop the member?",
+      "anchors": [
+        {
+          "path": "src/game/sim/flasher.cc",
+          "startLine": 31,
+          "endLine": 37,
+          "text": "void Flasher::Start(const int frames) {\n  frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));\n  if (frames_left_ == 0) {\n    // Process() only clears the flag while it counts down.\n    brightened_ = false;\n  }\n}",
+          "before": [
+            "",
+            "namespace game {",
+            ""
+          ],
+          "after": [
+            "",
+            "bool Flasher::Process() {",
+            "  if (frames_left_ == 0) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-466",
+      "title": "Decide between Flasher and TargetFlash as the type's name",
+      "details": "FlasherClass became `game::Flasher` (2d77b9aa0), matching the original FLASHER.H and both games' `TechnoClass::flasher_`. `TargetFlash` would say what it is (the flash that shows an object was picked as a target) and would not share a spelling with the sidebar strips' unrelated `int Flasher` member. Renaming means the type (RA and TD techno.h, the test), the file pair (target_flash.h/.cc) and CLAUDE.md's game/sim line.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:29:12Z",
+      "parent": "T-464",
+      "source": "1c8b7143c..961c1ada8",
+      "toDecide": "Keep `game::Flasher`, or rename it (and the files) to `TargetFlash`?",
+      "anchors": [
+        {
+          "path": "src/game/sim/flasher.h",
+          "startLine": 37,
+          "endLine": 37,
+          "text": "class Flasher {",
+          "before": [
+            "// Example:",
+            "//   flasher.Start(7);",
+            "//   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }"
+          ],
+          "after": [
+            " public:",
+            "  // The longest flash, in frames. A save holds the count in one byte, as an",
+            "  // int8_t."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-467",
+      "title": "Normalise a loaded Flasher that is brightened with no frames left",
+      "details": "Before c777f3554 a Start() whose count wrapped to 0 on a brightened frame left `brightened_` true with `frames_left_` 0, and a save made then still holds that pair. Loading it brings the stuck brightening back until the next Start(). Serialize() could clear `brightened_` when the loaded count is 0 (not fail the load: the save is valid). A two-line change plus a test that loads the bytes {0, 1}.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "cleanup",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:29:12Z",
+      "parent": "T-464",
+      "source": "1c8b7143c..961c1ada8",
+      "anchors": [
+        {
+          "path": "src/game/sim/flasher.h",
+          "startLine": 46,
+          "endLine": 53,
+          "text": "    ar(frames_left_, brightened_);\n    if constexpr (Archive::kIsReading) {\n      // A negative count, a byte past 127, is a damaged save.\n      if (frames_left_ < 0) {\n        ar.Fail(\"invalid flash count\");\n        *this = Flasher();\n      }\n    }",
+          "before": [
+            "  // Saved-game support.",
+            "  template <class Archive>",
+            "  void Serialize(Archive& ar) {"
+          ],
+          "after": [
+            "  }",
+            "",
+            "  // Starts flashing for `frames` calls of Process(), replacing what was left"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-468",
+      "title": "Name Clicked_As_Target()'s count for its unit in both games",
+      "details": "`TechnoClass::Clicked_As_Target(int count = 7)` passes its count straight to `Flasher::Start(int frames)`; it is a number of game frames, capped at `Flasher::kMaxFrames` (127). The virtual chain runs through ObjectClass and TerrainClass in each game (`int /*unused*/` there), so the parameter is renamed along the chain, best in the techno/object files' own modernization passes, one game per commit.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:29:12Z",
+      "parent": "T-464",
+      "source": "1c8b7143c..961c1ada8",
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.h",
+          "startLine": 365,
+          "endLine": 365,
+          "text": "  void Clicked_As_Target(int count = 7) override;",
+          "before": [
+            "  /*",
+            "  **\tUser I/O.",
+            "  */"
+          ],
+          "after": [
+            "  bool Select() override;",
+            "  virtual void Response_Select();",
+            "  virtual void Response_Move();"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 2614,
+          "endLine": 2614,
+          "text": "void TechnoClass::Clicked_As_Target(int count) {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 12/09/1994 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  DCHECK(IsActive);",
+            "",
+            "  flasher_.Start(count);"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/techno.h",
+          "startLine": 258,
+          "endLine": 258,
+          "text": "  void Clicked_As_Target(int count = 7) override;",
+          "before": [
+            "  /*",
+            "  **\tUser I/O.",
+            "  */"
+          ],
+          "after": [
+            "  bool Select() override;",
+            "  virtual void Response_Select();",
+            "  virtual void Response_Move();"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/techno.cc",
+          "startLine": 1766,
+          "endLine": 1766,
+          "text": "void TechnoClass::Clicked_As_Target(int count) { flasher_.Start(count); }",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 12/09/1994 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "",
+            "/***********************************************************************************************",
+            " * TechnoClass::AI -- Handles AI processing for techno object. *"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-469",
+      "title": "Rename the sidebar strips' Flasher member so it no longer reads as the type",
+      "details": "Both games' sidebar strip classes have `int Flasher = -1`, the index of the cameo being flashed (-1 for none), spelled exactly like the type `game::Flasher` since 2d77b9aa0. It is saved (RA ra/saveload/iomap.cc:211), so only the name changes. A name like `flashing_cameo_` (or a std::optional index) for the sidebar files' own modernization pass, one game per commit.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T07:29:12Z",
+      "updated": "2026-10-16T07:29:12Z",
+      "parent": "T-464",
+      "source": "1c8b7143c..961c1ada8",
+      "anchors": [
+        {
+          "path": "src/ra/map/sidebar.h",
+          "startLine": 246,
+          "endLine": 246,
+          "text": "    int Flasher = -1;",
+          "before": [
+            "    *flashing *\tat any one instant. This is usually the result of a click on the",
+            "    *slot and construction *\thas commenced.",
+            "    */"
+          ],
+          "after": [
+            "",
+            "    /*",
+            "    **\tAs the sidebar scrolls up and down, this variable holds the index for"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/sidebar.h",
+          "startLine": 274,
+          "endLine": 274,
+          "text": "    int Flasher = -1;",
+          "before": [
+            "    *flashing *\tat any one instant. This is usually the result of a click on the",
+            "    *slot and construction *\thas commenced.",
+            "    */"
+          ],
+          "after": [
+            "",
+            "    /*",
+            "    **\tAs the sidebar scrolls up and down, this variable holds the index for"
           ],
           "lost": false
         }
