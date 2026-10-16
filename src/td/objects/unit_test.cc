@@ -445,7 +445,7 @@ TEST_F(UnitTest, ADinosaurStartsItsAttackAnimationAndBitesAtStageFour) {
   rex.AI();
   EXPECT_TRUE(rex.IsFiring);
   EXPECT_EQ(rex.animation().stage(), 0);
-  EXPECT_NE(rex.animation().frames_per_stage(), 0);
+  EXPECT_TRUE(rex.animation().IsAnimating());
   EXPECT_EQ(rex.Can_Fire(target, 0), game::FIRE_BUSY);
 
   rex.animation().set_stage(3);

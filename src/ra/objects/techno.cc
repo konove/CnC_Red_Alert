@@ -2782,7 +2782,7 @@ void TechnoClass::Cloaking_AI() {
         */
         case game::CLOAKING:
           Mark(MARK_CHANGE);
-          if (!CloakingDevice.frames_per_stage()) {
+          if (!CloakingDevice.IsAnimating()) {
             CloakingDevice.SetFramesPerStage(1);
           }
           switch (Visual_Character(true)) {
@@ -2876,7 +2876,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   *start cloaking.
   */
   if (Cloak == game::CLOAKED ||
-      (Cloak == game::CLOAKING && CloakingDevice.frames_per_stage())) {
+      (Cloak == game::CLOAKING && CloakingDevice.IsAnimating())) {
     return false;
   }
 

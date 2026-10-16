@@ -6371,7 +6371,7 @@ void BuildingClass::Animation_AI() {
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == game::BSTATE_NONE || animation().frames_per_stage() == 0) {
+      if (BState == game::BSTATE_NONE || !animation().IsAnimating()) {
         IsReadyToCommence = true;
       }
     }

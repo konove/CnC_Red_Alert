@@ -82,9 +82,7 @@ class FactoryClass {
   bool Completed();
   bool Has_Changed();
   bool Has_Completed();
-  [[nodiscard]] bool Is_Building() const {
-    return progress_.frames_per_stage() != 0;
-  }
+  [[nodiscard]] bool Is_Building() const { return progress_.IsAnimating(); }
   bool Set(const TechnoTypeClass& object, HouseClass& house);
   bool Set(const int& type, HouseClass& house);
   bool Start();

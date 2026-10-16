@@ -470,7 +470,7 @@ void UnitClass::AI() {
   ** stages here
   */
   if (Class->IsAnimating) {
-    if (!animation().frames_per_stage()) {
+    if (!animation().IsAnimating()) {
       animation().SetFramesPerStage(2);
     }
     animation().AI();
@@ -487,7 +487,7 @@ void UnitClass::AI() {
   if ((Class->IsPieceOfEight && TheSpecialFlags().jurassic &&
        TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
-    if (!animation().frames_per_stage()) {
+    if (!animation().IsAnimating()) {
       animation().SetFramesPerStage(TheOptions().Normalize_Delay(2));
       animation().set_stage(0);
     }

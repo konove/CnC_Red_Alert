@@ -2950,7 +2950,7 @@ int UnitClass::Mission_Harvest() {
     **	Harvest at current location until full or Tiberium exhausted.
     */
     case kHarvesting:
-      if (animation().frames_per_stage() == 0) {
+      if (!animation().IsAnimating()) {
         animation().set_stage(0);
         animation().SetFramesPerStage(TheRules().OreDumpRate);
       }

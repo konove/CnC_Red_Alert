@@ -33,7 +33,7 @@ class StageCounterTest : public testing::Test {
 TEST_F(StageCounterTest, ANewCounterStandsStill) {
   StageCounter counter;
   EXPECT_EQ(counter.stage(), 0);
-  EXPECT_EQ(counter.frames_per_stage(), 0);
+  EXPECT_FALSE(counter.IsAnimating());
   for (int frame = 0; frame < 5; ++frame) {
     EXPECT_FALSE(Tick(counter));
   }
@@ -44,7 +44,7 @@ TEST_F(StageCounterTest, MovesOnAStageEveryFramesPerStage) {
   StageCounter counter;
   counter.set_stage(7);
   counter.SetFramesPerStage(3);
-  EXPECT_EQ(counter.frames_per_stage(), 3);
+  EXPECT_TRUE(counter.IsAnimating());
   for (int stage = 8; stage <= 9; ++stage) {
     EXPECT_FALSE(Tick(counter));
     EXPECT_FALSE(Tick(counter));
@@ -75,6 +75,7 @@ TEST_F(StageCounterTest, SettingFramesPerStageRestartsTheCountdown) {
   EXPECT_FALSE(Tick(counter));
   EXPECT_TRUE(Tick(counter));
   counter.SetFramesPerStage(0);
+  EXPECT_FALSE(counter.IsAnimating());
   Skip(100);
   EXPECT_FALSE(counter.AI());
   EXPECT_EQ(counter.stage(), 1);
@@ -99,10 +100,14 @@ TEST_F(StageCounterTest, ASavedCounterCarriesOnWhereItWas) {
   loaded.Serialize(reader);
   ASSERT_TRUE(reader.ok());
   EXPECT_EQ(loaded.stage(), 12);
-  EXPECT_EQ(loaded.frames_per_stage(), 3);
+  EXPECT_TRUE(loaded.IsAnimating());
   EXPECT_FALSE(Tick(loaded));
   EXPECT_TRUE(Tick(loaded));
   EXPECT_EQ(loaded.stage(), 13);
+  // The stages after it last the saved three frames.
+  EXPECT_FALSE(Tick(loaded));
+  EXPECT_FALSE(Tick(loaded));
+  EXPECT_TRUE(Tick(loaded));
 }
 
 }  // namespace

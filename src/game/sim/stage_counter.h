@@ -54,8 +54,10 @@ class StageCounter {
   }
 
   [[nodiscard]] int stage() const { return stage_; }
-  [[nodiscard]] int frames_per_stage() const { return frames_per_stage_; }
   void set_stage(const int stage) { stage_ = stage; }
+  // Returns false when the stage stands still: SetFramesPerStage(0), or never
+  // set.
+  [[nodiscard]] bool IsAnimating() const { return frames_per_stage_ != 0; }
   // Sets the game frames a stage lasts and restarts the countdown to the next
   // one; 0 stops the animation.
   void SetFramesPerStage(const int frames) {
@@ -67,7 +69,7 @@ class StageCounter {
   // to redraw. However late it is called, it moves on one stage and counts the
   // next one from now: frames that passed without it are not caught up.
   bool AI() {
-    if (frames_per_stage_ != 0 && countdown_.IsFinished()) {
+    if (IsAnimating() && countdown_.IsFinished()) {
       stage_++;
       countdown_.Set(frames_per_stage_);
       return true;

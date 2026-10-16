@@ -1020,7 +1020,7 @@ void InfantryClass::AI() {
   **	Special hack to make sure that if this infantry is in firing animation,
   *but the *	stage class isn't set, then abort the firing flag.
   */
-  if (IsFiring && !animation().frames_per_stage()) {
+  if (IsFiring && !animation().IsAnimating()) {
     IsFiring = false;
   }
 
