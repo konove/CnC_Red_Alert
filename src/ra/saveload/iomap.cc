@@ -208,7 +208,7 @@ template void RadarClass::Serialize(ArchiveReader&);
 template <class Archive>
 void SidebarClass::StripClass::Serialize(Archive& ar) {
   bool building = IsBuilding;
-  ar(building, Flasher, TopIndex, BuildableCount);
+  ar(building, TopIndex, BuildableCount);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || BuildableCount < 0 || BuildableCount > kMaxBuildables ||
         TopIndex < 0 || TopIndex >= kMaxBuildables) {
@@ -293,8 +293,6 @@ void SidebarClass::ResetTransientUiState() {
     column.IsToRedraw = true;
     column.IsScrolling = column.IsScrollingDown = false;
     column.Scroller = column.Slid = column.LastSlid = 0;
-    column.animation().set_stage(0);
-    column.animation().SetRate(0);
   }
 }
 
