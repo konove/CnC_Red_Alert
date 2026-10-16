@@ -45,11 +45,6 @@ class TypeTally {
  public:
   // Creates `type_count` counters, all zero.
   explicit TypeTally(int type_count);
-  ~TypeTally();
-  TypeTally(const TypeTally&) = delete;
-  TypeTally& operator=(const TypeTally&) = delete;
-  TypeTally(TypeTally&&) = delete;
-  TypeTally& operator=(TypeTally&&) = delete;
 
   // Adds or takes one from the count of `type`, which must be below the
   // type count (std::out_of_range otherwise).
