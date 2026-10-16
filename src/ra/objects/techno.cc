@@ -2698,9 +2698,6 @@ void TechnoClass::AI() {
   **	if the current animation process needs to change.
   */
   if (What_Am_I() != RTTI_BUILDING) {
-    if (animation().IsAboutToChange()) {
-      Mark(MARK_CHANGE_REDRAW);
-    }
     if (animation().AI() || door_moved) {
       Mark(MARK_CHANGE_REDRAW);
     }
