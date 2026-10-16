@@ -672,10 +672,8 @@ void Send_Statistics_Packet() {
       stats.Add_Field(field_player_vessels_bought,
                       player->VesselTotals->NetworkBytes());
 
-      /*
-      ** Clear out the counts and use the space to count up the current number
-      *of units/buildings
-      */
+      // The bought counts have been sent, so their tallies are cleared and reused
+      // to count what each player has left.
       player->InfantryTotals->Clear();
       player->AircraftTotals->Clear();
       player->UnitTotals->Clear();
