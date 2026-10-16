@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 470,
+  "nextId": 473,
   "items": [
     {
       "id": "T-2",
@@ -12418,10 +12418,10 @@
         "rust",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T07:25:39Z",
-      "updated": "2026-10-16T06:58:05Z",
+      "updated": "2026-10-16T20:40:31Z",
       "source": "d3623d18..f8694ec5",
       "resolution": "Deleted the C++ reference kernels, their seven differential tests, `kernel_bench` and `base/lcg_test_util.h` (about 6,200 lines). Before deleting, moved what only the differential tests covered into the tests that stay: the overlap death tests, the in-place ADPCM layouts, VQ entries with a high byte and past the codebook, long XOR-delta commands, and Blowfish keys of every length (1–24 are Eric Young's set_key vectors) plus re-keying. The PK vector is now an expected-value test. Each `docs/RUST_*_PLAN.md` records the last `kernel_bench` run and the deletion.",
       "toDecide": "When has the migration settled enough to drop the references? They cost build time and strict-check time on every full build, and they are the only thing that would show a regression against the original C++ if a Rust kernel is changed. Say when (for example after the branch `rust-migration` is merged and the real-device sound check is done) and an agent can do the deletion.",
@@ -13718,8 +13718,8 @@
       "anchors": [
         {
           "path": "src/td/objects/unit.cc",
-          "startLine": 527,
-          "endLine": 552,
+          "startLine": 528,
+          "endLine": 553,
           "text": "  Validate();\n\n  const game::FireErrorType cf = Turret_Can_Fire(target, which);\n  /*\n  ** A dinosaur plays its attack animation first and releases the bullet at\n  ** the proper attack stage, so things won't die prematurely.\n  */\n  if (cf == game::FIRE_OK && Class->IsFireAnim &&\n      (!IsFiring || animation().stage() < 4)) {\n    return game::FIRE_BUSY;\n  }\n  return cf;\n}\n\n// Checks the turret alone first: Can_Fire() answers FIRE_BUSY for a dinosaur\n// that has yet to start its attack animation.\ngame::FireErrorType UnitClass::Ready_To_Fire(Target target, int which) {\n  if (Class->IsFireAnim && !IsFiring &&\n      Turret_Can_Fire(target, which) == game::FIRE_OK) {\n    animation().SetRate(TheOptions().Normalize_Delay(2));\n    animation().set_stage(0);\n    IsFiring = true;\n    return game::FIRE_BUSY;\n  }\n  return Can_Fire(target, which);\n}",
           "before": [
             " * HISTORY: * 05/08/1995 JLB : Created. *",
@@ -13731,7 +13731,7 @@
             "/***********************************************************************************************",
             " * UnitClass::Receive_Message -- Handles receiving a radio message. *"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -16982,11 +16982,13 @@
         "refactoring",
         "game"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:28:56Z",
-      "updated": "2026-10-16T07:50:25Z",
+      "updated": "2026-10-16T20:40:42Z",
       "source": "1c8b7143c..961c1ada8",
+      "fixedIn": "682e1565f",
+      "resolution": "All five parts done (efa6c9119..682e1565f): brightened flag derived from the count (T-465, T-467), type renamed to `game::TargetFlash` (T-466), `Clicked_As_Target()`'s count is `frames` (T-468), the sidebar strips' dead flashing removed (T-469).",
       "anchors": [
         {
           "path": "src/game/sim/target_flash.h",
@@ -17004,10 +17006,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:50:25Z",
+      "updated": "2026-10-16T20:40:36Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "efa6c9119",
@@ -17055,10 +17057,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:50:25Z",
+      "updated": "2026-10-16T20:40:34Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "4473fb405",
@@ -17105,10 +17107,10 @@
         "cleanup",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:50:25Z",
+      "updated": "2026-10-16T20:40:33Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "efa6c9119",
@@ -17144,10 +17146,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:57:53Z",
+      "updated": "2026-10-16T20:40:39Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "918055f80",
@@ -17234,12 +17236,14 @@
         "ra",
         "td"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T15:10:55Z",
+      "updated": "2026-10-16T20:40:41Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
+      "fixedIn": "682e1565f",
+      "resolution": "The member was only ever set to -1, so instead of a rename the strip flashing is removed in both games: `Flasher`, the strip's `animation_` StageCounter and accessor, the AI() step and the load reset. Save versions RA 22 (bb723081d), TD 13 (this commit), both fixtures regenerated, both smoke scripts pass.",
       "decisions": [
         {
           "question": "The sidebar strips' int Flasher is only ever assigned -1, so the flashing block and animation_ are dead. Rename it as planned, or remove the dead flashing?",
@@ -17254,37 +17258,106 @@
       "anchors": [
         {
           "path": "src/ra/map/sidebar.h",
-          "startLine": 246,
-          "endLine": 246,
-          "text": "    int Flasher = -1;",
-          "before": [
-            "    *flashing *\tat any one instant. This is usually the result of a click on the",
-            "    *slot and construction *\thas commenced.",
-            "    */"
-          ],
-          "after": [
-            "",
-            "    /*",
-            "    **\tAs the sidebar scrolls up and down, this variable holds the index for"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/map/sidebar.h",
-          "startLine": 274,
-          "endLine": 274,
-          "text": "    int Flasher = -1;",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-470",
+      "title": "Leftovers from the game/sim/stage_counter.h modernization",
+      "details": "Open items from the second /modernize-file run on stage_counter.h (rate renamed to frames_per_stage, IsAboutToChange() folded into AI(), IsAnimating() replaced the frames_per_stage() getter).",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "game",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T21:06:23Z",
+      "updated": "2026-10-16T21:06:23Z",
+      "source": "682e1565f..7452c654b",
+      "anchors": [
+        {
+          "path": "src/game/sim/stage_counter.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-471",
+      "title": "Reset a StageCounter loaded with a negative frames per stage",
+      "details": "StageCounter::Serialize() takes `frames_per_stage_` from the archive unchecked. A damaged save with a negative value gives a countdown that is finished at once (Countdown::Set(-1) reads Remaining() == 0), and since IsAnimating() is true the stage advances every frame. No crash, just an animation running flat out.\n\ngame::Door and game::TargetFlash (T-370, T-467) settled this for their own loads: a loaded state no object can have is replaced with the default (Door: `if (Archive::kIsReading && !IsConsistent()) *this = Door();`). Doing the same here is a few lines plus a save test in stage_counter_test.cc that writes a negative value through ArchiveWriter and checks the loaded counter stands still. Countdown already fails the archive on a negative remaining value, so only `frames_per_stage_` (and arguably a negative `stage_`) needs the check. No save-format change.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "cleanup",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T21:06:33Z",
+      "updated": "2026-10-16T21:06:33Z",
+      "parent": "T-470",
+      "source": "682e1565f..7452c654b",
+      "anchors": [
+        {
+          "path": "src/game/sim/stage_counter.h",
+          "startLine": 48,
+          "endLine": 54,
+          "text": "  // Saved-game support. The countdown is saved as the frames it has left, so\n  // a loaded counter carries on where it was whatever frame the loading game\n  // is at; the game clock must be restored before this is read.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(stage_, countdown_, frames_per_stage_);\n  }",
           "before": [
-            "    *flashing *\tat any one instant. This is usually the result of a click on the",
-            "    *slot and construction *\thas commenced.",
-            "    */"
+            " public:",
+            "  StageCounter() = default;",
+            ""
           ],
           "after": [
             "",
-            "    /*",
-            "    **\tAs the sidebar scrolls up and down, this variable holds the index for"
+            "  [[nodiscard]] int stage() const { return stage_; }",
+            "  void set_stage(const int stage) { stage_ = stage; }"
           ],
-          "lost": true
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-472",
+      "title": "Remove Tiberian Dawn's #ifdef OBSOLETE blocks",
+      "details": "`OBSOLETE` is defined nowhere (not in src/, cmake/ or CMakeLists.txt), so the 27 `#ifdef OBSOLETE` / `#if ... OBSOLETE` blocks in 16 Tiberian Dawn files never compile; Red Alert has none. Seen while renaming StageCounter::SetRate: td/map/mouse.cc:195 still calls `Control.set_stage()`/`SetFramesPerStage()` on a `Control` member that no longer exists, and the rename had to edit it blind.\n\nRun /remove-dead-code over the files `git grep -lE '^\\s*#\\s*if(def)?\\s.*OBSOLETE' -- src` lists, keeping any `#else` branch. Check each for an `#ifndef OBSOLETE` (the live side) before deleting.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "cleanup",
+        "td",
+        "dead-code"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-16T21:06:33Z",
+      "updated": "2026-10-16T21:06:33Z",
+      "parent": "T-470",
+      "source": "682e1565f..7452c654b",
+      "anchors": [
+        {
+          "path": "src/td/map/mouse.cc",
+          "startLine": 195,
+          "endLine": 199,
+          "text": "#ifdef OBSOLETE\n    Control.set_stage(0);\n    int rate = TheOptions().Normalize_Delay(control->FrameRate);\n    Control.SetFramesPerStage(std::max(rate, 1));\n#endif",
+          "before": [
+            "    AnimTimer.Set(control->FrameRate);",
+            "    Frame = 0;",
+            ""
+          ],
+          "after": [
+            "    baseshp = wwsmall ? control->SmallFrame : control->StartFrame;",
+            "",
+            "    game::TheMouse().SetShape("
+          ],
+          "lost": false
         }
       ]
     }
