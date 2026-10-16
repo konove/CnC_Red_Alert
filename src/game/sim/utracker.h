@@ -63,14 +63,10 @@ class TypeTally {
   // Returns every count, in type order, as a 32-bit big-endian integer: the
   // layout the statistics packet sends.
   [[nodiscard]] std::vector<std::byte> NetworkBytes() const;
-  // Returns the number of counters: the number of types this tracks.
-  [[nodiscard]] int Get_Unit_Count() const { return UnitCount; }
 
  private:
   // One count per type, indexed by the type's enum value.
   std::vector<int32_t> counts_;
-  // The number of counts in counts_.
-  int UnitCount;
 };
 
 }  // namespace game

@@ -34,8 +34,7 @@
 
 namespace game {
 
-TypeTally::TypeTally(int type_count)
-    : counts_(base::ToSize(type_count)), UnitCount(type_count) {
+TypeTally::TypeTally(int type_count) : counts_(base::ToSize(type_count)) {
   Clear();
 }
 
