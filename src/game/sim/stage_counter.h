@@ -16,28 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/STAGE.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : STAGE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : June 17, 1994 *
- *                                                                                             *
- *                  Last Update : June 17, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 // File: StageCounter, the frame counter behind an object's looping animation.
+//
+// Originally STAGE.H by Joe L. Bostic, started June 17, 1994.
 
 #ifndef CNC_RED_ALERT_GAME_SIM_STAGE_COUNTER_H_
 #define CNC_RED_ALERT_GAME_SIM_STAGE_COUNTER_H_
@@ -64,7 +45,9 @@ class StageCounter {
  public:
   StageCounter() : countdown_(0) {}
 
-  // Saved-game support.
+  // Saved-game support. The countdown is saved as the frames it has left, so
+  // a loaded counter carries on where it was whatever frame the loading game
+  // is at; the game clock must be restored before this is read.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(stage_, countdown_, rate_);
@@ -79,13 +62,14 @@ class StageCounter {
     countdown_.Set(rate);
     rate_ = rate;
   }
-  // Returns whether the next AI() will move on a stage.
+  // Returns whether AI(), called in this frame, will move on a stage.
   [[nodiscard]] bool IsAboutToChange() const {
     return countdown_.IsFinished() && rate_ != 0;
   }
   // Moves on a stage when the countdown has run out, and restarts it. Call it
   // once a game frame. Returns whether the stage changed, so the owner knows
-  // to redraw.
+  // to redraw. However late it is called, it moves on one stage and counts the
+  // next one from now: frames that passed without it are not caught up.
   bool AI() {
     if (IsAboutToChange()) {
       stage_++;
