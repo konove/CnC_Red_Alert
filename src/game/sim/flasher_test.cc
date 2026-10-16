@@ -54,10 +54,13 @@ TEST(FlasherTest, StartingAgainReplacesTheCount) {
   EXPECT_FALSE(flasher.Process());
 }
 
-TEST(FlasherTest, KeepsTheLowSevenBitsOfTheCount) {
+TEST(FlasherTest, CutsALongCountToTheLongestFlash) {
   FlasherClass flasher;
+  // A count past 127 used to wrap: 129 flashed once.
   flasher.Start(128 + 1);
-  EXPECT_TRUE(flasher.Process());
+  for (int frame = 0; frame < 127; ++frame) {
+    EXPECT_TRUE(flasher.Process()) << frame;
+  }
   EXPECT_FALSE(flasher.Process());
 }
 

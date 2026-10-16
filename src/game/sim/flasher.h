@@ -24,6 +24,7 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 #define CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 
+#include <algorithm>
 #include <cstdint>
 
 namespace game {
@@ -36,6 +37,9 @@ namespace game {
 //   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }
 class FlasherClass {
  public:
+  // The longest flash, in frames: the most FlashCount's seven bits hold.
+  static constexpr int kMaxCount = 127;
+
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
@@ -45,7 +49,7 @@ class FlasherClass {
     if constexpr (Archive::kIsReading) {
       // FlashCount is a 7-bit field; a larger count is a damaged save, and
       // storing it would silently drop its high bit.
-      if (flash_count > 127) {
+      if (flash_count > kMaxCount) {
         ar.Fail("invalid flash count");
         return;
       }
@@ -55,11 +59,12 @@ class FlasherClass {
   }
 
   // Starts flashing for `count` calls of Process(), replacing what was left
-  // of an earlier flash. Only the low seven bits of `count` are kept.
-  // TODO: A count of 128 or more wraps (RA's C4 flash with a C4Delay of
-  // 0.285 minutes or more), and a count that wraps to 0 while the object is
-  // brightened leaves it brightened until the next Start().
-  void Start(int count) { FlashCount = static_cast<uint8_t>(count) & 0x7F; }
+  // of an earlier flash. A count past kMaxCount flashes for kMaxCount.
+  // TODO: Start(0) while the object is brightened leaves it brightened until
+  // the next Start().
+  void Start(int count) {
+    FlashCount = static_cast<uint8_t>(std::clamp(count, 0, kMaxCount));
+  }
 
   // Steps the flash by one game frame; the owner calls it once a frame.
   // Returns true when the object has to be redrawn: on every frame of the
