@@ -169,11 +169,9 @@ void TeamMission::Draw_It(PixelView& view, const int index, const int x,
                           const int y, const int width, const int height,
                           const bool selected, const FontType font,
                           const TextPrintType flags) const {
-  // Pixel columns of the mission's name and of a second field
-  // Description() never writes.
-  static constexpr int kTabStops[] = {13, 40};
+  // Description() writes no tab, so the stops do not matter.
   UiSkin::Draw_List_Entry(view, Description(index).c_str(), x, y, width, height,
-                          font, flags, selected, kTabStops);
+                          font, flags, selected, UiSkin::kEditorListTabStops);
 }
 
 TeamType::TeamType()

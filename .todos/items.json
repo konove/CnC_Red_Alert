@@ -1835,11 +1835,11 @@
       "anchors": [
         {
           "path": "src/ra/ai/trigger_action.cc",
-          "startLine": 996,
-          "endLine": 996,
+          "startLine": 932,
+          "endLine": 932,
           "text": "TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {",
           "before": [
-            "  return NeedType::kNone;",
+            "  return InfoOf(action).need;",
             "}",
             ""
           ],
@@ -10421,18 +10421,18 @@
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.h",
-          "startLine": 178,
-          "endLine": 178,
+          "startLine": 170,
+          "endLine": 170,
           "text": "  void Detach(Target target);",
           "before": [
-            "  // the event without a check, for a trigger another trigger forces.",
+            "  void Reset(TriggerEventState& state) const;",
             "  // Drops the event's reference to the team type `target`, which is being",
             "  // destroyed. Does nothing for any other target."
           ],
           "after": [
-            "  bool HasHappened(TriggerEventState& state, TriggerEventType cause,",
-            "                   HousesType trigger_house, const ObjectClass* object,",
-            "                   bool forced) const;"
+            "  // Returns whether the event has happened for the trigger whose state is",
+            "  // `state`. `cause` is what caused the check: the moment events (entering,",
+            "  // being attacked, crossing a line) only count when it is this event, while"
           ],
           "lost": false
         }
@@ -10981,8 +10981,8 @@
         },
         {
           "path": "src/ra/ai/trigger_action.cc",
-          "startLine": 923,
-          "endLine": 923,
+          "startLine": 924,
+          "endLine": 924,
           "text": "const char* ActionName(const TriggerActionType action) {",
           "before": [
             "",
@@ -10990,7 +10990,7 @@
             ""
           ],
           "after": [
-            "  return kActionNames.at(action);",
+            "  return InfoOf(action).name;",
             "}",
             ""
           ],
@@ -16370,10 +16370,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-15T01:58:57Z",
-      "updated": "2026-10-15T01:58:57Z",
+      "updated": "2026-10-16T02:50:19Z",
       "source": "41772da62..e8da958c5",
       "anchors": [
         {
@@ -16541,10 +16541,10 @@
         "ra",
         "editor"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T08:05:01Z",
+      "updated": "2026-10-16T02:49:48Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Renamed the editor label to \"Credits exceed...\", since the value is in plain credits: the only shipped use, Allied 14's trigger `0+` at 2300, is 500 above Greece's starting 1800. Removed the comment about the mismatch and updated the description golden test.",
@@ -16589,26 +16589,46 @@
       "effort": "m",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-16T03:26:57Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Scanned all 1,855 triggers in the 66 shipped scenarios: none pairs a moment event with a house-attached event. Per the user's decision, `HasHappened()` now counts the moment events only when the check is made for them, not for the per-frame `kAny` house check.",
       "toDecide": "Keep it, or stop `kAny` as a *cause* from satisfying the moment events (behaviour change for such triggers)?",
+      "decisions": [
+        {
+          "question": "Keep it, or stop kAny as a cause from satisfying the moment events?",
+          "options": [
+            "Keep original",
+            "Fix it"
+          ],
+          "answer": "Can you check whether shipped missions rely on it",
+          "time": "2026-10-16T03:10:19Z"
+        },
+        {
+          "question": "None of the 1,855 triggers in the 66 shipped scenarios pairs a moment event with a house-attached event. Fix it?",
+          "options": [
+            "Fix it",
+            "Keep original"
+          ],
+          "answer": "Fix it",
+          "time": "2026-10-16T03:10:19Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 158,
-          "endLine": 158,
-          "text": "  const bool checked_for_it = cause == type_ || cause == TriggerEventType::kAny;",
+          "startLine": 201,
+          "endLine": 201,
+          "text": "  const bool checked_for_it = cause == type_;",
           "before": [
-            "  // the caller springs TriggerEventType::kAttacked from the code that does the",
-            "  // attacking. TriggerEventType::kAny lets them through as well, so a house's",
-            "  // per-frame check of a trigger counts them as having happened."
+            "  // house's per-frame check (HouseClass::AI()) counted \"attacked\" as having",
+            "  // happened every frame for a trigger whose other event is a house's; no",
+            "  // shipped scenario has such a trigger."
           ],
           "after": [
             "",
@@ -16681,61 +16701,79 @@
         "ra",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-16T03:26:57Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Added `ObjectHeap::FilledSlotOrNull()`; `TriggerEvent::ReadIni()` and `ReadTriggerActionRecord()` use it as they read, and `DropUnfilledTypeReferences()` only fixes the team type's trigger now.",
       "anchors": [
         {
-          "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 333,
-          "endLine": 333,
-          "text": "    team_type_ = TheObjectHeaps().team_type().SlotOrNull(next_number());",
+          "path": "src/game/core/object_heap.h",
+          "startLine": 291,
+          "endLine": 291,
+          "text": "  T* FilledSlotOrNull(const int slot_index) {",
           "before": [
-            "      }",
-            "    }",
-            "  } else {"
+            "  // SlotOrNull() for a slot that holds an object: nullptr as well when slot",
+            "  // `slot_index` is free, which would read as a zeroed object. For a",
+            "  // reference read once every object it can name exists."
           ],
           "after": [
-            "    set_value(next_number());",
+            "    return IsAllocated(slot_index) ? Slot(slot_index) : nullptr;",
             "  }",
-            "}"
+            "};"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/trigger_event.cc",
+          "startLine": 355,
+          "endLine": 355,
+          "text": "  const auto team_in_slot = [](const int slot_index) {",
+          "before": [
+            "  };",
+            "  // The team types are read before the trigger types, so a slot that holds no",
+            "  // team type names one the scenario does not have."
+          ],
+          "after": [
+            "    TeamType* const team_type =",
+            "        TheObjectHeaps().team_type().FilledSlotOrNull(slot_index);",
+            "    if (team_type == nullptr && slot_index != -1) {"
           ],
           "lost": false
         },
         {
           "path": "src/ra/ai/trigger_action.cc",
-          "startLine": 148,
-          "endLine": 148,
-          "text": "T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,",
+          "startLine": 164,
+          "endLine": 164,
+          "text": "T* TypeInSlot(game::ObjectHeap<T>& heap, const int slot_index,",
           "before": [
-            "// is none or the scenario never filled the slot: an empty slot would read as a",
-            "// zeroed object. `field` names the reference for the log.",
+            "// none (-1) or names no type, which it logs: every type the scenario has is",
+            "// read by the time its actions are. `field` names the reference for the log.",
             "template <class T>"
           ],
           "after": [
-            "                    const std::string_view field) {",
-            "  if (heap.IsAllocated(slot_index)) {",
-            "    return heap.Slot(slot_index);"
+            "              const std::string_view field) {",
+            "  T* const type = heap.FilledSlotOrNull(slot_index);",
+            "  if (type == nullptr && slot_index != -1) {"
           ],
           "lost": false
         },
         {
           "path": "src/ra/ai/scenario.cc",
-          "startLine": 1871,
-          "endLine": 1871,
-          "text": "    for (TriggerEvent* event : {&trigger_type.event1, &trigger_type.event2}) {",
+          "startLine": 1861,
+          "endLine": 1861,
+          "text": "void DropUnfilledTypeReferences() {",
           "before": [
-            "  }",
-            "  for (int i = 0; i < trigger_types.Count(); i++) {",
-            "    TriggerType& trigger_type = *trigger_types.ActiveAt(i);"
+            "// empty would read a zeroed object, so it is dropped instead. (The trigger",
+            "// events and actions are read after every team type exists and check their own",
+            "// slots.)"
           ],
           "after": [
-            "      TeamType* team = event->team_type();",
-            "      DropIfUnfilled(team, team_types, trigger_type.Name(), \"event team\");",
-            "      event->set_team_type(team);"
+            "  auto& team_types = TheObjectHeaps().team_type();",
+            "  auto& trigger_types = TheObjectHeaps().trigger_type();",
+            "  for (int i = 0; i < team_types.Count(); i++) {"
           ],
           "lost": false
         }
@@ -16752,44 +16790,45 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-16T03:26:57Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Moved `LowByte()`/`LowByteAs<>()` to `ra/core/low_byte.h` (with a test); `TriggerEvent::house()` and the actions both use it.",
       "anchors": [
+        {
+          "path": "src/ra/core/low_byte.h",
+          "startLine": 16,
+          "endLine": 16,
+          "text": "constexpr int LowByte(const int value) { return static_cast<int8_t>(value); }",
+          "before": [
+            "namespace ra {",
+            "",
+            "// Returns the low byte of `value` as a signed number, -128 to 127."
+          ],
+          "after": [
+            "",
+            "// Returns the one-byte enum `value` means, which is its low byte.",
+            "template <class Enum>"
+          ],
+          "lost": false
+        },
         {
           "path": "src/ra/ai/trigger_event.h",
           "startLine": 231,
           "endLine": 231,
           "text": "  [[nodiscard]] HousesType house() const {",
           "before": [
-            "  // HousesType is one byte, the word's lowest. Storing one keeps the other",
-            "  // three, as the store into the union this replaced did, so the value a",
-            "  // [Trigs] entry saves does not change."
+            "  // HousesType is one byte, the word's lowest (see ra/core/low_byte.h).",
+            "  // Storing one keeps the other three, as the store into the union this",
+            "  // replaced did, so the value a [Trigs] entry saves does not change."
           ],
           "after": [
-            "    return static_cast<HousesType>(static_cast<int8_t>(argument_));",
+            "    return LowByteAs<HousesType>(argument_);",
             "  }",
             "  void set_house(const HousesType house) {"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ai/trigger_action.cc",
-          "startLine": 169,
-          "endLine": 169,
-          "text": "constexpr Enum LowByteAs(const int value) {",
-          "before": [
-            "",
-            "// Returns the one-byte enum a record's `value` means, which is its low byte.",
-            "template <class Enum>"
-          ],
-          "after": [
-            "  return static_cast<Enum>(LowByte(value));",
-            "}",
-            ""
           ],
           "lost": false
         }
@@ -16805,27 +16844,56 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-16T03:26:57Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Per the user's choice, both sides: one `EnumArray` of {name, need, attachment} rows for the events and {name, need} for the actions; the functions are lookups, and an out-of-range number still reads as none.",
+      "decisions": [
+        {
+          "question": "Replace kEventNames + EventNeed() + EventAttachment() (and the actions' ActionName()/ActionNeed()) with one constexpr EnumArray of rows per type?",
+          "options": [
+            "Do both tables",
+            "Leave as is"
+          ],
+          "answer": "Do both tables",
+          "time": "2026-10-16T03:10:19Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
-          "startLine": 96,
-          "endLine": 96,
-          "text": "constexpr base::EnumArray<TriggerEventType, const char*> kEventNames = {",
+          "startLine": 121,
+          "endLine": 121,
+          "text": "constexpr base::EnumArray<TriggerEventType, EventInfo> kEvents = {{",
           "before": [
-            "}  // namespace",
-            "",
-            "// The scenario editor's name for each event, which its lists show and sort by."
+            "constexpr auto kHouse = TriggerAttachment::kHouse;",
+            "constexpr auto kGeneral = TriggerAttachment::kGeneral;",
+            ""
           ],
           "after": [
-            "    \"-No Event-\",",
-            "    \"Entered by...\",",
-            "    \"Spied by...\","
+            "    // kNone leaves the trigger free to go on a cell or an object.",
+            "    {\"-No Event-\", NeedType::kNone, kCell | kObject},",
+            "    {\"Entered by...\", NeedType::kHouse, kCell | kObject},"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/trigger_action.cc",
+          "startLine": 112,
+          "endLine": 112,
+          "text": "constexpr base::EnumArray<TriggerActionType, ActionInfo> kActions = {{",
+          "before": [
+            "  NeedType need;  // The value the editor prompts for.",
+            "};",
+            ""
+          ],
+          "after": [
+            "    {\"-No Action-\", NeedType::kNone},",
+            "    {\"Winner is...\", NeedType::kHouse},",
+            "    {\"Loser is...\", NeedType::kHouse},"
           ],
           "lost": false
         }
@@ -16865,7 +16933,7 @@
             "                          font, flags, selected, kTabStops);",
             "}"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/editor/trigger_type_dialog.cc",
@@ -16882,7 +16950,7 @@
             "",
             "  Type type_;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

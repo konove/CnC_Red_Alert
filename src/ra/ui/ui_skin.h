@@ -3,6 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_UI_UI_SKIN_H_
 #define CNC_RED_ALERT_RA_UI_UI_SKIN_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -98,6 +99,10 @@ struct UiSkin {
                               int width, int line_height, Font font,
                               PrintFlags flags, bool selected,
                               std::span<const int> tabs);
+  // The tab stops, in pixels, of the scenario editor's lists of a name and
+  // the details after it (trigger types, trigger events and actions, team
+  // missions).
+  static constexpr std::array<int, 2> kEditorListTabStops = {13, 40};
 
   // Prints a text label, unclipped or clipped to `width` pixels.
   static void Print_Label(PixelView& view, const char* text, int x, int y,

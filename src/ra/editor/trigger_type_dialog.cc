@@ -98,15 +98,12 @@ class TriggerChoice {
   void Draw_It(PixelView& view, int /*index*/, int x, int y, int width,
                int height, bool selected, FontType font,
                TextPrintType flags) const {
+    // The names hold no tabs, so the stops do not matter.
     UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font,
-                            flags, selected, kTabStops);
+                            flags, selected, UiSkin::kEditorListTabStops);
   }
 
  private:
-  // Tab stops in pixels; the names hold no tabs, so they only matter to the
-  // shared print call.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
-
   Type type_;
 };
 

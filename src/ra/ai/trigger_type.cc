@@ -18,7 +18,6 @@
 
 #include "ra/ai/trigger_type.h"
 
-#include <array>
 #include <cstddef>
 #include <format>
 #include <string>
@@ -266,10 +265,9 @@ void TriggerType::Draw_It(PixelView& view, int /*unused*/, const int x,
   if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
     return;
   }
-  // Tab stops in pixels: Description() puts a tab after the name.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
+  // Description() puts a tab after the name.
   UiSkin::Draw_List_Entry(view, Description().c_str(), x, y, width, height,
-                          font, flags, selected, kTabStops);
+                          font, flags, selected, UiSkin::kEditorListTabStops);
 }
 
 void TriggerType::DestroyAll() {
