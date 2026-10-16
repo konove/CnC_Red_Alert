@@ -2603,7 +2603,8 @@ HousesType TechnoClass::Owner() const {
  *as a result of the player       * clicking on this object in order to make
  *it the target of a move or attack.              *
  *                                                                                             *
- * INPUT:   count -- The number of times the object should flash. *
+ * INPUT:   frames -- The number of game frames the object should flash for, *
+ *                   at most TargetFlash::kMaxFrames.                          *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -2611,10 +2612,10 @@ HousesType TechnoClass::Owner() const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Clicked_As_Target(int count) {
+void TechnoClass::Clicked_As_Target(int frames) {
   DCHECK(IsActive);
 
-  target_flash_.Start(count);
+  target_flash_.Start(frames);
 }
 
 /***********************************************************************************************

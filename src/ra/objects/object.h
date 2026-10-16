@@ -262,7 +262,7 @@ class ObjectClass : public AbstractClass {
   virtual void Active_Click_With(ActionType /*unused*/,
                                  ObjectClass* /*unused*/);
   virtual void Active_Click_With(ActionType /*unused*/, Cell /*unused*/);
-  virtual void Clicked_As_Target(int /*unused*/ = 7);
+  virtual void Clicked_As_Target(int /*frames*/ = 7);
   virtual bool Select();
   virtual void Unselect();
 

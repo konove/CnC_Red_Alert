@@ -16985,12 +16985,12 @@
       "status": "in_progress",
       "author": "agent",
       "created": "2026-10-16T07:28:56Z",
-      "updated": "2026-10-16T07:32:04Z",
+      "updated": "2026-10-16T07:50:25Z",
       "source": "1c8b7143c..961c1ada8",
       "anchors": [
         {
-          "path": "src/game/sim/flasher.h",
-          "lost": true
+          "path": "src/game/sim/target_flash.h",
+          "lost": false
         }
       ]
     },
@@ -17007,7 +17007,7 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:41:41Z",
+      "updated": "2026-10-16T07:50:25Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "efa6c9119",
@@ -17027,7 +17027,7 @@
       ],
       "anchors": [
         {
-          "path": "src/game/sim/flasher.h",
+          "path": "src/game/sim/target_flash.h",
           "startLine": 73,
           "endLine": 73,
           "text": "  [[nodiscard]] bool IsBrightened() const { return frames_left_ % 2 != 0; }",
@@ -17041,7 +17041,7 @@
             " private:",
             "  // The Process() calls left in the flash. It counts down to zero and stops"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -17055,12 +17055,14 @@
         "refactoring",
         "game"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:33:50Z",
+      "updated": "2026-10-16T07:50:25Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
+      "fixedIn": "4473fb405",
+      "resolution": "Renamed `game::Flasher` to `game::TargetFlash`, the files to target_flash.{h,cc} and target_flash_test.cc, and both games' `flasher_`/`flasher()` to `target_flash_`/`target_flash()`; CLAUDE.md's game/sim line follows.",
       "toDecide": "Keep `game::Flasher`, or rename it (and the files) to `TargetFlash`?",
       "decisions": [
         {
@@ -17075,21 +17077,21 @@
       ],
       "anchors": [
         {
-          "path": "src/game/sim/flasher.h",
+          "path": "src/game/sim/target_flash.h",
           "startLine": 37,
           "endLine": 37,
-          "text": "class Flasher {",
+          "text": "class TargetFlash {",
           "before": [
             "// Example:",
-            "//   flasher.Start(7);",
-            "//   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }"
+            "//   flash.Start(7);",
+            "//   if (flash.Process()) { /* redraw, brightened if IsBrightened() */ }"
           ],
           "after": [
             " public:",
             "  // The longest flash, in frames. A save holds the count in one byte, as an",
             "  // int8_t."
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -17106,14 +17108,14 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:41:41Z",
+      "updated": "2026-10-16T07:50:25Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
       "fixedIn": "efa6c9119",
       "resolution": "Moot with the derived flag (T-465): a load ignores the saved flag, so {0, 1} loads unbrightened; `ALoadIgnoresAFlagSetWithNoFramesLeft` pins it.",
       "anchors": [
         {
-          "path": "src/game/sim/flasher.h",
+          "path": "src/game/sim/target_flash.h",
           "startLine": 45,
           "endLine": 45,
           "text": "  void Serialize(Archive& ar) {",
@@ -17127,7 +17129,7 @@
             "    // from the count now, so a load ignores it, which also clears the flag an",
             "    // older Start() could leave set with no frames left."
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -17164,7 +17166,7 @@
             "  virtual void Response_Select();",
             "  virtual void Response_Move();"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/techno.cc",
@@ -17181,7 +17183,7 @@
             "",
             "  target_flash_.Start(count);"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/techno.h",

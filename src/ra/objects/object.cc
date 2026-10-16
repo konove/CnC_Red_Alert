@@ -806,7 +806,7 @@ void ObjectClass::Active_Click_With(ActionType /*unused*/, Cell /*unused*/) {
  *action.       * For more sophisticated object, this will trigger the object to
  *begin flashing a few      * times. At this level, no action is performed. *
  *                                                                                             *
- * INPUT:   flashes  -- The requested number of times to flash this object. *
+ * INPUT:   frames   -- The number of game frames to flash this object for.  *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -814,7 +814,7 @@ void ObjectClass::Active_Click_With(ActionType /*unused*/, Cell /*unused*/) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Clicked_As_Target(int /*unused*/) { DCHECK(IsActive); }
+void ObjectClass::Clicked_As_Target(int /*frames*/) { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * ObjectClass::In_Range -- Determines if the coordinate is within weapon range.

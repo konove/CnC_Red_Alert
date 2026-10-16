@@ -362,7 +362,7 @@ class TechnoClass : public ObjectClass,
   /*
   **	User I/O.
   */
-  void Clicked_As_Target(int count = 7) override;
+  void Clicked_As_Target(int frames = 7) override;
   bool Select() override;
   virtual void Response_Select();
   virtual void Response_Move();
