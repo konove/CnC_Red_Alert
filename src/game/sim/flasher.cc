@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: FlasherClass's countdown.
+// File: Flasher's countdown.
 //
 // Originally FLASHER.CPP by Joe L. Bostic, started May 28, 1994; made
 // independent of the object it flashes on June 20, 1994.
@@ -25,7 +25,7 @@
 
 namespace game {
 
-bool FlasherClass::Process() {
+bool Flasher::Process() {
   if (frames_left_ > 0) {
     frames_left_--;
     // The parity of what is left decides the frame, so a count of 1 ends the

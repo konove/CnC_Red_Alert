@@ -293,10 +293,10 @@ class TechnoClass : public ObjectClass,
   }
 
   // The flashing that shows the player this object was targeted.
-  [[nodiscard]] game::FlasherClass& flasher() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] game::Flasher& flasher() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return flasher_;
   }
-  [[nodiscard]] const game::FlasherClass& flasher() const
+  [[nodiscard]] const game::Flasher& flasher() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return flasher_;
   }
@@ -482,7 +482,7 @@ class TechnoClass : public ObjectClass,
 
   MissionClass mission_state_;
   RadioClass radio_;
-  game::FlasherClass flasher_;
+  game::Flasher flasher_;
   game::StageCounter animation_;
   CargoClass cargo_;
   game::Door door_;

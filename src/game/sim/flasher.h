@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: FlasherClass, the flash that shows an object has been picked as a
+// File: Flasher, the flash that shows an object has been picked as a
 // target.
 //
 // Originally FLASHER.H by Joe L. Bostic, started May 28, 1994.
@@ -35,7 +35,7 @@ namespace game {
 // Example:
 //   flasher.Start(7);
 //   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }
-class FlasherClass {
+class Flasher {
  public:
   // The longest flash, in frames. A save holds the count in one byte, as an
   // int8_t.
@@ -49,7 +49,7 @@ class FlasherClass {
       // A negative count, a byte past 127, is a damaged save.
       if (frames_left_ < 0) {
         ar.Fail("invalid flash count");
-        *this = FlasherClass();
+        *this = Flasher();
       }
     }
   }

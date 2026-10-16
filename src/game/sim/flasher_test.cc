@@ -15,13 +15,13 @@ namespace game {
 namespace {
 
 TEST(FlasherTest, DoesNothingUntilStarted) {
-  FlasherClass flasher;
+  Flasher flasher;
   EXPECT_FALSE(flasher.Process());
   EXPECT_FALSE(flasher.IsBrightened());
 }
 
 TEST(FlasherTest, ReportsAChangeOnAsManyFramesAsTheCount) {
-  FlasherClass flasher;
+  Flasher flasher;
   flasher.Start(4);
   // The call that takes the count to zero still reports a change: the object
   // has to be drawn once more, not brightened.
@@ -33,7 +33,7 @@ TEST(FlasherTest, ReportsAChangeOnAsManyFramesAsTheCount) {
 }
 
 TEST(FlasherTest, IsBrightenedOnEveryOtherFrame) {
-  FlasherClass flasher;
+  Flasher flasher;
   flasher.Start(5);
   EXPECT_FALSE(flasher.IsBrightened());  // Not before the first Process().
   const std::array<bool, 5> expected{false, true, false, true, false};
@@ -44,7 +44,7 @@ TEST(FlasherTest, IsBrightenedOnEveryOtherFrame) {
 }
 
 TEST(FlasherTest, StartingAgainReplacesTheCount) {
-  FlasherClass flasher;
+  Flasher flasher;
   flasher.Start(7);
   flasher.Process();
   flasher.Start(2);
@@ -55,7 +55,7 @@ TEST(FlasherTest, StartingAgainReplacesTheCount) {
 }
 
 TEST(FlasherTest, CutsALongCountToTheLongestFlash) {
-  FlasherClass flasher;
+  Flasher flasher;
   // A count past 127 used to wrap: 129 flashed once.
   flasher.Start(128 + 1);
   for (int frame = 0; frame < 127; ++frame) {
@@ -65,7 +65,7 @@ TEST(FlasherTest, CutsALongCountToTheLongestFlash) {
 }
 
 TEST(FlasherTest, StartingWithNothingStopsABrightenedFlash) {
-  FlasherClass flasher;
+  Flasher flasher;
   flasher.Start(4);
   flasher.Process();
   ASSERT_TRUE(flasher.IsBrightened());
@@ -76,7 +76,7 @@ TEST(FlasherTest, StartingWithNothingStopsABrightenedFlash) {
 }
 
 TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
-  FlasherClass flasher;
+  Flasher flasher;
   flasher.Start(4);
   flasher.Process();
   ASSERT_TRUE(flasher.IsBrightened());
@@ -88,7 +88,7 @@ TEST(FlasherTest, ASavedFlasherCarriesOnWhereItWas) {
   // The count, then the brightened flag.
   EXPECT_EQ(bytes, (std::array{std::byte{3}, std::byte{1}}));
 
-  FlasherClass loaded;
+  Flasher loaded;
   SpanSource source(bytes);
   ArchiveReader reader(source);
   reader(loaded);
@@ -105,7 +105,7 @@ TEST(FlasherTest, ACountThatDoesNotFitFailsTheLoad) {
   const std::array<uint8_t, 2> bytes{128, 0};
   SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
-  FlasherClass flasher;
+  Flasher flasher;
   reader(flasher);
   EXPECT_FALSE(reader.ok());
 }
