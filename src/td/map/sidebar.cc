@@ -1114,7 +1114,6 @@ void SidebarClass::StripClass::Init_Clear() {
   IsScrollingDown = false;
   IsScrolling = false;
   IsBuilding = false;
-  Flasher = -1;
   TopIndex = 0;
   Slid = 0;
   BuildableCount = 0;
@@ -1472,20 +1471,6 @@ bool SidebarClass::StripClass::AI(engine::window::KeyNumber& input,
       }
     }
     redraw = true;
-  }
-
-  /*
-  **	Handle any flashing logic. Flashing occurs when the player selects an
-  *object *	and provides the visual feedback of a recognized and legal
-  *selection.
-  */
-  if ((Flasher != -1) && animation_.AI()) {
-    redraw = true;
-    if (animation_.stage() >= 7) {
-      animation_.SetRate(0);
-      animation_.set_stage(0);
-      Flasher = -1;
-    }
   }
 
   /*

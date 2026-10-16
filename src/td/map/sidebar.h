@@ -45,10 +45,8 @@
 #include <cstdint>
 #include <span>
 
-#include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "game/sim/stage_counter.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "td/core/defines.h"
@@ -167,16 +165,6 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
-    // The frame counter of the flashing cameo.
-    [[nodiscard]] game::StageCounter& animation()
-        ABSL_ATTRIBUTE_LIFETIME_BOUND {
-      return animation_;
-    }
-    [[nodiscard]] const game::StageCounter& animation() const
-        ABSL_ATTRIBUTE_LIFETIME_BOUND {
-      return animation_;
-    }
-
     template <class Archive>
     void Serialize(Archive& ar);
 
@@ -267,13 +255,6 @@ class SidebarClass : public PowerClass {
     bool IsScrolling : 1 = false;
 
     /*
-    **	This is the object (sidebar slot) that is flashing. Only one slot can be
-    *flashing *	at any one instant. This is usually the result of a click on the
-    *slot and construction *	has commenced.
-    */
-    int Flasher = -1;
-
-    /*
     **	As the sidebar scrolls up and down, this variable holds the index for
     *the topmost *	visible sidebar slot.
     */
@@ -348,10 +329,6 @@ class SidebarClass : public PowerClass {
     *displays *	progress of construction.
     */
     static unsigned char ClockTranslucentTable[(1 + 1) * 256];
-
-   private:
-    // Which flash frame is shown and when the next one is due.
-    game::StageCounter animation_;
   } Column[kColumns];
 
   /*

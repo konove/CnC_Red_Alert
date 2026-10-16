@@ -17284,7 +17284,7 @@
             "    /*",
             "    **\tAs the sidebar scrolls up and down, this variable holds the index for"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

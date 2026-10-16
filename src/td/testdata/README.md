@@ -3,7 +3,7 @@
 ## SAVEGAME.SCG01EA
 
 A save of scenario SCG01EA at frame 60, written by `tdsdl` built from the commit that moved the save
-version to 12:
+version to 13:
 
 ```
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./tdsdl -NOMOVIES -SEED1 -NEWGAMESCG01EA -QUITFRAME60 -SAVESLOT98 -CD"<game data>"

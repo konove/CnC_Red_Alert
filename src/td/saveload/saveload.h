@@ -12,7 +12,7 @@ class ArchiveWriter;
 namespace td {
 
 // Field-wise save body, including map, layers and globals.
-inline constexpr int32_t kSaveGameVersion = 12;
+inline constexpr int32_t kSaveGameVersion = 13;
 
 bool Load_Misc_Values(ArchiveReader& file);
 bool Save_Misc_Values(ArchiveWriter& file);
