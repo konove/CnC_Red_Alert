@@ -32,13 +32,16 @@
 
 namespace game {
 
-TypeTally::TypeTally(int type_count) : counts_(base::ToSize(type_count)) {}
+TypeTally::TypeTally(const int type_count)
+    : counts_(base::ToSize(type_count)) {}
 
-void TypeTally::Increment(int type) { counts_.at(base::ToSize(type))++; }
+void TypeTally::Increment(const int type) { counts_.at(base::ToSize(type))++; }
 
 void TypeTally::Clear() { std::ranges::fill(counts_, 0); }
 
-int TypeTally::Count(int type) const { return counts_.at(base::ToSize(type)); }
+int TypeTally::Count(const int type) const {
+  return counts_.at(base::ToSize(type));
+}
 
 std::vector<std::byte> TypeTally::NetworkBytes() const {
   std::vector<std::byte> bytes;
