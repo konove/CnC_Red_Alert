@@ -50,8 +50,6 @@
 #include "td/net/mplayer.h"
 
 #include <algorithm>
-#include <bit>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -694,40 +692,6 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     Add it to our list
     .....................................................................*/
     TheNetwork().phone_book().push_back(std::move(phone));
-  }
-
-  /*------------------------------------------------------------------------
-  Read special recording playback values, to help find sync bugs
-  ------------------------------------------------------------------------*/
-  if (TheSession().playback_game()) {
-    TheDebugState().trap_frame() = ini.GetInt("SyncBug", "Frame", 0x7fffffff);
-
-    TheDebugState().trap_object_type() = static_cast<RTTIType>(
-        ini.GetInt("SyncBug", "Type", static_cast<int>(RTTI_NONE)));
-    const std::string type_name = ini.GetString("SyncBug", "Type", "NONE");
-    if (absl::EqualsIgnoreCase(type_name, "AIRCRAFT")) {
-      TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
-    } else if (absl::EqualsIgnoreCase(type_name, "ANIM")) {
-      TheDebugState().trap_object_type() = RTTI_ANIM;
-    } else if (absl::EqualsIgnoreCase(type_name, "BUILDING")) {
-      TheDebugState().trap_object_type() = RTTI_BUILDING;
-    } else if (absl::EqualsIgnoreCase(type_name, "BULLET")) {
-      TheDebugState().trap_object_type() = RTTI_BULLET;
-    } else if (absl::EqualsIgnoreCase(type_name, "INFANTRY")) {
-      TheDebugState().trap_object_type() = RTTI_INFANTRY;
-    } else if (absl::EqualsIgnoreCase(type_name, "UNIT")) {
-      TheDebugState().trap_object_type() = RTTI_UNIT;
-    } else {
-      TheDebugState().trap_object_type() = RTTI_NONE;
-    }
-
-    TheDebugState().trap_coord() = Coordinate::FromPacked(
-        base::ParseHexOr<uint32_t>(ini.GetString("SyncBug", "Coord", "0"), 0));
-
-    if (const auto trap_this =
-            base::ParseHex<uintptr_t>(ini.GetString("SyncBug", "this", "0"))) {
-      TheDebugState().trap_this() = std::bit_cast<void*>(*trap_this);
-    }
   }
 }
 

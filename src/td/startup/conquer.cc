@@ -56,8 +56,7 @@
  *   Source_From_Name -- Converts ASCII name into SourceType. * Sync_Delay --
  *Forces the game into a 15 FPS rate.                                         *
  *   Theater_From_Name -- Converts ASCII name into a theater number. *
- *   Trap_Object -- gets a ptr to object of given type & coord * Unselect_All --
- *Causes all selected objects to become unselected.                         *
+ *   Unselect_All -- Causes all selected objects to become unselected.       *
  *   Validate_Error
  *-- prints an error message when an object fails validation                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -201,13 +200,9 @@ static engine::platform::Stopwatch<engine::platform::SystemTickSource>
 // player picked with F1-F3. IPX only.
 static engine::net::IPXAddressClass message_address;
 
-// Turned on at the [SyncBug] trap frame when CheckHeap is set; from then on
-// Heap_Dump_Check() dumps the heaps.
+// Turned on in the first Main_Loop() when [MultiPlayer] CheckHeap is set; from
+// then on Heap_Dump_Check() dumps the heaps.
 static bool check_heap = false;
-
-// The object Trap_Object() found for the [SyncBug] trap, for watching in a
-// debugger; nullptr if none.
-[[maybe_unused]] static ObjectClass* trap_object = nullptr;
 
 /****************************************
 **	Function prototypes for this module **
@@ -217,7 +212,6 @@ static void Message_Input(engine::window::KeyNumber& input);
 #endif
 static bool Color_Cycle();
 static bool Map_Edit_Loop();
-static void Trap_Object();
 
 static void Do_Record_Playback();
 
@@ -1646,13 +1640,6 @@ bool Main_Loop() {
   */
   Check_For_Focus_Loss();
 
-  /*
-  ** Sync-bug trapping code
-  */
-  if (game::CurrentFrame() >= TheDebugState().trap_frame()) {
-    Trap_Object();
-  }
-
   //
   // Initialize our AI processing timer
   //
@@ -2489,180 +2476,6 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
       break;
   }
   return nullptr;
-}
-
-/***************************************************************************
- * Trap_Object -- gets a ptr to object of given type & coord               *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   06/02/1995 BRR : Created.                                             *
- *=========================================================================*/
-void Trap_Object() {
-  trap_object = nullptr;
-
-  switch (TheDebugState().trap_object_type()) {
-    case RTTI_AIRCRAFT:
-      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().aircraft().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().aircraft().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_ANIM:
-      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().anim().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().anim().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_BUILDING:
-      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().building().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().building().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_BULLET:
-      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().bullet().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().bullet().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_INFANTRY:
-      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().infantry().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().infantry().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_UNIT:
-      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().ActiveAt(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().unit().ActiveAt(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().unit().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    /*
-    ** Last-ditch find-the-object-right-now-darnit loop
-    */
-    case RTTI_NONE:
-      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().aircraft().Slot(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().aircraft().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().anim().Slot(i) == TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().anim().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_ANIM;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().building().Slot(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().building().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_BUILDING;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().bullet().Slot(i) == TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().bullet().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_BULLET;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().infantry().Slot(i) ==
-                TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().infantry().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_INFANTRY;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Slot(i)->Coord ==
-                TheDebugState().trap_coord() ||
-            TheObjectHeaps().unit().Slot(i) == TheDebugState().trap_this()) {
-          trap_object = TheObjectHeaps().unit().Slot(i);
-          TheDebugState().trap_object_type() = RTTI_UNIT;
-          return;
-        }
-      }
-      [[fallthrough]];
-
-    case RTTIType::RTTI_INFANTRYTYPE:
-    case RTTIType::RTTI_UNITTYPE:
-    case RTTIType::RTTI_AIRCRAFTTYPE:
-    case RTTIType::RTTI_BUILDINGTYPE:
-    case RTTIType::RTTI_TERRAIN:
-    case RTTIType::RTTI_ABSTRACTTYPE:
-    case RTTIType::RTTI_ANIMTYPE:
-    case RTTIType::RTTI_BULLETTYPE:
-    case RTTIType::RTTI_OVERLAY:
-    case RTTIType::RTTI_OVERLAYTYPE:
-    case RTTIType::RTTI_SMUDGE:
-    case RTTIType::RTTI_SMUDGETYPE:
-    case RTTIType::RTTI_TEAM:
-    case RTTIType::RTTI_TEMPLATE:
-    case RTTIType::RTTI_TEMPLATETYPE:
-    case RTTIType::RTTI_TERRAINTYPE:
-    case RTTIType::RTTI_OBJECT:
-    case RTTIType::RTTI_SPECIAL:
-    default:
-      break;
-  }
 }
 
 /***********************************************************************************************

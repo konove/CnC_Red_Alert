@@ -3,11 +3,8 @@
 #ifndef CNC_RED_ALERT_TD_DEBUG_DEBUG_STATE_H_
 #define CNC_RED_ALERT_TD_DEBUG_DEBUG_STATE_H_
 
-#include <cstdint>
-
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "td/core/defines.h"
 
 namespace td {
 
@@ -94,16 +91,8 @@ class DebugState {
   [[nodiscard]] bool heap_dump() const { return heap_dump_; }
   void set_heap_dump(bool on) { heap_dump_ = on; }
 
-  // The sync-bug trap, which CONQUER.INI's [SyncBug] section sets up. From
-  // trap_frame() on, the game looks each frame for an object of
-  // trap_object_type() at trap_coord() or at trap_this(), and parks it
-  // where a debugger can see it. trap_check_heap() walks the heaps instead.
-  int64_t& trap_frame() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_frame_; }
-  RTTIType& trap_object_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return trap_object_type_;
-  }
-  Coordinate& trap_coord() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_coord_; }
-  void*& trap_this() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_this_; }
+  // CONQUER.INI's [MultiPlayer] CheckHeap: nonzero makes the main loop walk
+  // the heaps each frame.
   int& trap_check_heap() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trap_check_heap_;
   }
@@ -123,11 +112,6 @@ class DebugState {
   bool trace_path_search_ = false;
   bool heap_dump_ = false;
 
-  // 0x7fffffff means "never", which is what the INI file defaults to.
-  int64_t trap_frame_ = 0x7fffffff;
-  RTTIType trap_object_type_ = RTTI_NONE;
-  Coordinate trap_coord_{};
-  void* trap_this_ = nullptr;
   int trap_check_heap_ = 0;
 };
 

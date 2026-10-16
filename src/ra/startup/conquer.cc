@@ -657,11 +657,6 @@ bool RunFrame() {
 
   Check_For_Focus_Loss();
 
-  // Sync-bug trapping code
-  if (game::CurrentFrame() >= TheSession().TrapFrame) {
-    TheSession().Trap_Object();
-  }
-
   // Initialize our AI processing timer
   TheSession().ProcessTimer = engine::platform::SystemTicks();
 

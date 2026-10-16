@@ -45,7 +45,6 @@
  *   SessionClass::Write_MultiPlayer_Settings -- writes settings to INI *
  *   SessionClass::Read_Scenario_Descriptions -- reads scen. descriptions *
  *   SessionClass::Free_Scenario_Descriptions -- frees scen. descriptions *
- *   SessionClass::Trap_Object -- searches for an object, for debugging *
  *   SessionClass::Compute_Unique_ID -- computes unique local ID number *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -84,11 +83,9 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
-#include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/installation.h"
 #include "ra/core/defines.h"
-#include "ra/core/object_heaps.h"
 #include "ra/data/mission_id.h"
 #include "ra/map/map.h"
 #include "ra/map/world.h"
@@ -708,40 +705,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       PhoneBook.Add(std::move(phone));
     }
 
-    //	Read special recording playback values, to help find sync bugs
-    TrapFrame = ini.GetInt("SyncBug", "Frame", 0x7fffffff);
-
-    const std::string trap_type = ini.GetString("SyncBug", "Type", "NONE");
-
-    if (absl::EqualsIgnoreCase(trap_type, "AIRCRAFT")) {
-      TrapObjType = RTTI_AIRCRAFT;
-    } else if (absl::EqualsIgnoreCase(trap_type, "ANIM")) {
-      TrapObjType = RTTI_ANIM;
-    } else if (absl::EqualsIgnoreCase(trap_type, "BUILDING")) {
-      TrapObjType = RTTI_BUILDING;
-    } else if (absl::EqualsIgnoreCase(trap_type, "BULLET")) {
-      TrapObjType = RTTI_BULLET;
-    } else if (absl::EqualsIgnoreCase(trap_type, "INFANTRY")) {
-      TrapObjType = RTTI_INFANTRY;
-    } else if (absl::EqualsIgnoreCase(trap_type, "UNIT")) {
-      TrapObjType = RTTI_UNIT;
-    } else {
-      TrapObjType = RTTI_NONE;
-    }
-
-    TrapCoord = Coordinate::FromPacked(
-        base::ParseHexOr<uint32_t>(ini.GetString("SyncBug", "Coord", "0"), 0));
-
-    TrapTarget =
-        Target::FromPacked(static_cast<int32_t>(base::ParseHexOr<uint32_t>(
-            ini.GetString("SyncBug", "Target", "0"), 0)));
-
-    const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(
-        ini.GetString("SyncBug", "Cell", "0"), 0));
-    if (cell.index() != 0) {
-      TrapCell = &TheMap().at(cell);
-    }
-
+    //	The [SyncBug] frame at which the game prints its CRC state and exits
     TrapPrintCRC = ini.GetInt("SyncBug", "PrintCRC", 0x7fffffff);
   }
 }
@@ -1024,183 +988,6 @@ void SessionClass::Free_Scenario_Descriptions() {
   PhoneBook.Clear();
 
 } /* end of Free_Scenario_Descriptions */
-
-/***************************************************************************
- * SessionClass::Trap_Object -- searches for an object, for debugging *
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   06/02/1995 BRR : Created.                                             *
- *=========================================================================*/
-void SessionClass::Trap_Object() {
-
-  //------------------------------------------------------------------------
-  // Initialize
-  //------------------------------------------------------------------------
-  TrapObject = nullptr;
-
-  //------------------------------------------------------------------------
-  // Search for the object based upon its type, then its coordinate or
-  // 'this' pointer value.
-  //------------------------------------------------------------------------
-  switch (TrapObjType) {
-    case RTTI_AIRCRAFT:
-      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().aircraft().ActiveAt(i)->As_Target() ==
-                TrapTarget) {
-          TrapObject = TheObjectHeaps().aircraft().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_ANIM:
-      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().anim().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().anim().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_BUILDING:
-      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().building().ActiveAt(i)->As_Target() ==
-                TrapTarget) {
-          TrapObject = TheObjectHeaps().building().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_BULLET:
-      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().bullet().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().bullet().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_INFANTRY:
-      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().infantry().ActiveAt(i)->As_Target() ==
-                TrapTarget) {
-          TrapObject = TheObjectHeaps().infantry().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    case RTTI_UNIT:
-      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().ActiveAt(i)->Coord == TrapCoord ||
-            TheObjectHeaps().unit().ActiveAt(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().unit().ActiveAt(i);
-          break;
-        }
-      }
-      break;
-
-    //.....................................................................
-    // Last-ditch find-the-object-right-now-darnit loop
-    //.....................................................................
-    case RTTI_NONE:
-      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().aircraft().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().aircraft().Slot(i);
-          TrapObjType = RTTI_AIRCRAFT;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().anim().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().anim().Slot(i);
-          TrapObjType = RTTI_ANIM;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().building().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().building().Slot(i);
-          TrapObjType = RTTI_BUILDING;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().bullet().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().bullet().Slot(i);
-          TrapObjType = RTTI_BULLET;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().infantry().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().infantry().Slot(i);
-          TrapObjType = RTTI_INFANTRY;
-          return;
-        }
-      }
-      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Slot(i)->Coord == TrapCoord ||
-            TheObjectHeaps().unit().Slot(i)->As_Target() == TrapTarget) {
-          TrapObject = TheObjectHeaps().unit().Slot(i);
-          TrapObjType = RTTI_UNIT;
-          return;
-        }
-      }
-      [[fallthrough]];
-
-    case RTTIType::RTTI_AIRCRAFTTYPE:
-    case RTTIType::RTTI_ANIMTYPE:
-    case RTTIType::RTTI_BUILDINGTYPE:
-    case RTTIType::RTTI_BULLETTYPE:
-    case RTTIType::RTTI_CELL:
-    case RTTIType::RTTI_FACTORY:
-    case RTTIType::RTTI_HOUSE:
-    case RTTIType::RTTI_HOUSETYPE:
-    case RTTIType::RTTI_INFANTRYTYPE:
-    case RTTIType::RTTI_OVERLAY:
-    case RTTIType::RTTI_OVERLAYTYPE:
-    case RTTIType::RTTI_SMUDGE:
-    case RTTIType::RTTI_SMUDGETYPE:
-    case RTTIType::RTTI_SPECIAL:
-    case RTTIType::RTTI_TEAM:
-    case RTTIType::RTTI_TEAMTYPE:
-    case RTTIType::RTTI_TEMPLATE:
-    case RTTIType::RTTI_TEMPLATETYPE:
-    case RTTIType::RTTI_TERRAIN:
-    case RTTIType::RTTI_TERRAINTYPE:
-    case RTTIType::RTTI_TRIGGER:
-    case RTTIType::RTTI_TRIGGERTYPE:
-    case RTTIType::RTTI_UNITTYPE:
-    case RTTIType::RTTI_VESSEL:
-    case RTTIType::RTTI_VESSELTYPE:
-    default:
-      break;
-  }
-}
 
 /***************************************************************************
  * SessionClass::Compute_Unique_ID -- computes unique local ID number      *

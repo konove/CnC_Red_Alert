@@ -16067,15 +16067,27 @@
         "refactoring",
         "ra",
         "td",
-        "debugging",
-        "needs-decision"
+        "debugging"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T21:39:01Z",
-      "updated": "2026-10-14T21:39:01Z",
+      "updated": "2026-10-16T04:05:26Z",
       "source": "1e4e02862..5877f6df4",
+      "resolution": "Deleted the sync-bug trap in both games: `Trap_Object()`, the object it stored (RA `Session::TrapObject`, TD `trap_object`), the fields that only fed it (RA `TrapFrame/TrapObjType/TrapCoord/TrapTarget/TrapCell`, TD `DebugState::trap_frame/trap_object_type/trap_coord/trap_this`) and their `[SyncBug]` INI reads. `PrintCRC` (RA) and `CheckHeap` (TD) stay; `tools/net_check.py` covers desync hunting.",
       "toDecide": "Trap_Object() finds the object the [SyncBug] settings name and stores it in RA's Session::TrapObject / TD's file-static trap_object, which nothing reads: it was there to be watched in a debugger (TD's needs [[maybe_unused]]). Options: (a) log what it finds with DLOG so the trap is useful without a debugger, (b) delete the trap object and the search that fills it, (c) keep it as is.",
+      "decisions": [
+        {
+          "question": "What should happen to the [SyncBug] trap object (Trap_Object() and the fields that only feed it) in RA and TD?",
+          "options": [
+            "(b) Delete it (Recommended)",
+            "(a) Log with DLOG",
+            "(c) Keep as is"
+          ],
+          "answer": "(b) Delete it (Recommended)",
+          "time": "2026-10-16T03:59:12Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/net/session.h",
@@ -16092,7 +16104,7 @@
             "  Target TrapTarget{Target{}};  // Target # of object, 0 = ignore",
             "  CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/startup/conquer.cc",
@@ -16109,7 +16121,7 @@
             "/****************************************",
             "**\tFunction prototypes for this module **"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -16370,11 +16382,12 @@
         "refactoring",
         "ra"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:58:57Z",
-      "updated": "2026-10-16T02:50:19Z",
+      "updated": "2026-10-16T03:54:32Z",
       "source": "41772da62..e8da958c5",
+      "resolution": "All ten parts closed: T-458 fixed per the user's decision after a scan of the shipped scenarios, T-460 to T-463 done (T-462 for both events and actions).",
       "anchors": [
         {
           "path": "src/ra/ai/trigger_event.cc",
@@ -16591,10 +16604,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-16T03:26:57Z",
+      "updated": "2026-10-16T03:54:40Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Scanned all 1,855 triggers in the 66 shipped scenarios: none pairs a moment event with a house-attached event. Per the user's decision, `HasHappened()` now counts the moment events only when the check is made for them, not for the per-frame `kAny` house check.",
@@ -16701,10 +16714,10 @@
         "ra",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-16T03:26:57Z",
+      "updated": "2026-10-16T03:54:36Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Added `ObjectHeap::FilledSlotOrNull()`; `TriggerEvent::ReadIni()` and `ReadTriggerActionRecord()` use it as they read, and `DropUnfilledTypeReferences()` only fixes the team type's trigger now.",
@@ -16790,10 +16803,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-16T03:26:57Z",
+      "updated": "2026-10-16T03:54:38Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Moved `LowByte()`/`LowByteAs<>()` to `ra/core/low_byte.h` (with a test); `TriggerEvent::house()` and the actions both use it.",
@@ -16844,10 +16857,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-16T03:26:57Z",
+      "updated": "2026-10-16T03:54:39Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
       "resolution": "Per the user's choice, both sides: one `EnumArray` of {name, need, attachment} rows for the events and {name, need} for the actions; the functions are lookups, and an out-of-range number still reads as none.",
@@ -16911,46 +16924,30 @@
         "editor",
         "cleanup"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-15T01:59:37Z",
-      "updated": "2026-10-15T01:59:37Z",
+      "updated": "2026-10-16T03:54:35Z",
       "parent": "T-453",
       "source": "41772da62..e8da958c5",
+      "resolution": "Added `UiSkin::kEditorListTabStops`; the trigger type list, the dialog's `TriggerChoice` and the team mission list (a fourth copy) use it.",
       "anchors": [
         {
-          "path": "src/ra/ai/trigger_type.cc",
-          "startLine": 270,
-          "endLine": 270,
-          "text": "  static constexpr std::array<int, 2> kTabStops = {13, 40};",
+          "path": "src/ra/ui/ui_skin.h",
+          "startLine": 105,
+          "endLine": 105,
+          "text": "  static constexpr std::array<int, 2> kEditorListTabStops = {13, 40};",
           "before": [
-            "    return;",
-            "  }",
-            "  // Tab stops in pixels: Description() puts a tab after the name."
+            "  // The tab stops, in pixels, of the scenario editor's lists of a name and",
+            "  // the details after it (trigger types, trigger events and actions, team",
+            "  // missions)."
           ],
           "after": [
-            "  UiSkin::Draw_List_Entry(view, Description().c_str(), x, y, width, height,",
-            "                          font, flags, selected, kTabStops);",
-            "}"
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/ra/editor/trigger_type_dialog.cc",
-          "startLine": 107,
-          "endLine": 107,
-          "text": "  // shared print call.",
-          "before": [
             "",
-            " private:",
-            "  // Tab stops in pixels; the names hold no tabs, so they only matter to the"
+            "  // Prints a text label, unclipped or clipped to `width` pixels.",
+            "  static void Print_Label(PixelView& view, const char* text, int x, int y,"
           ],
-          "after": [
-            "  static constexpr std::array<int, 2> kTabStops = {13, 40};",
-            "",
-            "  Type type_;"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     }

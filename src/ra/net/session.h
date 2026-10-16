@@ -619,11 +619,6 @@ class SessionClass {
   int Save(ByteSink& file);
   bool Load(ByteSource& file);
 
-  //.....................................................................
-  // Debugging / Sync Bugs
-  //.....................................................................
-  void Trap_Object();
-
   //---------------------------------------------------------------------
   // Public Data
   //---------------------------------------------------------------------
@@ -794,14 +789,7 @@ class SessionClass {
   //.....................................................................
   // For finding Sync Bugs
   //.....................................................................
-  int32_t TrapFrame{0x7fffffff};    // frame # to start trapping 'TrapObject'
-  RTTIType TrapObjType{RTTI_NONE};  // type of object to trap
-  // The object being trapped, for examining in the debugger; nullptr if none.
-  ObjectClass* TrapObject = nullptr;
-  Coordinate TrapCoord{};       // coord of object, 0 = ignore
-  Target TrapTarget{Target{}};  // Target # of object, 0 = ignore
-  CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
-  int32_t TrapPrintCRC{0};         // Frame # to print CRC state file
+  int32_t TrapPrintCRC{0};  // Frame # to print CRC state file
 
  private:
   std::string record_file_name_ = "RECORD.BIN";
