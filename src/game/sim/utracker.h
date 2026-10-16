@@ -61,7 +61,7 @@ class UnitTrackerClass {
   // counts are in host byte order.
   void Increment_Unit_Total(int unit_type);
   void Decrement_Unit_Total(int unit_type);
-  // Sets every count to zero. The byte order is left as it was.
+  // Sets every count to zero, in host byte order.
   void Clear_Unit_Total();
 
   // Returns the count of `unit_type`, as stored: byte-swapped while the counts

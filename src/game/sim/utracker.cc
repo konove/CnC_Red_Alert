@@ -59,10 +59,11 @@ int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
   return UnitTotals.at(base::ToSize(unit_type));
 }
 
-// TODO: Zero is zero in either byte order, yet InNetworkFormat keeps saying
-// "network": the next To_Network_Format() then skips the swap, and the counts
-// made since go out in host order (the RA vessels-left statistic).
-void UnitTrackerClass::Clear_Unit_Total() { std::ranges::fill(UnitTotals, 0); }
+// Zero is zero in either byte order, so the counts are back in host order.
+void UnitTrackerClass::Clear_Unit_Total() {
+  std::ranges::fill(UnitTotals, 0);
+  InNetworkFormat = 0;
+}
 
 void UnitTrackerClass::To_Network_Format() {
   if (!InNetworkFormat) {
