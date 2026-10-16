@@ -2614,7 +2614,7 @@ HousesType TechnoClass::Owner() const {
 void TechnoClass::Clicked_As_Target(int count) {
   DCHECK(IsActive);
 
-  flasher_.Start(count);
+  target_flash_.Start(count);
 }
 
 /***********************************************************************************************
@@ -2711,7 +2711,7 @@ void TechnoClass::AI() {
   **	If the object is flashing and a change of flash state has occurred, then
   *mark the *	object to be redrawn.
   */
-  if (flasher_.Process()) {
+  if (target_flash_.Process()) {
     Mark(MARK_CHANGE);
   }
 }
@@ -4860,7 +4860,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
   DCHECK(IsActive);
 
   if (Techno_Type_Class()->IsRemappable) {
-    return House->Remap_Table(flasher().IsBrightened(),
+    return House->Remap_Table(target_flash().IsBrightened(),
                               Techno_Type_Class()->Remap);
   }
   return ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable;

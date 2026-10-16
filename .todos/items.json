@@ -13323,7 +13323,7 @@
       "anchors": [
         {
           "path": "src/game/sim/flasher.h",
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/cargo.h",
@@ -16990,7 +16990,7 @@
       "anchors": [
         {
           "path": "src/game/sim/flasher.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17004,12 +17004,14 @@
         "refactoring",
         "game"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:33:49Z",
+      "updated": "2026-10-16T07:41:41Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
+      "fixedIn": "efa6c9119",
+      "resolution": "Derived: `IsBrightened()` returns `frames_left_ % 2 != 0` and the member is gone; Serialize() still writes the flag byte from the count and ignores it on load, so the save format is unchanged.",
       "toDecide": "Keep Start()'s `if (frames_left_ == 0)` as it is, make Start() always clear the flag, or derive the flag from the count and drop the member?",
       "decisions": [
         {
@@ -17025,19 +17027,19 @@
       ],
       "anchors": [
         {
-          "path": "src/game/sim/flasher.cc",
-          "startLine": 31,
-          "endLine": 37,
-          "text": "void Flasher::Start(const int frames) {\n  frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));\n  if (frames_left_ == 0) {\n    // Process() only clears the flag while it counts down.\n    brightened_ = false;\n  }\n}",
+          "path": "src/game/sim/flasher.h",
+          "startLine": 73,
+          "endLine": 73,
+          "text": "  [[nodiscard]] bool IsBrightened() const { return frames_left_ % 2 != 0; }",
           "before": [
-            "",
-            "namespace game {",
-            ""
+            "  // Whether the object is to be drawn brightened on this frame, as feedback",
+            "  // to the player that it was targeted: while the count left is odd, so on",
+            "  // every other frame of the flash and never once it is over."
           ],
           "after": [
             "",
-            "bool Flasher::Process() {",
-            "  if (frames_left_ == 0) {"
+            " private:",
+            "  // The Process() calls left in the flash. It counts down to zero and stops"
           ],
           "lost": true
         }
@@ -17087,7 +17089,7 @@
             "  // The longest flash, in frames. A save holds the count in one byte, as an",
             "  // int8_t."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17101,27 +17103,29 @@
         "cleanup",
         "game"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-16T07:29:12Z",
-      "updated": "2026-10-16T07:33:49Z",
+      "updated": "2026-10-16T07:41:41Z",
       "parent": "T-464",
       "source": "1c8b7143c..961c1ada8",
+      "fixedIn": "efa6c9119",
+      "resolution": "Moot with the derived flag (T-465): a load ignores the saved flag, so {0, 1} loads unbrightened; `ALoadIgnoresAFlagSetWithNoFramesLeft` pins it.",
       "anchors": [
         {
           "path": "src/game/sim/flasher.h",
-          "startLine": 46,
-          "endLine": 53,
-          "text": "    ar(frames_left_, brightened_);\n    if constexpr (Archive::kIsReading) {\n      // A negative count, a byte past 127, is a damaged save.\n      if (frames_left_ < 0) {\n        ar.Fail(\"invalid flash count\");\n        *this = Flasher();\n      }\n    }",
+          "startLine": 45,
+          "endLine": 45,
+          "text": "  void Serialize(Archive& ar) {",
           "before": [
+            "",
             "  // Saved-game support.",
-            "  template <class Archive>",
-            "  void Serialize(Archive& ar) {"
+            "  template <class Archive>"
           ],
           "after": [
-            "  }",
-            "",
-            "  // Starts flashing for `frames` calls of Process(), replacing what was left"
+            "    // The save still holds the brightened flag after the count. It is derived",
+            "    // from the count now, so a load ignores it, which also clears the flag an",
+            "    // older Start() could leave set with no frames left."
           ],
           "lost": true
         }
@@ -17175,7 +17179,7 @@
           "after": [
             "  DCHECK(IsActive);",
             "",
-            "  flasher_.Start(count);"
+            "  target_flash_.Start(count);"
           ],
           "lost": false
         },
@@ -17211,7 +17215,7 @@
             "/***********************************************************************************************",
             " * TechnoClass::AI -- Handles AI processing for techno object. *"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

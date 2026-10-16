@@ -16,23 +16,23 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Flasher's countdown.
+// File: TargetFlash's countdown.
 //
 // Originally FLASHER.CPP by Joe L. Bostic, started May 28, 1994; made
 // independent of the object it flashes on June 20, 1994.
 
-#include "game/sim/flasher.h"
+#include "game/sim/target_flash.h"
 
 #include <algorithm>
 #include <cstdint>
 
 namespace game {
 
-void Flasher::Start(const int frames) {
+void TargetFlash::Start(const int frames) {
   frames_left_ = static_cast<int8_t>(std::clamp(frames, 0, kMaxFrames));
 }
 
-bool Flasher::Process() {
+bool TargetFlash::Process() {
   if (frames_left_ == 0) {
     return false;
   }

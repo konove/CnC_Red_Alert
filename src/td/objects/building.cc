@@ -5152,7 +5152,7 @@ game::Direction BuildingClass::Fire_Direction() const {
  *=============================================================================================*/
 std::span<const unsigned char> BuildingClass::Remap_Table() {
   Validate();
-  return House->Remap_Table(flasher().IsBrightened(), false);
+  return House->Remap_Table(target_flash().IsBrightened(), false);
 }
 
 /***********************************************************************************************

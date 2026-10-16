@@ -4068,7 +4068,7 @@ void UnitClass::APC_Open_Door() {
 std::span<const unsigned char> UnitClass::Remap_Table() {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
-    return House->Remap_Table(flasher().IsBrightened(), false);
+    return House->Remap_Table(target_flash().IsBrightened(), false);
   }
   return DriveClass::Remap_Table();
 }

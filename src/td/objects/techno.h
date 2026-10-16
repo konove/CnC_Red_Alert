@@ -48,9 +48,9 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/door.h"
-#include "game/sim/flasher.h"
 #include "game/sim/heading.h"
 #include "game/sim/stage_counter.h"
+#include "game/sim/target_flash.h"
 #include "td/core/defines.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
@@ -293,12 +293,13 @@ class TechnoClass : public ObjectClass,
   }
 
   // The flashing that shows the player this object was targeted.
-  [[nodiscard]] game::Flasher& flasher() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return flasher_;
-  }
-  [[nodiscard]] const game::Flasher& flasher() const
+  [[nodiscard]] game::TargetFlash& target_flash()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return flasher_;
+    return target_flash_;
+  }
+  [[nodiscard]] const game::TargetFlash& target_flash() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return target_flash_;
   }
 
   // The stage counter that drives this object's animation: the frame of a
@@ -482,7 +483,7 @@ class TechnoClass : public ObjectClass,
 
   MissionClass mission_state_;
   RadioClass radio_;
-  game::Flasher flasher_;
+  game::TargetFlash target_flash_;
   game::StageCounter animation_;
   CargoClass cargo_;
   game::Door door_;

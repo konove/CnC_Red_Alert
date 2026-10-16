@@ -39,8 +39,8 @@
 
 #include "game/core/heap_slot_ptr.h"
 #include "game/sim/door.h"
-#include "game/sim/flasher.h"
 #include "game/sim/stage_counter.h"
+#include "game/sim/target_flash.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/carryover.h"
 #include "ra/ai/team.h"
@@ -325,7 +325,7 @@ void TechnoClass::Serialize(Archive& ar) {
   if constexpr (Archive::kIsReading) {
     radio_.set_contact(contact);
   }
-  flasher_.Serialize(ar);
+  target_flash_.Serialize(ar);
   animation_.Serialize(ar);
   cargo_.Serialize(ar);
   door_.Serialize(ar);

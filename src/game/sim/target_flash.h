@@ -16,13 +16,13 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Flasher, the flash that shows an object has been picked as a
+// File: TargetFlash, the flash that shows an object has been picked as a
 // target.
 //
 // Originally FLASHER.H by Joe L. Bostic, started May 28, 1994.
 
-#ifndef CNC_RED_ALERT_GAME_SIM_FLASHER_H_
-#define CNC_RED_ALERT_GAME_SIM_FLASHER_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_TARGET_FLASH_H_
+#define CNC_RED_ALERT_GAME_SIM_TARGET_FLASH_H_
 
 #include <cstdint>
 
@@ -32,9 +32,9 @@ namespace game {
 // frames it is drawn brightened on every other one.
 //
 // Example:
-//   flasher.Start(7);
-//   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }
-class Flasher {
+//   flash.Start(7);
+//   if (flash.Process()) { /* redraw, brightened if IsBrightened() */ }
+class TargetFlash {
  public:
   // The longest flash, in frames. A save holds the count in one byte, as an
   // int8_t.
@@ -52,7 +52,7 @@ class Flasher {
       // A negative count, a byte past 127, is a damaged save.
       if (frames_left_ < 0) {
         ar.Fail("invalid flash count");
-        *this = Flasher();
+        *this = TargetFlash();
       }
     }
   }
@@ -80,4 +80,4 @@ class Flasher {
 
 }  // namespace game
 
-#endif  // CNC_RED_ALERT_GAME_SIM_FLASHER_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_TARGET_FLASH_H_
