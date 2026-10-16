@@ -69,7 +69,8 @@ class UnitTrackerClass {
   [[nodiscard]] int Get_Unit_Total(int unit_type) const;
   // Returns every count, one per type and in whichever byte order they are in
   // now; the statistics packet sends these bytes as they are.
-  std::span<int32_t> Get_All_Totals() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] std::span<const int32_t> Get_All_Totals() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns the number of counters: the number of types this tracks.
   [[nodiscard]] int Get_Unit_Count() const { return UnitCount; }
 
@@ -84,9 +85,9 @@ class UnitTrackerClass {
   std::vector<int32_t> UnitTotals;
   // The number of counts in UnitTotals.
   int UnitCount;
-  // Nonzero while UnitTotals holds network (big-endian) byte order; zero
-  // while it holds host order.
-  int InNetworkFormat{0};
+  // True while UnitTotals holds network (big-endian) byte order, false while
+  // it holds host order.
+  bool InNetworkFormat{false};
 };
 
 }  // namespace game

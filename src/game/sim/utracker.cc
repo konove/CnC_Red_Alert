@@ -53,7 +53,9 @@ void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
   UnitTotals.at(base::ToSize(unit_type))--;
 }
 
-std::span<int32_t> UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
+std::span<const int32_t> UnitTrackerClass::Get_All_Totals() const {
+  return UnitTotals;
+}
 
 int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
   return UnitTotals.at(base::ToSize(unit_type));
@@ -62,7 +64,7 @@ int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
 // Zero is zero in either byte order, so the counts are back in host order.
 void UnitTrackerClass::Clear_Unit_Total() {
   std::ranges::fill(UnitTotals, 0);
-  InNetworkFormat = 0;
+  InNetworkFormat = false;
 }
 
 void UnitTrackerClass::To_Network_Format() {
@@ -72,7 +74,7 @@ void UnitTrackerClass::To_Network_Format() {
           htonl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
-  InNetworkFormat = 1;
+  InNetworkFormat = true;
 }
 
 void UnitTrackerClass::To_PC_Format() {
@@ -82,7 +84,7 @@ void UnitTrackerClass::To_PC_Format() {
           ntohl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
-  InNetworkFormat = 0;
+  InNetworkFormat = false;
 }
 
 }  // namespace game
