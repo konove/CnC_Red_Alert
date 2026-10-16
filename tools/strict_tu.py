@@ -47,6 +47,24 @@ def ninja_program(build_dir: Path) -> str:
     return match.group(1)
 
 
+def regenerate(ninja: str, build_dir: Path) -> None:
+    """Brings build_dir's ninja graph up to date with the CMake files.
+
+    A source added since the last configure has no object in the graph until
+    CMake re-runs, and querying a stale graph would skip it. Building
+    build.ninja re-checks the globs and re-runs CMake only when they or a
+    CMakeLists.txt changed, which otherwise costs a few tens of milliseconds.
+    """
+    result = subprocess.run(
+        [ninja, "-C", str(build_dir), "build.ninja"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout + result.stderr)
+        sys.exit(f"regenerating {build_dir} failed")
+
+
 def object_targets(ninja: str, build_dir: Path, source: Path) -> list[str]:
     """Returns the ninja object targets built from source, which may be none."""
     query = subprocess.run(
@@ -104,6 +122,7 @@ def main() -> int:
         sys.exit(f"{build_dir} is not a configured build directory")
 
     ninja = ninja_program(build_dir)
+    regenerate(ninja, build_dir)
     targets: list[str] = []
     for source in sources_to_check(args.files):
         found = object_targets(ninja, build_dir, source)
