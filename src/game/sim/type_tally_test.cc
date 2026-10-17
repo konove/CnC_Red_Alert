@@ -10,7 +10,7 @@ namespace game {
 
 namespace {
 
-TEST(TypeTallyTest, CountsUpAndClears) {
+TEST(TypeTallyTest, CountsUp) {
   TypeTally tally(3);
   tally.Increment(0);
   tally.Increment(2);
@@ -18,9 +18,6 @@ TEST(TypeTallyTest, CountsUpAndClears) {
   EXPECT_EQ(tally.Count(0), 1);
   EXPECT_EQ(tally.Count(1), 0);
   EXPECT_EQ(tally.Count(2), 2);
-  tally.Clear();
-  EXPECT_EQ(tally.Count(0), 0);
-  EXPECT_EQ(tally.Count(2), 0);
 }
 
 TEST(TypeTallyTest, CountsListsEveryTypeInOrder) {

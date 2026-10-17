@@ -52,8 +52,6 @@ class TypeTally {
   // Adds one to the count of `type`, which must be below the type count
   // (std::out_of_range otherwise).
   void Increment(int type);
-  // Sets every count to zero.
-  void Clear();
 
   // Returns the count of `type`.
   [[nodiscard]] int Count(int type) const;

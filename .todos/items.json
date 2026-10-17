@@ -17488,7 +17488,7 @@
             "        player->InfantryTotals->Clear();",
             "        player->AircraftTotals->Clear();"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/sim/type_tally.h",
@@ -17505,7 +17505,7 @@
             "  // Returns the count of `type`.",
             "  [[nodiscard]] int Count(int type) const;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

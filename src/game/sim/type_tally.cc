@@ -23,7 +23,6 @@
 
 #include "game/sim/type_tally.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/numeric.h"
@@ -35,8 +34,6 @@ TypeTally::TypeTally(const base::ssize type_count)
     : counts_(base::ToSize(type_count)) {}
 
 void TypeTally::Increment(const int type) { counts_.at(base::ToSize(type))++; }
-
-void TypeTally::Clear() { std::ranges::fill(counts_, 0); }
 
 int TypeTally::Count(const int type) const {
   return counts_.at(base::ToSize(type));
