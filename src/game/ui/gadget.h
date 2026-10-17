@@ -16,70 +16,29 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/GADGET.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : GADGET.H *
- *                                                                                             *
- *                   Programmer : Maria del Mar McCready Legg *
- *                                                                                             *
- *                   Start Date : January 3, 1995 *
- *                                                                                             *
- *                  Last Update : January 3, 1995   [MML] *
- *                                                                                             *
- *                                                                                             *
- *        Link [This is the linked list manager class. It keeps a record *
- *            �      of the next and previous gadget in the list. It is possible
- ** �      delete a gadget out of the middle of the list with this * � class.] *
- *            � * GadgetClass [The is the basic gadget class. It handles
- *processing of                  * �       input events and dispatching the
- *appropriate functions.                  * �       All gadgets must be derived
- *from this class.]                            * ����Ŀ * �    � * �  ListClass
- *[This list class functions like a list box does in Windows. It      * � keeps
- *track of a list of text strings. This list can be            * � scrolled and
- *an item selected. If the list becomes larger than     * �             can be
- *completely displayed, it will automatically create a        * � slider (at the
- *right edge) to manage the scrolling.]               * � * ControlClass [This
- *class adds the concept of giving an ID number to the                * �
- *gadget. This ID can then be returned from the Input()                    * �
- *function as if it were a pseudo-keystroke. Additionally,                 * �
- *the ability to inform another button that this button has                * �
- *been actioned is allowed. This ability allows one button                 * �
- *to watch what happens to another button. Example: a list                 * �
- *box gadget can tell when an attached slider has been                     * �
- *touched.]                                                                *
- *    ������������Ŀ * �       �    � * �       �  GaugeClass [This class looks
- *similar to Windows slider, but has               * �       �    �         a
- *different controlling logic. There is no thumb and              * �       � �
- *it serves as a simple variable control setting. This              * �       �
- *�         is analogous to a volume slider.]                                 *
- *    �       �    � * �       � SliderClass [The slider class is similar to the
- *typical Windows slider. It     * �       �              has a current setting,
- *a thumb, and a controllable scale. This    * �       �              is the
- *object created to handle a scrolling list box.]            * �       � * �
- *EditClass * � * � * ToggleClass [The toggle class is used for buttons that
- *have an image and behave just        * �         like the buttons in Windows
- *do. That is, they have a separate visual for       * �         when they are
- *pressed and raised. They are officially triggered (return        * � their ID
- *number) when the mouse button is released while over the button.      * � This
- *class doesn't perform any rendering itself. It merely provides the        * �
- *logic so that the derived classes will function correctly.] * ������Ŀ * � � *
- *  �   TextButtonClass [The text button functions like a normal Windows style
- *button, but     * �                    the imagery is based on text that is
- *displayed on the button. A       * �                    typical example would
- *be the "OK" or "Cancel" buttons.]               * � * ShapeButtonClass [The
- *shape buttons is similar to the TextButton but instead of text        * being
- *used to give the button its imagery, an actual shape is used        * instead.
- *This allows graphic buttons. These are similar to the up/down    * arrows seen
- *in a Windows slider.]                                         *
- *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// GadgetClass, the base of every on-screen control both games share: a
+// rectangle of the screen that reacts to the mouse and the keyboard. A
+// GadgetList holds the gadgets of one screen and feeds them input.
+//
+// The hierarchy, as it stands in game/ui:
+//
+//   GadgetClass         a screen region; dispatches input to Action()
+//     TextLabelClass    a line of text
+//     ControlClass      adds an ID that Input() returns like a keystroke, and
+//                       a peer it tells when it is actioned (a list box
+//                       watches its slider this way)
+//       GaugeClass      a value control without a thumb, like a volume slider
+//         SliderClass   a scroll bar with a thumb; scrolls a list box
+//       ListClass       a scrolling list of text lines with its own slider
+//       EditClass       a line of editable text
+//       ToggleClass     button logic: triggers on a release over the button,
+//                       and tracks pressed and raised; draws nothing itself
+//         TextButtonClass   a button showing text ("OK", "Cancel")
+//         ShapeButtonClass  a button showing a shape (a scroll arrow)
+//         CheckBoxClass     a box that is checked or not
+//
+// Each game derives its own gadgets from these as well (the sidebar strips,
+// the tactical map, the radar).
 
 #ifndef CNC_RED_ALERT_GAME_UI_GADGET_H_
 #define CNC_RED_ALERT_GAME_UI_GADGET_H_
@@ -93,9 +52,22 @@ namespace game {
 class ControlClass;
 class GadgetList;
 
+// A rectangle of the screen that reacts to input. Derived classes override
+// Action() to do their job and Draw_Me() to draw themselves; a GadgetList
+// calls both from its Input().
+//
+// Keyboard focus and the mouse capture ("sticky" processing) are global: one
+// gadget at a time holds each, in Focused and StuckOn.
+//
+// Example:
+//   GadgetList buttons;
+//   buttons.Add(ok_button);  // A ControlClass with the ID kOk.
+//   if (buttons.Input(view).key == engine::window::ButtonKey(kOk)) ...
 class GadgetClass {
  public:
-  // Input events a gadget listens for, stored OR'd in Flags.
+  // Input events a gadget listens for, stored OR'd in Flags. A press or
+  // release is reported once, when it happens; held and up describe the
+  // button's state on each Input() call that has no event to report.
   static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.
   static constexpr unsigned kLeftHeld =
       0x0002;  // Left mouse button is being held down.
@@ -111,13 +83,18 @@ class GadgetClass {
   static constexpr unsigned kRightUp =
       0x0080;  // Right mouse button is being held up.
   static constexpr unsigned kKeyboard =
-      0x0100;  // Keyboard input processing (maybe).
+      0x0100;  // A key that came from the keyboard, not a mouse button.
 
+  // Owns the region at (`x`, `y`), `w` by `h` screen pixels, and acts on the
+  // events in `flags`. A `sticky` gadget also listens for left presses and
+  // releases, which it needs to capture the mouse.
   GadgetClass(int x, int y, int w, int h, unsigned flags,
               bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
   GadgetClass(const GadgetClass&) = delete;
+  // Releases the keyboard focus and the mouse capture if this gadget holds
+  // them, and leaves its list.
   virtual ~GadgetClass();
   GadgetClass& operator=(const GadgetClass&) = delete;
   GadgetClass(GadgetClass&&) = delete;
@@ -126,25 +103,38 @@ class GadgetClass {
   // Returns the list this gadget is in, or nullptr when it is in none.
   [[nodiscard]] GadgetList* list() const { return list_; }
 
-  /*
-  **	Manages individual gadget states and actions.
-  */
+  // Disable() makes the gadget ignore input; it is still drawn, so a gadget
+  // that should vanish draws nothing while disabled or leaves its list.
+  // Enable() undoes it. Both flag a redraw and drop the keyboard focus.
   virtual void Disable();
   virtual void Enable();
+  // Returns the ID GadgetList::Input() reports for this gadget; 0 for a gadget
+  // without one (only a ControlClass has one).
   [[nodiscard]] virtual unsigned Get_ID() const { return 0; }
+  // Has Draw_Me() draw the gadget the next time its list's Input() runs.
   virtual void Flag_To_Redraw();
+  // Called by a ControlClass this gadget is the peer of, after it was
+  // actioned with `flags` and `key`; the peer may replace `key`. Does nothing
+  // here.
   virtual void Peer_To_Peer(unsigned /*unused*/,
                             engine::window::KeyNumber& /*unused*/,
                             ControlClass& /*unused*/) {}
+  // Routes every keyboard event to this gadget, taking the focus from the
+  // gadget that had it (which is redrawn).
   virtual void Set_Focus();
+  // Gives up the keyboard focus if this gadget has it; otherwise does nothing.
+  // A derived class overrides it to react to losing the focus.
   virtual void Clear_Focus();
+  // Returns whether keyboard events are routed to this gadget.
   virtual bool Has_Focus();
+  // Returns whether the gadget waits to be drawn.
   virtual bool Is_To_Redraw() { return IsToRepaint; }
+  // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
   virtual void Set_Position(int x, int y);
 
-  /*
-  **	General render function.
-  */
+  // Returns whether the gadget is to be drawn now, which it is when `forced`
+  // or flagged, and clears the flag. Draws nothing itself: an override calls
+  // it and draws when it returns true.
   virtual bool Draw_Me(PixelView& view, bool forced = false);
 
   // Sets the function GadgetList::Input() hands every key it reads, before any
@@ -154,29 +144,25 @@ class GadgetClass {
     KeyHook = hook;
   }
 
-  /*
-  **	This is the coordinates and dimensions of the gadget region. These are
-  *in *	absolute screen pixel coordinates.
-  */
+  // The gadget's region, in screen pixels.
   int X = 0;
   int Y = 0;
   int Width = 0;
   int Height = 0;
 
  protected:
-  /*
-  **	Processes the event flags so that if this gadget needs to "stick" or
-  **	"unstick", it will be properly flagged. Call this function if you are
-  **	going to clear the button press flags before calling the base class
-  **	Action() function. Otherwise, calling this function manually, is
-  **	unnecessary since the base class Action() function already does so.
-  */
+  // Captures the mouse for a sticky gadget on a left press in `flags`, and
+  // releases it on a left release. The base Action() calls it; an override
+  // that clears the press bits before calling the base Action() calls it
+  // first itself.
   virtual void Sticky_Process(unsigned flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
   // its job. `x` and `y` are where it happened: a click's position for a
   // press or release, the mouse's for anything else. A gadget that acts on a
-  // key replaces `key` with its ButtonKey(). Returns whether it acted.
+  // key replaces `key` with its ButtonKey(). Returns whether it acted, which
+  // ends the list's sweep. The base flags a redraw and handles the mouse
+  // capture when `flags` holds anything.
   virtual bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
                       int y);
 
@@ -187,53 +173,35 @@ class GadgetClass {
   virtual void OnAdded(GadgetList& /*list*/) {}
   virtual void OnRemoved(GadgetList& /*list*/) {}
 
-  /*
-  **	This points to the gadget that has the keyboard focus. All keyboard only
-  **	events are fed to this gadget to the exclusion of all others.
-  */
+  // The gadget every keyboard event goes to, to the exclusion of all others;
+  // nullptr when no gadget has the focus.
   static GadgetClass* Focused;
 
-  /*
-  **	This button should call the Draw_Me function because some graphic
-  *element needs *	to be redrawn. This flag is set by default if the Action
-  *function is called.
-  */
+  // Set when the gadget's look has changed and Draw_Me() has to draw it; the
+  // base Action() sets it whenever it acts.
   bool IsToRepaint : 1 = false;
 
  public
      :  // HACK HACK HACK.. this is here because the sidebar buttons are static.
-  /*
-  **	A sticky button is one that is processed to the exclusion of all other
-  *buttons *	IF the mouse was pressed down while over this button and the
-  *mouse continues *	to remain pressed. This is the standard behavior for all
-  *normal Windows style *	buttons.
-  */
+  // A sticky gadget captures the mouse: pressed over it, it alone gets the
+  // input until the left button is released, as a Windows button does.
+  // Public because the sidebar's buttons are static and set it after they
+  // are constructed.
   bool IsSticky : 1 = false;
 
-  //	ajw - Publicized StuckOn 7/30/98 (was protected)
-  /*
-  **	If there is a sticky button being processed, then this will point to it.
-  *A sticky *	button is one that will ONLY be processed while the mouse button
-  *is being *	held down.
-  */
+  // The sticky gadget that holds the mouse while the left button is down;
+  // nullptr when none does. Public since 7/30/98 (ajw) so a game's gadget can
+  // ask whether it holds the mouse.
   static GadgetClass* StuckOn;
 
  protected:
-  /*
-  **	If the button is disabled, then it won't be processed by the input
-  *function. It will *	have its Draw_Me function called as necessary. In order
-  *to not display the button *	at all, the appropriate draw function should
-  *perform no action -- just return. Or, *	just remove the button from the
-  *list.
-  */
+  // Set by Disable(): the list's sweep draws the gadget but does not offer it
+  // input.
   bool IsDisabled : 1 = false;
 
-  /*
-  **	These are the action flags that are used to determine when the action
-  *function *	should be called. Example: If this gadget only wants the action
-  *button called when *	the left mouse button is pressed over the its region,
-  *then the flag will be set *	to kLeftPress.
-  */
+  // The k... events Action() is called for: kLeftPress alone calls it only
+  // for a left press over the region. kKeyboard is added while the gadget
+  // has the focus.
   unsigned Flags = 0;
 
  private:
@@ -262,11 +230,16 @@ class GadgetClass {
   // Returns the event as GadgetList::Input() reports it.
   static engine::window::InputEvent FinishInput(const PendingInput& input);
 
+  // See Set_Key_Hook(); nullptr when none is set.
   static void (*KeyHook)(engine::window::KeyNumber key);
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;
 
+  // Calls Action() with the events of `flags` this gadget listens for, when
+  // they concern it: always for the gadget holding the mouse and for a key,
+  // otherwise only for mouse events inside its region. Returns what Action()
+  // returned, or false when it was not called.
   virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
                           int y);
 };
