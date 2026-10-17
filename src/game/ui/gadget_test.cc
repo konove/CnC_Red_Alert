@@ -140,11 +140,13 @@ TEST_F(GadgetTest, TheBasePeerHookLeavesTheKeyAlone) {
 TEST_F(GadgetTest, AGadgetDestroyedWhileItHoldsTheMouseLetsGoOfIt) {
   std::optional<Probe> sticky(std::in_place, /*sticky=*/true);
   list_.Add(*sticky);
+  list_.Add(probe_);
   PressAt(25, 25);
-  ASSERT_EQ(Gadget::mouse_captor(), &*sticky);
+  ASSERT_TRUE(sticky->HoldsMouse());
 
   sticky.reset();
-  EXPECT_EQ(Gadget::mouse_captor(), nullptr);
+  PressAt(25, 25);
+  EXPECT_EQ(probe_.actions, 1);
 }
 
 TEST_F(GadgetTest, AStickyGadgetListensForTheLeftPressAndRelease) {
@@ -156,11 +158,11 @@ TEST_F(GadgetTest, AStickyGadgetListensForTheLeftPressAndRelease) {
   } bare;
   list_.Add(bare);
   PressAt(25, 25);
-  EXPECT_EQ(Gadget::mouse_captor(), &bare);
+  EXPECT_TRUE(bare.HoldsMouse());
 
   ASSERT_TRUE(input_.keyboard().PutClick(MouseButton::kLeft, true, 25, 25));
   list_.Input(view_);
-  EXPECT_EQ(Gadget::mouse_captor(), nullptr);
+  EXPECT_FALSE(bare.HoldsMouse());
 }
 
 }  // namespace

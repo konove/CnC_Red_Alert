@@ -58,8 +58,9 @@ class GadgetList;
 // Action() to do their job and Draw() to draw themselves; a GadgetList
 // calls both from its Input().
 //
-// Keyboard focus and the mouse capture ("sticky" processing) are global: one
-// gadget at a time holds each, in focused_ and mouse_captor_.
+// Keyboard focus and the mouse capture ("sticky" processing) belong to the
+// gadget: its list keeps at most one of its gadgets holding each, and drops
+// both when another list takes its turn (see GadgetList::Input()).
 //
 // Example:
 //   GadgetList buttons;
@@ -116,14 +117,15 @@ class Gadget {
   virtual void OnPeerAction(uint32_t /*flags*/,
                             engine::window::KeyNumber& /*key*/,
                             ControlClass& /*peer*/) {}
-  // Routes every keyboard event to this gadget, taking the focus from the
-  // gadget that had it (which is redrawn).
+  // Routes every keyboard event its list reads to this gadget, taking the
+  // focus from the gadget of the list that had it (which is redrawn). A gadget
+  // in no list keeps the focus until it is added to one.
   virtual void SetFocus();
   // Gives up the keyboard focus if this gadget has it; otherwise does nothing.
   // A derived class overrides it to react to losing the focus.
   virtual void ClearFocus();
   // Returns whether keyboard events are routed to this gadget.
-  [[nodiscard]] bool HasFocus() const;
+  [[nodiscard]] bool HasFocus() const { return has_focus_; }
   // Returns whether the gadget waits to be drawn.
   [[nodiscard]] bool IsToRedraw() const { return to_redraw_; }
   // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
@@ -151,9 +153,9 @@ class Gadget {
   // constructed.
   void set_sticky(const bool sticky) { sticky_ = sticky; }
 
-  // The sticky gadget that holds the mouse while the left button is down;
-  // nullptr when none does.
-  [[nodiscard]] static Gadget* mouse_captor() { return mouse_captor_; }
+  // Returns whether this sticky gadget holds the mouse: it was pressed and the
+  // left button is not released yet.
+  [[nodiscard]] bool HoldsMouse() const { return holds_mouse_; }
 
  protected:
   // Captures the mouse for a sticky gadget on a left press in `flags`, and
@@ -200,6 +202,10 @@ class Gadget {
   // ends the sweep.
   bool Offer(PixelView& view, bool forced, PendingInput& input);
 
+  // Gives up the focus and the hold on the mouse without telling the gadget,
+  // as when another list takes its turn.
+  void DropFocusAndMouse();
+
   // Calls Action() with the events of `input` this gadget listens for, when
   // they concern it: always for the gadget holding the mouse and for a key,
   // otherwise only for mouse events inside its region. Action() may replace
@@ -212,10 +218,6 @@ class Gadget {
   int width_ = 0;
   int height_ = 0;
 
-  // The gadget every keyboard event goes to, to the exclusion of all others;
-  // nullptr when no gadget has the focus.
-  static Gadget* focused_;
-
   // Set when the gadget's look has changed and Draw() has to draw it; the
   // base Action() sets it whenever it acts.
   bool to_redraw_ : 1 = false;
@@ -223,8 +225,12 @@ class Gadget {
   // See set_sticky().
   bool sticky_ : 1 = false;
 
-  // See mouse_captor().
-  static Gadget* mouse_captor_;
+  // See HasFocus(): every keyboard event of its list goes to this gadget, to
+  // the exclusion of the others.
+  bool has_focus_ : 1 = false;
+
+  // See HoldsMouse().
+  bool holds_mouse_ : 1 = false;
 
   // Set by Disable(): the list's sweep draws the gadget but does not offer it
   // input.
@@ -232,7 +238,8 @@ class Gadget {
 
   // The k... events Action() is called for: kLeftPress alone calls it only
   // for a left press over the region. kKeyboard is added while the gadget
-  // has the focus.
+  // has the focus, without being stored here: a gadget that listens for keys
+  // anyway (a list box) keeps listening when it loses the focus.
   uint32_t event_mask_ = 0;
 
   // The list this gadget is in; nullptr when in none.

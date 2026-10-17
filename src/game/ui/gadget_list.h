@@ -22,10 +22,11 @@ class ControlClass;
 //
 // A gadget is in one list at most. Adding it to a list takes it out of the one
 // it was in, so a gadget two dialogs share is handed over by adding it. The
-// gadget keeps its keyboard focus on the way. The parts of a composite gadget
-// (a list box's scroll gadgets, a drop list's button and dropped list) do not:
-// their owner takes them out with Remove(), so adding a list box again lets go
-// of a scroll thumb that is being dragged.
+// gadget keeps its keyboard focus on the way, and takes it from the gadget of
+// its new list that had it. The parts of a composite gadget (a list box's
+// scroll gadgets, a drop list's button and dropped list) do not: their owner
+// takes them out with Remove(), so adding a list box again lets go of a scroll
+// thumb that is being dragged.
 //
 // Input() gives an event to the first gadget that takes it, so the order is
 // part of a dialog's behavior where gadgets overlap.
@@ -74,7 +75,9 @@ class GadgetList {
   // keeps the click's position either way.
   //
   // The first call after another list had its turn draws every gadget and
-  // drops the focus and the hold on the mouse, which belonged to that list.
+  // drops the focus and the hold on the mouse, both this list's and that
+  // list's: a button pressed when a dialog opened over it must not hold the
+  // mouse when its list gets the input back.
   engine::window::InputEvent Input(PixelView& view);
   // Sets the function Input() hands every key it reads, before any
   // gadget sees it (the games save a screenshot on K this way). Null, the
@@ -115,16 +118,25 @@ class GadgetList {
   // Erases `gadget` from gadgets_ and clears its back pointer.
   void Erase(Gadget& gadget);
 
-  // Puts `gadget`, which is in no list, at `index` and tells it so.
+  // Puts `gadget`, which is in no list, at `index` and tells it so. A gadget
+  // that has the focus takes it from the one in this list that had it.
   void InsertAt(base::ssize index, Gadget& gadget);
+
+  // Returns the gadget that has the focus or holds the mouse, or nullptr when
+  // none does.
+  [[nodiscard]] Gadget* FocusedGadget() const;
+  [[nodiscard]] Gadget* MouseHolder() const;
+
+  // Takes the focus and the hold on the mouse from every gadget, without
+  // telling them.
+  void DropFocusAndMouse();
 
   // The steps of Input(). ReadInput() takes one event, if any, from the
   // keyboard and describes it.
   static Gadget::PendingInput ReadInput();
   // Gives `input` to the gadget holding the mouse or, for a key, the one with
   // the focus. Returns whether there was one, which leaves the others out.
-  static bool OfferToStuckOrFocused(PixelView& view,
-                                    Gadget::PendingInput& input);
+  bool OfferToStuckOrFocused(PixelView& view, Gadget::PendingInput& input);
   // Returns the event as Input() reports it.
   static engine::window::InputEvent FinishInput(
       const Gadget::PendingInput& input);
@@ -135,7 +147,7 @@ class GadgetList {
   // The list Input() ran on last; nullptr when the next call is to draw
   // everything.
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-  static inline const GadgetList* last_input_ = nullptr;
+  static inline GadgetList* last_input_ = nullptr;
 
   std::vector<Gadget*> gadgets_;
 };

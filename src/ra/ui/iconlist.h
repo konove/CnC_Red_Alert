@@ -209,7 +209,7 @@ class IconListClass : public ListClass {
   virtual int Get_View_Index() { return CurrentTopIndex; }
   bool bScrollBeingDragged() {
     //	Returns true if the scroll bar of the list is being dragged by the user.
-    return (game::Gadget::mouse_captor() == &ScrollGadget);
+    return ScrollGadget.HoldsMouse();
   }
 
   virtual int Find(const char* szItemToFind);

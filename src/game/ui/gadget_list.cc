@@ -53,9 +53,7 @@ void GadgetList::Remove(Gadget& gadget) {
     return;
   }
   gadget.ClearFocus();
-  if (Gadget::mouse_captor_ == &gadget) {
-    Gadget::mouse_captor_ = nullptr;
-  }
+  gadget.holds_mouse_ = false;
   Detach(gadget);
 }
 
@@ -74,10 +72,12 @@ void GadgetList::Clear() {
 engine::window::InputEvent GadgetList::Input(PixelView& view) {
   bool forced = false;
   if (last_input_ != this) {
+    if (last_input_ != nullptr) {
+      last_input_->DropFocusAndMouse();
+    }
+    DropFocusAndMouse();
     last_input_ = this;
     forced = true;
-    Gadget::mouse_captor_ = nullptr;
-    Gadget::focused_ = nullptr;
   }
 
   Gadget::PendingInput input = ReadInput();
@@ -135,9 +135,34 @@ void GadgetList::Erase(Gadget& gadget) {
 }
 
 void GadgetList::InsertAt(base::ssize index, Gadget& gadget) {
+  // Before the insertion, so that the search finds only the others.
+  if (gadget.has_focus_) {
+    if (Gadget* const holder = FocusedGadget()) {
+      holder->FlagToRedraw();
+      holder->ClearFocus();
+    }
+  }
   gadgets_.insert(gadgets_.begin() + index, &gadget);
   gadget.list_ = this;
   gadget.OnAdded(*this);
+}
+
+Gadget* GadgetList::FocusedGadget() const {
+  const auto found = std::ranges::find_if(
+      gadgets_, [](const Gadget* gadget) { return gadget->has_focus_; });
+  return found == gadgets_.end() ? nullptr : *found;
+}
+
+Gadget* GadgetList::MouseHolder() const {
+  const auto found = std::ranges::find_if(
+      gadgets_, [](const Gadget* gadget) { return gadget->holds_mouse_; });
+  return found == gadgets_.end() ? nullptr : *found;
+}
+
+void GadgetList::DropFocusAndMouse() {
+  for (Gadget* const gadget : gadgets_) {
+    gadget->DropFocusAndMouse();
+  }
 }
 
 Gadget::PendingInput GadgetList::ReadInput() {
@@ -205,27 +230,24 @@ bool GadgetList::OfferToStuckOrFocused(PixelView& view,
                                        Gadget::PendingInput& input) {
   // While a gadget holds the mouse it gets every event and no other gadget
   // is drawn or offered anything.
-  if (Gadget::mouse_captor_) {
-    Gadget::mouse_captor_->Draw(view, false);
-    // A release in ActionIfConcerned() clears Gadget::mouse_captor_; the gadget
-    // is still redrawn so it can show itself raised.
-    Gadget* captor = Gadget::mouse_captor_;
-    Gadget::mouse_captor_->ActionIfConcerned(input);
-    if (Gadget::mouse_captor_) {
-      Gadget::mouse_captor_->Draw(view, false);
-    } else {
-      captor->Draw(view, false);
-    }
+  if (Gadget* const captor = MouseHolder()) {
+    captor->Draw(view, false);
+    // A release lets go of the mouse; the gadget is still redrawn so it can
+    // show itself raised.
+    captor->ActionIfConcerned(input);
+    captor->Draw(view, false);
     return true;
   }
 
   // Keys go only to the focused gadget; its mouse events go through the
   // normal sweep.
-  if (Gadget::focused_ && input.flags & Gadget::kKeyboard) {
-    Gadget::focused_->Draw(view, false);
-    Gadget::focused_->ActionIfConcerned(input);
-    if (Gadget::focused_) {
-      Gadget::focused_->Draw(view, false);
+  if (Gadget* const focused = FocusedGadget();
+      focused != nullptr && input.flags & Gadget::kKeyboard) {
+    focused->Draw(view, false);
+    focused->ActionIfConcerned(input);
+    // The focus may have moved on to another gadget, which shows it now.
+    if (Gadget* const now_focused = FocusedGadget()) {
+      now_focused->Draw(view, false);
     }
     return true;
   }

@@ -63,6 +63,11 @@ class GadgetListTest : public testing::Test {
     ASSERT_TRUE(input_.keyboard().PutClick(MouseButton::kLeft, false, x, 5));
   }
 
+  // Queues the A key.
+  void TypeA() {
+    ASSERT_TRUE(input_.keyboard().Put({.key = engine::window::KN_A}));
+  }
+
   Input input_{48, 48};
   base::Installed<Input>::Scope input_scope_{input_};
   PixelView view_;
@@ -161,9 +166,9 @@ TEST_F(GadgetListTest, RemoveDropsTheHoldOnTheMouse) {
   list_.Add(a_);
   Press(5);
   list_.Input(view_);
-  ASSERT_EQ(Gadget::mouse_captor(), &a_);
+  ASSERT_TRUE(a_.HoldsMouse());
   list_.Remove(a_);
-  EXPECT_EQ(Gadget::mouse_captor(), nullptr);
+  EXPECT_FALSE(a_.HoldsMouse());
 }
 
 TEST_F(GadgetListTest, RemoveIgnoresAGadgetOfAnotherList) {
@@ -316,6 +321,80 @@ TEST_F(GadgetListTest, AnotherListsTurnDrawsEverythingAndDropsTheFocus) {
   EXPECT_FALSE(a_.HasFocus());
   list_.Input(view_);
   EXPECT_EQ(a_.draws, 2);
+}
+
+TEST_F(GadgetListTest, AnotherListsTurnDropsTheHoldOnTheMouse) {
+  GadgetList other;
+  a_.set_sticky(true);
+  list_.Add(a_);
+  Press(5);
+  list_.Input(view_);
+  ASSERT_TRUE(a_.HoldsMouse());
+  other.Input(view_);
+  EXPECT_FALSE(a_.HoldsMouse());
+}
+
+TEST_F(GadgetListTest, AGadgetThatLostTheFocusToAnotherListsTurnTakesNoKeys) {
+  GadgetList other;
+  list_.Add(a_);
+  list_.Input(view_);
+  a_.SetFocus();
+  other.Input(view_);
+  TypeA();
+  EXPECT_EQ(list_.Input(view_).key, engine::window::KN_A);
+  EXPECT_EQ(a_.actions, 0);
+}
+
+TEST_F(GadgetListTest, TheFocusOfAnotherListTakesNoKeys) {
+  GadgetList other;
+  other.Add(a_);
+  a_.SetFocus();
+  list_.Add(b_);
+  TypeA();
+  EXPECT_EQ(list_.Input(view_).key, engine::window::KN_A);
+  EXPECT_EQ(a_.actions, 0);
+  EXPECT_TRUE(a_.HasFocus());
+}
+
+TEST_F(GadgetListTest, EachListHasAFocusOfItsOwn) {
+  GadgetList other;
+  list_.Add(a_);
+  other.Add(b_);
+  a_.SetFocus();
+  b_.SetFocus();
+  EXPECT_TRUE(a_.HasFocus());
+  EXPECT_TRUE(b_.HasFocus());
+}
+
+TEST_F(GadgetListTest, AFocusedGadgetAddedTakesTheFocusFromTheOneThatHadIt) {
+  list_.Add(a_);
+  a_.SetFocus();
+  b_.SetFocus();
+  list_.Add(b_);
+  EXPECT_FALSE(a_.HasFocus());
+  EXPECT_TRUE(b_.HasFocus());
+}
+
+TEST_F(GadgetListTest, AGadgetFocusedOutsideTheClearedListMayBeDestroyed) {
+  {
+    Probe temporary;
+    list_.Add(temporary);
+    temporary.SetFocus();
+    list_.Clear();
+  }
+  list_.Add(a_);
+  TypeA();
+  EXPECT_EQ(list_.Input(view_).key, engine::window::KN_A);
+}
+
+TEST_F(GadgetListTest, AGadgetListeningForKeysKeepsThemWithoutTheFocus) {
+  ControlClass keys(5, 0, 0, 10, 10, Gadget::kKeyboard);
+  list_.Add(keys);
+  list_.Input(view_);
+  keys.SetFocus();
+  keys.ClearFocus();
+  TypeA();
+  EXPECT_EQ(list_.Input(view_).key, engine::window::ButtonKey(5));
 }
 
 TEST_F(GadgetListTest, FlagToRedrawMakesTheNextInputDrawEverything) {

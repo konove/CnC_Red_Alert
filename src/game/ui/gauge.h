@@ -178,7 +178,7 @@ class GaugeClass : public ControlClass {
     // If the thumb is currently being "dragged around", then update the
     // slider position according to the mouse position. In all other cases,
     // ignore the button being held down.
-    if (flags & kLeftPress || (flags & kLeftHeld && mouse_captor() == this)) {
+    if (flags & kLeftPress || (flags & kLeftHeld && HoldsMouse())) {
       // Compute the difference between where we clicked, and the edge of the
       // thumb (only if we clicked on the thumb.)
       if (flags & kLeftPress) {

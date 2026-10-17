@@ -113,11 +113,7 @@ class EditClass : public ControlClass {
       }
     }
   }
-  ~EditClass() override {
-    if (Gadget::HasFocus()) {
-      Gadget::ClearFocus();
-    }
-  }
+  ~EditClass() override = default;
   EditClass(const EditClass&) = delete;
   EditClass& operator=(const EditClass&) = delete;
   EditClass(EditClass&&) = delete;

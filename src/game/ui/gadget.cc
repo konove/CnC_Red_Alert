@@ -27,10 +27,6 @@
 
 namespace game {
 
-Gadget* Gadget::focused_ = nullptr;
-
-Gadget* Gadget::mouse_captor_ = nullptr;
-
 Gadget::Gadget(const base::Rect& region, const uint32_t flags,
                const bool sticky) noexcept
     : x_(region.x()),
@@ -47,15 +43,9 @@ Gadget::Gadget(const base::Rect& region, const uint32_t flags,
 }
 
 Gadget::~Gadget() {
-  // The base version: by now the overrides (DropListClass collapses its
-  // drop-down in its own) are gone, so a derived class that needs more does
-  // it in its own destructor, while the object is still of that type.
-  Gadget::ClearFocus();
-
-  if (this == mouse_captor_) {
-    mouse_captor_ = nullptr;
-  }
-
+  // The focus and the hold on the mouse go with the gadget: they are its own
+  // state, and nothing else points at it but its list.
+  //
   // Not through Remove(): its hook is a virtual call this destructor cannot
   // make any more.
   if (list_ != nullptr) {
@@ -78,22 +68,17 @@ void Gadget::Enable() {
 void Gadget::FlagToRedraw() { to_redraw_ = true; }
 
 void Gadget::SetFocus() {
-  if (focused_) {
-    focused_->FlagToRedraw();
-    focused_->ClearFocus();
+  // The gadget that loses the focus may be this one, which then runs its own
+  // ClearFocus() first. Out of a list there is no other to look for.
+  Gadget* const holder = list_ != nullptr ? list_->FocusedGadget() : this;
+  if (holder != nullptr && holder->has_focus_) {
+    holder->FlagToRedraw();
+    holder->ClearFocus();
   }
-  event_mask_ |= kKeyboard;
-  focused_ = this;
+  has_focus_ = true;
 }
 
-void Gadget::ClearFocus() {
-  if (focused_ == this) {
-    event_mask_ &= ~kKeyboard;
-    focused_ = nullptr;
-  }
-}
-
-bool Gadget::HasFocus() const { return this == focused_; }
+void Gadget::ClearFocus() { has_focus_ = false; }
 
 void Gadget::SetPosition(const int x, const int y) {
   x_ = x;
@@ -110,10 +95,10 @@ bool Gadget::Draw(PixelView& /*view*/, const bool forced) {
 
 void Gadget::UpdateMouseCapture(const uint32_t flags) {
   if (sticky_ && flags & kLeftPress) {
-    mouse_captor_ = this;
+    holds_mouse_ = true;
   }
-  if (mouse_captor_ == this && flags & kLeftRelease) {
-    mouse_captor_ = nullptr;
+  if (flags & kLeftRelease) {
+    holds_mouse_ = false;
   }
 }
 
@@ -141,18 +126,24 @@ bool Gadget::Offer(PixelView& view, const bool forced, PendingInput& input) {
   return false;
 }
 
+void Gadget::DropFocusAndMouse() {
+  has_focus_ = false;
+  holds_mouse_ = false;
+}
+
 bool Gadget::ActionIfConcerned(PendingInput& input) {
   // Keep only the events this gadget listens for; none left means a mouse
   // event is not for it. The sweep offers `input` to the next gadget too, so
   // its flags stay as they are.
-  const uint32_t flags = input.flags & event_mask_;
+  const uint32_t mask = has_focus_ ? event_mask_ | kKeyboard : event_mask_;
+  const uint32_t flags = input.flags & mask;
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
   // mouse events must fall inside the region. The unsigned casts turn a
   // position left of or above the region into a huge value, so one compare
   // per axis checks both edges.
-  if (this == mouse_captor_ || flags & kKeyboard ||
+  if (holds_mouse_ || flags & kKeyboard ||
       (flags &&
        static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
        static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {

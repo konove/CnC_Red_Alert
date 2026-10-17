@@ -78,13 +78,13 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
 bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
                            int x, int y) {
   // We might end up clearing the event bits. Make sure that the sticky
-  // process is properly updated anyway: it is what makes StuckOn this dial
-  // from the press to the release.
+  // process is properly updated anyway: it is what makes this dial hold the
+  // mouse from the press to the release.
   UpdateMouseCapture(flags);
 
   // Follow the mouse on a press, or while the button is held after a press on
-  // the dial (StuckOn); a drag that starts elsewhere must not turn it.
-  if (flags & kLeftPress || (flags & kLeftHeld && mouse_captor() == this)) {
+  // the dial (HoldsMouse()); a drag that starts elsewhere must not turn it.
+  if (flags & kLeftPress || (flags & kLeftHeld && HoldsMouse())) {
     const game::Facing old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
     direction_ = game::Direction8Toward(
