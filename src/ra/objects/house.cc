@@ -769,7 +769,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
  *=========================================================================*/
 void HouseClass::Init() {
   // Destroyed rather than just freed: an Internet game's houses own their
-  // unit trackers.
+  // type tallies.
   TheObjectHeaps().house().DestroyAll();
 
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {

@@ -12,7 +12,7 @@ namespace ra {
 
 ObjectHeaps::~ObjectHeaps() {
   // The heaps free their buffers without running element destructors, and
-  // the houses own their unit trackers and the trigger types their actions.
+  // the houses own their type tallies and the trigger types their actions.
   // The units' and buildings' destructors reach into the game through its
   // globals, so they stay unrun.
   house_.DestroyAll();
