@@ -177,7 +177,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"

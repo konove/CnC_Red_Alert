@@ -113,7 +113,7 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/occupy_flags.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"

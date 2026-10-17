@@ -54,7 +54,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/objects/object.h"

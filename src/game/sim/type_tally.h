@@ -22,8 +22,8 @@
 //
 // Originally UTRACKER.H by Steve Tall, June 3-7, 1996.
 
-#ifndef CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
-#define CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_TYPE_TALLY_H_
+#define CNC_RED_ALERT_GAME_SIM_TYPE_TALLY_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -65,4 +65,4 @@ class TypeTally {
 
 }  // namespace game
 
-#endif  // CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_TYPE_TALLY_H_

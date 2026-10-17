@@ -60,7 +60,7 @@
 #include "engine/platform/win32/win32_com.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "ra/ai/scenario.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"

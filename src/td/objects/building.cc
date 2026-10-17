@@ -161,7 +161,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"

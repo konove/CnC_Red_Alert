@@ -59,7 +59,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/core/special_flags.h"

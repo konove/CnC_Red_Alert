@@ -21,7 +21,7 @@
 //
 // Originally UTRACKER.CPP by Steve Tall, June 3-7, 1996.
 
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 
 #include <algorithm>
 #include <cstddef>

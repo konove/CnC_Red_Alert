@@ -143,7 +143,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/mph.h"
-#include "game/sim/utracker.h"
+#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/trigger.h"
