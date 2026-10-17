@@ -158,6 +158,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/type_tally.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
 #include "td/ai/team.h"
@@ -3253,7 +3254,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (TheSession().type() == GAME_NORMAL) {
           counter = {};
         } else {
-          for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
+          for (const UnitType index : magic_enum::enum_values<UnitType>()) {
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(UnitTypeClass::As_Reference(index).Level,
                                     TheWorld().build_level())) {
@@ -3341,7 +3342,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         int bestval = -1;
         int bestcount = 0;
         UnitType bestlist[kUnitCount];
-        for (UnitType utype = UNIT_HTANK; utype < UNIT_COUNT; utype++) {
+        for (const UnitType utype : magic_enum::enum_values<UnitType>()) {
           if (counter.at(utype) > 0 && Can_Build(utype, Class->House) &&
               UnitTypeClass::As_Reference(utype).Cost_Of() <=
                   Available_Money()) {
@@ -3375,8 +3376,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (TheSession().type() == GAME_NORMAL) {
           counter = {};
         } else {
-          for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT;
-               index++) {
+          for (const InfantryType index :
+               magic_enum::enum_values<InfantryType>()) {
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(
                     InfantryTypeClass::As_Reference(index).Level,
@@ -3467,8 +3468,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         int bestval = -1;
         int bestcount = 0;
         InfantryType bestlist[kInfantryCount];
-        for (InfantryType utype = INFANTRY_E1; utype < INFANTRY_COUNT;
-             utype++) {
+        for (const InfantryType utype :
+             magic_enum::enum_values<InfantryType>()) {
           if (counter.at(utype) > 0 && Can_Build(utype, Class->House) &&
               InfantryTypeClass::As_Reference(utype).Cost_Of() <=
                   Available_Money()) {

@@ -2493,7 +2493,6 @@ int UnitClass::Mission_Unload() {
     case UnitType::UNIT_TREX:
     case UnitType::UNIT_RAPT:
     case UnitType::UNIT_STEG:
-    case UnitType::UNIT_COUNT:
     default:
       break;
   }
@@ -4413,7 +4412,6 @@ Coordinate UnitClass::Fire_Coord(int which) const {
     case UnitType::UNIT_TREX:
     case UnitType::UNIT_RAPT:
     case UnitType::UNIT_STEG:
-    case UnitType::UNIT_COUNT:
     default:
       break;
   }

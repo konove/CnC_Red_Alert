@@ -298,7 +298,7 @@ void HouseClass::Serialize(Archive& ar) {
     }
     if (!IsActive || Class == nullptr || ActLike < HOUSE_FIRST ||
         ActLike >= HOUSE_COUNT || saved_NukePieces > 7 ||
-        JustBuilt < STRUCT_NONE || JustBuilt >= STRUCT_COUNT ||
+        (JustBuilt != STRUCT_NONE && !magic_enum::enum_contains(JustBuilt)) ||
         Edge < SOURCE_FIRST || Edge >= SOURCE_COUNT || remap_id < 0 ||
         remap_id >= 7 || RemapColor < REMAP_NONE || RemapColor >= REMAP_COUNT ||
         WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||

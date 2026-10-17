@@ -17636,7 +17636,7 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-17T00:44:22Z",
-      "updated": "2026-10-17T01:07:04Z",
+      "updated": "2026-10-17T01:07:11Z",
       "source": "fb71855bc",
       "resolution": "The `RTTI_VESSEL` case of `Record_The_Kill()` now increments `DestroyedVessels`, so the `VSK?` field carries vessel kills and `UNK?` no longer counts them as vehicles of the same number. `TechnoTest.AnInternetGameTalliesTheKillByKind` covers both kinds.",
       "anchors": [
@@ -17644,7 +17644,7 @@
           "path": "src/ra/objects/techno.cc",
           "startLine": 4492,
           "endLine": 4497,
-          "text": "    case RTTI_VESSEL:\n      if (source != nullptr && !total_recorded &&\n          TheSession().Type == GAME_INTERNET) {\n        source->House->DestroyedUnits->Increment(\n            static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));\n      }",
+          "text": "    case RTTI_VESSEL:\n      if (source != nullptr && !total_recorded &&\n          TheSession().Type == GAME_INTERNET) {\n        source->House->DestroyedVessels->Increment(\n            static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));\n      }",
           "before": [
             "        total_recorded++;",
             "      }",
@@ -17655,7 +17655,7 @@
             "      House->UnitsLost++;",
             "      if (source != nullptr) {"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },

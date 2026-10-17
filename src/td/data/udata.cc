@@ -72,6 +72,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
@@ -1365,7 +1366,7 @@ std::span<const int16_t> UnitTypeClass::Occupy_List(bool /*placement*/) const {
  *=============================================================================================*/
 UnitType UnitTypeClass::From_Name(std::string_view name) {
   if (!name.empty()) {
-    for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
+    for (const UnitType classid : magic_enum::enum_values<UnitType>()) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
@@ -1423,7 +1424,7 @@ void UnitTypeClass::Display(PixelView& view, int x, int y,
  *interface functions.                                    *
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
-  for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
+  for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
       TheMap().Add_To_List(&As_Reference(index));
     }
@@ -1447,7 +1448,7 @@ void UnitTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::One_Time() {
-  for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
+  for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     const UnitTypeClass& uclass = As_Reference(index);
 
     std::span<const std::byte> ptr;  // Shape pointer and set pointer.
@@ -1518,7 +1519,7 @@ void UnitTypeClass::One_Time() {
 
 void UnitTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor() && (theater != TheWorld().last_theater())) {
-    for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
+    for (const UnitType index : magic_enum::enum_values<UnitType>()) {
       const UnitTypeClass& uclass = As_Reference(index);
 
       uclass.Set_Cameo_Data({});

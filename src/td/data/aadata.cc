@@ -36,6 +36,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
@@ -285,8 +286,7 @@ AircraftTypeClass::AircraftTypeClass(
 
 AircraftType AircraftTypeClass::From_Name(std::string_view name) {
   if (!name.empty()) {
-    for (AircraftType classid = AIRCRAFT_TRANSPORT; classid < AIRCRAFT_COUNT;
-         classid++) {
+    for (const AircraftType classid : magic_enum::enum_values<AircraftType>()) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
@@ -296,8 +296,7 @@ AircraftType AircraftTypeClass::From_Name(std::string_view name) {
 }
 
 void AircraftTypeClass::One_Time() {
-  for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
-       index++) {
+  for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
     const AircraftTypeClass& uclass = As_Reference(index);
 
     // Load the sidebar cameo icon (hi-res "ICNH" or lo-res "ICON").
@@ -328,8 +327,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
 }
 
 void AircraftTypeClass::Prep_For_Add() {
-  for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
-       ++index) {
+  for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
       TheMap().Add_To_List(&As_Reference(index));
     }
@@ -411,8 +409,7 @@ bool AircraftTypeClass::Create_And_Place(Cell /*unused*/,
 
 void AircraftTypeClass::Init(TheaterType theater) {
   if ((theater != TheWorld().last_theater()) && Get_Resolution_Factor()) {
-    for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
-         ++index) {
+    for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
       const AircraftTypeClass& uclass = As_Reference(index);
 
       uclass.Set_Cameo_Data({});

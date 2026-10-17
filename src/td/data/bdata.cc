@@ -85,6 +85,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/assets/assets.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -3709,7 +3710,7 @@ void BuildingTypeClass::One_Time() {
       {STRUCT_TEMPLE, game::BSTATE_ACTIVE, 0, 5, 1},
   };
 
-  for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
+  for (const StructType sindex : magic_enum::enum_values<StructType>()) {
     const BuildingTypeClass& building = As_Reference(sindex);
 
     /*
@@ -3786,7 +3787,7 @@ void BuildingTypeClass::One_Time() {
  *=============================================================================================*/
 StructType BuildingTypeClass::From_Name(std::string_view name) {
   if (!name.empty()) {
-    for (StructType classid = STRUCT_WEAP; classid < STRUCT_COUNT; classid++) {
+    for (const StructType classid : magic_enum::enum_values<StructType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
@@ -3843,7 +3844,7 @@ void BuildingTypeClass::Display(PixelView& view, int x, int y,
  *interface routines.                                     *
  *=============================================================================================*/
 void BuildingTypeClass::Prep_For_Add() {
-  for (StructType index = STRUCT_WEAP; index < STRUCT_COUNT; index++) {
+  for (const StructType index : magic_enum::enum_values<StructType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
       TheMap().Add_To_List(&As_Reference(index));
     }
@@ -4066,7 +4067,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != TheWorld().last_theater()) {
-    for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
+    for (const StructType sindex : magic_enum::enum_values<StructType>()) {
       const BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {

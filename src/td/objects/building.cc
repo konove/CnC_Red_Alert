@@ -405,7 +405,6 @@ RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
         case StructType::STRUCT_BRICK_WALL:
         case StructType::STRUCT_BARBWIRE_WALL:
         case StructType::STRUCT_WOOD_WALL:
-        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -501,7 +500,6 @@ RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
         case StructType::STRUCT_BRICK_WALL:
         case StructType::STRUCT_BARBWIRE_WALL:
         case StructType::STRUCT_WOOD_WALL:
-        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -992,7 +990,6 @@ bool BuildingClass::Mark(MarkType mark) {
             case StructType::STRUCT_V35:
             case StructType::STRUCT_V36:
             case StructType::STRUCT_V37:
-            case StructType::STRUCT_COUNT:
             default:
               break;
           }
@@ -1645,7 +1642,6 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::Direction dir) {
         case StructType::STRUCT_V35:
         case StructType::STRUCT_V36:
         case StructType::STRUCT_V37:
-        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -2508,7 +2504,6 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case StructType::STRUCT_BRICK_WALL:
         case StructType::STRUCT_BARBWIRE_WALL:
         case StructType::STRUCT_WOOD_WALL:
-        case StructType::STRUCT_COUNT:
         default:
           break;
 
@@ -2686,7 +2681,7 @@ void BuildingClass::Update_Buildables() {
   if (House == ThePlayer() && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
       case RTTI_BUILDINGTYPE:
-        for (StructType i = STRUCT_WEAP; i < STRUCT_COUNT; i++) {
+        for (const StructType i : magic_enum::enum_values<StructType>()) {
           if (ThePlayer()->Can_Build(i, ActLike)) {
             //						if
             //(BuildingTypeClass::As_Reference(i).Who_Can_Build_Me(true, true,
@@ -2698,7 +2693,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_UNITTYPE:
-        for (UnitType u = UNIT_HTANK; u < UNIT_COUNT; u++) {
+        for (const UnitType u : magic_enum::enum_values<UnitType>()) {
           if (ThePlayer()->Can_Build(u, ActLike)) {
             //						if
             //(UnitTypeClass::As_Reference(u).Who_Can_Build_Me(true, true,
@@ -2710,7 +2705,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_INFANTRYTYPE:
-        for (InfantryType f = INFANTRY_E1; f < INFANTRY_COUNT; f++) {
+        for (const InfantryType f : magic_enum::enum_values<InfantryType>()) {
           if (ThePlayer()->Can_Build(f, ActLike)) {
             //						if
             //(InfantryTypeClass::As_Reference(f).Who_Can_Build_Me(true, true,
@@ -2722,7 +2717,7 @@ void BuildingClass::Update_Buildables() {
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        for (AircraftType a = AIRCRAFT_TRANSPORT; a < AIRCRAFT_COUNT; a++) {
+        for (const AircraftType a : magic_enum::enum_values<AircraftType>()) {
           if (ThePlayer()->Can_Build(a, ActLike)) {
             //						if
             //(AircraftTypeClass::As_Reference(a).Who_Can_Build_Me(true, true,
@@ -3030,7 +3025,6 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
     case StructType::STRUCT_BRICK_WALL:
     case StructType::STRUCT_BARBWIRE_WALL:
     case StructType::STRUCT_WOOD_WALL:
-    case StructType::STRUCT_COUNT:
     default:
     case STRUCT_GTOWER:
     case STRUCT_ATOWER:
@@ -5403,7 +5397,6 @@ InfantryType BuildingClass::Crew_Type() const {
     case StructType::STRUCT_BRICK_WALL:
     case StructType::STRUCT_BARBWIRE_WALL:
     case StructType::STRUCT_WOOD_WALL:
-    case StructType::STRUCT_COUNT:
     default:
       break;
   }

@@ -57,6 +57,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/standard_colors.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/cell.h"        // IWYU pragma: export
 #include "td/core/coordinate.h"  // IWYU pragma: export
 #include "td/core/special_flags.h"
@@ -674,11 +675,10 @@ enum class StructType {
   STRUCT_BRICK_WALL,
   STRUCT_BARBWIRE_WALL,
   STRUCT_WOOD_WALL,
-
-  STRUCT_COUNT,
 };
 using enum StructType;
-inline constexpr int kStructCount = static_cast<int>(STRUCT_COUNT);
+inline constexpr int kStructCount =
+    static_cast<int>(magic_enum::enum_count<StructType>());
 
 // The bit for `type` in the 64-bit house scans (HouseClass::BScan and the
 // unit, infantry and aircraft scans), or 0 for a building type past the 64
@@ -800,11 +800,10 @@ enum class InfantryType {
   INFANTRY_MOEBIUS,  // Dr. Moebius
   INFANTRY_DELPHI,   // Agent "Delphi"
   INFANTRY_CHAN,     // Dr. Chan
-
-  INFANTRY_COUNT,
 };
 using enum InfantryType;
-inline constexpr int kInfantryCount = static_cast<int>(INFANTRY_COUNT);
+inline constexpr int kInfantryCount =
+    static_cast<int>(magic_enum::enum_count<InfantryType>());
 
 /**********************************************************************
 **	The game units are enumerated here. These include not only traditional
@@ -834,11 +833,10 @@ enum class UnitType {
   UNIT_TREX,       //	Tyranosaurus Rex
   UNIT_RAPT,       //	Velociraptor
   UNIT_STEG,       //	Stegasaurus
-
-  UNIT_COUNT,
 };
 using enum UnitType;
-inline constexpr int kUnitCount = static_cast<int>(UNIT_COUNT);
+inline constexpr int kUnitCount =
+    static_cast<int>(magic_enum::enum_count<UnitType>());
 
 // Bit masks over UnitType for the unit scans and prerequisites.
 inline constexpr uint64_t kUnitFlagHtank = base::Bit<uint64_t>(UNIT_HTANK);
@@ -875,12 +873,11 @@ enum class AircraftType {
   AIRCRAFT_HELICOPTER = 2,  // Apache gunship.
   AIRCRAFT_CARGO = 3,       // Cargo plane.
   AIRCRAFT_ORCA = 4,        // Nod attack helicopter.
-
-  AIRCRAFT_COUNT = 5,
   AIRCRAFT_NONE = -1,
 };
 using enum AircraftType;
-inline constexpr int kAircraftCount = static_cast<int>(AIRCRAFT_COUNT);
+inline constexpr int kAircraftCount =
+    static_cast<int>(magic_enum::enum_count<AircraftType>());
 
 // Bit masks over AircraftType for the aircraft scans.
 inline constexpr uint64_t kAircraftFlagTransport =
@@ -2523,17 +2520,9 @@ inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 template <>
 inline constexpr bool base::kIsSteppableEnum<td::HousesType> = true;
 template <>
-inline constexpr bool base::kIsSteppableEnum<td::UnitType> = true;
-template <>
-inline constexpr bool base::kIsSteppableEnum<td::InfantryType> = true;
-template <>
 inline constexpr bool base::kIsSteppableEnum<td::ThemeType> = true;
 template <>
-inline constexpr bool base::kIsSteppableEnum<td::StructType> = true;
-template <>
 inline constexpr bool base::kIsSteppableEnum<td::LayerType> = true;
-template <>
-inline constexpr bool base::kIsSteppableEnum<td::AircraftType> = true;
 template <>
 inline constexpr bool base::kIsSteppableEnum<td::TerrainType> = true;
 template <>

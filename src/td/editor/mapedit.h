@@ -91,13 +91,12 @@ This is the maximum # of ObjectTypeClasses the editor has to deal with.
 inline constexpr int kMaxEditObjects =
     static_cast<int>(TEMPLATE_COUNT) + static_cast<int>(OVERLAY_COUNT) +
     static_cast<int>(SMUDGE_COUNT) + static_cast<int>(TERRAIN_COUNT) +
-    static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
-    static_cast<int>(AIRCRAFT_COUNT) +
-    static_cast<int>(STRUCT_COUNT);  // max # of ObjectTypeClasses allowed
+    kUnitCount + kInfantryCount + kAircraftCount +
+    kStructCount;  // max # of ObjectTypeClasses allowed
 
 inline constexpr int kMaxTeamClasses =
-    static_cast<int>(UNIT_COUNT) + static_cast<int>(INFANTRY_COUNT) +
-    static_cast<int>(AIRCRAFT_COUNT);  // max # ObjectTypeClasses for a team
+    kUnitCount + kInfantryCount +
+    kAircraftCount;  // max # ObjectTypeClasses for a team
 
 //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
 // assigned an object

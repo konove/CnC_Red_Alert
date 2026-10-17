@@ -188,7 +188,7 @@ TEST(TdSaveValuesTest, TypePointersResolveEnumsAndPreserveNull) {
 }
 
 TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
-  for (int32_t id : {-2, static_cast<int32_t>(UNIT_COUNT), INT32_MAX}) {
+  for (int32_t id : {-2, int32_t{kUnitCount}, INT32_MAX}) {
     const auto bytes = Save(id);
     const UnitRecord* value = nullptr;
     SpanSource source(std::as_bytes(std::span(bytes).first(4)));

@@ -71,6 +71,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
@@ -1761,7 +1762,7 @@ void InfantryTypeClass::Display(PixelView& view, int x, int y,
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
-  for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
+  for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
     TheMap().Add_To_List(&As_Reference(index));
   }
 }
@@ -1786,8 +1787,7 @@ void InfantryTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 InfantryType InfantryTypeClass::From_Name(std::string_view name) {
   if (!name.empty()) {
-    for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
-         classid++) {
+    for (const InfantryType classid : magic_enum::enum_values<InfantryType>()) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
@@ -1813,7 +1813,7 @@ InfantryType InfantryTypeClass::From_Name(std::string_view name) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
-  for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
+  for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
     const InfantryTypeClass* uclass = &As_Reference(index);
 
     /*
@@ -1855,7 +1855,7 @@ void InfantryTypeClass::One_Time() {
 
 void InfantryTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor() && (theater != TheWorld().last_theater())) {
-    for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
+    for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
       const InfantryTypeClass* uclass = &As_Reference(index);
 
       uclass->Set_Cameo_Data({});

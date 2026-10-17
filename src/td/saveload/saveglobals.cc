@@ -4,6 +4,7 @@
 
 #include "base/numeric.h"
 #include "engine/stream/archive.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/core/defines.h"
 #include "td/map/layer.h"
@@ -29,7 +30,7 @@ void PrebuiltBase::Serialize(Archive& ar) {
     for (int i = 0; i < count; ++i) {
       BaseNode node;
       ar(node.type, node.coord);
-      if (!ar.ok() || node.type < STRUCT_WEAP || node.type >= STRUCT_COUNT) {
+      if (!ar.ok() || !magic_enum::enum_contains(node.type)) {
         ar.Fail("invalid saved base building type");
         return;
       }

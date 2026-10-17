@@ -1556,21 +1556,21 @@ int MapEditClass::Team_Members(HousesType house) {
   **	checking to be sure this house can own the object
   */
   int i = 0;
-  for (InfantryType i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
+  for (const InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
     if (Verify_House(house, &InfantryTypeClass::As_Reference(i_id))) {
       teamclass.at(base::ToSize(i)) = &InfantryTypeClass::As_Reference(i_id);
       i++;
     }
   }
 
-  for (AircraftType a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
+  for (const AircraftType a_id : magic_enum::enum_values<AircraftType>()) {
     if (Verify_House(house, &AircraftTypeClass::As_Reference(a_id))) {
       teamclass.at(base::ToSize(i)) = &AircraftTypeClass::As_Reference(a_id);
       i++;
     }
   }
 
-  for (UnitType u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
+  for (const UnitType u_id : magic_enum::enum_values<UnitType>()) {
     if (Verify_House(house, &UnitTypeClass::As_Reference(u_id))) {
       teamclass.at(base::ToSize(i)) = &UnitTypeClass::As_Reference(u_id);
       i++;
