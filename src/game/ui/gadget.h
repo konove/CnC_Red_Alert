@@ -181,13 +181,13 @@ class Gadget {
   void UpdateMouseCapture(InputFlags flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
-  // its job. `x` and `y` are where it happened: a click's position for a
-  // press or release, the mouse's for anything else. A gadget that acts on a
-  // key replaces `key` with its ButtonKey(). Returns whether it acted, which
-  // ends the list's sweep. The base flags a redraw and handles the mouse
+  // its job. `event_x` and `event_y` are where it happened: a click's position
+  // for a press or release, the mouse's for anything else. A gadget that acts
+  // on a key replaces `key` with its ButtonKey(). Returns whether it acted,
+  // which ends the list's sweep. The base flags a redraw and handles the mouse
   // capture when `flags` holds anything.
-  virtual bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-                      int y);
+  virtual bool Action(InputFlags flags, engine::window::KeyNumber& key,
+                      int event_x, int event_y);
 
   // Called by a GadgetList after it added this gadget or took it out. A gadget
   // made of several (a list box and its scroll bar) adds and removes its

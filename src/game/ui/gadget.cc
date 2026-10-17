@@ -98,7 +98,7 @@ void Gadget::UpdateMouseCapture(const InputFlags flags) {
 }
 
 bool Gadget::Action(const InputFlags flags, engine::window::KeyNumber& /*key*/,
-                    int /*x*/, int /*y*/) {
+                    int /*event_x*/, int /*event_y*/) {
   // ActionIfConcerned() also calls this with no events for the gadget holding
   // the mouse; that is not an action, and the sweep goes on.
   if (base::Any(flags)) {

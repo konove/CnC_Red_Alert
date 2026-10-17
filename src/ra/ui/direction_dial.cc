@@ -59,8 +59,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
                          InputFlags::kLeftPress | InputFlags::kLeftHeld |
                              InputFlags::kLeftRelease,
                          true),
-      center_x_(this->x() + (this->width() / 2)),
-      center_y_(this->y() + (this->height() / 2)),
+      center_x_(x + (width / 2)),
+      center_y_(y + (height / 2)),
       direction_(initial_direction),
       facing_(game::NearestFacing(direction_)) {
   // The decorations sit at 8/10 of the radius and the hand reaches 6/10 of
@@ -79,7 +79,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
 }
 
 bool DirectionDial::Action(const InputFlags flags,
-                           engine::window::KeyNumber& key, int x, int y) {
+                           engine::window::KeyNumber& key, int event_x,
+                           int event_y) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes this dial hold the
   // mouse from the press to the release.
@@ -98,13 +99,13 @@ bool DirectionDial::Action(const InputFlags flags,
     if (facing_ != old_facing) {
       // Report the change: ControlClass::Action notifies the peer, replaces
       // `key` with the button ID for the owner and asks for a redraw.
-      game::ControlClass::Action(flags, key, x, y);
+      game::ControlClass::Action(flags, key, event_x, event_y);
     } else {
       // The dial has not moved; kill the event so the owner sees nothing.
       // ControlClass::Action leaves `key` alone when given no flags, so it
       // has to be cleared here.
       key = engine::window::KN_NONE;
-      game::ControlClass::Action(InputFlags::kNone, key, x, y);
+      game::ControlClass::Action(InputFlags::kNone, key, event_x, event_y);
     }
     return true;
   }
@@ -112,7 +113,7 @@ bool DirectionDial::Action(const InputFlags flags,
   if (base::Any(flags & InputFlags::kLeftRelease)) {
     key = engine::window::KN_NONE;
   }
-  return game::ControlClass::Action(InputFlags::kNone, key, x, y);
+  return game::ControlClass::Action(InputFlags::kNone, key, event_x, event_y);
 }
 
 bool DirectionDial::Draw(PixelView& view, const bool forced) {

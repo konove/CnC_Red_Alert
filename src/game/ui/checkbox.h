@@ -67,8 +67,8 @@ class CheckBoxClass : public ToggleClass {
   }
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override {
     // Only a release that ends a press on the box toggles it: that is the
     // release ToggleClass reports as the box's ID, so whoever reads IsOn when
     // the ID comes back sees the state drawn.
@@ -79,7 +79,7 @@ class CheckBoxClass : public ToggleClass {
         Turn_On();
       }
     }
-    return ToggleClass::Action(flags, key, x, y);
+    return ToggleClass::Action(flags, key, event_x, event_y);
   }
 };
 // NOLINTEND(portability-template-virtual-member-function)

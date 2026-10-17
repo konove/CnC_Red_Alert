@@ -81,8 +81,8 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
                          InputFlags::kLeftPress | InputFlags::kLeftHeld |
                              InputFlags::kLeftRelease,
                          true),
-      FaceX(this->x() + (width() / 2)),
-      FaceY(this->y() + (height() / 2)),
+      FaceX(x + (w / 2)),
+      FaceY(y + (h / 2)),
       Direction(dir),
       Facing(game::NearestFacing(Direction)),
       OldFacing(Facing) {
@@ -165,8 +165,8 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-                        int y) {
+bool Dial8Class::Action(InputFlags flags, engine::window::KeyNumber& key,
+                        int event_x, int event_y) {
   static int is_sel = 0;
 
   /*
@@ -205,14 +205,14 @@ bool Dial8Class::Action(InputFlags flags, engine::window::KeyNumber& key, int x,
     */
     if (Facing != OldFacing) {
       OldFacing = Facing;
-      game::ControlClass::Action(flags, key, x, y);
+      game::ControlClass::Action(flags, key, event_x, event_y);
       return true;
     }
     /*
      **	Dial hasn't moved; kill the event & return
      */
     key = engine::window::KN_NONE;
-    game::ControlClass::Action(InputFlags::kNone, key, x, y);
+    game::ControlClass::Action(InputFlags::kNone, key, event_x, event_y);
     return true;
   }
   /*
@@ -223,7 +223,7 @@ bool Dial8Class::Action(InputFlags flags, engine::window::KeyNumber& key, int x,
     key = engine::window::KN_NONE;
     is_sel = 0;
   }
-  return game::ControlClass::Action(InputFlags::kNone, key, x, y);
+  return game::ControlClass::Action(InputFlags::kNone, key, event_x, event_y);
 }
 
 /***************************************************************************

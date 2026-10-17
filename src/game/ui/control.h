@@ -92,8 +92,8 @@ class ControlClass : public Gadget {
   [[nodiscard]] unsigned id() const override;
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 
   /*
   **	This points to the peer button to inform when something happens to this

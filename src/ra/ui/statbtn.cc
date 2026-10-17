@@ -232,18 +232,18 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
   **	Display the text.
   */
   if (!String.empty()) {
-    int x = this->x();
+    int text_x = x();
 
     if (base::Any(PrintFlags & TPF_CENTER)) {
-      x += width() / 2;
+      text_x += width() / 2;
     }
     if (base::Any(PrintFlags & TPF_RIGHT)) {
-      x += width() - 1;
+      text_x += width() - 1;
     }
 
     TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, TextFont,
                        PrintFlags})
-        .Print(text, {x, y()});
+        .Print(text, {text_x, y()});
   }
 }
 

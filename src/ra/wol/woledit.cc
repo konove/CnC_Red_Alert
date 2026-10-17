@@ -68,7 +68,7 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 // trying to have as minimal an affect as possible on 	the current game code.
 // -ajw
 bool WOLEditClass::Action(InputFlags flags, engine::window::KeyNumber& key,
-                          int x, int y) {
+                          int event_x, int event_y) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
      can't do the following. For this reason, don't make a WOLEditClass edit box
@@ -146,7 +146,7 @@ bool WOLEditClass::Action(InputFlags flags, engine::window::KeyNumber& key,
   // This reimplements EditClass::Action with WOL-specific key handling rather
   // than extending it, and finishes the same way EditClass does.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  return game::ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, event_x, event_y);
 }
 
 }  // namespace ra

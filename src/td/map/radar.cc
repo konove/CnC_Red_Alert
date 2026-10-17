@@ -1398,8 +1398,8 @@ void RadarClass::AI(engine::window::InputEvent& event, int x, int y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::TacticalClass::Action(InputFlags flags,
-                                       engine::window::KeyNumber& key, int x,
-                                       int y) {
+                                       engine::window::KeyNumber& key,
+                                       int event_x, int event_y) {
   ObjectClass* object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -1423,15 +1423,15 @@ bool RadarClass::TacticalClass::Action(InputFlags flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    game::Gadget::Action(InputFlags::kNone, key, x, y);
+    game::Gadget::Action(InputFlags::kNone, key, event_x, event_y);
     return true;
   }
 
-  const int result = TheMap().Click_In_Radar(x, y, false);
+  const int result = TheMap().Click_In_Radar(event_x, event_y, false);
 
   if (result == 1) {
     Cell cell = TheMap().RadarClass::Click_Cell_Calc(
-        x, y);  // cell num click happened over
+        event_x, event_y);  // cell num click happened over
     if (cell != Cell::None() && TheMap().In_Radar(cell)) {
       const bool shadow =
           !TheMap().at(cell).IsVisible &&
@@ -1534,7 +1534,7 @@ bool RadarClass::TacticalClass::Action(InputFlags flags,
         TheMap().Set_Default_Mouse(MOUSE_RADAR_CURSOR, !TheMap().IsZoomed);
 
         if (base::Any(flags & InputFlags::kLeftPress)) {
-          cell = TheMap().RadarClass::Click_Cell_Calc(x, y);
+          cell = TheMap().RadarClass::Click_Cell_Calc(event_x, event_y);
           if (cell != Cell::None()) {
             int cell_x = cell.x();
             int cell_y = cell.y();
@@ -1563,7 +1563,7 @@ bool RadarClass::TacticalClass::Action(InputFlags flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  game::Gadget::Action(InputFlags::kNone, key, x, y);
+  game::Gadget::Action(InputFlags::kNone, key, event_x, event_y);
   return true;
 }
 

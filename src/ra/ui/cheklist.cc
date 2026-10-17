@@ -101,7 +101,7 @@ bool CheckListClass::Is_Checked(int index) const {
 }
 
 bool CheckListClass::Action(InputFlags flags, engine::window::KeyNumber& key,
-                            int x, int y) {
+                            int event_x, int event_y) {
   /*
   ** If this is a read-only list, it's a display-only device
   */
@@ -112,7 +112,7 @@ bool CheckListClass::Action(InputFlags flags, engine::window::KeyNumber& key,
   /*
   **	Invoke parents Action first, so it can set the SelectedIndex if needed.
   */
-  const bool rc = ListClass::Action(flags, key, x, y);
+  const bool rc = ListClass::Action(flags, key, event_x, event_y);
 
   /*
   **	Now, if this event was a left-press, toggle the checked state of the

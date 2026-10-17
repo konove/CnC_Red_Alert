@@ -81,8 +81,8 @@ class ToggleClass : public ControlClass {
   bool IsToggleType : 1 {false};
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 };
 
 }  // namespace game

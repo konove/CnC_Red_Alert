@@ -84,8 +84,8 @@ class TListClass final : public game::ControlClass {
   void SetPosition(int x, int y) override;
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 
   // The scroll bar follows the list box into a list and out of it.
   void OnAdded(game::GadgetList& list) override {
@@ -185,7 +185,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
   DownGadget.set_y(DownGadget.y() - DownGadget.height());
   ScrollGadget.set_x(ScrollGadget.x() -
                      std::max(UpGadget.width(), DownGadget.width()));
-  ScrollGadget.set_y(this->y() + UpGadget.height());
+  ScrollGadget.set_y(y + UpGadget.height());
   ScrollGadget.set_height(ScrollGadget.height() -
                           (UpGadget.height() + DownGadget.height()));
   ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
@@ -290,11 +290,11 @@ void TListClass<T>::Remove_Item(T text) {
 
 template <class T>
 bool TListClass<T>::Action(InputFlags flags, engine::window::KeyNumber& key,
-                           int x, int y) {
+                           int event_x, int event_y) {
   if (base::Any(flags & InputFlags::kLeftRelease)) {
     key = engine::window::KN_NONE;
     flags &= (~InputFlags::kLeftRelease);
-    game::ControlClass::Action(flags, key, x, y);
+    game::ControlClass::Action(flags, key, event_x, event_y);
     return true;
   }
   /*
@@ -316,13 +316,13 @@ bool TListClass<T>::Action(InputFlags flags, engine::window::KeyNumber& key,
     }
 
   } else {
-    int index = game::TheMouse().y() - (this->y() + 1);
+    int index = game::TheMouse().y() - (y() + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex =
         std::min<int>(SelectedIndex, static_cast<int>(std::ssize(List)) - 1);
   }
-  return game::ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, event_x, event_y);
 }
 
 template <class T>

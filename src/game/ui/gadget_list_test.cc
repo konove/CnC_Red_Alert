@@ -44,13 +44,13 @@ class Probe : public ControlClass {
   std::function<void()> on_action;
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override {
     ++actions;
     if (on_action) {
       on_action();
     }
-    return takes_input && ControlClass::Action(flags, key, x, y);
+    return takes_input && ControlClass::Action(flags, key, event_x, event_y);
   }
   void OnAdded(GadgetList& /*list*/) override { ++added; }
   void OnRemoved(GadgetList& /*list*/) override { ++removed; }

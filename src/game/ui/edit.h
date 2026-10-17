@@ -167,8 +167,8 @@ class EditClass : public ControlClass {
   // Processes mouse and keyboard events. Sets focus on left-click; inserts
   // characters on keypress. Returns the gadget ID on RETURN, clears focus
   // on ESC.
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override {
     using engine::window::KN_BACKSPACE;
     using engine::window::KN_ESC;
     using engine::window::KN_NONE;
@@ -208,7 +208,7 @@ class EditClass : public ControlClass {
       }
     }
 
-    return ControlClass::Action(flags, key, x, y);
+    return ControlClass::Action(flags, key, event_x, event_y);
   }
 
   // Draws the gadget background. Called with the mouse hidden.

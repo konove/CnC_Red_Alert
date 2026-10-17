@@ -2512,8 +2512,8 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(InputFlags flags,
-                                         engine::window::KeyNumber& key, int x,
-                                         int y) {
+                                         engine::window::KeyNumber& key,
+                                         int event_x, int event_y) {
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -2523,16 +2523,16 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
   if (!base::Any(flags &
                  (InputFlags::kLeftPress | InputFlags::kLeftRelease |
                   InputFlags::kRightPress | InputFlags::kRightRelease))) {
-    edge = x == 0 || y == 199 || x == 319;
+    edge = event_x == 0 || event_y == 199 || event_x == 319;
   }
-  const Coordinate coord = TheMap().Pixel_To_Coord(x, y);
+  const Coordinate coord = TheMap().Pixel_To_Coord(event_x, event_y);
   const Cell cell = Cell::Containing(coord);
   //	Cell cell = Map.Click_Cell_Calc(x, y);
   if (coord) {
     const bool shadow =
         !TheMap().at(cell).IsVisible && !TheDebugState().unshroud();
-    x -= TheMap().TacPixelX;
-    y -= TheMap().TacPixelY;
+    event_x -= TheMap().TacPixelX;
+    event_y -= TheMap().TacPixelY;
 
     /*
     ** Cause any displayed cursor to move along with the mouse cursor.
@@ -2663,7 +2663,7 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     *is *	intercepted and possible rubber-band mode is flagged.
     */
     if (base::Any(flags & InputFlags::kLeftRelease)) {
-      TheMap().Mouse_Left_Release(cell, x, y, object, action);
+      TheMap().Mouse_Left_Release(cell, event_x, event_y, object, action);
     }
 
     /*
@@ -2673,7 +2673,7 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     **	held down and moved a certain minimum distance.
     */
     if (!edge && base::Any(flags & InputFlags::kLeftPress)) {
-      TheMap().Mouse_Left_Press(x, y);
+      TheMap().Mouse_Left_Press(event_x, event_y);
     }
 
     /*
@@ -2682,11 +2682,11 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     **	and flag the map to redraw it.
     */
     if (base::Any(flags & InputFlags::kLeftHeld)) {
-      TheMap().Mouse_Left_Held(x, y);
+      TheMap().Mouse_Left_Held(event_x, event_y);
     }
   }
 
-  return game::Gadget::Action(InputFlags::kNone, key, x, y);
+  return game::Gadget::Action(InputFlags::kNone, key, event_x, event_y);
 }
 
 /***********************************************************************************************

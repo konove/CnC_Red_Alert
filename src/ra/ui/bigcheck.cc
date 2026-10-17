@@ -84,7 +84,7 @@ bool BigCheckBoxClass::Draw(PixelView& view, bool forced) {
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Action(InputFlags flags, engine::window::KeyNumber& key,
-                              int x, int y) {
+                              int event_x, int event_y) {
   /*	if( base::Any(flags & InputFlags::kLeftPress) )
           {
                   if (IsOn) {
@@ -94,7 +94,7 @@ bool BigCheckBoxClass::Action(InputFlags flags, engine::window::KeyNumber& key,
                   }
           }
   */
-  return game::ToggleClass::Action(flags, key, x, y);
+  return game::ToggleClass::Action(flags, key, event_x, event_y);
 }
 
 }  // namespace ra

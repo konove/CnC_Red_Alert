@@ -70,8 +70,8 @@ class Dial8Class : public game::ControlClass {
   /*
   ** Overloaded event processing routine
   */
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 
  private:
   int FaceX;             // x-coord of center of face

@@ -42,10 +42,10 @@ class Probe : public Gadget {
   int draws = 0;
 
  protected:
-  bool Action(const InputFlags flags, KeyNumber& key, const int x,
-              const int y) override {
+  bool Action(const InputFlags flags, KeyNumber& key, const int event_x,
+              const int event_y) override {
     ++actions;
-    return Gadget::Action(flags, key, x, y);
+    return Gadget::Action(flags, key, event_x, event_y);
   }
 };
 

@@ -43,8 +43,8 @@ class WOLEditClass : public EditClass {
       : EditClass(id, text, max_len, font, flags, x, y, w, h, style) {}
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;  //	Override of base
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;  //	Override of base
   void Draw_Text(PixelView& view,
                  const char* text) override;  //	Override of base
 };

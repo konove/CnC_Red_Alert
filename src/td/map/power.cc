@@ -455,8 +455,8 @@ int PowerClass::Power_Height(int value) const {
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
 bool PowerClass::PowerButtonClass::Action(InputFlags flags,
-                                          engine::window::KeyNumber& key, int x,
-                                          int y) {
+                                          engine::window::KeyNumber& key,
+                                          int event_x, int event_y) {
   if (!TheMap().IsSidebarActive) {
     return false;
   }
@@ -471,7 +471,7 @@ bool PowerClass::PowerButtonClass::Action(InputFlags flags,
   } else {
     TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, kCcGreen);
   }
-  game::Gadget::Action(flags, key, x, y);
+  game::Gadget::Action(flags, key, event_x, event_y);
   return true;
 }
 

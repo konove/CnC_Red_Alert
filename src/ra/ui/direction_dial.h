@@ -59,8 +59,8 @@ class DirectionDial : public game::ControlClass {
   // press on it. Reports a change in facing to the owner through `key`;
   // presses that leave the facing unchanged, and the release, are swallowed.
   // `flags` are the gadget event bits (InputFlags::kLeftPress, ...).
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 
  private:
   int center_x_;                   // x of the dial's centre, in window pixels

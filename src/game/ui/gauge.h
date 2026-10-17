@@ -166,8 +166,8 @@ class GaugeClass : public ControlClass {
     }
   }
 
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override {
     // If there's no thumb on this gauge, it's a display-only device.
     if (!HasThumb) {
       return false;
@@ -213,7 +213,7 @@ class GaugeClass : public ControlClass {
       if (!Set_Value(Pixel_To_Value(IsHorizontal
                                         ? TheMouse().x() - ClickDiff
                                         : TheMouse().y() - ClickDiff))) {
-        ControlClass::Action(InputFlags::kNone, key, x, y);
+        ControlClass::Action(InputFlags::kNone, key, event_x, event_y);
         key = engine::window::KN_NONE;
         return true;
       }
@@ -224,7 +224,7 @@ class GaugeClass : public ControlClass {
       // be more closely controlled.
       flags &= ~InputFlags::kLeftHeld;
     }
-    return ControlClass::Action(flags, key, x, y);
+    return ControlClass::Action(flags, key, event_x, event_y);
   }
 
   virtual int Pixel_To_Value(int pixel) {

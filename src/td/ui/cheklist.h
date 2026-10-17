@@ -86,8 +86,8 @@ class CheckListClass : public ListClass {
   void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override;
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override;
 
  private:
   bool IsReadOnly{false};

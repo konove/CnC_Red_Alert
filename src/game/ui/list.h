@@ -91,7 +91,7 @@ class ListClass : public ControlClass {
     DownGadget.set_y(DownGadget.y() - DownGadget.height());
     ScrollGadget.set_x(ScrollGadget.x() -
                        std::max(UpGadget.width(), DownGadget.width()));
-    ScrollGadget.set_y(this->y() + UpGadget.height());
+    ScrollGadget.set_y(y + UpGadget.height());
     ScrollGadget.set_height(ScrollGadget.height() -
                             (UpGadget.height() + DownGadget.height()));
     ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
@@ -393,15 +393,15 @@ class ListClass : public ControlClass {
   }
 
  protected:
-  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+              int event_y) override {
     using engine::window::KN_DOWN;
     using engine::window::KN_NONE;
     using engine::window::KN_UP;
     if (base::Any(flags & InputFlags::kLeftRelease)) {
       key = KN_NONE;
       flags &= ~InputFlags::kLeftRelease;
-      ControlClass::Action(flags, key, x, y);
+      ControlClass::Action(flags, key, event_x, event_y);
       return true;
     }
 
@@ -419,7 +419,7 @@ class ListClass : public ControlClass {
         flags &= ~InputFlags::kKeyboard;
       }
     } else {
-      int index = TheMouse().y() - (this->y() + 1);
+      int index = TheMouse().y() - (y() + 1);
       index = index / LineHeight;
       SelectedIndex = CurrentTopIndex + index;
       SelectedIndex = std::min(SelectedIndex, Count() - 1);
@@ -427,7 +427,7 @@ class ListClass : public ControlClass {
         SelectedIndex = 0;
       }
     }
-    return ControlClass::Action(flags, key, x, y);
+    return ControlClass::Action(flags, key, event_x, event_y);
   }
 
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,

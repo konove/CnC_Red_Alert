@@ -143,8 +143,8 @@ class SliderClass final : public GaugeClass<Skin> {
   int ThumbSize = 0;
   int ThumbStart = 0;  // x or y position for the thumb
 
-  bool Action(Gadget::InputFlags flags, engine::window::KeyNumber& key, int x,
-              int y) override {
+  bool Action(Gadget::InputFlags flags, engine::window::KeyNumber& key,
+              int event_x, int event_y) override {
     // Handle the mouse click in a special way. If the click was not on the
     // thumb, then jump the thumb position one "step" in the appropriate
     // direction. Otherwise, let normal processing take place -- the slider
@@ -166,21 +166,21 @@ class SliderClass final : public GaugeClass<Skin> {
       // button.
       if (mouse < edge + ThumbStart) {
         Bump(true);
-        Base::Action(Gadget::InputFlags::kNone, key, x, y);
+        Base::Action(Gadget::InputFlags::kNone, key, event_x, event_y);
         key = engine::window::KN_NONE;
         return true;
       }
       if (mouse > edge + ThumbStart + ThumbSize) {
         Bump(false);
-        Base::Action(Gadget::InputFlags::kNone, key, x, y);
+        Base::Action(Gadget::InputFlags::kNone, key, event_x, event_y);
         key = engine::window::KN_NONE;
         return true;
       }
-      Base::Action(flags, key, x, y);
+      Base::Action(flags, key, event_x, event_y);
       key = engine::window::KN_NONE;
       return true;
     }
-    return Base::Action(flags, key, x, y);
+    return Base::Action(flags, key, event_x, event_y);
   }
 
   void Draw_Thumb(PixelView& view) override {

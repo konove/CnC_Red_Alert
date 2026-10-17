@@ -2503,22 +2503,22 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(InputFlags flags,
-                                         engine::window::KeyNumber& key, int x,
-                                         int y) {
+                                         engine::window::KeyNumber& key,
+                                         int event_x, int event_y) {
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
-  const bool edge = y == 0 || x == 0 ||
-                    x == TheScreen().visible_view().width() - 1 ||
-                    y == TheScreen().visible_view().height() - 1;
-  const Coordinate coord = TheMap().Pixel_To_Coord(x, y);
+  const bool edge = event_y == 0 || event_x == 0 ||
+                    event_x == TheScreen().visible_view().width() - 1 ||
+                    event_y == TheScreen().visible_view().height() - 1;
+  const Coordinate coord = TheMap().Pixel_To_Coord(event_x, event_y);
   const Cell cell = Cell::Containing(coord);
   if (coord) {
     const bool shadow =
         !TheMap().at(cell).IsMapped && !TheDebugState().unshroud();
-    x -= TheMap().TacPixelX;
-    y -= TheMap().TacPixelY;
+    event_x -= TheMap().TacPixelX;
+    event_y -= TheMap().TacPixelY;
 
     /*
     ** Cause any displayed cursor to move along with the mouse cursor.
@@ -2687,7 +2687,7 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     *is *	intercepted and possible rubber-band mode is flagged.
     */
     if (base::Any(flags & InputFlags::kLeftRelease)) {
-      TheMap().Mouse_Left_Release(cell, x, y, object, action);
+      TheMap().Mouse_Left_Release(cell, event_x, event_y, object, action);
     }
 
     /*
@@ -2698,7 +2698,7 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     */
     if (!edge && base::Any(flags & InputFlags::kLeftPress)) {
       TheMap().Mouse_Left_Up(cell, shadow, object, action);
-      TheMap().Mouse_Left_Press(x, y);
+      TheMap().Mouse_Left_Press(event_x, event_y);
     }
 
     /*
@@ -2707,11 +2707,11 @@ bool DisplayClass::TacticalClass::Action(InputFlags flags,
     **	and flag the map to redraw it.
     */
     if (base::Any(flags & InputFlags::kLeftHeld)) {
-      TheMap().Mouse_Left_Held(x, y);
+      TheMap().Mouse_Left_Held(event_x, event_y);
     }
   }
 
-  return game::Gadget::Action(InputFlags::kNone, key, x, y);
+  return game::Gadget::Action(InputFlags::kNone, key, event_x, event_y);
 }
 
 /***********************************************************************************************

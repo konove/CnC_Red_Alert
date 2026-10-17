@@ -134,15 +134,15 @@ void ToggleClass::Turn_Off() {
  *get passed to other buttons now                       *
  *=============================================================================================*/
 bool ToggleClass::Action(InputFlags flags, engine::window::KeyNumber& key,
-                         int x, int y) {
+                         int event_x, int event_y) {
   /*
   **	If there are no action flag bits set, then this must be a forced call. A
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  const bool overbutton = static_cast<unsigned>(TheMouse().x() - this->x()) <
+  const bool overbutton = static_cast<unsigned>(TheMouse().x() - x()) <
                               static_cast<unsigned>(width()) &&
-                          static_cast<unsigned>(TheMouse().y() - this->y()) <
+                          static_cast<unsigned>(TheMouse().y() - y()) <
                               static_cast<unsigned>(height());
   if (!base::Any(flags)) {
     if (overbutton) {
@@ -173,7 +173,7 @@ bool ToggleClass::Action(InputFlags flags, engine::window::KeyNumber& key,
     IsPressed = true;
     FlagToRedraw();
     flags &= ~InputFlags::kLeftPress;
-    ControlClass::Action(flags, key, x, y);
+    ControlClass::Action(flags, key, event_x, event_y);
     key = engine::window::KN_NONE;  // erase the event
     return true;                    // stop processing other buttons now
   }
@@ -194,7 +194,7 @@ bool ToggleClass::Action(InputFlags flags, engine::window::KeyNumber& key,
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return ControlClass::Action(flags, key, x, y);
+  return ControlClass::Action(flags, key, event_x, event_y);
 }
 
 }  // namespace game

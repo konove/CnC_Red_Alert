@@ -128,8 +128,8 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-                  int y) override;
+      bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+                  int event_y) override;
     };
 
    public:
@@ -330,8 +330,8 @@ class SidebarClass : public PowerClass {
               InputFlags::kLeftUp) {}
 
    protected:
-    bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
-                int y) override;
+    bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
+                int event_y) override;
   };
 
   /*

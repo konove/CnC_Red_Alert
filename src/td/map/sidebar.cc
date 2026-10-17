@@ -2057,7 +2057,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(
-    InputFlags flags, engine::window::KeyNumber& key, int x, int y) {
+    InputFlags flags, engine::window::KeyNumber& key, int event_x,
+    int event_y) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -2142,18 +2143,15 @@ bool SidebarClass::StripClass::SelectClass::Action(
     if (base::Any(flags & InputFlags::kLeftUp)) {
       switch (spc) {
         case static_cast<int>(SPC_ION_CANNON):
-          TheMap().Help_Text(TXT_ION_CANNON, this->x(), this->y(), kCcGreen,
-                             true);
+          TheMap().Help_Text(TXT_ION_CANNON, x(), y(), kCcGreen, true);
           break;
 
         case static_cast<int>(SPC_NUCLEAR_BOMB):
-          TheMap().Help_Text(TXT_NUKE_STRIKE, this->x(), this->y(), kCcGreen,
-                             true);
+          TheMap().Help_Text(TXT_NUKE_STRIKE, x(), y(), kCcGreen, true);
           break;
 
         case static_cast<int>(SPC_AIR_STRIKE):
-          TheMap().Help_Text(TXT_AIR_STRIKE, this->x(), this->y(), kCcGreen,
-                             true);
+          TheMap().Help_Text(TXT_AIR_STRIKE, x(), y(), kCcGreen, true);
           break;
         default:
           break;
@@ -2214,8 +2212,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
       **	Display the help text if the mouse is over the button.
       */
       if (base::Any(flags & InputFlags::kLeftUp)) {
-        TheMap().Help_Text(choice->Full_Name(), this->x(), this->y(), kCcGreen,
-                           true, choice->Cost_Of());
+        TheMap().Help_Text(choice->Full_Name(), x(), y(), kCcGreen, true,
+                           choice->Cost_Of());
         flags &= ~InputFlags::kLeftUp;
       }
 
@@ -2260,7 +2258,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         */
         if (fnumber == -1 && genfactory != -1) {
           Speak(VOX_NO_FACTORY);
-          game::ControlClass::Action(flags, key, x, y);
+          game::ControlClass::Action(flags, key, event_x, event_y);
           return true;
         }
 
@@ -2346,7 +2344,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
   }
 
-  game::ControlClass::Action(flags, key, x, y);
+  game::ControlClass::Action(flags, key, event_x, event_y);
   return true;
 }
 
@@ -2370,7 +2368,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(InputFlags /*flags*/,
                                          engine::window::KeyNumber& /*key*/,
-                                         int /*x*/, int /*y*/) {
+                                         int /*event_x*/, int /*event_y*/) {
   TheMap().Help_Text(TXT_NONE);
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

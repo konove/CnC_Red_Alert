@@ -1920,7 +1920,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *to regular event type.                             *
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(
-    InputFlags flags, engine::window::KeyNumber& key, int x, int y) {
+    InputFlags flags, engine::window::KeyNumber& key, int event_x,
+    int event_y) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -1961,8 +1962,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
     **	Display the help text if the mouse is over the button.
     */
     if (base::Any(flags & InputFlags::kLeftUp)) {
-      TheMap().Help_Text(SpecialWeaponHelp.at(spc), this->x(), this->y(),
-                         scheme->Color, true);
+      TheMap().Help_Text(SpecialWeaponHelp.at(spc), x(), y(), scheme->Color,
+                         true);
       flags &= ~InputFlags::kLeftUp;
     }
 
@@ -2001,8 +2002,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
       **	Display the help text if the mouse is over the button.
       */
       if (base::Any(flags & InputFlags::kLeftUp)) {
-        TheMap().Help_Text(choice->Full_Name(), this->x(), this->y(),
-                           scheme->Color, true);
+        TheMap().Help_Text(choice->Full_Name(), x(), y(), scheme->Color, true);
         TheMap().Set_Cost(choice->Cost_Of() * ThePlayer()->CostBias);
         flags &= ~InputFlags::kLeftUp;
       }
@@ -2050,7 +2050,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         */
         if (fnumber == -1 && factory != nullptr) {
           Speak(VOX_NO_FACTORY);
-          game::ControlClass::Action(flags, key, x, y);
+          game::ControlClass::Action(flags, key, event_x, event_y);
           return true;
         }
 
@@ -2145,7 +2145,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
   }
 
-  game::ControlClass::Action(flags, key, x, y);
+  game::ControlClass::Action(flags, key, event_x, event_y);
   return true;
 }
 
@@ -2169,7 +2169,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(InputFlags /*flags*/,
                                          engine::window::KeyNumber& /*key*/,
-                                         int /*x*/, int /*y*/) {
+                                         int /*event_x*/, int /*event_y*/) {
   TheMap().Help_Text(TXT_NONE);
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;
