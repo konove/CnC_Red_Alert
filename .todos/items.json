@@ -17379,10 +17379,10 @@
         "game",
         "cleanup"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-17T00:08:00Z",
-      "updated": "2026-10-17T00:08:00Z",
+      "updated": "2026-10-17T00:30:42Z",
       "source": "40bf225ab..5511b411d",
       "anchors": [
         {
@@ -17406,9 +17406,22 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:08:19Z",
+      "updated": "2026-10-17T00:32:06Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "decisions": [
+        {
+          "question": "Where should the big-endian encoding of a TypeTally's counts live?",
+          "options": [
+            "Packet layer",
+            "Packet layer + base helper",
+            "base helper only",
+            "Leave it"
+          ],
+          "answer": "Packet layer + base helper",
+          "time": "2026-10-17T00:32:06Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",
@@ -17602,7 +17615,7 @@
             "      */",
             "      field_player_harvested[3] ="
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/stats.cc",
@@ -17656,7 +17669,7 @@
             "              static_cast<int>(aircraft->Class->Type));",
             "        }"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

@@ -704,8 +704,7 @@ void Send_Statistics_Packet() {
            index++) {
         const AircraftClass* aircraft =
             TheObjectHeaps().aircraft().ActiveAt(index);
-        if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
-                                          // AIRCRAFT_CARGO){
+        if (player == aircraft->House) {
           player->AircraftTotals->Increment(
               static_cast<int>(aircraft->Class->Type));
         }
