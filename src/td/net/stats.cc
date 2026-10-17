@@ -43,13 +43,17 @@
 
 #include "td/net/stats.h"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -185,6 +189,14 @@ game::TypeTally CountOwned(const Heap& heap, const HouseClass* player,
   return owned;
 }
 
+// Adds `tally` to `stats` as the field named `prefix` followed by the player's
+// number: house 0 is player 1.
+void AddPlayerTally(PacketClass& stats, const std::string_view prefix,
+                    const int house, const game::TypeTally& tally) {
+  const std::string field = absl::StrCat(prefix, house + 1);
+  stats.Add_Field(field.c_str(), tally.counts());
+}
+
 }  // namespace
 
 /***********************************************************************************************
@@ -212,20 +224,6 @@ void Send_Statistics_Packet() {
   static char field_player_team[5] = {"SID?"};
   static char field_player_color[5] = {"COL?"};
   static char field_player_credits[5] = {"CRD?"};
-  static char field_player_units_left[5] = {"UNL?"};
-  static char field_player_infantry_left[5] = {"INL?"};
-  static char field_player_planes_left[5] = {"PLL?"};
-  static char field_player_buildings_left[5] = {"BLL?"};
-  static char field_player_units_bought[5] = {"UNB?"};
-  static char field_player_infantry_bought[5] = {"INB?"};
-  static char field_player_planes_bought[5] = {"PLB?"};
-  static char field_player_buildings_bought[5] = {"BLB?"};
-  static char field_player_units_killed[5] = {"UNK?"};
-  static char field_player_infantry_killed[5] = {"INK?"};
-  static char field_player_planes_killed[5] = {"PLK?"};
-  static char field_player_buildings_killed[5] = {"BLK?"};
-  static char field_player_buildings_captured[5] = {"BLC?"};
-  static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
   static const base::EnumArray<HousesType, const char*, kHouseCount> houses = {
@@ -463,27 +461,6 @@ void Send_Statistics_Packet() {
             static_cast<int32_t>(player->Credits + player->Tiberium));
 
         /*
-        ** Number of each unit/building type built
-        */
-        base::At(field_player_infantry_bought, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_units_bought, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_planes_bought, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_buildings_bought, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-
-        stats.Add_Field(field_player_infantry_bought,
-                        player->InfantryTotals->counts());
-        stats.Add_Field(field_player_units_bought,
-                        player->UnitTotals->counts());
-        stats.Add_Field(field_player_planes_bought,
-                        player->AircraftTotals->counts());
-        stats.Add_Field(field_player_buildings_bought,
-                        player->BuildingTotals->counts());
-
-        /*
         ** Number of units remaining to player. They are counted afresh, so
         ** the house's tallies keep what it bought.
         */
@@ -502,55 +479,31 @@ void Send_Statistics_Packet() {
         const game::TypeTally buildings_left =
             CountOwned(TheObjectHeaps().building(), player, kStructCount);
 
-        base::At(field_player_infantry_left, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_units_left, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_planes_left, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_buildings_left, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_infantry_left, infantry_left.counts());
-        stats.Add_Field(field_player_units_left, units_left.counts());
-        stats.Add_Field(field_player_planes_left, aircraft_left.counts());
-        stats.Add_Field(field_player_buildings_left, buildings_left.counts());
-
         /*
-        ** Number of enemy units/buildings of each type destroyed.
+        ** Number of each unit/building type built, remaining to the player
+        ** and destroyed, enemy buildings captured and crates found by
+        ** contents.
         */
-
-        base::At(field_player_infantry_killed, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_units_killed, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_planes_killed, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        base::At(field_player_buildings_killed, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_infantry_killed,
-                        player->DestroyedInfantry->counts());
-        stats.Add_Field(field_player_units_killed,
-                        player->DestroyedUnits->counts());
-        stats.Add_Field(field_player_planes_killed,
-                        player->DestroyedAircraft->counts());
-        stats.Add_Field(field_player_buildings_killed,
-                        player->DestroyedBuildings->counts());
-
-        /*
-        ** Number and type of enemy buildings captured
-        */
-        base::At(field_player_buildings_captured, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_buildings_captured,
-                        player->CapturedBuildings->counts());
-
-        /*
-        ** Number of crates discovered and their contents
-        */
-        base::At(field_player_crates_found, 3) =
-            static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_crates_found,
-                        player->TotalCrates->counts());
+        const auto tallies =
+            std::to_array<std::pair<std::string_view, const game::TypeTally*>>({
+                {"INB", player->InfantryTotals.get()},
+                {"UNB", player->UnitTotals.get()},
+                {"PLB", player->AircraftTotals.get()},
+                {"BLB", player->BuildingTotals.get()},
+                {"INL", &infantry_left},
+                {"UNL", &units_left},
+                {"PLL", &aircraft_left},
+                {"BLL", &buildings_left},
+                {"INK", player->DestroyedInfantry.get()},
+                {"UNK", player->DestroyedUnits.get()},
+                {"PLK", player->DestroyedAircraft.get()},
+                {"BLK", player->DestroyedBuildings.get()},
+                {"BLC", player->CapturedBuildings.get()},
+                {"CRA", player->TotalCrates.get()},
+            });
+        for (const auto& [prefix, tally] : tallies) {
+          AddPlayerTally(stats, prefix, house, *tally);
+        }
 
         /*
         ** Amount of tiberium turned into credits
