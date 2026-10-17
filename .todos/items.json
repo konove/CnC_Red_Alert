@@ -17449,63 +17449,21 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:08:19Z",
+      "updated": "2026-10-17T00:42:22Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "resolution": "Both games' `Send_Statistics_Packet()` count the units left with a `CountOwned(heap, player, type_count, filter)` template into local `game::TypeTally` objects instead of clearing and reusing the houses' bought tallies; `TypeTally::Clear()` and its test lines are gone. Packet bytes unchanged (same counts, same field order).",
       "anchors": [
         {
           "path": "src/ra/wol/stats.cc",
-          "startLine": 674,
-          "endLine": 674,
-          "text": "      // The bought counts have been sent, so their tallies are cleared and reused",
-          "before": [
-            "      stats.Add_Field(field_player_vessels_bought,",
-            "                      player->VesselTotals->counts());",
-            ""
-          ],
-          "after": [
-            "      // to count what each player has left.",
-            "      player->InfantryTotals->Clear();",
-            "      player->AircraftTotals->Clear();"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/net/stats.cc",
-          "startLine": 463,
-          "endLine": 463,
-          "text": "        // The bought counts have been sent, so their tallies are cleared and reused",
-          "before": [
-            "        stats.Add_Field(field_player_buildings_bought,",
-            "                        player->BuildingTotals->counts());",
-            ""
-          ],
-          "after": [
-            "        // to count what each player has left.",
-            "        player->InfantryTotals->Clear();",
-            "        player->AircraftTotals->Clear();"
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/game/sim/type_tally.h",
-          "startLine": 56,
-          "endLine": 56,
-          "text": "  void Clear();",
-          "before": [
-            "  // (std::out_of_range otherwise).",
-            "  void Increment(int type);",
-            "  // Sets every count to zero."
-          ],
-          "after": [
-            "",
-            "  // Returns the count of `type`.",
-            "  [[nodiscard]] int Count(int type) const;"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
