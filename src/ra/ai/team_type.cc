@@ -113,56 +113,58 @@ const TechnoTypeClass* MemberTypeFromName(const std::string_view name) {
 }  // namespace
 
 std::string TeamMission::Description(const int index) const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    std::string text =
-        absl::StrFormat("%d\t%s", index, TeamType::MissionName(mission_));
-
-    switch (TeamMissionNeeds(mission_)) {
-      case NeedType::kMission:
-        text += MissionClass::Mission_Name(unit_mission());
-        break;
-
-      case NeedType::kFormation:
-        text += FormationName.at(formation());
-        break;
-
-      case NeedType::kNumber:
-        absl::StrAppendFormat(&text, "%d", value());
-        break;
-
-      case NeedType::kHexNumber:
-        absl::StrAppendFormat(&text, "%x", static_cast<unsigned int>(value()));
-        break;
-
-      case NeedType::kQuarry:
-        text += QuarryName.at(quarry());
-        break;
-
-      case NeedType::kWaypoint:
-        text += WaypointLetters(value());
-        break;
-      case NeedType::kNone:
-      case NeedType::kTheme:
-      case NeedType::kMovie:
-      case NeedType::kSound:
-      case NeedType::kSpeech:
-      case NeedType::kInfantry:
-      case NeedType::kUnit:
-      case NeedType::kAircraft:
-      case NeedType::kStructure:
-      case NeedType::kTrigger:
-      case NeedType::kTeam:
-      case NeedType::kHouse:
-      case NeedType::kTime:
-      case NeedType::kBool:
-      case NeedType::kSpecial:
-      default:
-        break;
-    }
-
-    return text;
+  // An early return rather than a branch around the body: a discarded branch
+  // that returns text still trips -Wnrvo in builds without these features.
+  if constexpr (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
+    return "";
   }
-  return "";
+  std::string text =
+      absl::StrFormat("%d\t%s", index, TeamType::MissionName(mission_));
+
+  switch (TeamMissionNeeds(mission_)) {
+    case NeedType::kMission:
+      text += MissionClass::Mission_Name(unit_mission());
+      break;
+
+    case NeedType::kFormation:
+      text += FormationName.at(formation());
+      break;
+
+    case NeedType::kNumber:
+      absl::StrAppendFormat(&text, "%d", value());
+      break;
+
+    case NeedType::kHexNumber:
+      absl::StrAppendFormat(&text, "%x", static_cast<unsigned int>(value()));
+      break;
+
+    case NeedType::kQuarry:
+      text += QuarryName.at(quarry());
+      break;
+
+    case NeedType::kWaypoint:
+      text += WaypointLetters(value());
+      break;
+    case NeedType::kNone:
+    case NeedType::kTheme:
+    case NeedType::kMovie:
+    case NeedType::kSound:
+    case NeedType::kSpeech:
+    case NeedType::kInfantry:
+    case NeedType::kUnit:
+    case NeedType::kAircraft:
+    case NeedType::kStructure:
+    case NeedType::kTrigger:
+    case NeedType::kTeam:
+    case NeedType::kHouse:
+    case NeedType::kTime:
+    case NeedType::kBool:
+    case NeedType::kSpecial:
+    default:
+      break;
+  }
+
+  return text;
 }
 
 void TeamMission::Draw_It(PixelView& view, const int index, const int x,
