@@ -101,7 +101,7 @@ class DropListClass : public EditClass {
   void OnRemoved(game::GadgetList& list) override;
 
  public:
-  // Not copyable -- see GadgetClass.
+  // Not copyable -- see Gadget.
   DropListClass(const DropListClass&) = delete;
   DropListClass& operator=(const DropListClass&) = delete;
 

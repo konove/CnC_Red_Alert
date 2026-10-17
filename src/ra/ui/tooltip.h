@@ -37,7 +37,7 @@ namespace ra {
 
 class ToolTipClass {
  public:
-  ToolTipClass(game::GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  ToolTipClass(game::Gadget* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
                const char* szText, int x_show, int y_show,
                bool right_align = false, bool icon_list = false);
   ~ToolTipClass() = default;
@@ -55,7 +55,7 @@ class ToolTipClass {
   ToolTipClass* next{
       nullptr};  //	Next tooltip in list of which *this is a part.
 
-  game::GadgetClass* pGadget;  //	Gadget to which this tooltip is bound.
+  game::Gadget* pGadget;  //	Gadget to which this tooltip is bound.
 
   bool bRightAlign;
 

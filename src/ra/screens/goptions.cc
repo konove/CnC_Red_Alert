@@ -247,7 +247,7 @@ void GameOptionsClass::Process() {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  for (game::GadgetClass* const g : buttons.gadgets()) {
+  for (game::Gadget* const g : buttons.gadgets()) {
     g->Width = std::max(maxwidth, 180);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
   }
@@ -264,9 +264,8 @@ void GameOptionsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  const auto dialog_area = std::make_unique<game::GadgetClass>(
-      OptionX, OptionY, OptionWidth, OptionHeight,
-      game::GadgetClass::kLeftPress);
+  const auto dialog_area = std::make_unique<game::Gadget>(
+      OptionX, OptionY, OptionWidth, OptionHeight, game::Gadget::kLeftPress);
   buttons.Add(*dialog_area);
 
   /*
@@ -276,7 +275,7 @@ void GameOptionsClass::Process() {
   const auto outside_click = std::make_unique<game::ControlClass>(
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
+      game::Gadget::kLeftPress | game::Gadget::kRightPress);
   buttons.Add(*outside_click);
 
   game::TheKeyboard().Clear();

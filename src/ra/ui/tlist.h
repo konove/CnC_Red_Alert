@@ -325,7 +325,7 @@ bool TListClass<T>::Draw(PixelView& view, bool forced) {
   // As in ListClass::Draw: skipping ControlClass avoids asking the peer
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (game::GadgetClass::Draw(view, forced)) {
+  if (game::Gadget::Draw(view, forced)) {
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*

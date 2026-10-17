@@ -53,14 +53,14 @@ namespace game {
 // fields the game's message list keeps on each label.
 // NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin.
 template <WidgetSkin Skin>
-class TextLabelClass : public GadgetClass {
+class TextLabelClass : public Gadget {
  public:
   // Red Alert's colour is a scheme the label points at, Tiberian Dawn's a
   // palette index, which cannot be marked lifetimebound.
   // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
                  Skin::TextColor color, Skin::Font font, Skin::PrintFlags style)
-      : GadgetClass(x, y, 1, 1, 0, false),
+      : Gadget(x, y, 1, 1, 0, false),
         TextFont(font),
         Style(style),
         Text(txt),
@@ -68,7 +68,7 @@ class TextLabelClass : public GadgetClass {
   // NOLINTEND(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
 
   bool Draw(PixelView& view, bool forced = false) override {
-    if (!GadgetClass::Draw(view, forced)) {
+    if (!Gadget::Draw(view, forced)) {
       return false;
     }
     if (PixWidth == -1) {

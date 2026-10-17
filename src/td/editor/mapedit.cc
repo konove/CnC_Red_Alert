@@ -186,11 +186,11 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The map: a single large "button"
   ........................................................................*/
-  // MapArea = new ControlClass(kMapArea,0,8,312,192, GadgetClass::kLeftPress |
-  // GadgetClass::kLeftRelease, false);
+  // MapArea = new ControlClass(kMapArea,0,8,312,192, Gadget::kLeftPress |
+  // Gadget::kLeftRelease, false);
   MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 16, 624, 384,
-      game::GadgetClass::kLeftPress | game::GadgetClass::kLeftRelease, false);
+      game::Gadget::kLeftPress | game::Gadget::kLeftRelease, false);
 
   /*........................................................................
   House buttons

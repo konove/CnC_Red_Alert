@@ -14,7 +14,7 @@
 namespace game {
 
 class ControlClass;
-class GadgetClass;
+class Gadget;
 
 // The gadgets of one dialog, in the order they are offered input and drawn.
 // The list does not own them: a gadget is usually a local next to the list, and
@@ -50,17 +50,17 @@ class GadgetList {
   ~GadgetList();
 
   // Adds `gadget` at the end, where it is offered input last.
-  void Add(GadgetClass& gadget);
+  void Add(Gadget& gadget);
   // Adds `gadget` at the front, where it is offered input first.
-  void AddFront(GadgetClass& gadget);
+  void AddFront(Gadget& gadget);
   // Adds `gadget` right behind `predecessor`, which has to be in this list.
   // Does nothing when the two are the same gadget.
-  void AddAfter(GadgetClass& gadget, const GadgetClass& predecessor);
+  void AddAfter(Gadget& gadget, const Gadget& predecessor);
 
   // Takes `gadget` out and drops its keyboard focus and its hold on the mouse
   // (a sticky gadget being pressed), and those of its parts. Does nothing when
   // it is not in this list.
-  void Remove(GadgetClass& gadget);
+  void Remove(Gadget& gadget);
 
   // Takes every gadget out. Unlike Remove() this keeps the focus where it is,
   // so a dialog that builds its list again on every redraw does not take the
@@ -93,31 +93,31 @@ class GadgetList {
   [[nodiscard]] ControlClass* Extract(unsigned id) const;
 
   [[nodiscard]] bool empty() const { return gadgets_.empty(); }
-  [[nodiscard]] std::span<GadgetClass* const> gadgets() const
+  [[nodiscard]] std::span<Gadget* const> gadgets() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return gadgets_;
   }
 
  private:
-  // GadgetClass's destructor takes the gadget out without the hooks.
-  friend class GadgetClass;
+  // Gadget's destructor takes the gadget out without the hooks.
+  friend class Gadget;
 
   // Takes `gadget` out of the list it is in, if any, and tells it so. Keeps
   // its focus.
-  static void Detach(GadgetClass& gadget);
+  static void Detach(Gadget& gadget);
 
   // Erases `gadget` from gadgets_ and clears its back pointer.
-  void Erase(GadgetClass& gadget);
+  void Erase(Gadget& gadget);
 
   // Puts `gadget`, which is in no list, at `index` and tells it so.
-  void InsertAt(base::ssize index, GadgetClass& gadget);
+  void InsertAt(base::ssize index, Gadget& gadget);
 
   // The list Input() ran on last; nullptr when the next call is to draw
   // everything.
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
   static inline const GadgetList* last_input_ = nullptr;
 
-  std::vector<GadgetClass*> gadgets_;
+  std::vector<Gadget*> gadgets_;
 };
 
 }  // namespace game

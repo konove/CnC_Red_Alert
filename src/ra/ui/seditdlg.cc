@@ -294,18 +294,18 @@ const char* SimpleEditDlgClass::Show() {
       //	These do not actually draw. I am actually clearing the "draw"
       // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
       // there is no FlagToRedraw(false).
-      EditBox.GadgetClass::Draw(view, true);
+      EditBox.Gadget::Draw(view, true);
       if (!szPrompt2.empty()) {
         EditBox2.Disable();
-        EditBox2.GadgetClass::Draw(view, true);
+        EditBox2.Gadget::Draw(view, true);
       }
       OkBtn.Disable();
-      OkBtn.GadgetClass::Draw(view, true);
+      OkBtn.Gadget::Draw(view, true);
       CancelBtn.Disable();
-      CancelBtn.GadgetClass::Draw(view, true);
+      CancelBtn.Gadget::Draw(view, true);
       if (szMiddleButton) {
         MiddleBtn.Disable();
-        MiddleBtn.GadgetClass::Draw(view, true);
+        MiddleBtn.Gadget::Draw(view, true);
       }
     }
 

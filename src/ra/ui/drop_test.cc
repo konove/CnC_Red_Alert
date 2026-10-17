@@ -38,7 +38,7 @@ class DropListClassTest : public testing::Test {
   DropListClass drop_{
       1,  text_, sizeof(text_), FontType::k6Point, TPF_NONE, 0, 0, 100, 40,
       {}, {}};
-  game::GadgetClass button_{0, 0, 10, 10, 0};
+  game::Gadget button_{0, 0, 10, 10, 0};
 };
 
 TEST_F(DropListClassTest, TheDropButtonFollowsTheFieldIntoAGadgetList) {

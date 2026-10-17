@@ -36,7 +36,7 @@ class TdListClassTest : public InstalledAssetsTest {
 
 // The scroll bar is three gadgets of its own, which go where the list box goes.
 TEST_F(TdListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
-  game::GadgetClass button(0, 0, 10, 10, 0);
+  game::Gadget button(0, 0, 10, 10, 0);
   game::GadgetList gadgets;
   list_.Add_Scroll_Bar();
   gadgets.Add(list_);
@@ -52,7 +52,7 @@ TEST_F(TdListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
 }
 
 TEST_F(TdListClassTest, AScrollBarAddedLaterJoinsTheListBoxesGadgetList) {
-  game::GadgetClass button(0, 0, 10, 10, 0);
+  game::Gadget button(0, 0, 10, 10, 0);
   game::GadgetList gadgets;
   gadgets.Add(list_);
   gadgets.Add(button);

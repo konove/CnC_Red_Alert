@@ -178,7 +178,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
 
   /*
   **	If left mouse is clicked or held, and the dial has changed its
-  *direction, *	invoke the parent Action routine: *	GadgetClass::Action
+  *direction, *	invoke the parent Action routine: *	Gadget::Action
   *handles Sticky processing, & sets IsToRepaint if any *	  flag bits are
   *set. *	ControlClass::Action handles OnPeerAction notification, and
   *substitues *	  'key' with the button ID if any flags are set, or 0 if no

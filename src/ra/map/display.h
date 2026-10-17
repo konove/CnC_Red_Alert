@@ -300,10 +300,10 @@ class DisplayClass : public MapClass {
   **	This gadget class is used for capturing input to the tactical map. All
   *mouse input *	will be routed through this gadget.
   */
-  class TacticalClass : public game::GadgetClass {
+  class TacticalClass : public game::Gadget {
    public:
     TacticalClass() noexcept
-        : game::GadgetClass(
+        : game::Gadget(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

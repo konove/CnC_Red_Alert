@@ -56,7 +56,7 @@ class Game {
   explicit Game(const engine::window::DisplayKind display_kind =
                     engine::window::DisplayKind::kWindow)
       : display_(engine::window::MakeDisplay(display_kind, window_events_)) {
-    game::GadgetClass::SetKeyHook(&Screenshot_Key);
+    game::Gadget::SetKeyHook(&Screenshot_Key);
   }
   // Stops the IPX manager listening first: that goes through TheNetwork(),
   // which no longer resolves by the time network_ is destroyed.

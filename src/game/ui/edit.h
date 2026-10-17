@@ -93,7 +93,7 @@ class EditClass : public ControlClass {
         Color(Skin::Edit_Default_Color()) {
     PrepareEditBuffer(String, max_len);
     Length = static_cast<int>(std::string_view(String.data()).size());
-    GadgetClass::FlagToRedraw();
+    Gadget::FlagToRedraw();
 
     if (w == -1 || h == -1) {
       const FontStyle font_style = Skin::FontStyleFor(TextFont, TextFlags);
@@ -114,8 +114,8 @@ class EditClass : public ControlClass {
     }
   }
   ~EditClass() override {
-    if (GadgetClass::HasFocus()) {
-      GadgetClass::ClearFocus();
+    if (Gadget::HasFocus()) {
+      Gadget::ClearFocus();
     }
   }
   EditClass(const EditClass&) = delete;

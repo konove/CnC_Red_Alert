@@ -30,14 +30,14 @@ namespace game {
 
 using enum engine::window::KeyNumber;
 
-GadgetClass* GadgetClass::StuckOn = nullptr;
+Gadget* Gadget::StuckOn = nullptr;
 
-GadgetClass* GadgetClass::Focused = nullptr;
+Gadget* Gadget::Focused = nullptr;
 
-void (*GadgetClass::key_hook_)(engine::window::KeyNumber key) = nullptr;
+void (*Gadget::key_hook_)(engine::window::KeyNumber key) = nullptr;
 
-GadgetClass::GadgetClass(int x, int y, int width, int height, uint32_t flags,
-                         bool sticky) noexcept
+Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
+               bool sticky) noexcept
     : X(x),
       Y(y),
       Width(width),
@@ -51,7 +51,7 @@ GadgetClass::GadgetClass(int x, int y, int width, int height, uint32_t flags,
   }
 }
 
-GadgetClass::~GadgetClass() {
+Gadget::~Gadget() {
   // Drop the keyboard focus directly. ClearFocus is virtual -- DropListClass
   // collapses its drop-down in its override -- and a destructor cannot reach
   // that override; a derived class that needs more does it in its own
@@ -76,8 +76,8 @@ GadgetClass::~GadgetClass() {
   }
 }
 
-bool GadgetClass::ActionIfConcerned(engine::window::KeyNumber& key,
-                                    uint32_t flags, int x, int y) {
+bool Gadget::ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
+                               int x, int y) {
   // Keep only the events this gadget listens for; none left means a mouse
   // event is not for it.
   flags &= event_mask_;
@@ -95,20 +95,20 @@ bool GadgetClass::ActionIfConcerned(engine::window::KeyNumber& key,
   return false;
 }
 
-void GadgetClass::Enable() {
+void Gadget::Enable() {
   IsDisabled = false;
   IsToRepaint = true;
   ClearFocus();
 }
 
-void GadgetClass::Disable() {
+void Gadget::Disable() {
   IsDisabled = true;
   IsToRepaint = true;
   ClearFocus();
 }
 
-bool GadgetClass::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
-                         int /*x*/, int /*y*/) {
+bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
+                    int /*x*/, int /*y*/) {
   // ActionIfConcerned() also calls this with no events for the gadget holding
   // the mouse; that is not an action, and the sweep goes on.
   if (flags) {
@@ -119,7 +119,7 @@ bool GadgetClass::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
   return false;
 }
 
-bool GadgetClass::Draw(PixelView& /*view*/, bool forced) {
+bool Gadget::Draw(PixelView& /*view*/, bool forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
     return true;
@@ -127,7 +127,7 @@ bool GadgetClass::Draw(PixelView& /*view*/, bool forced) {
   return false;
 }
 
-GadgetClass::PendingInput GadgetClass::ReadInput() {
+Gadget::PendingInput Gadget::ReadInput() {
   PendingInput input;
 
   // The keyboard queue holds the mouse clicks as well as the keys. With
@@ -194,14 +194,14 @@ GadgetClass::PendingInput GadgetClass::ReadInput() {
   return input;
 }
 
-bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
+bool Gadget::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   // While a gadget holds the mouse it gets every event and no other gadget
   // is drawn or offered anything.
   if (StuckOn) {
     StuckOn->Draw(view, false);
     // A release in ActionIfConcerned() clears StuckOn; the gadget is still
     // redrawn so it can show itself raised.
-    GadgetClass* captor = StuckOn;
+    Gadget* captor = StuckOn;
     StuckOn->ActionIfConcerned(input.key, input.flags, input.x, input.y);
     if (StuckOn) {
       StuckOn->Draw(view, false);
@@ -224,7 +224,7 @@ bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   return false;
 }
 
-bool GadgetClass::Offer(PixelView& view, bool forced, PendingInput& input) {
+bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   Draw(view, forced);
 
   // A gadget that acted has used up the event, so the sweep stops there.
@@ -237,7 +237,7 @@ bool GadgetClass::Offer(PixelView& view, bool forced, PendingInput& input) {
   return false;
 }
 
-engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
+engine::window::InputEvent Gadget::FinishInput(const PendingInput& input) {
   engine::window::InputEvent event = input.event;
   // A gadget that acted replaced the key, and used up the click with it.
   if (input.key != event.key) {
@@ -247,9 +247,9 @@ engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
   return event;
 }
 
-void GadgetClass::FlagToRedraw() { IsToRepaint = true; }
+void Gadget::FlagToRedraw() { IsToRepaint = true; }
 
-void GadgetClass::UpdateMouseCapture(uint32_t flags) {
+void Gadget::UpdateMouseCapture(uint32_t flags) {
   if (IsSticky && flags & kLeftPress) {
     StuckOn = this;
   }
@@ -258,7 +258,7 @@ void GadgetClass::UpdateMouseCapture(uint32_t flags) {
   }
 }
 
-void GadgetClass::SetFocus() {
+void Gadget::SetFocus() {
   if (Focused) {
     Focused->FlagToRedraw();
     Focused->ClearFocus();
@@ -267,16 +267,16 @@ void GadgetClass::SetFocus() {
   Focused = this;
 }
 
-void GadgetClass::ClearFocus() {
+void Gadget::ClearFocus() {
   if (Focused == this) {
     event_mask_ &= ~kKeyboard;
     Focused = nullptr;
   }
 }
 
-bool GadgetClass::HasFocus() { return this == Focused; }
+bool Gadget::HasFocus() { return this == Focused; }
 
-void GadgetClass::SetPosition(int x, int y) {
+void Gadget::SetPosition(int x, int y) {
   X = x;
   Y = y;
 }

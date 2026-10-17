@@ -92,7 +92,7 @@ class ListClass : public ControlClass {
     ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
     ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
   }
-  // Not copyable -- see GadgetClass.
+  // Not copyable -- see Gadget.
   ListClass(const ListClass&) = delete;
   ~ListClass() override { ListClass::Remove_Scroll_Bar(); }
   ListClass& operator=(const ListClass&) = delete;
@@ -188,7 +188,7 @@ class ListClass : public ControlClass {
     // list ask its owner to redraw in the middle of its own draw. Events
     // still reach the peer through ControlClass::Action.
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (!GadgetClass::Draw(view, forced)) {
+    if (!Gadget::Draw(view, forced)) {
       return false;
     }
     Skin::Draw_List_Box(view, X, Y, Width, Height);

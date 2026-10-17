@@ -80,7 +80,7 @@ namespace game {
  *=============================================================================================*/
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, bool sticky) noexcept
-    : GadgetClass(x, y, w, h, flags, sticky), ID(id) {}
+    : Gadget(x, y, w, h, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
  * ControlClass::Action -- Normal action for control gadget objects. *
@@ -124,7 +124,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     Peer->OnPeerAction(flags, key, *this);
   }
 
-  return GadgetClass::Action(flags, key, x, y);
+  return Gadget::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************
@@ -145,7 +145,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ControlClass::Make_Peer(GadgetClass& gadget) { Peer = &gadget; }
+void ControlClass::Make_Peer(Gadget& gadget) { Peer = &gadget; }
 
 /***********************************************************************************************
  * ControlClass::id -- Gets the ID number for this gadget. *
@@ -194,7 +194,7 @@ bool ControlClass::Draw(PixelView& view, bool forced) {
   if (Peer) {
     Peer->Draw(view);
   }
-  return GadgetClass::Draw(view, forced);
+  return Gadget::Draw(view, forced);
 }
 
 }  // namespace game

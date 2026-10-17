@@ -44,16 +44,15 @@ namespace {
 
 // The gadget this tooltip is bound to, when bIconList says it is a list whose
 // lines each carry their own help text. Null if it turns out not to be one.
-IconListClass* AsIconList(game::GadgetClass* gadget) {
+IconListClass* AsIconList(game::Gadget* gadget) {
   return dynamic_cast<IconListClass*>(gadget);
 }
 
 }  // namespace
 
 //***********************************************************************************************
-ToolTipClass::ToolTipClass(game::GadgetClass* gadget, const char* szText,
-                           int x_show, int y_show,
-                           bool right_align /* = false */,
+ToolTipClass::ToolTipClass(game::Gadget* gadget, const char* szText, int x_show,
+                           int y_show, bool right_align /* = false */,
                            bool icon_list /*= false */)
     : pGadget(gadget),
       bRightAlign(right_align),

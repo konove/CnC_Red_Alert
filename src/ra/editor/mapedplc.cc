@@ -1557,10 +1557,9 @@ void MapEditClass::Toggle_House() {
  *   11/23/1994 BR : Created.                                              *
  *   01/26/1996 JLB : Uses new house selection list method.                *
  *=========================================================================*/
-void MapEditClass::Set_House_Buttons(HousesType house,
-                                     game::GadgetClass* /*unused*/,
+void MapEditClass::Set_House_Buttons(HousesType house, game::Gadget* /*unused*/,
                                      int /*unused*/)
-// void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass * btnlist,
+// void MapEditClass::Set_House_Buttons(HousesType house, Gadget * btnlist,
 // int base_id)
 {
   HouseList->Set_Selected_Index(static_cast<int>(house));

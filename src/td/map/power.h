@@ -87,10 +87,10 @@ class PowerClass : public RadarClass {
   /*
   **	This gadget is used to capture mouse input on the power bar.
   */
-  class PowerButtonClass : public game::GadgetClass {
+  class PowerButtonClass : public game::Gadget {
    public:
     PowerButtonClass() noexcept
-        : game::GadgetClass(
+        : game::Gadget(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

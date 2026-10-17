@@ -185,7 +185,7 @@ class IconListClass : public ListClass {
   //		virtual Link & Add(Link & object);
   //		virtual Link & AppendTo(Link & object);
   //		virtual Link & PrependTo(Link & object);
-  //		virtual GadgetClass * Remove();
+  //		virtual Gadget * Remove();
 
   virtual void Show_Last_Item();
   [[nodiscard]] virtual bool bItemIsMultiSelected(int index) const;
@@ -209,7 +209,7 @@ class IconListClass : public ListClass {
   virtual int Get_View_Index() { return CurrentTopIndex; }
   bool bScrollBeingDragged() {
     //	Returns true if the scroll bar of the list is being dragged by the user.
-    return (game::GadgetClass::StuckOn == &ScrollGadget);
+    return (game::Gadget::StuckOn == &ScrollGadget);
   }
 
   virtual int Find(const char* szItemToFind);

@@ -50,7 +50,7 @@
 
 namespace ra {
 
-class StaticButtonClass final : public game::GadgetClass {
+class StaticButtonClass final : public game::Gadget {
  public:
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, FontType font,

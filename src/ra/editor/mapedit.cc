@@ -195,7 +195,7 @@ void MapEditClass::One_Time() {
   */
   MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 8, 640 - 8, 400 - 8,
-      game::GadgetClass::kLeftPress | game::GadgetClass::kLeftRelease, false);
+      game::Gadget::kLeftPress | game::Gadget::kLeftRelease, false);
 
   /*
   **	House buttons

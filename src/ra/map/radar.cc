@@ -1659,7 +1659,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    game::GadgetClass::Action(0, key, x, y);
+    game::Gadget::Action(0, key, x, y);
     return true;
   }
 
@@ -1826,7 +1826,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  game::GadgetClass::Action(0, key, x, y);
+  game::Gadget::Action(0, key, x, y);
   return true;
 }
 

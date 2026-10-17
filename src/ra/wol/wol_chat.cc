@@ -683,7 +683,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     input = commands.Input(view).key;
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
-    // around GadgetClass::Input's 	tendency to remove any focus the first
+    // around Gadget::Input's 	tendency to remove any focus the first
     // time it runs for a 'commands' list.
 
     //	ajw - Perhaps I could try doing this every cycle regardless - would

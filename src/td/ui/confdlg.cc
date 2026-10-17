@@ -132,7 +132,7 @@ bool ConfirmationClass::Process(const char* string) {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  game::GadgetClass dialog(x, y, width, height, game::GadgetClass::kLeftPress);
+  game::Gadget dialog(x, y, width, height, game::Gadget::kLeftPress);
   gadgets.Add(dialog);
 
   /*
@@ -142,7 +142,7 @@ bool ConfirmationClass::Process(const char* string) {
   game::ControlClass background(
       kButtonNo, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
+      game::Gadget::kLeftPress | game::Gadget::kRightPress);
   gadgets.Add(background);
 
   /*

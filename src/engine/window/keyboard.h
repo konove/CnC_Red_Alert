@@ -146,7 +146,7 @@ enum KeyNumber {
   KN_BUTTON = kKeyButtonBit,
 };
 
-// Returns the KeyNumber that GadgetClass::Input() reports when the gadget with
+// Returns the KeyNumber that Gadget::Input() reports when the gadget with
 // the given ID is triggered. The KN_BUTTON bit distinguishes a gadget event
 // from a real keypress, letting both share one switch on the input value.
 //

@@ -151,7 +151,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   Remove every entry in the list
   ------------------------------------------------------------------------*/
   while (!MessageList.empty()) {
-    game::GadgetClass* const gadget = MessageList.gadgets().front();
+    game::Gadget* const gadget = MessageList.gadgets().front();
     MessageList.Remove(*gadget);
     Destroy_Label(dynamic_cast<const TextLabelClass*>(gadget));
   }
@@ -218,7 +218,7 @@ TextLabelClass* MessageListClass::Add_Message(
   Prevent a duplicate message.  (The IPXManager Global Channel cannot detect
   a resend of a packet, so sometimes two identical messages appear in a row.)
   ------------------------------------------------------------------------*/
-  for (game::GadgetClass* const gadget : MessageList.gadgets()) {
+  for (game::Gadget* const gadget : MessageList.gadgets()) {
     txtlabel = dynamic_cast<TextLabelClass*>(gadget);
     /*
     ** Dont check for duplicates in multi-segment strings
@@ -239,7 +239,7 @@ TextLabelClass* MessageListClass::Add_Message(
   if (magic_number > MESSAGE_HEAD_MAGIC_NUMBER &&
       magic_number < MESSAGE_HEAD_MAGIC_NUMBER + MAX_MESSAGE_SEGMENTS) {
     position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
-    for (game::GadgetClass* const gadget : MessageList.gadgets()) {
+    for (game::Gadget* const gadget : MessageList.gadgets()) {
       txtlabel = dynamic_cast<TextLabelClass*>(gadget);
       if (txtlabel->Color == color && txtlabel->TextFont == font &&
           txtlabel->Style == style && txtlabel->label_data().CRC == crc) {
@@ -308,10 +308,9 @@ TextLabelClass* MessageListClass::Add_Message(
     no next one, just return.
     .....................................................................*/
     const auto gadgets = MessageList.gadgets();
-    const auto top =
-        std::ranges::find_if(gadgets, [this](const game::GadgetClass* gadget) {
-          return gadget != EditLabel;
-        });
+    const auto top = std::ranges::find_if(
+        gadgets,
+        [this](const game::Gadget* gadget) { return gadget != EditLabel; });
     if (top == gadgets.end()) {
       return nullptr;
     }
@@ -332,7 +331,7 @@ TextLabelClass* MessageListClass::Add_Message(
     Recompute everyone's y-coordinate
     .....................................................................*/
     y = MessageY;
-    for (game::GadgetClass* const gadget : MessageList.gadgets()) {
+    for (game::Gadget* const gadget : MessageList.gadgets()) {
       gadget->Y = y;
       y += Height;
     }
@@ -519,8 +518,8 @@ int MessageListClass::Manage() {
   ------------------------------------------------------------------------*/
   // A copy: the loop takes labels out of MessageList.
   const auto current = MessageList.gadgets();
-  const std::vector<game::GadgetClass*> gadgets(current.begin(), current.end());
-  for (game::GadgetClass* const gadget : gadgets) {
+  const std::vector<game::Gadget*> gadgets(current.begin(), current.end());
+  for (game::Gadget* const gadget : gadgets) {
     auto* const txtlabel = dynamic_cast<TextLabelClass*>(gadget);
     /*.....................................................................
     If this message's time is up, remove it from the list
@@ -554,7 +553,7 @@ int MessageListClass::Manage() {
   ------------------------------------------------------------------------*/
   if (changed) {
     int y = MessageY;
-    for (game::GadgetClass* const gadget : MessageList.gadgets()) {
+    for (game::Gadget* const gadget : MessageList.gadgets()) {
       gadget->Y = y;
       y += Height;
     }
@@ -730,7 +729,7 @@ int MessageListClass::Num_Messages() {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Set_Width(int width) {
-  for (game::GadgetClass* const gadget : MessageList.gadgets()) {
+  for (game::Gadget* const gadget : MessageList.gadgets()) {
     dynamic_cast<TextLabelClass*>(gadget)->PixWidth = width;
   }
 }

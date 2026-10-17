@@ -301,7 +301,7 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
+void GScreenClass::Add_A_Button(game::Gadget& gadget) {
   // Out first, also when it is in the list already: that drops its focus, and
   // puts it at the end.
   Buttons.Remove(gadget);
@@ -321,7 +321,7 @@ void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Remove_A_Button(game::GadgetClass& gadget) {
+void GScreenClass::Remove_A_Button(game::Gadget& gadget) {
   Buttons.Remove(gadget);
 }
 

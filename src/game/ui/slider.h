@@ -149,7 +149,7 @@ class SliderClass final : public GaugeClass<Skin> {
     // thumb, then jump the thumb position one "step" in the appropriate
     // direction. Otherwise, let normal processing take place -- the slider
     // then "sticks" and the thumb moves according to mouse position.
-    if (flags & GadgetClass::kLeftPress) {
+    if (flags & Gadget::kLeftPress) {
       int mouse = 0;  // Mouse pixel position.
       int edge = 0;   // Edge of slider.
       if (this->IsHorizontal) {

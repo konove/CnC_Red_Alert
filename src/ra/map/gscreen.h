@@ -79,8 +79,8 @@ class GScreenClass {
   // that uses up the event's key sets it to KN_NONE.
   virtual void AI(engine::window::InputEvent& /*unused*/, int /*unused*/,
                   int /*unused*/) {}
-  virtual void Add_A_Button(game::GadgetClass& gadget);
-  virtual void Remove_A_Button(game::GadgetClass& gadget);
+  virtual void Add_A_Button(game::Gadget& gadget);
+  virtual void Remove_A_Button(game::Gadget& gadget);
 
   /*
   **	Called when map needs complete updating.

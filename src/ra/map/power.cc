@@ -465,7 +465,7 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags,
   } else {
     TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, Get_Color_Scheme()->Color);
   }
-  game::GadgetClass::Action(flags, key, x, y);
+  game::Gadget::Action(flags, key, x, y);
   return true;
 }
 

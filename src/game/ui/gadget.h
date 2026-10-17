@@ -16,13 +16,13 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// GadgetClass, the base of every on-screen control both games share: a
+// Gadget, the base of every on-screen control both games share: a
 // rectangle of the screen that reacts to the mouse and the keyboard. A
 // GadgetList holds the gadgets of one screen and feeds them input.
 //
 // The hierarchy, as it stands in game/ui:
 //
-//   GadgetClass         a screen region; dispatches input to Action()
+//   Gadget         a screen region; dispatches input to Action()
 //     TextLabelClass    a line of text
 //     ControlClass      adds an ID that Input() returns like a keystroke, and
 //                       a peer it tells when it is actioned (a list box
@@ -65,7 +65,7 @@ class GadgetList;
 //   GadgetList buttons;
 //   buttons.Add(ok_button);  // A ControlClass with the ID kOk.
 //   if (buttons.Input(view).key == engine::window::ButtonKey(kOk)) ...
-class GadgetClass {
+class Gadget {
  public:
   // Input events a gadget listens for, stored OR'd in event_mask_. A press or
   // release is reported once, when it happens; held and up describe the
@@ -90,17 +90,17 @@ class GadgetClass {
   // Owns the region at (`x`, `y`), `width` by `height` screen pixels, and acts
   // on the events in `flags`. A `sticky` gadget also listens for left presses
   // and releases, which it needs to capture the mouse.
-  GadgetClass(int x, int y, int width, int height, uint32_t flags,
-              bool sticky = false) noexcept;
-  GadgetClass() noexcept = default;
+  Gadget(int x, int y, int width, int height, uint32_t flags,
+         bool sticky = false) noexcept;
+  Gadget() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
-  GadgetClass(const GadgetClass&) = delete;
+  Gadget(const Gadget&) = delete;
   // Releases the keyboard focus and the mouse capture if this gadget holds
   // them, and leaves its list.
-  virtual ~GadgetClass();
-  GadgetClass& operator=(const GadgetClass&) = delete;
-  GadgetClass(GadgetClass&&) = delete;
-  GadgetClass& operator=(GadgetClass&&) = delete;
+  virtual ~Gadget();
+  Gadget& operator=(const Gadget&) = delete;
+  Gadget(Gadget&&) = delete;
+  Gadget& operator=(Gadget&&) = delete;
 
   // Returns the list this gadget is in, or nullptr when it is in none.
   [[nodiscard]] GadgetList* list() const { return list_; }
@@ -177,7 +177,7 @@ class GadgetClass {
 
   // The gadget every keyboard event goes to, to the exclusion of all others;
   // nullptr when no gadget has the focus.
-  static GadgetClass* Focused;
+  static Gadget* Focused;
 
   // Set when the gadget's look has changed and Draw() has to draw it; the
   // base Action() sets it whenever it acts.
@@ -194,7 +194,7 @@ class GadgetClass {
   // The sticky gadget that holds the mouse while the left button is down;
   // nullptr when none does. Public since 7/30/98 (ajw) so a game's gadget can
   // ask whether it holds the mouse.
-  static GadgetClass* StuckOn;
+  static Gadget* StuckOn;
 
  protected:
   // Set by Disable(): the list's sweep draws the gadget but does not offer it

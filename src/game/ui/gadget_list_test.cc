@@ -157,9 +157,9 @@ TEST_F(GadgetListTest, RemoveTakesTheGadgetOutAndDropsItsFocus) {
 
 TEST_F(GadgetListTest, RemoveDropsTheHoldOnTheMouse) {
   list_.Add(a_);
-  GadgetClass::StuckOn = &a_;
+  Gadget::StuckOn = &a_;
   list_.Remove(a_);
-  EXPECT_EQ(GadgetClass::StuckOn, nullptr);
+  EXPECT_EQ(Gadget::StuckOn, nullptr);
 }
 
 TEST_F(GadgetListTest, RemoveIgnoresAGadgetOfAnotherList) {
@@ -208,7 +208,7 @@ TEST_F(GadgetListTest, AListDestroyedFirstReleasesItsGadgets) {
 }
 
 TEST_F(GadgetListTest, ExtractFindsAGadgetByItsId) {
-  GadgetClass plain(0, 0, 10, 10, 0);
+  Gadget plain(0, 0, 10, 10, 0);
   list_.Add(plain);
   list_.Add(a_);
   list_.Add(b_);

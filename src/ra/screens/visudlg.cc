@@ -189,8 +189,8 @@ void VisualControlsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  game::GadgetClass dialog(option_x, option_y, option_width, option_height,
-                           game::GadgetClass::kLeftPress);
+  game::Gadget dialog(option_x, option_y, option_width, option_height,
+                      game::Gadget::kLeftPress);
   gadgets.Add(dialog);
 
   /*
@@ -200,7 +200,7 @@ void VisualControlsClass::Process() {
   game::ControlClass background(
       kButtonOptions, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
+      game::Gadget::kLeftPress | game::Gadget::kRightPress);
   gadgets.Add(background);
 
   int curbutton = 0;

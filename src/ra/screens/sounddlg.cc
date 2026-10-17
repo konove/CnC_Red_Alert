@@ -232,17 +232,17 @@ void SoundControlsClass::Process() {
   **	Causes left mouse clicks inside the dialog area, but not on any
   **	particular button, to be ignored.
   */
-  game::GadgetClass area(option_x, option_y, option_width, option_height,
-                         game::GadgetClass::kLeftPress);
+  game::Gadget area(option_x, option_y, option_width, option_height,
+                    game::Gadget::kLeftPress);
 
   /*
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  game::ControlClass ctrl(
-      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
-      TheScreen().visible_view().height(),
-      game::GadgetClass::kRightPress | game::GadgetClass::kLeftPress);
+  game::ControlClass ctrl(kButtonOptions, 0, 0,
+                          TheScreen().visible_view().width(),
+                          TheScreen().visible_view().height(),
+                          game::Gadget::kRightPress | game::Gadget::kLeftPress);
 
   /*
   **	The repeat and shuffle buttons are of the toggle type. They toggle

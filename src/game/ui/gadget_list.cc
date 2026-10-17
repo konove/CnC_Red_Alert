@@ -23,17 +23,17 @@ GadgetList::~GadgetList() {
   }
 }
 
-void GadgetList::Add(GadgetClass& gadget) {
+void GadgetList::Add(Gadget& gadget) {
   Detach(gadget);
   InsertAt(std::ssize(gadgets_), gadget);
 }
 
-void GadgetList::AddFront(GadgetClass& gadget) {
+void GadgetList::AddFront(Gadget& gadget) {
   Detach(gadget);
   InsertAt(0, gadget);
 }
 
-void GadgetList::AddAfter(GadgetClass& gadget, const GadgetClass& predecessor) {
+void GadgetList::AddAfter(Gadget& gadget, const Gadget& predecessor) {
   if (&gadget == &predecessor) {
     return;
   }
@@ -44,13 +44,13 @@ void GadgetList::AddAfter(GadgetClass& gadget, const GadgetClass& predecessor) {
   InsertAt(index < 0 ? std::ssize(gadgets_) : index + 1, gadget);
 }
 
-void GadgetList::Remove(GadgetClass& gadget) {
+void GadgetList::Remove(Gadget& gadget) {
   if (gadget.list_ != this) {
     return;
   }
   gadget.ClearFocus();
-  if (GadgetClass::StuckOn == &gadget) {
-    GadgetClass::StuckOn = nullptr;
+  if (Gadget::StuckOn == &gadget) {
+    Gadget::StuckOn = nullptr;
   }
   Detach(gadget);
 }
@@ -58,11 +58,11 @@ void GadgetList::Remove(GadgetClass& gadget) {
 void GadgetList::Clear() {
   // Emptied first, so that a gadget's OnRemoved() finds its parts gone already
   // and may add to the list again.
-  const std::vector<GadgetClass*> removed = std::exchange(gadgets_, {});
-  for (GadgetClass* gadget : removed) {
+  const std::vector<Gadget*> removed = std::exchange(gadgets_, {});
+  for (Gadget* gadget : removed) {
     gadget->list_ = nullptr;
   }
-  for (GadgetClass* gadget : removed) {
+  for (Gadget* gadget : removed) {
     gadget->OnRemoved(*this);
   }
 }
@@ -72,12 +72,12 @@ engine::window::InputEvent GadgetList::Input(PixelView& view) {
   if (last_input_ != this) {
     last_input_ = this;
     forced = true;
-    GadgetClass::StuckOn = nullptr;
-    GadgetClass::Focused = nullptr;
+    Gadget::StuckOn = nullptr;
+    Gadget::Focused = nullptr;
   }
 
-  GadgetClass::PendingInput input = GadgetClass::ReadInput();
-  if (!GadgetClass::OfferToStuckOrFocused(view, input)) {
+  Gadget::PendingInput input = Gadget::ReadInput();
+  if (!Gadget::OfferToStuckOrFocused(view, input)) {
     // By index, and with the size read again every time: a gadget's action may
     // add or remove gadgets (a drop list opening, the message list).
     for (base::ssize i = 0; i < std::ssize(gadgets_); ++i) {
@@ -86,7 +86,7 @@ engine::window::InputEvent GadgetList::Input(PixelView& view) {
       }
     }
   }
-  return GadgetClass::FinishInput(input);
+  return Gadget::FinishInput(input);
 }
 
 void GadgetList::DrawAll(PixelView& view, bool forced) {
@@ -103,7 +103,7 @@ void GadgetList::FlagToRedraw() {
 
 bool GadgetList::IsToRedraw() const {
   return std::ranges::any_of(
-      gadgets_, [](const GadgetClass* gadget) { return gadget->IsToRepaint; });
+      gadgets_, [](const Gadget* gadget) { return gadget->IsToRepaint; });
 }
 
 ControlClass* GadgetList::Extract(unsigned id) const {
@@ -111,12 +111,12 @@ ControlClass* GadgetList::Extract(unsigned id) const {
     return nullptr;
   }
   const auto found = std::ranges::find_if(
-      gadgets_, [id](const GadgetClass* gadget) { return gadget->id() == id; });
+      gadgets_, [id](const Gadget* gadget) { return gadget->id() == id; });
   return found == gadgets_.end() ? nullptr
                                  : dynamic_cast<ControlClass*>(*found);
 }
 
-void GadgetList::Detach(GadgetClass& gadget) {
+void GadgetList::Detach(Gadget& gadget) {
   GadgetList* const list = gadget.list_;
   if (list == nullptr) {
     return;
@@ -125,12 +125,12 @@ void GadgetList::Detach(GadgetClass& gadget) {
   gadget.OnRemoved(*list);
 }
 
-void GadgetList::Erase(GadgetClass& gadget) {
+void GadgetList::Erase(Gadget& gadget) {
   std::erase(gadgets_, &gadget);
   gadget.list_ = nullptr;
 }
 
-void GadgetList::InsertAt(base::ssize index, GadgetClass& gadget) {
+void GadgetList::InsertAt(base::ssize index, Gadget& gadget) {
   gadgets_.insert(gadgets_.begin() + index, &gadget);
   gadget.list_ = this;
   gadget.OnAdded(*this);

@@ -180,10 +180,10 @@ class RadarClass : public DisplayClass {
   **	This gadget class is used for capturing input to the tactical map. All
   *mouse input *	will be routed through this gadget.
   */
-  class RTacticalClass : public game::GadgetClass {
+  class RTacticalClass : public game::Gadget {
    public:
     RTacticalClass() noexcept
-        : game::GadgetClass(
+        : game::Gadget(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

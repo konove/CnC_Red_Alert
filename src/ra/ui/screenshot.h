@@ -8,7 +8,7 @@
 
 namespace ra {
 
-// For game::GadgetClass::SetKeyHook(): on K, in a build with cheat keys
+// For game::Gadget::SetKeyHook(): on K, in a build with cheat keys
 // and in developer or playtest mode outside the map editor and motion
 // capture, saves the visible page as the first free scrshtNN.pcx and beeps.
 void Screenshot_Key(engine::window::KeyNumber key);

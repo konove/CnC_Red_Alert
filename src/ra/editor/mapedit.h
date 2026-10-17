@@ -232,8 +232,7 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category();
   void Place_Home();
   void Toggle_House();
-  void Set_House_Buttons(HousesType house, game::GadgetClass* btnlist,
-                         int base_id);
+  void Set_House_Buttons(HousesType house, game::Gadget* btnlist, int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
   // Places the current trigger on what was clicked at `x`, `y`.

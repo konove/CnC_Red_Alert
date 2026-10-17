@@ -488,7 +488,7 @@ char* MessageListClass::Get_Message(int id) {
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
   //------------------------------------------------------------------------
-  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+  for (game::Gadget* const gadg : MessageList.gadgets()) {
     const auto& label = dynamic_cast<TextLabelClass&>(*gadg);
     if (label.label_data().UserData2 == id) {
       return label.Text;
@@ -523,7 +523,7 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
   //------------------------------------------------------------------------
-  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+  for (game::Gadget* const gadg : MessageList.gadgets()) {
     auto& label = dynamic_cast<TextLabelClass&>(*gadg);
     if (label.label_data().UserData2 == id) {
       return &label;
@@ -573,7 +573,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Scan through all active messages, searching for one with a matching
   // name & ID
   //------------------------------------------------------------------------
-  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+  for (game::Gadget* const gadg : MessageList.gadgets()) {
     auto& label = dynamic_cast<TextLabelClass&>(*gadg);
     if (label.label_data().UserData2 == id &&
         std::string_view(label.Text).starts_with(name)) {
@@ -911,9 +911,9 @@ int MessageListClass::Manage() {
   //	Loop through all messages
   //------------------------------------------------------------------------
   // Walks a copy: removing a label changes the list's own span.
-  const std::span<game::GadgetClass* const> current = MessageList.gadgets();
-  const std::vector<game::GadgetClass*> gadgets(current.begin(), current.end());
-  for (game::GadgetClass* const gadg : gadgets) {
+  const std::span<game::Gadget* const> current = MessageList.gadgets();
+  const std::vector<game::Gadget*> gadgets(current.begin(), current.end());
+  for (game::Gadget* const gadg : gadgets) {
     auto& txtlabel = dynamic_cast<TextLabelClass&>(*gadg);
     //.....................................................................
     //	If this message's time is up, remove it from the list
@@ -1185,7 +1185,7 @@ int MessageListClass::Num_Messages() {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Set_Width(int width) {
-  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+  for (game::Gadget* const gadg : MessageList.gadgets()) {
     dynamic_cast<TextLabelClass&>(*gadg).PixWidth = width;
   }
 
@@ -1319,7 +1319,7 @@ void MessageListClass::Compute_Y() {
   } else {
     y = MessageY;
   }
-  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+  for (game::Gadget* const gadg : MessageList.gadgets()) {
     gadg->Y = y;
     y += Height;
   }

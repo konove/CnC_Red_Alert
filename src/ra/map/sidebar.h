@@ -320,12 +320,11 @@ class SidebarClass : public PowerClass {
   */
   bool IsSidebarToRedraw : 1 {true};
 
-  class SBGadgetClass : public game::GadgetClass {
+  class SBGadgetClass : public game::Gadget {
    public:
     SBGadgetClass() noexcept
-        : game::GadgetClass((kSideX + 8) * 2, kSideY * 2,
-                            ((kSideWidth - 1) * 2) - 1, (kSideHeight - 1) * 2,
-                            kLeftUp) {}
+        : game::Gadget((kSideX + 8) * 2, kSideY * 2, ((kSideWidth - 1) * 2) - 1,
+                       (kSideHeight - 1) * 2, kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

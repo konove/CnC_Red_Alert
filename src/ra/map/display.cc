@@ -2711,7 +2711,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     }
   }
 
-  return game::GadgetClass::Action(0, key, x, y);
+  return game::Gadget::Action(0, key, x, y);
 }
 
 /***********************************************************************************************

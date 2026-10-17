@@ -63,7 +63,7 @@ namespace game {
  * HISTORY:                                                                *
  *   01/03/1995 MML : Created.                                             *
  *=========================================================================*/
-class ControlClass : public GadgetClass {
+class ControlClass : public Gadget {
  public:
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = kLeftPress | kRightPress,
@@ -75,7 +75,7 @@ class ControlClass : public GadgetClass {
   ControlClass(ControlClass&&) = delete;
   ControlClass& operator=(ControlClass&&) = delete;
 
-  virtual void Make_Peer(GadgetClass& gadget);
+  virtual void Make_Peer(Gadget& gadget);
 
   /*
   **	Render support function.
@@ -98,7 +98,7 @@ class ControlClass : public GadgetClass {
   **	This points to the peer button to inform when something happens to this
   **	gadget.
   */
-  GadgetClass* Peer{nullptr};
+  Gadget* Peer{nullptr};
 };
 
 }  // namespace game
