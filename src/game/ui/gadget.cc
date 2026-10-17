@@ -28,11 +28,7 @@ namespace game {
 
 Gadget::Gadget(const base::Rect& region, const InputFlags flags,
                const bool sticky) noexcept
-    : region_(region),
-
-      sticky_(sticky),
-
-      event_mask_(flags) {
+    : region_(region), sticky_(sticky), event_mask_(flags) {
   if (sticky_) {
     event_mask_ |= InputFlags::kLeftPress | InputFlags::kLeftRelease;
   }
