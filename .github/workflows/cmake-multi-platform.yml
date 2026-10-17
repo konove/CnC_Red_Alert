@@ -104,8 +104,9 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         -S ${{ github.workspace }}
 
+    # -k 0 keeps going past a failure, so one run reports every broken file.
     - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --parallel
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --parallel -- -k 0
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
@@ -163,7 +164,7 @@ jobs:
         -S ${{ github.workspace }}
 
     - name: Build with clang-tidy
-      run: cmake --build ${{ github.workspace }}/build --parallel $(( $(getconf _NPROCESSORS_ONLN) / 2 ))
+      run: cmake --build ${{ github.workspace }}/build --parallel $(( $(getconf _NPROCESSORS_ONLN) / 2 )) -- -k 0
 
     # The build job tests a Release build, where NDEBUG compiles every DCHECK
     # out; this is the only run with them in, so a test that feeds the code a
