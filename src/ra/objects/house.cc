@@ -157,6 +157,7 @@
 #include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
@@ -512,31 +513,31 @@ HouseClass::HouseClass(HousesType house)
 void HouseClass::Init_Trackers() {
   if (TheSession().Type == GAME_INTERNET) {
     AircraftTotals = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+        base::ToSigned(magic_enum::enum_count<AircraftType>()));
     InfantryTotals = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+        base::ToSigned(magic_enum::enum_count<InfantryType>()));
     UnitTotals = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<UnitType>()));
+        base::ToSigned(magic_enum::enum_count<UnitType>()));
     BuildingTotals = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<StructType>()));
+        base::ToSigned(magic_enum::enum_count<StructType>()));
     VesselTotals = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<VesselType>()));
+        base::ToSigned(magic_enum::enum_count<VesselType>()));
 
     DestroyedAircraft = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+        base::ToSigned(magic_enum::enum_count<AircraftType>()));
     DestroyedInfantry = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+        base::ToSigned(magic_enum::enum_count<InfantryType>()));
     DestroyedUnits = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<UnitType>()));
+        base::ToSigned(magic_enum::enum_count<UnitType>()));
     DestroyedBuildings = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<StructType>()));
+        base::ToSigned(magic_enum::enum_count<StructType>()));
     DestroyedVessels = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<VesselType>()));
+        base::ToSigned(magic_enum::enum_count<VesselType>()));
 
     CapturedBuildings = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<StructType>()));
+        base::ToSigned(magic_enum::enum_count<StructType>()));
     TotalCrates = std::make_unique<game::TypeTally>(
-        static_cast<int>(magic_enum::enum_count<CrateType>()));
+        base::ToSigned(magic_enum::enum_count<CrateType>()));
   }
 }
 

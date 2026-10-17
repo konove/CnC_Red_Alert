@@ -17647,12 +17647,13 @@
         "dead-code",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:08:19Z",
+      "updated": "2026-10-17T00:32:35Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "resolution": "Deleted the disabled `AIRCRAFT_CARGO` condition from the 'planes left' loop in `ra/wol/stats.cc`.",
       "anchors": [
         {
           "path": "src/ra/wol/stats.cc",
@@ -17707,7 +17708,7 @@
             "  // Adds one to the count of `type`, which must be below the type count",
             "  // (std::out_of_range otherwise)."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/house.cc",
@@ -17724,7 +17725,7 @@
             "",
             "HouseClass::HouseClass()"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/house.cc",
@@ -17741,7 +17742,7 @@
             "",
             "/***********************************************************************************************"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

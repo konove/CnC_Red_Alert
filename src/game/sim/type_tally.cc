@@ -29,10 +29,11 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/types.h"
 
 namespace game {
 
-TypeTally::TypeTally(const int type_count)
+TypeTally::TypeTally(const base::ssize type_count)
     : counts_(base::ToSize(type_count)) {}
 
 void TypeTally::Increment(const int type) { counts_.at(base::ToSize(type))++; }

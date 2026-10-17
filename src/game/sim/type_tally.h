@@ -29,6 +29,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/types.h"
+
 namespace game {
 
 // One counter per type of one kind of object (infantry, vehicles, aircraft,
@@ -44,7 +46,7 @@ namespace game {
 class TypeTally {
  public:
   // Creates `type_count` counters, all zero.
-  explicit TypeTally(int type_count);
+  explicit TypeTally(base::ssize type_count);
 
   // Adds one to the count of `type`, which must be below the type count
   // (std::out_of_range otherwise).

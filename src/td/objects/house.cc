@@ -472,25 +472,17 @@ HouseClass::HouseClass(HousesType house)
 }
 
 void HouseClass::Init_Trackers() {
-  AircraftTotals =
-      std::make_unique<game::TypeTally>(static_cast<int>(AIRCRAFT_COUNT));
-  InfantryTotals =
-      std::make_unique<game::TypeTally>(static_cast<int>(INFANTRY_COUNT));
-  UnitTotals = std::make_unique<game::TypeTally>(static_cast<int>(UNIT_COUNT));
-  BuildingTotals =
-      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));
+  AircraftTotals = std::make_unique<game::TypeTally>(kAircraftCount);
+  InfantryTotals = std::make_unique<game::TypeTally>(kInfantryCount);
+  UnitTotals = std::make_unique<game::TypeTally>(kUnitCount);
+  BuildingTotals = std::make_unique<game::TypeTally>(kStructCount);
 
-  DestroyedAircraft =
-      std::make_unique<game::TypeTally>(static_cast<int>(AIRCRAFT_COUNT));
-  DestroyedInfantry =
-      std::make_unique<game::TypeTally>(static_cast<int>(INFANTRY_COUNT));
-  DestroyedUnits =
-      std::make_unique<game::TypeTally>(static_cast<int>(UNIT_COUNT));
-  DestroyedBuildings =
-      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));
+  DestroyedAircraft = std::make_unique<game::TypeTally>(kAircraftCount);
+  DestroyedInfantry = std::make_unique<game::TypeTally>(kInfantryCount);
+  DestroyedUnits = std::make_unique<game::TypeTally>(kUnitCount);
+  DestroyedBuildings = std::make_unique<game::TypeTally>(kStructCount);
 
-  CapturedBuildings =
-      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));
+  CapturedBuildings = std::make_unique<game::TypeTally>(kStructCount);
   TotalCrates =
       std::make_unique<game::TypeTally>(TOTAL_CRATE_TYPES);  // 15 crate types
 }
