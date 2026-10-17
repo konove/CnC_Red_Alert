@@ -16,6 +16,9 @@
 
 #ifdef _WIN32
 
+#include <winsock2.h>
+// After <winsock2.h>: on its own <windows.h> brings in the Winsock 1 header,
+// which conflicts with <winsock2.h> in any unit that includes both.
 #include <windows.h>
 
 #else

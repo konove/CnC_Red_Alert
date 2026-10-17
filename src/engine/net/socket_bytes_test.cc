@@ -6,7 +6,7 @@
 #include "gtest/gtest.h"
 
 #ifdef _WIN32
-#include <winsock.h>
+#include <winsock2.h>
 #else
 #include <netinet/in.h>
 #include <sys/socket.h>

@@ -48,7 +48,7 @@
 /*
 ** Include standard Winsock 1.0 header file.
 */
-#include <winsock.h>
+#include <winsock2.h>
 #else
 using SOCKET = int;
 #define INVALID_SOCKET (-1)

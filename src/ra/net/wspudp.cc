@@ -74,8 +74,6 @@
 #include "ra/net/wsproto.h"
 
 #ifdef _WIN32
-#include <nspapi.h>
-#include <svcguid.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
