@@ -28,8 +28,6 @@
 
 namespace game {
 
-using enum engine::window::KeyNumber;
-
 Gadget* Gadget::StuckOn = nullptr;
 
 Gadget* Gadget::Focused = nullptr;
@@ -52,14 +50,10 @@ Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
 }
 
 Gadget::~Gadget() {
-  // Drop the keyboard focus directly. ClearFocus is virtual -- DropListClass
-  // collapses its drop-down in its override -- and a destructor cannot reach
-  // that override; a derived class that needs more does it in its own
-  // destructor, while the object is still of that type.
-  if (Focused == this) {
-    event_mask_ &= ~kKeyboard;
-    Focused = nullptr;
-  }
+  // The base version: by now the overrides (DropListClass collapses its
+  // drop-down in its own) are gone, so a derived class that needs more does
+  // it in its own destructor, while the object is still of that type.
+  Gadget::ClearFocus();
 
   if (this == StuckOn) {
     StuckOn = nullptr;
@@ -77,8 +71,6 @@ bool Gadget::ActionIfConcerned(PendingInput& input) {
   // event is not for it. The sweep offers `input` to the next gadget too, so
   // its flags stay as they are.
   const uint32_t flags = input.flags & event_mask_;
-  const int x = input.x;
-  const int y = input.y;
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
@@ -86,9 +78,10 @@ bool Gadget::ActionIfConcerned(PendingInput& input) {
   // position left of or above the region into a huge value, so one compare
   // per axis checks both edges.
   if (this == StuckOn || flags & kKeyboard ||
-      (flags && static_cast<unsigned>(x - X) < static_cast<unsigned>(Width) &&
-       static_cast<unsigned>(y - Y) < static_cast<unsigned>(Height))) {
-    return Action(flags, input.key, x, y);
+      (flags &&
+       static_cast<unsigned>(input.x - X) < static_cast<unsigned>(Width) &&
+       static_cast<unsigned>(input.y - Y) < static_cast<unsigned>(Height))) {
+    return Action(flags, input.key, input.x, input.y);
   }
   return false;
 }
@@ -178,16 +171,8 @@ Gadget::PendingInput Gadget::ReadInput() {
   if (!event) {
     // The event queue reports only changes, so the held state comes from the
     // buttons themselves.
-    if (engine::window::IsLeftButtonDown()) {
-      input.flags |= kLeftHeld;
-    } else {
-      input.flags |= kLeftUp;
-    }
-    if (engine::window::IsRightButtonDown()) {
-      input.flags |= kRightHeld;
-    } else {
-      input.flags |= kRightUp;
-    }
+    input.flags |= engine::window::IsLeftButtonDown() ? kLeftHeld : kLeftUp;
+    input.flags |= engine::window::IsRightButtonDown() ? kRightHeld : kRightUp;
   }
   return input;
 }

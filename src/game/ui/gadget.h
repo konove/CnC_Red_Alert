@@ -67,24 +67,19 @@ class GadgetList;
 class Gadget {
  public:
   // Input events a gadget listens for, stored OR'd in event_mask_. A press or
-  // release is reported once, when it happens; held and up describe the
-  // button's state on each Input() call that has no event to report.
-  static constexpr uint32_t kLeftPress = 0x0001;  // Left mouse button press.
-  static constexpr uint32_t kLeftHeld =
-      0x0002;  // Left mouse button is being held down.
-  static constexpr uint32_t kLeftRelease =
-      0x0004;  // Left mouse button released.
-  static constexpr uint32_t kLeftUp =
-      0x0008;  // Left mouse button is being held up.
-  static constexpr uint32_t kRightPress = 0x0010;  // Right mouse button press.
-  static constexpr uint32_t kRightHeld =
-      0x0020;  // Right mouse button is being held down.
-  static constexpr uint32_t kRightRelease =
-      0x0040;  // Right mouse button released.
-  static constexpr uint32_t kRightUp =
-      0x0080;  // Right mouse button is being held up.
-  static constexpr uint32_t kKeyboard =
-      0x0100;  // A key that came from the keyboard, not a mouse button.
+  // release is reported once, when it happens; held (the button is down) and
+  // up (it is not) describe the button's state on each Input() call that has
+  // no event to report.
+  static constexpr uint32_t kLeftPress = 0x0001;
+  static constexpr uint32_t kLeftHeld = 0x0002;
+  static constexpr uint32_t kLeftRelease = 0x0004;
+  static constexpr uint32_t kLeftUp = 0x0008;
+  static constexpr uint32_t kRightPress = 0x0010;
+  static constexpr uint32_t kRightHeld = 0x0020;
+  static constexpr uint32_t kRightRelease = 0x0040;
+  static constexpr uint32_t kRightUp = 0x0080;
+  // A key that came from the keyboard, not a mouse button.
+  static constexpr uint32_t kKeyboard = 0x0100;
 
   // Owns the region at (`x`, `y`), `width` by `height` screen pixels, and acts
   // on the events in `flags`. A `sticky` gadget also listens for left presses
@@ -107,8 +102,8 @@ class Gadget {
   // Disable() makes the gadget ignore input; it is still drawn, so a gadget
   // that should vanish draws nothing while disabled or leaves its list.
   // Enable() undoes it. Both flag a redraw and drop the keyboard focus.
-  virtual void Disable();
-  virtual void Enable();
+  void Disable();
+  void Enable();
   // Returns the ID GadgetList::Input() reports for this gadget; 0 for a gadget
   // without one (only a ControlClass has one).
   [[nodiscard]] virtual unsigned id() const { return 0; }
@@ -156,7 +151,7 @@ class Gadget {
   // releases it on a left release. The base Action() calls it; an override
   // that clears the press bits before calling the base Action() calls it
   // first itself.
-  virtual void UpdateMouseCapture(uint32_t flags);
+  void UpdateMouseCapture(uint32_t flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
   // its job. `x` and `y` are where it happened: a click's position for a
@@ -182,8 +177,7 @@ class Gadget {
   // base Action() sets it whenever it acts.
   bool IsToRepaint : 1 = false;
 
- public
-     :  // HACK HACK HACK.. this is here because the sidebar buttons are static.
+ public:
   // A sticky gadget captures the mouse: pressed over it, it alone gets the
   // input until the left button is released, as a Windows button does.
   // Public because the sidebar's buttons are static and set it after they
