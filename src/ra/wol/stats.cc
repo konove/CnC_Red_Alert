@@ -53,14 +53,17 @@
 #include <vector>
 
 #include "base/array.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "base/unaligned.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
 #include "game/core/game_clock.h"
-#include "game/core/object_heap.h"
+#include "game/core/object_heap.h"  // IWYU pragma: keep
 #include "game/sim/type_tally.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
@@ -68,13 +71,13 @@
 #include "ra/map/world.h"
 #include "ra/net/network.h"
 #include "ra/net/session.h"
-#include "ra/objects/aircraft.h"
-#include "ra/objects/building.h"
+#include "ra/objects/aircraft.h"  // IWYU pragma: keep
+#include "ra/objects/building.h"  // IWYU pragma: keep
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/type.h"
-#include "ra/objects/unit.h"
-#include "ra/objects/vessel.h"
+#include "ra/objects/unit.h"  // IWYU pragma: keep
+#include "ra/objects/vessel.h"  // IWYU pragma: keep
 #include "ra/screens/goptions.h"
 #include "ra/startup/version.h"
 
@@ -199,6 +202,28 @@ constexpr int kCompletionWash = 64;
 static engine::platform::Stopwatch<engine::platform::SystemTickSource>
     GameTimer;
 static int32_t GameEndTime;
+
+namespace {
+
+constexpr auto kEveryObject = [](const auto& /*object*/) { return true; };
+
+// Returns how many of the objects in `heap` that `player` owns are of each of
+// the `type_count` types, leaving out those `counted` rejects.
+template <typename Heap, typename Filter = decltype(kEveryObject)>
+game::TypeTally CountOwned(const Heap& heap, const HouseClass* player,
+                           const base::ssize type_count,
+                           const Filter counted = kEveryObject) {
+  game::TypeTally owned(type_count);
+  for (int index = 0; index < heap.Count(); index++) {
+    const auto* object = heap.ActiveAt(index);
+    if (object->House == player && counted(*object)) {
+      owned.Increment(static_cast<int>(object->Class->Type));
+    }
+  }
+  return owned;
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -671,61 +696,28 @@ void Send_Statistics_Packet() {
       stats.Add_Field(field_player_vessels_bought,
                       player->VesselTotals->counts());
 
-      // The bought counts have been sent, so their tallies are cleared and reused
-      // to count what each player has left.
-      player->InfantryTotals->Clear();
-      player->AircraftTotals->Clear();
-      player->UnitTotals->Clear();
-      player->BuildingTotals->Clear();
-      player->VesselTotals->Clear();
-
       /*
-      ** Number of units remaining to player
+      ** Number of units remaining to player. They are counted afresh, so the
+      ** house's tallies keep what it bought.
       */
-      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
-        if (player == unit->House) {
-          player->UnitTotals->Increment(static_cast<int>(unit->Class->Type));
-        }
-      }
-
-      for (int index = 0; index < TheObjectHeaps().infantry().Count();
-           index++) {
-        const InfantryClass* infantry =
-            TheObjectHeaps().infantry().ActiveAt(index);
-        if (player == infantry->House && !infantry->Class->IsCivilian) {
-          player->InfantryTotals->Increment(
-              static_cast<int>(infantry->Class->Type));
-        }
-      }
-
-      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
-           index++) {
-        const AircraftClass* aircraft =
-            TheObjectHeaps().aircraft().ActiveAt(index);
-        if (player == aircraft->House) {
-          player->AircraftTotals->Increment(
-              static_cast<int>(aircraft->Class->Type));
-        }
-      }
-
-      for (int index = 0; index < TheObjectHeaps().building().Count();
-           index++) {
-        const BuildingClass* building =
-            TheObjectHeaps().building().ActiveAt(index);
-        if (player == building->House) {
-          player->BuildingTotals->Increment(
-              static_cast<int>(building->Class->Type));
-        }
-      }
-
-      for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-        const VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
-        if (player == vessel->House) {
-          player->VesselTotals->Increment(
-              static_cast<int>(vessel->Class->Type));
-        }
-      }
+      const game::TypeTally units_left =
+          CountOwned(TheObjectHeaps().unit(), player,
+                     base::ToSigned(magic_enum::enum_count<UnitType>()));
+      const game::TypeTally infantry_left =
+          CountOwned(TheObjectHeaps().infantry(), player,
+                     base::ToSigned(magic_enum::enum_count<InfantryType>()),
+                     [](const InfantryClass& infantry) {
+                       return !infantry.Class->IsCivilian;
+                     });
+      const game::TypeTally aircraft_left =
+          CountOwned(TheObjectHeaps().aircraft(), player,
+                     base::ToSigned(magic_enum::enum_count<AircraftType>()));
+      const game::TypeTally buildings_left =
+          CountOwned(TheObjectHeaps().building(), player,
+                     base::ToSigned(magic_enum::enum_count<StructType>()));
+      const game::TypeTally vessels_left =
+          CountOwned(TheObjectHeaps().vessel(), player,
+                     base::ToSigned(magic_enum::enum_count<VesselType>()));
 
       field_player_infantry_left[3] =
           static_cast<char>('1' + static_cast<char>(house));
@@ -737,15 +729,11 @@ void Send_Statistics_Packet() {
           static_cast<char>('1' + static_cast<char>(house));
       field_player_vessels_left[3] =
           static_cast<char>('1' + static_cast<char>(house));
-      stats.Add_Field(field_player_infantry_left,
-                      player->InfantryTotals->counts());
-      stats.Add_Field(field_player_units_left, player->UnitTotals->counts());
-      stats.Add_Field(field_player_planes_left,
-                      player->AircraftTotals->counts());
-      stats.Add_Field(field_player_buildings_left,
-                      player->BuildingTotals->counts());
-      stats.Add_Field(field_player_vessels_left,
-                      player->VesselTotals->counts());
+      stats.Add_Field(field_player_infantry_left, infantry_left.counts());
+      stats.Add_Field(field_player_units_left, units_left.counts());
+      stats.Add_Field(field_player_planes_left, aircraft_left.counts());
+      stats.Add_Field(field_player_buildings_left, buildings_left.counts());
+      stats.Add_Field(field_player_vessels_left, vessels_left.counts());
 
       /*
       ** Number of enemy units/buildings of each type destroyed.

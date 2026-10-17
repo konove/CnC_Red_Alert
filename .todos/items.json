@@ -17403,12 +17403,13 @@
         "engine",
         "net"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:32:06Z",
+      "updated": "2026-10-17T00:38:45Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "resolution": "New `base::AppendBigEndian<T>` in `base/unaligned.h` (replaces the VQA tests' `AppendBigEndian32`); `PacketClass::Add_Field(const char*, std::span<const int32_t>)` encodes through it into a CHUNK, pinned by `PacketClassTest.IntegerArrayFieldIsABigEndianChunk`; `TypeTally::NetworkBytes()` became `counts()`.",
       "decisions": [
         {
           "question": "Where should the big-endian encoding of a TypeTally's counts live?",
@@ -17424,89 +17425,16 @@
       ],
       "anchors": [
         {
-          "path": "src/game/sim/type_tally.h",
-          "startLine": 61,
-          "endLine": 61,
-          "text": "  [[nodiscard]] std::vector<std::byte> NetworkBytes() const;",
-          "before": [
-            "  [[nodiscard]] int Count(int type) const;",
-            "  // Returns every count, in type order, as a 32-bit big-endian integer: the",
-            "  // layout the statistics packet sends."
-          ],
-          "after": [
-            "",
-            " private:",
-            "  // One count per type, indexed by the type's enum value."
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/game/sim/type_tally.cc",
-          "startLine": 47,
-          "endLine": 57,
-          "text": "std::vector<std::byte> TypeTally::NetworkBytes() const {\n  std::vector<std::byte> bytes;\n  bytes.reserve(counts_.size() * sizeof(int32_t));\n  for (const int32_t count : counts_) {\n    const auto value = static_cast<uint32_t>(count);\n    bytes.push_back(static_cast<std::byte>(value >> 24U));\n    bytes.push_back(static_cast<std::byte>(value >> 16U));\n    bytes.push_back(static_cast<std::byte>(value >> 8U));\n    bytes.push_back(static_cast<std::byte>(value));\n  }\n  return bytes;",
-          "before": [
-            "  return counts_.at(base::ToSize(type));",
-            "}",
-            ""
-          ],
-          "after": [
-            "}",
-            "",
-            "}  // namespace game"
-          ],
-          "lost": true
+          "path": "src/base/unaligned.h",
+          "lost": false
         },
         {
           "path": "src/engine/net/packet.h",
-          "startLine": 91,
-          "endLine": 91,
-          "text": "  void Add_Field(const char* field, std::span<const std::byte> data) {",
-          "before": [
-            "  void Add_Field(const char* field, const char* data) {",
-            "    Add_Field(FieldClass(field, data));",
-            "  }"
-          ],
-          "after": [
-            "    Add_Field(FieldClass(field, data));",
-            "  }",
-            "  // Adds the integers as one chunk of 32-bit big-endian values, the layout in"
-          ],
           "lost": false
         },
         {
-          "path": "src/base/unaligned.h",
-          "startLine": 36,
-          "endLine": 36,
-          "text": "T ReadLittleEndian(const std::span<const std::byte> data,",
-          "before": [
-            "//   const auto frame_count = base::ReadLittleEndian<uint16_t>(shape_file, 0);",
-            "template <std::integral T>",
-            "  requires(!std::same_as<T, bool>)"
-          ],
-          "after": [
-            "                   const std::integral auto offset) {",
-            "  const auto bytes = SliceOrEmpty(data, offset, sizeof(T));",
-            "  if (bytes.empty()) {"
-          ],
+          "path": "src/game/sim/type_tally.h",
           "lost": false
-        },
-        {
-          "path": "src/engine/video/vqa/vqa_test_util.h",
-          "startLine": 175,
-          "endLine": 175,
-          "text": "inline void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {",
-          "before": [
-            "// LLVM 23 mistakes element invalidation for invalidating the vector reference;",
-            "// no element reference or iterator is retained across these appends.",
-            "// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)"
-          ],
-          "after": [
-            "  out.push_back(static_cast<uint8_t>(value >> 24));",
-            "  out.push_back(static_cast<uint8_t>(value >> 16));",
-            "  out.push_back(static_cast<uint8_t>(value >> 8));"
-          ],
-          "lost": true
         }
       ]
     },
@@ -17530,8 +17458,8 @@
       "anchors": [
         {
           "path": "src/ra/wol/stats.cc",
-          "startLine": 675,
-          "endLine": 675,
+          "startLine": 674,
+          "endLine": 674,
           "text": "      // The bought counts have been sent, so their tallies are cleared and reused",
           "before": [
             "      stats.Add_Field(field_player_vessels_bought,",
@@ -17543,7 +17471,7 @@
             "      player->InfantryTotals->Clear();",
             "      player->AircraftTotals->Clear();"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/stats.cc",
@@ -17564,8 +17492,8 @@
         },
         {
           "path": "src/game/sim/type_tally.h",
-          "startLine": 55,
-          "endLine": 55,
+          "startLine": 56,
+          "endLine": 56,
           "text": "  void Clear();",
           "before": [
             "  // (std::out_of_range otherwise).",
