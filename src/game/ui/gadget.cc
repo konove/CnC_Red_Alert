@@ -26,9 +26,9 @@
 
 namespace game {
 
-Gadget* Gadget::mouse_captor_ = nullptr;
-
 Gadget* Gadget::focused_ = nullptr;
+
+Gadget* Gadget::mouse_captor_ = nullptr;
 
 Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
                bool sticky) noexcept
@@ -62,24 +62,10 @@ Gadget::~Gadget() {
   }
 }
 
-bool Gadget::ActionIfConcerned(PendingInput& input) {
-  // Keep only the events this gadget listens for; none left means a mouse
-  // event is not for it. The sweep offers `input` to the next gadget too, so
-  // its flags stay as they are.
-  const uint32_t flags = input.flags & event_mask_;
-
-  // A key always reaches Action(), which decides whether it wants it; so does
-  // anything while this gadget holds the mouse, even a drag outside it. Other
-  // mouse events must fall inside the region. The unsigned casts turn a
-  // position left of or above the region into a huge value, so one compare
-  // per axis checks both edges.
-  if (this == mouse_captor_ || flags & kKeyboard ||
-      (flags &&
-       static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
-       static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {
-    return Action(flags, input.key, input.x, input.y);
-  }
-  return false;
+void Gadget::Disable() {
+  disabled_ = true;
+  to_redraw_ = true;
+  ClearFocus();
 }
 
 void Gadget::Enable() {
@@ -88,56 +74,7 @@ void Gadget::Enable() {
   ClearFocus();
 }
 
-void Gadget::Disable() {
-  disabled_ = true;
-  to_redraw_ = true;
-  ClearFocus();
-}
-
-bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
-                    int /*x*/, int /*y*/) {
-  // ActionIfConcerned() also calls this with no events for the gadget holding
-  // the mouse; that is not an action, and the sweep goes on.
-  if (flags) {
-    to_redraw_ = true;
-    UpdateMouseCapture(flags);
-    return true;
-  }
-  return false;
-}
-
-bool Gadget::Draw(PixelView& /*view*/, bool forced) {
-  if (forced || to_redraw_) {
-    to_redraw_ = false;
-    return true;
-  }
-  return false;
-}
-
-
-
-bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
-  Draw(view, forced);
-
-  // A gadget that acted has used up the event, so the sweep stops there.
-  if (!disabled_ && ActionIfConcerned(input)) {
-    // Action() flags a gadget whose look it changed; show the change now.
-    Draw(view, false);
-    return true;
-  }
-  return false;
-}
-
 void Gadget::FlagToRedraw() { to_redraw_ = true; }
-
-void Gadget::UpdateMouseCapture(uint32_t flags) {
-  if (sticky_ && flags & kLeftPress) {
-    mouse_captor_ = this;
-  }
-  if (mouse_captor_ == this && flags & kLeftRelease) {
-    mouse_captor_ = nullptr;
-  }
-}
 
 void Gadget::SetFocus() {
   if (focused_) {
@@ -160,6 +97,67 @@ bool Gadget::HasFocus() const { return this == focused_; }
 void Gadget::SetPosition(int x, int y) {
   x_ = x;
   y_ = y;
+}
+
+bool Gadget::Draw(PixelView& /*view*/, bool forced) {
+  if (forced || to_redraw_) {
+    to_redraw_ = false;
+    return true;
+  }
+  return false;
+}
+
+void Gadget::UpdateMouseCapture(uint32_t flags) {
+  if (sticky_ && flags & kLeftPress) {
+    mouse_captor_ = this;
+  }
+  if (mouse_captor_ == this && flags & kLeftRelease) {
+    mouse_captor_ = nullptr;
+  }
+}
+
+bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
+                    int /*x*/, int /*y*/) {
+  // ActionIfConcerned() also calls this with no events for the gadget holding
+  // the mouse; that is not an action, and the sweep goes on.
+  if (flags) {
+    to_redraw_ = true;
+    UpdateMouseCapture(flags);
+    return true;
+  }
+  return false;
+}
+
+bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
+  Draw(view, forced);
+
+  // A gadget that acted has used up the event, so the sweep stops there.
+  if (!disabled_ && ActionIfConcerned(input)) {
+    // Action() flags a gadget whose look it changed; show the change now.
+    Draw(view, false);
+    return true;
+  }
+  return false;
+}
+
+bool Gadget::ActionIfConcerned(PendingInput& input) {
+  // Keep only the events this gadget listens for; none left means a mouse
+  // event is not for it. The sweep offers `input` to the next gadget too, so
+  // its flags stay as they are.
+  const uint32_t flags = input.flags & event_mask_;
+
+  // A key always reaches Action(), which decides whether it wants it; so does
+  // anything while this gadget holds the mouse, even a drag outside it. Other
+  // mouse events must fall inside the region. The unsigned casts turn a
+  // position left of or above the region into a huge value, so one compare
+  // per axis checks both edges.
+  if (this == mouse_captor_ || flags & kKeyboard ||
+      (flags &&
+       static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
+       static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {
+    return Action(flags, input.key, input.x, input.y);
+  }
+  return false;
 }
 
 }  // namespace game

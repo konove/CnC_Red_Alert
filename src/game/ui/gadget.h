@@ -89,12 +89,12 @@ class Gadget {
   Gadget() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
   Gadget(const Gadget&) = delete;
-  // Releases the keyboard focus and the mouse capture if this gadget holds
-  // them, and leaves its list.
-  virtual ~Gadget();
   Gadget& operator=(const Gadget&) = delete;
   Gadget(Gadget&&) = delete;
   Gadget& operator=(Gadget&&) = delete;
+  // Releases the keyboard focus and the mouse capture if this gadget holds
+  // them, and leaves its list.
+  virtual ~Gadget();
 
   // Returns the list this gadget is in, or nullptr when it is in none.
   [[nodiscard]] GadgetList* list() const { return list_; }
@@ -199,6 +199,13 @@ class Gadget {
   // ends the sweep.
   bool Offer(PixelView& view, bool forced, PendingInput& input);
 
+  // Calls Action() with the events of `input` this gadget listens for, when
+  // they concern it: always for the gadget holding the mouse and for a key,
+  // otherwise only for mouse events inside its region. Action() may replace
+  // `input.key`. Returns what Action() returned, or false when it was not
+  // called.
+  bool ActionIfConcerned(PendingInput& input);
+
   int x_ = 0;
   int y_ = 0;
   int width_ = 0;
@@ -229,13 +236,6 @@ class Gadget {
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;
-
-  // Calls Action() with the events of `input` this gadget listens for, when
-  // they concern it: always for the gadget holding the mouse and for a key,
-  // otherwise only for mouse events inside its region. Action() may replace
-  // `input.key`. Returns what Action() returned, or false when it was not
-  // called.
-  bool ActionIfConcerned(PendingInput& input);
 };
 
 }  // namespace game
