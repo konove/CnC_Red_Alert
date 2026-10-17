@@ -4492,7 +4492,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_VESSEL:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedUnits->Increment(
+        source->House->DestroyedVessels->Increment(
             static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));
       }
 

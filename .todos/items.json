@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 479,
+  "nextId": 481,
   "items": [
     {
       "id": "T-2",
@@ -15811,10 +15811,10 @@
         "cmake",
         "strict-build"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T06:38:41Z",
-      "updated": "2026-10-16T22:02:31Z",
+      "updated": "2026-10-17T01:04:38Z",
       "blockedBy": [
         "T-161"
       ],
@@ -17379,11 +17379,12 @@
         "game",
         "cleanup"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:00Z",
-      "updated": "2026-10-17T00:30:42Z",
+      "updated": "2026-10-17T01:04:25Z",
       "source": "40bf225ab..5511b411d",
+      "resolution": "All five parts fixed in 53cf5e274..e09ff27d3: the packet layer encodes the counts through the new `base::AppendBigEndian` (T-474), the 'left' counts go into local tallies and `Clear()` is gone (T-475), the stats fields are sent from a table (T-476), the dead cargo comment is deleted (T-477) and the size is a `base::ssize` (T-478). Found along the way: T-479 (RA vessel kills counted as vehicles) and T-480.",
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",
@@ -17403,10 +17404,10 @@
         "engine",
         "net"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:38:45Z",
+      "updated": "2026-10-17T01:04:14Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
       "resolution": "New `base::AppendBigEndian<T>` in `base/unaligned.h` (replaces the VQA tests' `AppendBigEndian32`); `PacketClass::Add_Field(const char*, std::span<const int32_t>)` encodes through it into a CHUNK, pinned by `PacketClassTest.IntegerArrayFieldIsABigEndianChunk`; `TypeTally::NetworkBytes()` became `counts()`.",
@@ -17449,10 +17450,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:42:22Z",
+      "updated": "2026-10-17T01:04:17Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
       "resolution": "Both games' `Send_Statistics_Packet()` count the units left with a `CountOwned(heap, player, type_count, filter)` template into local `game::TypeTally` objects instead of clearing and reusing the houses' bought tallies; `TypeTally::Clear()` and its test lines are gone. Packet bytes unchanged (same counts, same field order).",
@@ -17479,46 +17480,47 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:08:19Z",
+      "updated": "2026-10-17T01:04:18Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "resolution": "Both games send the per-type count fields from one `std::to_array` table of {name prefix, tally} through a new `AddPlayerTally()`, in the original order; the static `field_player_*` name arrays for those fields are gone (RA 17 rows with vessels, TD 14).",
       "anchors": [
         {
           "path": "src/ra/wol/stats.cc",
-          "startLine": 653,
-          "endLine": 795,
-          "text": "      field_player_infantry_bought[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_units_bought[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_planes_bought[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_buildings_bought[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_vessels_bought[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n\n      stats.Add_Field(field_player_infantry_bought,\n                      player->InfantryTotals->NetworkBytes());\n      stats.Add_Field(field_player_units_bought,\n                      player->UnitTotals->NetworkBytes());\n      stats.Add_Field(field_player_planes_bought,\n                      player->AircraftTotals->NetworkBytes());\n      stats.Add_Field(field_player_buildings_bought,\n                      player->BuildingTotals->NetworkBytes());\n      stats.Add_Field(field_player_vessels_bought,\n                      player->VesselTotals->NetworkBytes());\n\n      // The bought counts have been sent, so their tallies are cleared and reused\n      // to count what each player has left.\n      player->InfantryTotals->Clear();\n      player->AircraftTotals->Clear();\n      player->UnitTotals->Clear();\n      player->BuildingTotals->Clear();\n      player->VesselTotals->Clear();\n\n      /*\n      ** Number of units remaining to player\n      */\n      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {\n        const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);\n        if (player == unit->House) {\n          player->UnitTotals->Increment(static_cast<int>(unit->Class->Type));\n        }\n      }\n\n      for (int index = 0; index < TheObjectHeaps().infantry().Count();\n           index++) {\n        const InfantryClass* infantry =\n            TheObjectHeaps().infantry().ActiveAt(index);\n        if (player == infantry->House && !infantry->Class->IsCivilian) {\n          player->InfantryTotals->Increment(\n              static_cast<int>(infantry->Class->Type));\n        }\n      }\n\n      for (int index = 0; index < TheObjectHeaps().aircraft().Count();\n           index++) {\n        const AircraftClass* aircraft =\n            TheObjectHeaps().aircraft().ActiveAt(index);\n        if (player == aircraft->House) {  // &&\taircraft->Class->Type !=\n                                          // AIRCRAFT_CARGO){\n          player->AircraftTotals->Increment(\n              static_cast<int>(aircraft->Class->Type));\n        }\n      }\n\n      for (int index = 0; index < TheObjectHeaps().building().Count();\n           index++) {\n        const BuildingClass* building =\n            TheObjectHeaps().building().ActiveAt(index);\n        if (player == building->House) {\n          player->BuildingTotals->Increment(\n              static_cast<int>(building->Class->Type));\n        }\n      }\n\n      for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {\n        const VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);\n        if (player == vessel->House) {\n          player->VesselTotals->Increment(\n              static_cast<int>(vessel->Class->Type));\n        }\n      }\n\n      field_player_infantry_left[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_units_left[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_planes_left[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_buildings_left[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_vessels_left[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      stats.Add_Field(field_player_infantry_left,\n                      player->InfantryTotals->NetworkBytes());\n      stats.Add_Field(field_player_units_left,\n                      player->UnitTotals->NetworkBytes());\n      stats.Add_Field(field_player_planes_left,\n                      player->AircraftTotals->NetworkBytes());\n      stats.Add_Field(field_player_buildings_left,\n                      player->BuildingTotals->NetworkBytes());\n      stats.Add_Field(field_player_vessels_left,\n                      player->VesselTotals->NetworkBytes());\n\n      /*\n      ** Number of enemy units/buildings of each type destroyed.\n      */\n\n      field_player_infantry_killed[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_units_killed[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_planes_killed[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_buildings_killed[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      field_player_vessels_killed[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n\n      stats.Add_Field(field_player_infantry_killed,\n                      player->DestroyedInfantry->NetworkBytes());\n      stats.Add_Field(field_player_units_killed,\n                      player->DestroyedUnits->NetworkBytes());\n      stats.Add_Field(field_player_planes_killed,\n                      player->DestroyedAircraft->NetworkBytes());\n      stats.Add_Field(field_player_buildings_killed,\n                      player->DestroyedBuildings->NetworkBytes());\n      stats.Add_Field(field_player_vessels_killed,\n                      player->DestroyedVessels->NetworkBytes());\n\n      /*\n      ** Number and type of enemy buildings captured\n      */\n      field_player_buildings_captured[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      stats.Add_Field(field_player_buildings_captured,\n                      player->CapturedBuildings->NetworkBytes());\n\n      /*\n      ** Number of crates discovered and their contents\n      */\n      field_player_crates_found[3] =\n          static_cast<char>('1' + static_cast<char>(house));\n      stats.Add_Field(field_player_crates_found,\n                      player->TotalCrates->NetworkBytes());\n\n      /*",
+          "startLine": 696,
+          "endLine": 718,
+          "text": "      const auto tallies =\n          std::to_array<std::pair<std::string_view, const game::TypeTally*>>({\n              {\"INB\", player->InfantryTotals.get()},\n              {\"UNB\", player->UnitTotals.get()},\n              {\"PLB\", player->AircraftTotals.get()},\n              {\"BLB\", player->BuildingTotals.get()},\n              {\"VSB\", player->VesselTotals.get()},\n              {\"INL\", &infantry_left},\n              {\"UNL\", &units_left},\n              {\"PLL\", &aircraft_left},\n              {\"BLL\", &buildings_left},\n              {\"VSL\", &vessels_left},\n              {\"INK\", player->DestroyedInfantry.get()},\n              {\"UNK\", player->DestroyedUnits.get()},\n              {\"PLK\", player->DestroyedAircraft.get()},\n              {\"BLK\", player->DestroyedBuildings.get()},\n              {\"VSK\", player->DestroyedVessels.get()},\n              {\"BLC\", player->CapturedBuildings.get()},\n              {\"CRA\", player->TotalCrates.get()},\n          });\n      for (const auto& [prefix, tally] : tallies) {\n        AddPlayerTally(stats, prefix, house, *tally);\n      }",
           "before": [
-            "      /*",
-            "      ** Number of each unit/building type built",
+            "      ** Number of each unit/building type built, remaining to the player and",
+            "      ** destroyed, enemy buildings captured and crates found by contents.",
             "      */"
           ],
           "after": [
-            "      ** Amount of tiberium turned into credits",
-            "      */",
-            "      field_player_harvested[3] ="
+            "",
+            "      /*",
+            "      ** Amount of tiberium turned into credits"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/net/stats.cc",
-          "startLine": 440,
-          "endLine": 565,
-          "text": "            static_cast<int32_t>(player->Credits + player->Tiberium));\n\n        /*\n        ** Number of each unit/building type built\n        */\n        base::At(field_player_infantry_bought, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_units_bought, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_planes_bought, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_buildings_bought, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n\n        stats.Add_Field(field_player_infantry_bought,\n                        player->InfantryTotals->NetworkBytes());\n        stats.Add_Field(field_player_units_bought,\n                        player->UnitTotals->NetworkBytes());\n        stats.Add_Field(field_player_planes_bought,\n                        player->AircraftTotals->NetworkBytes());\n        stats.Add_Field(field_player_buildings_bought,\n                        player->BuildingTotals->NetworkBytes());\n\n        // The bought counts have been sent, so their tallies are cleared and reused\n        // to count what each player has left.\n        player->InfantryTotals->Clear();\n        player->AircraftTotals->Clear();\n        player->UnitTotals->Clear();\n        player->BuildingTotals->Clear();\n\n        /*\n        ** Number of units remaining to player\n        */\n        for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {\n          const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);\n          if (unit->House == player) {\n            player->UnitTotals->Increment(static_cast<int>(unit->Class->Type));\n          }\n        }\n\n        for (int index = 0; index < TheObjectHeaps().infantry().Count();\n             index++) {\n          const InfantryClass* infantry =\n              TheObjectHeaps().infantry().ActiveAt(index);\n          if (infantry->House == player && !infantry->Class->IsCivilian) {\n            player->InfantryTotals->Increment(\n                static_cast<int>(infantry->Class->Type));\n          }\n        }\n\n        for (int index = 0; index < TheObjectHeaps().aircraft().Count();\n             index++) {\n          const AircraftClass* aircraft =\n              TheObjectHeaps().aircraft().ActiveAt(index);\n          if (aircraft->House == player &&\n              aircraft->Class->Type != AIRCRAFT_CARGO) {\n            player->AircraftTotals->Increment(\n                static_cast<int>(aircraft->Class->Type));\n          }\n        }\n\n        for (int index = 0; index < TheObjectHeaps().building().Count();\n             index++) {\n          const BuildingClass* building =\n              TheObjectHeaps().building().ActiveAt(index);\n          if (building->House == player) {\n            player->BuildingTotals->Increment(\n                static_cast<int>(building->Class->Type));\n          }\n        }\n\n        base::At(field_player_infantry_left, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_units_left, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_planes_left, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_buildings_left, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        stats.Add_Field(field_player_infantry_left,\n                        player->InfantryTotals->NetworkBytes());\n        stats.Add_Field(field_player_units_left,\n                        player->UnitTotals->NetworkBytes());\n        stats.Add_Field(field_player_planes_left,\n                        player->AircraftTotals->NetworkBytes());\n        stats.Add_Field(field_player_buildings_left,\n                        player->BuildingTotals->NetworkBytes());\n\n        /*\n        ** Number of enemy units/buildings of each type destroyed.\n        */\n\n        base::At(field_player_infantry_killed, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_units_killed, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_planes_killed, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        base::At(field_player_buildings_killed, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        stats.Add_Field(field_player_infantry_killed,\n                        player->DestroyedInfantry->NetworkBytes());\n        stats.Add_Field(field_player_units_killed,\n                        player->DestroyedUnits->NetworkBytes());\n        stats.Add_Field(field_player_planes_killed,\n                        player->DestroyedAircraft->NetworkBytes());\n        stats.Add_Field(field_player_buildings_killed,\n                        player->DestroyedBuildings->NetworkBytes());\n\n        /*\n        ** Number and type of enemy buildings captured\n        */\n        base::At(field_player_buildings_captured, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        stats.Add_Field(field_player_buildings_captured,\n                        player->CapturedBuildings->NetworkBytes());\n\n        /*\n        ** Number of crates discovered and their contents\n        */\n        base::At(field_player_crates_found, 3) =\n            static_cast<char>('1' + static_cast<char>(house));\n        stats.Add_Field(field_player_crates_found,\n                        player->TotalCrates->NetworkBytes());\n\n        /*",
+          "startLine": 487,
+          "endLine": 506,
+          "text": "        const auto tallies =\n            std::to_array<std::pair<std::string_view, const game::TypeTally*>>({\n                {\"INB\", player->InfantryTotals.get()},\n                {\"UNB\", player->UnitTotals.get()},\n                {\"PLB\", player->AircraftTotals.get()},\n                {\"BLB\", player->BuildingTotals.get()},\n                {\"INL\", &infantry_left},\n                {\"UNL\", &units_left},\n                {\"PLL\", &aircraft_left},\n                {\"BLL\", &buildings_left},\n                {\"INK\", player->DestroyedInfantry.get()},\n                {\"UNK\", player->DestroyedUnits.get()},\n                {\"PLK\", player->DestroyedAircraft.get()},\n                {\"BLK\", player->DestroyedBuildings.get()},\n                {\"BLC\", player->CapturedBuildings.get()},\n                {\"CRA\", player->TotalCrates.get()},\n            });\n        for (const auto& [prefix, tally] : tallies) {\n          AddPlayerTally(stats, prefix, house, *tally);\n        }",
           "before": [
-            "            static_cast<char>('1' + static_cast<char>(house));",
-            "        stats.Add_Field(",
-            "            field_player_credits,"
+            "        ** and destroyed, enemy buildings captured and crates found by",
+            "        ** contents.",
+            "        */"
           ],
           "after": [
-            "        ** Amount of tiberium turned into credits",
-            "        */",
-            "        base::At(field_player_harvested, 3) ="
+            "",
+            "        /*",
+            "        ** Amount of tiberium turned into credits"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -17533,30 +17535,17 @@
         "dead-code",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:32:35Z",
+      "updated": "2026-10-17T01:04:23Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
       "resolution": "Deleted the disabled `AIRCRAFT_CARGO` condition from the 'planes left' loop in `ra/wol/stats.cc`.",
       "anchors": [
         {
           "path": "src/ra/wol/stats.cc",
-          "startLine": 707,
-          "endLine": 708,
-          "text": "        if (player == aircraft->House) {  // &&\taircraft->Class->Type !=\n                                          // AIRCRAFT_CARGO){",
-          "before": [
-            "           index++) {",
-            "        const AircraftClass* aircraft =",
-            "            TheObjectHeaps().aircraft().ActiveAt(index);"
-          ],
-          "after": [
-            "          player->AircraftTotals->Increment(",
-            "              static_cast<int>(aircraft->Class->Type));",
-            "        }"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -17572,19 +17561,19 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:34:22Z",
+      "updated": "2026-10-17T01:04:20Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
       "resolution": "`TypeTally(base::ssize)`; RA's `Init_Trackers()` passes `base::ToSigned(magic_enum::enum_count<...>())`, TD's passes `kAircraftCount` and the other `k*Count` constants instead of casting the enumerators.",
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",
-          "startLine": 47,
-          "endLine": 47,
-          "text": "  explicit TypeTally(int type_count);",
+          "startLine": 50,
+          "endLine": 50,
+          "text": "  explicit TypeTally(base::ssize type_count);",
           "before": [
             "class TypeTally {",
             " public:",
@@ -17595,41 +17584,148 @@
             "  // Adds one to the count of `type`, which must be below the type count",
             "  // (std::out_of_range otherwise)."
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/objects/house.cc",
-          "startLine": 512,
-          "endLine": 540,
-          "text": "void HouseClass::Init_Trackers() {\n  if (TheSession().Type == GAME_INTERNET) {\n    AircraftTotals = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<AircraftType>()));\n    InfantryTotals = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<InfantryType>()));\n    UnitTotals = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<UnitType>()));\n    BuildingTotals = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<StructType>()));\n    VesselTotals = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<VesselType>()));\n\n    DestroyedAircraft = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<AircraftType>()));\n    DestroyedInfantry = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<InfantryType>()));\n    DestroyedUnits = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<UnitType>()));\n    DestroyedBuildings = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<StructType>()));\n    DestroyedVessels = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<VesselType>()));\n\n    CapturedBuildings = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<StructType>()));\n    TotalCrates = std::make_unique<game::TypeTally>(\n        static_cast<int>(magic_enum::enum_count<CrateType>()));\n  }",
+          "startLine": 513,
+          "endLine": 513,
+          "text": "void HouseClass::Init_Trackers() {",
           "before": [
             " *                                                                                             *",
             " * HISTORY: * 8/6/96 4:48PM ST : Created *",
             " *=============================================================================================*/"
           ],
           "after": [
-            "}",
-            "",
-            "HouseClass::HouseClass()"
+            "  if (TheSession().Type == GAME_INTERNET) {",
+            "    AircraftTotals = std::make_unique<game::TypeTally>(",
+            "        base::ToSigned(magic_enum::enum_count<AircraftType>()));"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/objects/house.cc",
           "startLine": 474,
-          "endLine": 497,
-          "text": "void HouseClass::Init_Trackers() {\n  AircraftTotals =\n      std::make_unique<game::TypeTally>(static_cast<int>(AIRCRAFT_COUNT));\n  InfantryTotals =\n      std::make_unique<game::TypeTally>(static_cast<int>(INFANTRY_COUNT));\n  UnitTotals = std::make_unique<game::TypeTally>(static_cast<int>(UNIT_COUNT));\n  BuildingTotals =\n      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));\n\n  DestroyedAircraft =\n      std::make_unique<game::TypeTally>(static_cast<int>(AIRCRAFT_COUNT));\n  DestroyedInfantry =\n      std::make_unique<game::TypeTally>(static_cast<int>(INFANTRY_COUNT));\n  DestroyedUnits =\n      std::make_unique<game::TypeTally>(static_cast<int>(UNIT_COUNT));\n  DestroyedBuildings =\n      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));\n\n  CapturedBuildings =\n      std::make_unique<game::TypeTally>(static_cast<int>(STRUCT_COUNT));\n  TotalCrates =\n      std::make_unique<game::TypeTally>(TOTAL_CRATE_TYPES);  // 15 crate types\n}\n",
+          "endLine": 474,
+          "text": "void HouseClass::Init_Trackers() {",
           "before": [
             "  Init_Trackers();",
             "}",
             ""
           ],
           "after": [
-            "HouseClass::~HouseClass() = default;",
+            "  AircraftTotals = std::make_unique<game::TypeTally>(kAircraftCount);",
+            "  InfantryTotals = std::make_unique<game::TypeTally>(kInfantryCount);",
+            "  UnitTotals = std::make_unique<game::TypeTally>(kUnitCount);"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-479",
+      "title": "Red Alert counts destroyed vessels as destroyed vehicles in the statistics",
+      "details": "In `TechnoClass::Record_The_Kill()` (`ra/objects/techno.cc`), the `RTTI_VESSEL` case increments `source->House->DestroyedUnits` with the vessel's `VesselType` index, so a sunk destroyer is reported as a kill of the `UnitType` with the same number, and `DestroyedVessels` is never incremented: the `VSK?` statistics field is always zeros. The same code is in the original EA source. Fix: increment `DestroyedVessels`. This changes what the `UNK?`/`VSK?` fields of the WOL statistics packet carry (correctly), so it is a behavior change; there is no test reaching this switch today.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bug",
+        "ra",
+        "net"
+      ],
+      "status": "fixed",
+      "author": "agent",
+      "created": "2026-10-17T00:44:22Z",
+      "updated": "2026-10-17T01:07:04Z",
+      "source": "fb71855bc",
+      "resolution": "The `RTTI_VESSEL` case of `Record_The_Kill()` now increments `DestroyedVessels`, so the `VSK?` field carries vessel kills and `UNK?` no longer counts them as vehicles of the same number. `TechnoTest.AnInternetGameTalliesTheKillByKind` covers both kinds.",
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 4492,
+          "endLine": 4497,
+          "text": "    case RTTI_VESSEL:\n      if (source != nullptr && !total_recorded &&\n          TheSession().Type == GAME_INTERNET) {\n        source->House->DestroyedUnits->Increment(\n            static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));\n      }",
+          "before": [
+            "        total_recorded++;",
+            "      }",
+            "      [[fallthrough]];"
+          ],
+          "after": [
+            "",
+            "      House->UnitsLost++;",
+            "      if (source != nullptr) {"
+          ],
+          "lost": true
+        }
+      ]
+    },
+    {
+      "id": "T-480",
+      "title": "Remove the commented-out bought-tally increments in Red Alert",
+      "details": "`ra/objects/vessel.cc`, `ra/objects/aircraft.cc` and `ra/objects/building.cc` keep commented-out `House->*Totals->Increment(...)` blocks from Tiberian Dawn; Red Alert counts what was bought in `HouseClass` (`house.cc`, the `*Totals->Increment(techno->Class_Of().ID)` calls) instead. Dead code: delete with `/remove-dead-code`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "cleanup",
+        "dead-code",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-17T00:44:22Z",
+      "updated": "2026-10-17T00:44:22Z",
+      "source": "fb71855bc",
+      "anchors": [
+        {
+          "path": "src/ra/objects/vessel.cc",
+          "startLine": 176,
+          "endLine": 180,
+          "text": "  ** Keep count of the number of units created.\n  */\n  //\tif (Session.Type == GAME_INTERNET) {\n  //\t\tHouse->UnitTotals->Increment((int)classid);\n  //\t}",
+          "before": [
+            "  IsCloakable = Class->IsCloakable;",
+            "",
+            "  /*"
+          ],
+          "after": [
+            "}",
             "",
             "/***********************************************************************************************"
           ],
-          "lost": true
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/aircraft.cc",
+          "startLine": 330,
+          "endLine": 334,
+          "text": "  */\n  //\tif (/*classid != AIRCRAFT_CARGO && */ Session.Type ==\n  // GAME_INTERNET) {\n  // House->AircraftTotals->Increment((int)classid);\n  //\t}",
+          "before": [
+            "  ** Keep count of the number of units created. Dont track cargo planes as they",
+            "  *are created",
+            "  ** automatically, not bought."
+          ],
+          "after": [
+            "}",
+            "",
+            "/***********************************************************************************************"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/building.cc",
+          "startLine": 2120,
+          "endLine": 2122,
+          "text": "  //\tif (Session.Type == GAME_INTERNET) {\n  //\t\tHouse->BuildingTotals->Increment( (int) type);\n  //\t}",
+          "before": [
+            "    IsAllowedToSell = false;",
+            "  }",
+            ""
+          ],
+          "after": [
+            "}",
+            "",
+            "/***********************************************************************************************"
+          ],
+          "lost": false
         }
       ]
     }
