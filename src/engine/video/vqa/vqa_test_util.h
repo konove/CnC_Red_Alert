@@ -19,6 +19,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "base/unaligned.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/video/vqa/vqa_audio_device.h"
 #include "engine/video/vqa/vqa_format.h"
@@ -169,21 +170,11 @@ inline void AppendBytes(std::vector<uint8_t>& out, std::string_view text) {
   out.insert(out.end(), text.begin(), text.end());
 }
 
-// LLVM 23 mistakes element invalidation for invalidating the vector reference;
-// no element reference or iterator is retained across these appends.
-// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-inline void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {
-  out.push_back(static_cast<uint8_t>(value >> 24));
-  out.push_back(static_cast<uint8_t>(value >> 16));
-  out.push_back(static_cast<uint8_t>(value >> 8));
-  out.push_back(static_cast<uint8_t>(value));
-}
-
 // "FORM" <size> "WVQA" — the file preamble Open() validates first.
 inline std::vector<uint8_t> ValidPreamble() {
   std::vector<uint8_t> data;
   AppendBytes(data, "FORM");
-  AppendBigEndian32(data, 0x1234);
+  base::AppendBigEndian<uint32_t>(data, 0x1234);
   AppendBytes(data, "WVQA");
   return data;
 }
@@ -197,7 +188,7 @@ inline void AppendChunk(std::vector<uint8_t>& out, std::string_view id,
   // Built locally and appended once, so out is modified in a single step.
   std::vector<uint8_t> chunk;
   AppendBytes(chunk, id);
-  AppendBigEndian32(chunk, declared_size);
+  base::AppendBigEndian<uint32_t>(chunk, declared_size);
   chunk.insert(chunk.end(), payload.begin(), payload.end());
   if (payload.size() % 2 != 0) {
     chunk.push_back(0);

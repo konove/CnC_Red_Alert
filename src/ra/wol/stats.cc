@@ -662,15 +662,14 @@ void Send_Statistics_Packet() {
           static_cast<char>('1' + static_cast<char>(house));
 
       stats.Add_Field(field_player_infantry_bought,
-                      player->InfantryTotals->NetworkBytes());
-      stats.Add_Field(field_player_units_bought,
-                      player->UnitTotals->NetworkBytes());
+                      player->InfantryTotals->counts());
+      stats.Add_Field(field_player_units_bought, player->UnitTotals->counts());
       stats.Add_Field(field_player_planes_bought,
-                      player->AircraftTotals->NetworkBytes());
+                      player->AircraftTotals->counts());
       stats.Add_Field(field_player_buildings_bought,
-                      player->BuildingTotals->NetworkBytes());
+                      player->BuildingTotals->counts());
       stats.Add_Field(field_player_vessels_bought,
-                      player->VesselTotals->NetworkBytes());
+                      player->VesselTotals->counts());
 
       // The bought counts have been sent, so their tallies are cleared and reused
       // to count what each player has left.
@@ -739,15 +738,14 @@ void Send_Statistics_Packet() {
       field_player_vessels_left[3] =
           static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_infantry_left,
-                      player->InfantryTotals->NetworkBytes());
-      stats.Add_Field(field_player_units_left,
-                      player->UnitTotals->NetworkBytes());
+                      player->InfantryTotals->counts());
+      stats.Add_Field(field_player_units_left, player->UnitTotals->counts());
       stats.Add_Field(field_player_planes_left,
-                      player->AircraftTotals->NetworkBytes());
+                      player->AircraftTotals->counts());
       stats.Add_Field(field_player_buildings_left,
-                      player->BuildingTotals->NetworkBytes());
+                      player->BuildingTotals->counts());
       stats.Add_Field(field_player_vessels_left,
-                      player->VesselTotals->NetworkBytes());
+                      player->VesselTotals->counts());
 
       /*
       ** Number of enemy units/buildings of each type destroyed.
@@ -765,15 +763,15 @@ void Send_Statistics_Packet() {
           static_cast<char>('1' + static_cast<char>(house));
 
       stats.Add_Field(field_player_infantry_killed,
-                      player->DestroyedInfantry->NetworkBytes());
+                      player->DestroyedInfantry->counts());
       stats.Add_Field(field_player_units_killed,
-                      player->DestroyedUnits->NetworkBytes());
+                      player->DestroyedUnits->counts());
       stats.Add_Field(field_player_planes_killed,
-                      player->DestroyedAircraft->NetworkBytes());
+                      player->DestroyedAircraft->counts());
       stats.Add_Field(field_player_buildings_killed,
-                      player->DestroyedBuildings->NetworkBytes());
+                      player->DestroyedBuildings->counts());
       stats.Add_Field(field_player_vessels_killed,
-                      player->DestroyedVessels->NetworkBytes());
+                      player->DestroyedVessels->counts());
 
       /*
       ** Number and type of enemy buildings captured
@@ -781,15 +779,14 @@ void Send_Statistics_Packet() {
       field_player_buildings_captured[3] =
           static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_buildings_captured,
-                      player->CapturedBuildings->NetworkBytes());
+                      player->CapturedBuildings->counts());
 
       /*
       ** Number of crates discovered and their contents
       */
       field_player_crates_found[3] =
           static_cast<char>('1' + static_cast<char>(house));
-      stats.Add_Field(field_player_crates_found,
-                      player->TotalCrates->NetworkBytes());
+      stats.Add_Field(field_player_crates_found, player->TotalCrates->counts());
 
       /*
       ** Amount of tiberium turned into credits

@@ -17425,8 +17425,8 @@
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",
-          "startLine": 59,
-          "endLine": 59,
+          "startLine": 61,
+          "endLine": 61,
           "text": "  [[nodiscard]] std::vector<std::byte> NetworkBytes() const;",
           "before": [
             "  [[nodiscard]] int Count(int type) const;",
@@ -17438,12 +17438,12 @@
             " private:",
             "  // One count per type, indexed by the type's enum value."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/sim/type_tally.cc",
-          "startLine": 46,
-          "endLine": 56,
+          "startLine": 47,
+          "endLine": 57,
           "text": "std::vector<std::byte> TypeTally::NetworkBytes() const {\n  std::vector<std::byte> bytes;\n  bytes.reserve(counts_.size() * sizeof(int32_t));\n  for (const int32_t count : counts_) {\n    const auto value = static_cast<uint32_t>(count);\n    bytes.push_back(static_cast<std::byte>(value >> 24U));\n    bytes.push_back(static_cast<std::byte>(value >> 16U));\n    bytes.push_back(static_cast<std::byte>(value >> 8U));\n    bytes.push_back(static_cast<std::byte>(value));\n  }\n  return bytes;",
           "before": [
             "  return counts_.at(base::ToSize(type));",
@@ -17455,7 +17455,7 @@
             "",
             "}  // namespace game"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/engine/net/packet.h",
@@ -17470,14 +17470,14 @@
           "after": [
             "    Add_Field(FieldClass(field, data));",
             "  }",
-            ""
+            "  // Adds the integers as one chunk of 32-bit big-endian values, the layout in"
           ],
           "lost": false
         },
         {
           "path": "src/base/unaligned.h",
-          "startLine": 34,
-          "endLine": 34,
+          "startLine": 36,
+          "endLine": 36,
           "text": "T ReadLittleEndian(const std::span<const std::byte> data,",
           "before": [
             "//   const auto frame_count = base::ReadLittleEndian<uint16_t>(shape_file, 0);",
@@ -17506,7 +17506,7 @@
             "  out.push_back(static_cast<uint8_t>(value >> 16));",
             "  out.push_back(static_cast<uint8_t>(value >> 8));"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17535,7 +17535,7 @@
           "text": "      // The bought counts have been sent, so their tallies are cleared and reused",
           "before": [
             "      stats.Add_Field(field_player_vessels_bought,",
-            "                      player->VesselTotals->NetworkBytes());",
+            "                      player->VesselTotals->counts());",
             ""
           ],
           "after": [
@@ -17552,7 +17552,7 @@
           "text": "        // The bought counts have been sent, so their tallies are cleared and reused",
           "before": [
             "        stats.Add_Field(field_player_buildings_bought,",
-            "                        player->BuildingTotals->NetworkBytes());",
+            "                        player->BuildingTotals->counts());",
             ""
           ],
           "after": [
@@ -17564,8 +17564,8 @@
         },
         {
           "path": "src/game/sim/type_tally.h",
-          "startLine": 53,
-          "endLine": 53,
+          "startLine": 55,
+          "endLine": 55,
           "text": "  void Clear();",
           "before": [
             "  // (std::out_of_range otherwise).",
@@ -17632,7 +17632,7 @@
             "        */",
             "        base::At(field_player_harvested, 3) ="
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17686,12 +17686,13 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-17T00:08:19Z",
-      "updated": "2026-10-17T00:08:19Z",
+      "updated": "2026-10-17T00:34:22Z",
       "parent": "T-473",
       "source": "40bf225ab..5511b411d",
+      "resolution": "`TypeTally(base::ssize)`; RA's `Init_Trackers()` passes `base::ToSigned(magic_enum::enum_count<...>())`, TD's passes `kAircraftCount` and the other `k*Count` constants instead of casting the enumerators.",
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",

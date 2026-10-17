@@ -24,8 +24,6 @@
 #include "game/sim/type_tally.h"
 
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <vector>
 
 #include "base/numeric.h"
@@ -42,19 +40,6 @@ void TypeTally::Clear() { std::ranges::fill(counts_, 0); }
 
 int TypeTally::Count(const int type) const {
   return counts_.at(base::ToSize(type));
-}
-
-std::vector<std::byte> TypeTally::NetworkBytes() const {
-  std::vector<std::byte> bytes;
-  bytes.reserve(counts_.size() * sizeof(int32_t));
-  for (const int32_t count : counts_) {
-    const auto value = static_cast<uint32_t>(count);
-    bytes.push_back(static_cast<std::byte>(value >> 24U));
-    bytes.push_back(static_cast<std::byte>(value >> 16U));
-    bytes.push_back(static_cast<std::byte>(value >> 8U));
-    bytes.push_back(static_cast<std::byte>(value));
-  }
-  return bytes;
 }
 
 }  // namespace game

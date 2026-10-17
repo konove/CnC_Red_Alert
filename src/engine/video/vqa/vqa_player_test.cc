@@ -4,11 +4,13 @@
 
 #include "engine/video/vqa/vqa_player.h"
 
+#include <cstdint>
 #include <expected>
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/unaligned.h"
 #include "engine/video/vqa/vqa_format.h"
 #include "engine/video/vqa/vqa_test_util.h"
 #include "gtest/gtest.h"
@@ -53,7 +55,7 @@ TEST_F(VqaPlayerTest, ReportsAReadErrorAndClosesAnEmptyFile) {
 
 TEST_F(VqaPlayerTest, RejectsANonIffFile) {
   AppendBytes(fake_.data, "XXXX");
-  AppendBigEndian32(fake_.data, 0x1234);
+  base::AppendBigEndian<uint32_t>(fake_.data, 0x1234);
   AppendBytes(fake_.data, "WVQA");
 
   EXPECT_EQ(Open().error(), VqaError::kNotVqa);
@@ -62,7 +64,7 @@ TEST_F(VqaPlayerTest, RejectsANonIffFile) {
 
 TEST_F(VqaPlayerTest, RejectsAFormOfZeroSize) {
   AppendBytes(fake_.data, "FORM");
-  AppendBigEndian32(fake_.data, 0);
+  base::AppendBigEndian<uint32_t>(fake_.data, 0);
   AppendBytes(fake_.data, "WVQA");
 
   EXPECT_EQ(Open().error(), VqaError::kNotVqa);
@@ -70,7 +72,7 @@ TEST_F(VqaPlayerTest, RejectsAFormOfZeroSize) {
 
 TEST_F(VqaPlayerTest, RejectsAFormThatIsNotWvqa) {
   AppendBytes(fake_.data, "FORM");
-  AppendBigEndian32(fake_.data, 0x1234);
+  base::AppendBigEndian<uint32_t>(fake_.data, 0x1234);
   AppendBytes(fake_.data, "XXXX");
 
   EXPECT_EQ(Open().error(), VqaError::kNotVqa);
@@ -85,7 +87,8 @@ TEST_F(VqaPlayerTest, ReportsAReadErrorWhenTruncatedAfterThePreamble) {
 TEST_F(VqaPlayerTest, RejectsAHeaderChunkOfTheWrongSize) {
   fake_.data = ValidPreamble();
   AppendBytes(fake_.data, "VQHD");
-  AppendBigEndian32(fake_.data, 4);  // Real VQA headers are much larger.
+  base::AppendBigEndian<uint32_t>(fake_.data,
+                                  4);  // Real VQA headers are much larger.
   AppendBytes(fake_.data, "XXXX");
 
   EXPECT_EQ(Open().error(), VqaError::kNotVqa);

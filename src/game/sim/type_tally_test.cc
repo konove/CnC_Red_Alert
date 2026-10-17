@@ -1,6 +1,7 @@
 #include "game/sim/type_tally.h"
 
-#include <cstddef>
+#include <algorithm>
+#include <cstdint>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -22,17 +23,13 @@ TEST(TypeTallyTest, CountsUpAndClears) {
   EXPECT_EQ(tally.Count(2), 0);
 }
 
-// The statistics server reads each count as a 32-bit big-endian integer.
-TEST(TypeTallyTest, NetworkBytesAreBigEndian) {
-  TypeTally tally(2);
-  for (int i = 0; i < 258; ++i) {
-    tally.Increment(1);
-  }
-  EXPECT_EQ(
-      tally.NetworkBytes(),
-      (std::vector<std::byte>{std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
-                              std::byte{0x00}, std::byte{0x00}, std::byte{0x00},
-                              std::byte{0x01}, std::byte{0x02}}));
+TEST(TypeTallyTest, CountsListsEveryTypeInOrder) {
+  TypeTally tally(3);
+  tally.Increment(1);
+  tally.Increment(2);
+  tally.Increment(2);
+  EXPECT_TRUE(
+      std::ranges::equal(tally.counts(), std::vector<int32_t>{0, 1, 2}));
 }
 
 }  // namespace

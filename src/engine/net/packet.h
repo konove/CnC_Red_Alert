@@ -91,6 +91,9 @@ class PacketClass {
   void Add_Field(const char* field, std::span<const std::byte> data) {
     Add_Field(FieldClass(field, data));
   }
+  // Adds the integers as one chunk of 32-bit big-endian values, the layout in
+  // which the statistics server reads an array of counts.
+  void Add_Field(const char* field, std::span<const int32_t> data);
 
   //
   // These functions search for a field of a given name in the list and

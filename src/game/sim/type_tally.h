@@ -25,10 +25,11 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_TYPE_TALLY_H_
 #define CNC_RED_ALERT_GAME_SIM_TYPE_TALLY_H_
 
-#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "base/types.h"
 
 namespace game {
@@ -37,12 +38,12 @@ namespace game {
 // buildings, vessels, crates), indexed by the type's enum value. Each house of
 // an internet game owns a set of them (HouseClass::Init_Trackers()), the game
 // counts into them as things are built and destroyed, and the Westwood Online
-// statistics packet sends each set as an array of 32-bit big-endian counts.
+// statistics packet sends each set's counts().
 //
 // Example:
 //   TypeTally destroyed(unit_type_count);
 //   destroyed.Increment(static_cast<int>(UNIT_HTANK));
-//   packet.Add_Field("UNK1", destroyed.NetworkBytes());
+//   packet.Add_Field("UNK1", destroyed.counts());
 class TypeTally {
  public:
   // Creates `type_count` counters, all zero.
@@ -56,9 +57,11 @@ class TypeTally {
 
   // Returns the count of `type`.
   [[nodiscard]] int Count(int type) const;
-  // Returns every count, in type order, as a 32-bit big-endian integer: the
-  // layout the statistics packet sends.
-  [[nodiscard]] std::vector<std::byte> NetworkBytes() const;
+  // Returns every count, in type order.
+  [[nodiscard]] std::span<const int32_t> counts() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return counts_;
+  }
 
  private:
   // One count per type, indexed by the type's enum value.

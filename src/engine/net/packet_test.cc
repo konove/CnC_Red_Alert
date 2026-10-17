@@ -80,6 +80,26 @@ TEST(PacketClassTest, LongFieldIsFourBigEndianBytes) {
   EXPECT_EQ(base::CompareBytes(bytes, base::ObjectBytes(kExpected), size), 0);
 }
 
+// The statistics server reads an array of counts as 32-bit big-endian values
+// in one chunk field.
+TEST(PacketClassTest, IntegerArrayFieldIsABigEndianChunk) {
+  PacketClass packet(0x0102);
+  constexpr std::array<int32_t, 2> kCounts = {0, 258};
+  packet.Add_Field("UNB1", std::span<const int32_t>(kCounts));
+
+  int size = 0;
+  const std::vector<char> wire = Serialize(packet, size);
+
+  constexpr std::array<unsigned char, 20> kExpected = {
+      0x00, 0x14, 0x01, 0x02,                                 // packet size, id
+      'U',  'N',  'B',  '1',  0x00, TYPE_CHUNK, 0x00,         // field id, type
+      0x08,                                                   // field size
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       0x01, 0x02};  // counts
+  ASSERT_EQ(size, static_cast<int>(kExpected.size()));
+  const auto bytes = std::as_bytes(std::span(wire));
+  EXPECT_EQ(base::CompareBytes(bytes, base::ObjectBytes(kExpected), size), 0);
+}
+
 TEST(PacketClassTest, RejectsCharacterFieldWithoutAValue) {
   constexpr std::array<unsigned char, 12> wire = {
       0, 12, 0, 1, 'C', 'H', 'A', 'R', 0, TYPE_CHAR, 0, 0};

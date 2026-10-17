@@ -1,8 +1,10 @@
 #include "base/unaligned.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/aligned_buffer.h"
 #include "base/buffer.h"
@@ -38,6 +40,21 @@ TEST(UnalignedTest, ReadLittleEndianIgnoresHostOrderAndBounds) {
   EXPECT_EQ(base::ReadLittleEndian<uint32_t>(bytes, 2), 0U);
   EXPECT_EQ(base::ReadLittleEndian<uint8_t>(bytes, 5), 0);
   EXPECT_EQ(base::ReadLittleEndian<uint8_t>(bytes, -1), 0);
+}
+
+TEST(UnalignedTest, AppendBigEndianWritesMostSignificantByteFirst) {
+  std::vector<std::byte> bytes = {std::byte{0xa5}};
+  base::AppendBigEndian(bytes, int32_t{258});
+  base::AppendBigEndian(bytes, int16_t{-2});
+  base::AppendBigEndian(bytes, uint8_t{7});
+  EXPECT_EQ(bytes, (std::vector<std::byte>{std::byte{0xa5}, std::byte{0x00},
+                                           std::byte{0x00}, std::byte{0x01},
+                                           std::byte{0x02}, std::byte{0xff},
+                                           std::byte{0xfe}, std::byte{0x07}}));
+
+  std::vector<uint8_t> octets;
+  base::AppendBigEndian<uint32_t>(octets, 0x12345678);
+  EXPECT_EQ(octets, (std::vector<uint8_t>{0x12, 0x34, 0x56, 0x78}));
 }
 }  // namespace
 

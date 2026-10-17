@@ -65,6 +65,16 @@ void PacketClass::Add_Field(FieldClass field) {
   Fields.push_back(std::move(field));
 }
 
+void PacketClass::Add_Field(const char* field,
+                            const std::span<const int32_t> data) {
+  std::vector<std::byte> bytes;
+  bytes.reserve(data.size() * sizeof(int32_t));
+  for (const int32_t value : data) {
+    base::AppendBigEndian(bytes, value);
+  }
+  Add_Field(field, std::span<const std::byte>(bytes));
+}
+
 /**************************************************************************
  * PACKETCLASS::PACKETCLASS -- Creates a Packet object from a COMMS packe *
  *                                                                        *

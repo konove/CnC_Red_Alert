@@ -1,5 +1,6 @@
 // Copy trivially copyable values to and from byte buffers without alignment
-// requirements, and read the little-endian integers of the game's file formats.
+// requirements, read the little-endian integers of the game's file formats and
+// append the big-endian integers of the network and movie formats.
 #ifndef CNC_RED_ALERT_BASE_UNALIGNED_H_
 #define CNC_RED_ALERT_BASE_UNALIGNED_H_
 
@@ -8,6 +9,7 @@
 #include <cstddef>
 #include <span>
 #include <type_traits>
+#include <vector>
 
 #include "base/buffer.h"
 
@@ -50,6 +52,27 @@ template <typename T>
   requires std::is_trivially_copyable_v<T>
 void WriteUnaligned(std::span<std::byte> destination, const T& value) {
   base::CopyBytes(destination, base::ObjectBytes(value), sizeof(value));
+}
+
+// Appends `value` to `out` as sizeof(T) bytes, most significant first. Like
+// ReadLittleEndian, the result does not depend on the host's byte order. `out`
+// holds bytes of any one-byte type (std::byte, uint8_t).
+//
+// Example:
+//   base::AppendBigEndian(bytes, int32_t{258});  // 00 00 01 02
+template <std::integral T, typename Byte>
+  requires(!std::same_as<T, bool> && sizeof(Byte) == 1)
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
+void AppendBigEndian(std::vector<Byte>& out, const T value) {
+  auto bits = static_cast<std::make_unsigned_t<T>>(value);
+  if constexpr (std::endian::native == std::endian::little) {
+    bits = std::byteswap(bits);
+  }
+  for (const std::byte byte : base::ObjectBytes(bits)) {
+    out.push_back(static_cast<Byte>(byte));
+  }
 }
 
 }  // namespace base
