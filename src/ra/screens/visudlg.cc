@@ -328,7 +328,7 @@ void VisualControlsClass::Process() {
           }
         } else {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
 
           curbutton--;
           if (curbutton < kButtonReset - kButtonBase) {
@@ -336,7 +336,7 @@ void VisualControlsClass::Process() {
           }
 
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         break;
 
@@ -364,7 +364,7 @@ void VisualControlsClass::Process() {
           }
         } else {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
 
           curbutton++;
           if (curbutton > kButtonOptions - kButtonBase) {
@@ -372,7 +372,7 @@ void VisualControlsClass::Process() {
           }
 
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         break;
 
@@ -381,7 +381,7 @@ void VisualControlsClass::Process() {
           partial = true;
         } else {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
 
         curbutton--;
@@ -397,7 +397,7 @@ void VisualControlsClass::Process() {
           partial = true;
         } else {
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         break;
 
@@ -406,7 +406,7 @@ void VisualControlsClass::Process() {
           partial = true;
         } else {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
 
         curbutton++;
@@ -418,7 +418,7 @@ void VisualControlsClass::Process() {
           partial = true;
         } else {
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         break;
 

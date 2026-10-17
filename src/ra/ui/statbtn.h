@@ -55,7 +55,7 @@ class StaticButtonClass final : public game::GadgetClass {
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, FontType font,
                     TextPrintType style, int x, int y, int w = -1, int h = -1);
-  bool Draw_Me(PixelView& view, bool forced = false) override;
+  bool Draw(PixelView& view, bool forced = false) override;
   void Set_Text(const char* text);
 
  protected:

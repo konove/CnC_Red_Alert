@@ -52,7 +52,7 @@ class DirectionDial : public game::ControlClass {
 
   // Draws the dial and its hand if a redraw is pending or `forced` is true.
   // Returns true if it drew.
-  bool Draw_Me(PixelView& view, bool forced = false) override;
+  bool Draw(PixelView& view, bool forced = false) override;
 
  protected:
   // Turns the dial to follow the mouse while the left button is held after a

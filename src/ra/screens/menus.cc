@@ -794,7 +794,7 @@ int Main_Menu(int32_t /*unused*/) {
 
       case KN_UP:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton--;
         switch (curbutton) {
           case -1:
@@ -818,12 +818,12 @@ int Main_Menu(int32_t /*unused*/) {
             break;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton++;
         if (curbutton == max_buttons) {
           if (bExpansionCS) {
@@ -837,12 +837,12 @@ int Main_Menu(int32_t /*unused*/) {
           curbutton = 2;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(view, true);
+        base::At(buttons, curbutton)->Draw(view, true);
         retval = curbutton;
         process = false;
         break;

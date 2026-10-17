@@ -272,7 +272,7 @@ bool LoadOptionsClass::Process() {
   commands.Add(listbtn);
   if (Style == SAVE) {
     commands.Add(editbtn);
-    editbtn.Set_Focus();
+    editbtn.SetFocus();
   }
 
   /*
@@ -335,8 +335,8 @@ bool LoadOptionsClass::Process() {
     */
     if (firsttime && Style == SAVE) {
       firsttime = false;
-      editbtn.Set_Focus();
-      editbtn.Flag_To_Redraw();
+      editbtn.SetFocus();
+      editbtn.FlagToRedraw();
     }
 
     /*
@@ -508,7 +508,7 @@ bool LoadOptionsClass::Process() {
               //= false;
               toggle->Turn_Off();
               toggle->IsPressed = false;
-              toggle->Flag_To_Redraw();
+              toggle->FlagToRedraw();
             }
           }
         }

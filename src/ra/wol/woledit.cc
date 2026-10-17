@@ -46,7 +46,7 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
   //	string is at MaxLength.
 
   const TextPrintType flags =
-      Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
+      HasFocus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
   const TextPrinter printer(
       view, {Color, game::kTransparentBlack, TextFont, TextFlags | flags});
@@ -54,7 +54,7 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 
   const FontStyle font = TextFontStyle(TextFont, TextFlags | flags);
   const int text_width = StringPixelWidth(font, text);
-  if (Has_Focus() &&  //	strlen(text) < MaxLength &&
+  if (HasFocus() &&  //	strlen(text) < MaxLength &&
       text_width + StringPixelWidth(font, "_") < Width - 2) {
     printer.PrintClipped("_", {X + 1 + text_width, Y + 1}, -1);
   }
@@ -90,8 +90,8 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   //
   if ((flags & kLeftPress)) {
     flags &= ~kLeftPress;
-    Set_Focus();
-    Flag_To_Redraw();  // force to draw cursor
+    SetFocus();
+    FlagToRedraw();  // force to draw cursor
   }
 
   //
@@ -99,13 +99,13 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   // but if the 	RETURN key is pressed, then the button ID number is
   // returned from the Input() 	function.
   //
-  if ((flags & kKeyboard) && Has_Focus()) {
+  if ((flags & kKeyboard) && HasFocus()) {
     //
     //	Process the keyboard character. If indicated, consume this keyboard
     // event 	so that the edit gadget ID number is not returned.
     //
     if (key == KN_ESC) {
-      Clear_Focus();
+      ClearFocus();
       flags = 0;
 
     } else {
@@ -135,7 +135,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     //		if( key == ( KN_ESC | kKeyReleaseBit ) && ( key & kKeyAltBit )
     //)
     //		{
-    // Clear_Focus();
+    // ClearFocus();
     flags = 0;
     key = KN_NONE;
     //		}

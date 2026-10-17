@@ -285,7 +285,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         PlayerCountStatic.Set_Text(
             base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax)
                 .c_str());
-        PlayerCountStatic.Draw_Me(view);
+        PlayerCountStatic.Draw(view);
         break;
 
       case engine::window::ButtonKey(kCheckTournament):
@@ -297,7 +297,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           PlayerCountStatic.Set_Text(
               base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax)
                   .c_str());
-          PlayerCountStatic.Draw_Me(view);
+          PlayerCountStatic.Draw(view);
         }
         //				else
         //					PlayerCountGauge.Enable();

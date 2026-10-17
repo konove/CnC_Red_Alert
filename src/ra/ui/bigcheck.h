@@ -49,7 +49,7 @@ class BigCheckBoxClass : public game::ToggleClass {
     IsToggleType = true;
   }
 
-  bool Draw_Me(PixelView& view, bool forced = false) override;
+  bool Draw(PixelView& view, bool forced = false) override;
 
   bool Toggle() {
     if (IsOn) {

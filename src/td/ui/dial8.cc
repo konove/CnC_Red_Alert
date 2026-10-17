@@ -36,7 +36,7 @@
  * Functions:                                                              *
  *   Dial8Class::Action -- action routine for Dial8Class                   *
  *   Dial8Class::Dial8Class -- constructor for the facing dial             *
- *   Dial8Class::Draw_Me -- render routine for Dial8Class                  *
+ *   Dial8Class::Draw -- render routine for Dial8Class                  *
  *   Dial8Class::Get_Direction -- retrieves direction (0-255) of dial      *
  *   Dial8Class::Set_Direction -- sets current direction (0-255) of dial   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -170,7 +170,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	We might end up clearing the event bits. Make sure that the sticky
   **	process is properly updated anyway.
   */
-  Sticky_Process(flags);
+  UpdateMouseCapture(flags);
 
   if (flags & kLeftPress) {
     is_sel = 1;
@@ -180,7 +180,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	If left mouse is clicked or held, and the dial has changed its
   *direction, *	invoke the parent Action routine: *	GadgetClass::Action
   *handles Sticky processing, & sets IsToRepaint if any *	  flag bits are
-  *set. *	ControlClass::Action handles Peer_To_Peer notification, and
+  *set. *	ControlClass::Action handles OnPeerAction notification, and
   *substitues *	  'key' with the button ID if any flags are set, or 0 if no
   *flags are set
   */
@@ -223,7 +223,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
 }
 
 /***************************************************************************
- * Dial8Class::Draw_Me -- custom render routine for Dial8Class             *
+ * Dial8Class::Draw -- custom render routine for Dial8Class             *
  *                                                                         *
  * INPUT:                                                                  *
  *      forced      true = draw regardless of the current redraw flag state*
@@ -237,11 +237,11 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
+bool Dial8Class::Draw(PixelView& view, bool forced) {
   /*
   **	Redraw if parent indicates a redraw is needed
   */
-  if (game::ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw(view, forced)) {
     /*
     **	Hide the mouse.
     */
@@ -320,7 +320,7 @@ void Dial8Class::Set_Direction(game::Direction dir) {
   Direction = dir;
   Facing = game::NearestFacing(Direction);
   OldFacing = Facing;
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 }  // namespace td

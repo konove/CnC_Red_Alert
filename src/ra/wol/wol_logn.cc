@@ -209,7 +209,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   commands.Add(PassEdit);
   commands.Add(SaveCheckBox);
   commands.Add(DeleteBtn);
-  NameEdit.Set_Focus();
+  NameEdit.SetFocus();
 
   if (NickList.Count() == 0) {
     DeleteBtn.Disable();
@@ -286,8 +286,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     */
     if (firsttime) {
       firsttime = false;
-      NameEdit.Set_Focus();
-      NameEdit.Flag_To_Redraw();
+      NameEdit.SetFocus();
+      NameEdit.FlagToRedraw();
     }
 
     //		/*
@@ -316,13 +316,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     //			debugprint( "input: %i\n", input );
 
     if (TheGameState().tab_key_pressed()) {
-      if (NameEdit.Has_Focus()) {
-        PassEdit.Set_Focus();
+      if (NameEdit.HasFocus()) {
+        PassEdit.SetFocus();
       } else {
-        NameEdit.Set_Focus();
+        NameEdit.SetFocus();
       }
-      NameEdit.Flag_To_Redraw();
-      PassEdit.Flag_To_Redraw();
+      NameEdit.FlagToRedraw();
+      PassEdit.FlagToRedraw();
     }
 
     switch (static_cast<int>(input)) {
@@ -342,7 +342,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         if (std::string_view(szNameBuffer).empty()) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
-          NameEdit.Set_Focus();
+          NameEdit.SetFocus();
           game::TheKeyboard().Clear();
           display = true;
           break;
@@ -350,7 +350,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         if (std::string_view(szPassBuffer).empty()) {
           WWMessageBox().Process(TXT_WOL_MISSINGPASSWORD);
           firsttime = true;  //	Bloody hack.
-          PassEdit.Set_Focus();
+          PassEdit.SetFocus();
           game::TheKeyboard().Clear();
           display = true;
           break;
@@ -365,7 +365,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               bBreak = true;
               WWMessageBox().Process(TXT_WOL_CANTCONNECT);
               firsttime = true;  //	Bloody hack.
-              NameEdit.Set_Focus();
+              NameEdit.SetFocus();
               game::TheKeyboard().Clear();
               display = true;
               break;
@@ -373,14 +373,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               bBreak = true;
               WWMessageBox().Process(TXT_WOL_LOGINCANCEL);
               firsttime = true;  //	Bloody hack.
-              NameEdit.Set_Focus();
+              NameEdit.SetFocus();
               game::TheKeyboard().Clear();
               display = true;
               break;
             case PATCHAVOIDED:
               bBreak = true;
               firsttime = true;  //	Bloody hack.
-              NameEdit.Set_Focus();
+              NameEdit.SetFocus();
               game::TheKeyboard().Clear();
               display = true;
               break;
@@ -430,7 +430,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               break;
           }
           firsttime = true;  //	Bloody hack.
-          NameEdit.Set_Focus();
+          NameEdit.SetFocus();
           game::TheKeyboard().Clear();
           display = true;
         }
@@ -442,8 +442,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                        NickList.Get_Item(NickList.Current_Index()));
         base::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
                                          NickList.Current_Index()));
-        NameEdit.Flag_To_Redraw();
-        PassEdit.Flag_To_Redraw();
+        NameEdit.FlagToRedraw();
+        PassEdit.FlagToRedraw();
         //	Because the password is mangled, if the user begins to edit it
         // now, we clear it. 	Otherwise we could get a half-mangled,
         // half-unmangled password field. 	PassEdit.bClearOnNextSetFocus
@@ -460,10 +460,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         if (NickList.Count() > 0) {
           DeleteNick(pWO, NickList.Current_Index() + 1);
           NickList.Remove_Item(NickList.Current_Index());
-          NickList.Flag_To_Redraw();
+          NickList.FlagToRedraw();
           if (NickList.Count() == 0) {
             DeleteBtn.Disable();
-            DeleteBtn.Flag_To_Redraw();
+            DeleteBtn.FlagToRedraw();
           }
         }
         break;

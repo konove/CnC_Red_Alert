@@ -924,7 +924,7 @@ int Main_Menu(int timeout) {
 
       case KN_UP:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton--;
 #ifdef NEWMENU
         if (expansions) {
@@ -942,12 +942,12 @@ int Main_Menu(int timeout) {
         }
 #endif
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton++;
 #ifdef NEWMENU
         if (curbutton > 6) {
@@ -963,12 +963,12 @@ int Main_Menu(int timeout) {
         }
 #endif
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(view, true);
+        base::At(buttons, curbutton)->Draw(view, true);
         retval = curbutton;
         process = false;
         break;

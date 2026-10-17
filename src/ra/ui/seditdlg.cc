@@ -205,7 +205,7 @@ const char* SimpleEditDlgClass::Show() {
   if (!szPrompt2.empty()) {
     commands.Add(EditBox2);
   }
-  EditBox.Set_Focus();
+  EditBox.SetFocus();
 
   /*
   **	Main Processing Loop.
@@ -262,8 +262,8 @@ const char* SimpleEditDlgClass::Show() {
     */
     if (firsttime) {
       firsttime = false;
-      EditBox.Set_Focus();
-      EditBox.Flag_To_Redraw();
+      EditBox.SetFocus();
+      EditBox.FlagToRedraw();
     }
 
     //	My hack for triggering escape and return on key up instead of down...
@@ -293,19 +293,19 @@ const char* SimpleEditDlgClass::Show() {
       EditBox.Disable();
       //	These do not actually draw. I am actually clearing the "draw"
       // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
-      // there is no Flag_To_Redraw( false ).
-      EditBox.GadgetClass::Draw_Me(view, true);
+      // there is no FlagToRedraw(false).
+      EditBox.GadgetClass::Draw(view, true);
       if (!szPrompt2.empty()) {
         EditBox2.Disable();
-        EditBox2.GadgetClass::Draw_Me(view, true);
+        EditBox2.GadgetClass::Draw(view, true);
       }
       OkBtn.Disable();
-      OkBtn.GadgetClass::Draw_Me(view, true);
+      OkBtn.GadgetClass::Draw(view, true);
       CancelBtn.Disable();
-      CancelBtn.GadgetClass::Draw_Me(view, true);
+      CancelBtn.GadgetClass::Draw(view, true);
       if (szMiddleButton) {
         MiddleBtn.Disable();
-        MiddleBtn.GadgetClass::Draw_Me(view, true);
+        MiddleBtn.GadgetClass::Draw(view, true);
       }
     }
 

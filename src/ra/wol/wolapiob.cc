@@ -1307,7 +1307,7 @@ bool WolapiObject::bItemMarkedAccepted(int iIndex) {
 
 //***********************************************************************************************
 bool WolapiObject::MarkItemAccepted(int iIndex, bool bAccept) {
-  pILPlayers->Flag_To_Redraw();
+  pILPlayers->FlagToRedraw();
   if (bAccept) {
     return pILPlayers->Set_Icon(
         static_cast<unsigned int>(iIndex), 0,
@@ -1336,7 +1336,7 @@ bool WolapiObject::bItemMarkedReadyToGo(int iIndex) {
 void WolapiObject::MarkItemReadyToGo(int iIndex, const char* szReadyState) {
   //	Set szReadyState to "ready", "need scenario", or NULL.
   //	First two cases are regarded as player being ready to go.
-  pILPlayers->Flag_To_Redraw();
+  pILPlayers->FlagToRedraw();
   pILPlayers->Set_Item_ExtraDataString(iIndex, szReadyState);
 }
 
@@ -1960,7 +1960,7 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
           // );
 
           bFound = true;
-          pILUsersOrPlayers->Flag_To_Redraw();
+          pILUsersOrPlayers->FlagToRedraw();
         } else {
           PrintMessage(TXT_WOL_CANTSQUELCHSELF, WOLCOLORREMAP_LOCALMACHINEMESS);
         }

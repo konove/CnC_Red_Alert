@@ -972,7 +972,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //	Refresh display if needed
     //.....................................................................
 
-    if (bRetractHouseDropDown)  //|| pCheckListOptions->Is_To_Redraw() )
+    if (bRetractHouseDropDown)  //|| pCheckListOptions->IsToRedraw() )
     {
       bRetractHouseDropDown = false;
       if (pDropListHouse->IsDropped) {
@@ -980,9 +980,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         display = std::max(display, REDRAW_BACKGROUND);
       }
     }
-    //		if( pILDisc->Is_To_Redraw() )
+    //		if( pILDisc->IsToRedraw() )
     //		{
-    //			pDropListHouse->Flag_To_Redraw();
+    //			pDropListHouse->FlagToRedraw();
     //		}
 
     if (display != REDRAW_NONE) {
@@ -991,7 +991,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       /*
       ** Collapse the country list if we are going to redraw the game list
       */
-      //			if (pILScens->Is_To_Redraw() &&
+      //			if (pILScens->IsToRedraw() &&
       // pDropListHouse->IsDropped) {
       // pDropListHouse->Collapse(); 				if (display <
       // REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
@@ -1217,11 +1217,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             view, {scheme, game::kTransparentBlack, FontType::kType, TPF_NONE})
             .PrintClipped(szScenarioNameDisplay, {d_gamekind_x, d_gamekind_y},
                           d_gamekind_w);
-        //				pStaticDescrip->Draw_Me();
+        //				pStaticDescrip->Draw();
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         pStaticUnit->Set_Text(txt);
-        pStaticUnit->Draw_Me(view);
+        pStaticUnit->Draw(view);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
@@ -1229,15 +1229,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         pStaticLevel->Set_Text(txt);
-        pStaticLevel->Draw_Me(view);
+        pStaticLevel->Draw(view);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         pStaticCredits->Set_Text(txt);
-        pStaticCredits->Draw_Me(view);
+        pStaticCredits->Draw(view);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         pStaticAIPlayers->Set_Text(txt);
-        pStaticAIPlayers->Draw_Me(view);
+        pStaticAIPlayers->Draw(view);
       }
 
       game::TheMouse().Show();
@@ -1265,8 +1265,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     input = input_event.key;
 
     if (bHackFocus) {
-      pEditSend->Set_Focus();
-      pEditSend->Flag_To_Redraw();
+      pEditSend->SetFocus();
+      pEditSend->FlagToRedraw();
       input_event = commands.Input(view);
       input = input_event.key;
       bHackFocus = false;
@@ -1296,10 +1296,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     // A left release no gadget took.
     if (input_event.IsRelease(engine::window::MouseButton::kLeft)) {
       //	Redraw the tabs in case they were what were pressed down on.
-      pShpBtnScenarioRA->Flag_To_Redraw();
-      pShpBtnScenarioCS->Flag_To_Redraw();
-      pShpBtnScenarioAM->Flag_To_Redraw();
-      pShpBtnScenarioUser->Flag_To_Redraw();
+      pShpBtnScenarioRA->FlagToRedraw();
+      pShpBtnScenarioCS->FlagToRedraw();
+      pShpBtnScenarioAM->FlagToRedraw();
+      pShpBtnScenarioUser->FlagToRedraw();
     }
 
     //.....................................................................
@@ -1451,9 +1451,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, false);
         //	Clear pEditSend, reset focus.
         base::At(szSendBuffer, 0) = 0;
-        pEditSend->Set_Focus();
+        pEditSend->SetFocus();
         //	Mark for redraw.
-        pEditSend->Flag_To_Redraw();
+        pEditSend->FlagToRedraw();
         break;
 
       case engine::window::ButtonKey(kButtonAction):
@@ -1461,9 +1461,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, true);
         //	Clear pEditSend, reset focus.
         base::At(szSendBuffer, 0) = 0;
-        pEditSend->Set_Focus();
+        pEditSend->SetFocus();
         //	Mark for redraw.
-        pEditSend->Flag_To_Redraw();
+        pEditSend->FlagToRedraw();
         break;
 
       //..................................................................
@@ -1479,7 +1479,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                     1)) {  //	Hack to deal with ListClass "highlighting
                            // nothing" problem.
               //	SelectType was 0 before call.
-              pILScens->Flag_To_Redraw();
+              pILScens->FlagToRedraw();
             }
             //						pStaticDescrip->Set_Text(
             // pILScens->Get_Item( pILScens->Current_Index() ), false );
@@ -1940,11 +1940,11 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   }
 
   //	display = REDRAW_ALL;
-  pILScens->Flag_To_Redraw();
-  pShpBtnScenarioRA->Flag_To_Redraw();
-  pShpBtnScenarioCS->Flag_To_Redraw();
-  pShpBtnScenarioAM->Flag_To_Redraw();
-  pShpBtnScenarioUser->Flag_To_Redraw();
+  pILScens->FlagToRedraw();
+  pShpBtnScenarioRA->FlagToRedraw();
+  pShpBtnScenarioCS->FlagToRedraw();
+  pShpBtnScenarioAM->FlagToRedraw();
+  pShpBtnScenarioUser->FlagToRedraw();
 }
 
 //***********************************************************************************************
@@ -1998,7 +1998,7 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
   pILPlayers->Set_Item_Color(
       iItem, &ThePalettes().color_remaps().at(
                  Color == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE : Color));
-  pILPlayers->Flag_To_Redraw();
+  pILPlayers->FlagToRedraw();
 }
 
 //***********************************************************************************************
@@ -2034,7 +2034,7 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
   pWO->WritePlayerListItem(szItem, szName, House);
   //	debugprint ( "%i, %s\n", iItem, szItem );
   pILPlayers->Set_Item(static_cast<unsigned int>(iItem), szItem);
-  pILPlayers->Flag_To_Redraw();
+  pILPlayers->FlagToRedraw();
 }
 
 //***********************************************************************************************
@@ -3232,11 +3232,11 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
       ResetReadyToGo();
       display = REDRAW_ALL;
     } else {
-      pTextBtnAcceptStart->Flag_To_Redraw();
+      pTextBtnAcceptStart->FlagToRedraw();
     }
   } else {
     pTextBtnAcceptStart->Enable();
-    pTextBtnAcceptStart->Flag_To_Redraw();
+    pTextBtnAcceptStart->FlagToRedraw();
   }
 }
 

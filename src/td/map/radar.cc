@@ -513,7 +513,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
     }
 
     // HidPage.Unlock();
-    //		Map.Activator.Draw_Me(true);
+    //		Map.Activator.Draw(true);
   }
 }
 

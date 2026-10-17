@@ -48,7 +48,7 @@ void GadgetList::Remove(GadgetClass& gadget) {
   if (gadget.list_ != this) {
     return;
   }
-  gadget.Clear_Focus();
+  gadget.ClearFocus();
   if (GadgetClass::StuckOn == &gadget) {
     GadgetClass::StuckOn = nullptr;
   }
@@ -91,7 +91,7 @@ engine::window::InputEvent GadgetList::Input(PixelView& view) {
 
 void GadgetList::DrawAll(PixelView& view, bool forced) {
   for (base::ssize i = 0; i < std::ssize(gadgets_); ++i) {
-    base::At(gadgets_, i)->Draw_Me(view, forced);
+    base::At(gadgets_, i)->Draw(view, forced);
   }
 }
 
@@ -111,8 +111,7 @@ ControlClass* GadgetList::Extract(unsigned id) const {
     return nullptr;
   }
   const auto found = std::ranges::find_if(
-      gadgets_,
-      [id](const GadgetClass* gadget) { return gadget->Get_ID() == id; });
+      gadgets_, [id](const GadgetClass* gadget) { return gadget->id() == id; });
   return found == gadgets_.end() ? nullptr
                                  : dynamic_cast<ControlClass*>(*found);
 }

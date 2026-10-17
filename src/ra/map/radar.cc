@@ -432,9 +432,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
   if (IsRadarActivating || IsRadarDeactivating || IsRadarJammed) {
     Radar_Anim(view);
-    MouseClass::Repair.Draw_Me(view, true);
-    MouseClass::Upgrade.Draw_Me(view, true);
-    MouseClass::Zoom.Draw_Me(view, true);
+    MouseClass::Repair.Draw(view, true);
+    MouseClass::Upgrade.Draw(view, true);
+    MouseClass::Zoom.Draw(view, true);
     IsRadarToRedraw = false;
     return;
   }
@@ -538,9 +538,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         FullRedraw = false;
         IsRadarToRedraw = false;
 
-        MouseClass::Repair.Draw_Me(view, true);
-        MouseClass::Upgrade.Draw_Me(view, true);
-        MouseClass::Zoom.Draw_Me(view, true);
+        MouseClass::Repair.Draw(view, true);
+        MouseClass::Upgrade.Draw(view, true);
+        MouseClass::Zoom.Draw(view, true);
 
         if (TheScreen().IsVisible(&view)) {
           game::TheMouse().Hide();
@@ -575,9 +575,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
                    {RadX + (RadWidth / 2), RadY + RadHeight - 20});
       }
 
-      MouseClass::Repair.Draw_Me(view, true);
-      MouseClass::Upgrade.Draw_Me(view, true);
-      MouseClass::Zoom.Draw_Me(view, true);
+      MouseClass::Repair.Draw(view, true);
+      MouseClass::Upgrade.Draw(view, true);
+      MouseClass::Zoom.Draw(view, true);
     }
   }
 }
@@ -2165,9 +2165,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
                 ShapeFlags::kNone);
   int y = RadY + RadOffY + 4;
 
-  MouseClass::Repair.Draw_Me(view, true);
-  MouseClass::Upgrade.Draw_Me(view, true);
-  MouseClass::Zoom.Draw_Me(view, true);
+  MouseClass::Repair.Draw(view, true);
+  MouseClass::Upgrade.Draw(view, true);
+  MouseClass::Zoom.Draw(view, true);
 
   const TextPrinter label(
       view, {&ThePalettes().color_remaps().at(PCOLOR_GREY),
@@ -2325,9 +2325,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
     y += 12 + 1;
   }
 
-  MouseClass::Repair.Draw_Me(view, true);
-  MouseClass::Upgrade.Draw_Me(view, true);
-  MouseClass::Zoom.Draw_Me(view, true);
+  MouseClass::Repair.Draw(view, true);
+  MouseClass::Upgrade.Draw(view, true);
+  MouseClass::Zoom.Draw(view, true);
 }
 
 void RadarClass::Activate_Pulse() {

@@ -687,7 +687,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
  *=============================================================================================*/
 void MessageListClass::Set_Edit_Focus() {
   if (IsEdit) {
-    EditLabel->Set_Focus();
+    EditLabel->SetFocus();
   }
 }
 
@@ -707,7 +707,7 @@ void MessageListClass::Set_Edit_Focus() {
  *=============================================================================================*/
 bool MessageListClass::Has_Edit_Focus() {
   if (IsEdit) {
-    return EditLabel->Has_Focus();
+    return EditLabel->HasFocus();
   }
   return false;
 }
@@ -738,7 +738,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color, FontType font,
   //	Do nothing if we're already in "edit" mode
   //------------------------------------------------------------------------
   if (IsEdit) {
-    EditLabel->Set_Focus();
+    EditLabel->SetFocus();
     return nullptr;
   }
 
@@ -784,7 +784,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color, FontType font,
 
   if (EditLabel) {
     IsEdit = true;
-    EditLabel->Set_Focus();
+    EditLabel->SetFocus();
   } else {
     IsEdit = false;
   }
@@ -1029,7 +1029,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
           retcode = 2;
         }
         input = KN_NONE;
-        EditLabel->Set_Focus();
+        EditLabel->SetFocus();
         break;
 
       //..................................................................
@@ -1038,7 +1038,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       // next character, after the "To:" prefix.
       //..................................................................
       default:
-        EditLabel->Set_Focus();
+        EditLabel->SetFocus();
         bool overflowed = false;
         if (ascii >= ' ') {
           if (EditCurPos - EditInitPos < MaxChars - 1) {
@@ -1112,10 +1112,10 @@ void MessageListClass::Draw(PixelView& view) {
     if (TheScreen().IsVisible(&view)) {
       game::TheMouse().Hide();
     }
-    EditLabel->Draw_Me(view, true);
+    EditLabel->Draw(view, true);
 
     if (CursorChar && EditCurPos - EditInitPos < MaxChars - 1 &&
-        EditLabel->Has_Focus()) {
+        EditLabel->HasFocus()) {
       txt[0] = CursorChar;
       TextPrinter(view, {EditLabel->Color, game::kTransparentBlack,
                          EditLabel->TextFont, EditLabel->Style})

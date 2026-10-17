@@ -67,8 +67,8 @@ class TextLabelClass : public GadgetClass {
         Color(color) {}
   // NOLINTEND(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
 
-  bool Draw_Me(PixelView& view, bool forced = false) override {
-    if (!GadgetClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced = false) override {
+    if (!GadgetClass::Draw(view, forced)) {
       return false;
     }
     if (PixWidth == -1) {

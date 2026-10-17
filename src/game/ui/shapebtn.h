@@ -64,8 +64,8 @@ class ShapeButtonClass final : public ToggleClass {
     Set_Shape(shapes);
   }
 
-  bool Draw_Me(PixelView& view, bool forced = false) override {
-    if (!ControlClass::Draw_Me(view, forced) || ShapeData.empty()) {
+  bool Draw(PixelView& view, bool forced = false) override {
+    if (!ControlClass::Draw(view, forced) || ShapeData.empty()) {
       return false;
     }
     int shapenum = 0;

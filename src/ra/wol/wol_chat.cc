@@ -532,8 +532,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //	Rank buttons aren't there and should be.
         commands.AddAfter(RankRABtn, JoinBtn);
         commands.AddAfter(RankAMBtn, RankRABtn);
-        RankRABtn.Flag_To_Redraw();
-        RankAMBtn.Flag_To_Redraw();
+        RankRABtn.FlagToRedraw();
+        RankAMBtn.FlagToRedraw();
         if (pWO->bShowRankRA) {
           RankRABtn.DRAWTOGDOWN;
           RankAMBtn.DRAWTOGUP;
@@ -689,8 +689,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	ajw - Perhaps I could try doing this every cycle regardless - would
     // avoid stupid non-focused editbox key reactions bug.
     if (bHackFocus) {
-      sendedit.Set_Focus();
-      sendedit.Flag_To_Redraw();
+      sendedit.SetFocus();
+      sendedit.FlagToRedraw();
       input = commands.Input(view).key;
       bHackFocus = false;
     }
@@ -734,16 +734,16 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pWO->SendMessage(sendedit.Get_Text(), userlist, false);
           //	Clear sendedit, reset focus.
           szSendBuffer[0] = 0;
-          sendedit.Set_Focus();
+          sendedit.SetFocus();
           //	Mark for redraw.
-          sendedit.Flag_To_Redraw();
+          sendedit.FlagToRedraw();
         } else {
           WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
                            WOLCOLORREMAP_LOCALMACHINEMESS);
           PlaySoundEffect(WOLSOUND_ERROR);
-          sendedit.Set_Focus();
+          sendedit.SetFocus();
           //	Mark for redraw.
-          sendedit.Flag_To_Redraw();
+          sendedit.FlagToRedraw();
         }
         break;
 
@@ -756,11 +756,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(chanlist, ExpandChanBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.Set_Position(ExpandUserBtn.X,
-                                     chanlist.Y + chanlist.Height);
+          ExpandUserBtn.SetPosition(ExpandUserBtn.X,
+                                    chanlist.Y + chanlist.Height);
           TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-          userlistTitle.Set_Position(userlistTitle.X,
-                                     chanlist.Y + chanlist.Height + 2);
+          userlistTitle.SetPosition(userlistTitle.X,
+                                    chanlist.Y + chanlist.Height + 2);
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpUnexpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
@@ -770,16 +770,16 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(userlist, ExpandUserBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
+          ExpandUserBtn.SetPosition(ExpandUserBtn.X, userlist.Y - 14);
           TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-          userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
+          userlistTitle.SetPosition(userlistTitle.X, userlist.Y - 16 + 4);
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move rank buttons.
-        RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
-        RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
+        RankRABtn.SetPosition(RankRABtn.X, ExpandUserBtn.Y);
+        RankAMBtn.SetPosition(RankAMBtn.X, ExpandUserBtn.Y);
         TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
         TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
         display = REDRAW_ALL;
@@ -806,12 +806,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move userlist expand button.
-        ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
+        ExpandUserBtn.SetPosition(ExpandUserBtn.X, userlist.Y - 14);
         TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-        userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
+        userlistTitle.SetPosition(userlistTitle.X, userlist.Y - 16 + 4);
         //	Move rank buttons.
-        RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
-        RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
+        RankRABtn.SetPosition(RankRABtn.X, ExpandUserBtn.Y);
+        RankAMBtn.SetPosition(RankAMBtn.X, ExpandUserBtn.Y);
         TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
         TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
         display = REDRAW_ALL;
@@ -981,17 +981,17 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pWO->SendMessage(sendedit.Get_Text(), userlist, true);
           //	Clear sendedit, reset focus.
           szSendBuffer[0] = 0;
-          sendedit.Set_Focus();
+          sendedit.SetFocus();
           //	Mark for redraw.
-          // chatlist.Flag_To_Redraw();
-          sendedit.Flag_To_Redraw();
+          // chatlist.FlagToRedraw();
+          sendedit.FlagToRedraw();
         } else {
           WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
                            WOLCOLORREMAP_LOCALMACHINEMESS);
           PlaySoundEffect(WOLSOUND_ERROR);
-          sendedit.Set_Focus();
+          sendedit.SetFocus();
           //	Mark for redraw.
-          sendedit.Flag_To_Redraw();
+          sendedit.FlagToRedraw();
         }
         break;
 

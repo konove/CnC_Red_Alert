@@ -404,7 +404,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(view, true);
+        progress_meter.Draw(view, true);
       }
 
       display = REDRAW_NONE;
@@ -432,7 +432,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(view, true);
+          progress_meter.Draw(view, true);
         }
       }
 
@@ -461,7 +461,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(view, true);
+          progress_meter.Draw(view, true);
         }
       }
     }
@@ -724,7 +724,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(view, true);
+        progress_meter.Draw(view, true);
       }
 
       display = REDRAW_NONE;
@@ -762,7 +762,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(view, true);
+          progress_meter.Draw(view, true);
         }
       }
 
@@ -803,7 +803,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(view, true);
+          progress_meter.Draw(view, true);
         }
       }
     }

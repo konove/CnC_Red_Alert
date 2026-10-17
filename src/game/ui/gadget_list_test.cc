@@ -26,8 +26,8 @@ class Probe : public ControlClass {
   explicit Probe(unsigned id = 0, int x = 0)
       : ControlClass(id, x, 0, 10, 10, kLeftPress) {}
 
-  bool Draw_Me(PixelView& view, bool forced) override {
-    if (!ControlClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced) override {
+    if (!ControlClass::Draw(view, forced)) {
       return false;
     }
     ++draws;
@@ -139,20 +139,20 @@ TEST_F(GadgetListTest, AddingToAnotherListTakesTheGadgetOutOfTheFirst) {
 TEST_F(GadgetListTest, MovingToAnotherListKeepsTheFocus) {
   GadgetList other;
   list_.Add(a_);
-  a_.Set_Focus();
+  a_.SetFocus();
   other.Add(a_);
-  EXPECT_TRUE(a_.Has_Focus());
+  EXPECT_TRUE(a_.HasFocus());
 }
 
 TEST_F(GadgetListTest, RemoveTakesTheGadgetOutAndDropsItsFocus) {
   list_.Add(a_);
   list_.Add(b_);
-  a_.Set_Focus();
+  a_.SetFocus();
   list_.Remove(a_);
   EXPECT_THAT(list_.gadgets(), ElementsAre(&b_));
   EXPECT_EQ(a_.list(), nullptr);
   EXPECT_EQ(a_.removed, 1);
-  EXPECT_FALSE(a_.Has_Focus());
+  EXPECT_FALSE(a_.HasFocus());
 }
 
 TEST_F(GadgetListTest, RemoveDropsTheHoldOnTheMouse) {
@@ -165,25 +165,25 @@ TEST_F(GadgetListTest, RemoveDropsTheHoldOnTheMouse) {
 TEST_F(GadgetListTest, RemoveIgnoresAGadgetOfAnotherList) {
   GadgetList other;
   other.Add(a_);
-  a_.Set_Focus();
+  a_.SetFocus();
   list_.Remove(a_);
   EXPECT_EQ(a_.list(), &other);
-  EXPECT_TRUE(a_.Has_Focus());
+  EXPECT_TRUE(a_.HasFocus());
   EXPECT_EQ(a_.removed, 0);
 }
 
 TEST_F(GadgetListTest, ClearEmptiesTheListAndKeepsTheFocus) {
   list_.Add(a_);
   list_.Add(b_);
-  b_.Set_Focus();
+  b_.SetFocus();
   list_.Clear();
   EXPECT_TRUE(list_.empty());
   EXPECT_EQ(a_.list(), nullptr);
   EXPECT_EQ(b_.list(), nullptr);
   EXPECT_EQ(a_.removed, 1);
   EXPECT_EQ(b_.removed, 1);
-  EXPECT_TRUE(b_.Has_Focus());
-  b_.Clear_Focus();
+  EXPECT_TRUE(b_.HasFocus());
+  b_.ClearFocus();
 }
 
 TEST_F(GadgetListTest, AGadgetDestroyedFirstLeavesTheList) {
@@ -223,7 +223,7 @@ TEST_F(GadgetListTest, IsToRedrawTellsWhetherAGadgetIsFlagged) {
   list_.Add(b_);
   list_.DrawAll(view_);
   EXPECT_FALSE(list_.IsToRedraw());
-  b_.Flag_To_Redraw();
+  b_.FlagToRedraw();
   EXPECT_TRUE(list_.IsToRedraw());
 }
 
@@ -234,7 +234,7 @@ TEST_F(GadgetListTest, DrawAllDrawsEveryGadgetOrOnlyTheFlaggedOnes) {
   EXPECT_EQ(a_.draws, 1);
   EXPECT_EQ(b_.draws, 1);
 
-  b_.Flag_To_Redraw();
+  b_.FlagToRedraw();
   list_.DrawAll(view_, /*forced=*/false);
   EXPECT_EQ(a_.draws, 1);
   EXPECT_EQ(b_.draws, 2);
@@ -294,12 +294,12 @@ TEST_F(GadgetListTest, TheFirstInputDrawsEveryGadgetAndLaterOnesDoNot) {
 TEST_F(GadgetListTest, AddingInFrontDoesNotMakeItANewList) {
   list_.Add(a_);
   list_.Input(view_);
-  a_.Set_Focus();
+  a_.SetFocus();
   list_.AddFront(b_);
   list_.Input(view_);
   EXPECT_EQ(a_.draws, 1);
-  EXPECT_TRUE(a_.Has_Focus());
-  a_.Clear_Focus();
+  EXPECT_TRUE(a_.HasFocus());
+  a_.ClearFocus();
 }
 
 TEST_F(GadgetListTest, AnotherListsTurnDrawsEverythingAndDropsTheFocus) {
@@ -307,9 +307,9 @@ TEST_F(GadgetListTest, AnotherListsTurnDrawsEverythingAndDropsTheFocus) {
   other.Add(b_);
   list_.Add(a_);
   list_.Input(view_);
-  a_.Set_Focus();
+  a_.SetFocus();
   other.Input(view_);
-  EXPECT_FALSE(a_.Has_Focus());
+  EXPECT_FALSE(a_.HasFocus());
   list_.Input(view_);
   EXPECT_EQ(a_.draws, 2);
 }

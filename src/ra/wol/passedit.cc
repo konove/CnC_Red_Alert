@@ -11,7 +11,7 @@
 
 namespace ra {
 
-void PassEditClass::Set_Focus() {
+void PassEditClass::SetFocus() {
   if (bClearOnNextSetFocus) {
     // The buffer holds the saved, scrambled password. Throw it away rather
     // than let the player edit characters they never typed.
@@ -21,7 +21,7 @@ void PassEditClass::Set_Focus() {
     }
     Length = 0;
   }
-  WOLEditClass::Set_Focus();
+  WOLEditClass::SetFocus();
 }
 
 void PassEditClass::Draw_Text(PixelView& view, const char* text) {

@@ -2226,22 +2226,22 @@ int MapEditClass::Load_Scenario() {
         absl::SNPrintF(statictechbuff, sizeof(statictechbuff), "%2d",
                        techlevel.Get_Value());
         techstatic.Set_Text(statictechbuff);
-        techstatic.Draw_Me(view);
+        techstatic.Draw(view);
 
         absl::SNPrintF(staticcreditbuff, sizeof(staticcreditbuff), "$%-7d",
                        creditbtn.Get_Value() * 100);
         creditstatic.Set_Text(staticcreditbuff);
-        creditstatic.Draw_Me(view);
+        creditstatic.Draw(view);
 
         absl::SNPrintF(staticmaxunitbuff, sizeof(staticmaxunitbuff), "%4d",
                        maxunit.Get_Value());
         maxunitstatic.Set_Text(staticmaxunitbuff);
-        maxunitstatic.Draw_Me(view);
+        maxunitstatic.Draw(view);
 
         absl::SNPrintF(staticsmartiesbuff, sizeof(staticsmartiesbuff), "%2d",
                        smarties.Get_Value());
         smartiesstatic.Set_Text(staticsmartiesbuff);
-        smartiesstatic.Draw_Me(view);
+        smartiesstatic.Draw(view);
 
         game::TheMouse().Show();
       }

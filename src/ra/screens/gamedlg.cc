@@ -376,7 +376,7 @@ void GameControlsClass::Process() {
       case KN_UP:
         if (base::At(buttons, curbutton)) {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
 
         curbutton--;
@@ -389,7 +389,7 @@ void GameControlsClass::Process() {
 
         if (base::At(buttons, curbutton)) {
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         refresh = true;
         break;
@@ -397,7 +397,7 @@ void GameControlsClass::Process() {
       case KN_DOWN:
         if (base::At(buttons, curbutton)) {
           base::At(buttons, curbutton)->Turn_Off();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
 
         curbutton++;
@@ -410,7 +410,7 @@ void GameControlsClass::Process() {
 
         if (base::At(buttons, curbutton)) {
           base::At(buttons, curbutton)->Turn_On();
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
         }
         refresh = true;
         break;

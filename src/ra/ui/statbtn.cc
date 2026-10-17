@@ -34,7 +34,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * StaticButtonClass::Draw_Background -- Draws the background to
- *the text button.            * StaticButtonClass::Draw_Me -- Draws the text
+ *the text button.            * StaticButtonClass::Draw -- Draws the text
  *buttons as indicated.                        * StaticButtonClass::Draw_Text --
  *This draws the text for the text button.                  *
  *   StaticButtonClass::Set_Text -- Assigns a new text string to this button. *
@@ -122,7 +122,7 @@ StaticButtonClass::StaticButtonClass()
     : game::GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_NONE) {}
 
 /***********************************************************************************************
- * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
+ * StaticButtonClass::Draw -- Draws the text buttons as indicated. *
  *                                                                                             *
  *    This routine will draw the text button. *
  *                                                                                             *
@@ -135,8 +135,8 @@ StaticButtonClass::StaticButtonClass()
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
-  if (game::GadgetClass::Draw_Me(view, forced)) {
+bool StaticButtonClass::Draw(PixelView& view, bool forced) {
+  if (game::GadgetClass::Draw(view, forced)) {
     /*
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.
@@ -168,7 +168,7 @@ bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
 void StaticButtonClass::Set_Text(const char* text) {
   String = text != nullptr ? text : "";
 
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 /***********************************************************************************************

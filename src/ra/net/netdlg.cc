@@ -1746,12 +1746,12 @@ static int Net_Join_Dialog() {
     ** If we dont do this then the cursor doesnt disappear.
     */
     if (messages_have_focus) {
-      if (name_edt.Has_Focus()) {
+      if (name_edt.HasFocus()) {
         display = std::max(display, REDRAW_MESSAGE);
         messages_have_focus = false;
       }
     } else {
-      if (!name_edt.Has_Focus()) {
+      if (!name_edt.HasFocus()) {
         messages_have_focus = true;
       }
     }
@@ -1759,7 +1759,7 @@ static int Net_Join_Dialog() {
     /*
     ** Collapse the country list if we are going to redraw the game list
     */
-    if (gamelist.Is_To_Redraw() && housebtn.IsDropped) {
+    if (gamelist.IsToRedraw() && housebtn.IsDropped) {
       housebtn.Collapse();
       display = std::max(display, REDRAW_BACKGROUND);
     }
@@ -1965,7 +1965,7 @@ static int Net_Join_Dialog() {
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticcount.Set_Text(txt);
-        staticcount.Draw_Me(view);
+        staticcount.Draw(view);
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2 *2, d_count_y, scheme, BLACK, kTpfText);
 
@@ -1976,14 +1976,14 @@ static int Net_Join_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
-        staticlevel.Draw_Me(view);
+        staticlevel.Draw(view);
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2 *2, d_level_y, scheme, BLACK, kTpfText);
 
         right_label.Print(TXT_CREDITS_COLON, {d_credits_x - 4, d_credits_y});
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
-        staticcredits.Draw_Me(view);
+        staticcredits.Draw(view);
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, kTpfText);
 
@@ -1991,7 +1991,7 @@ static int Net_Join_Dialog() {
                           {d_aiplayers_x - 4, d_aiplayers_y});
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
-        staticaiplayers.Draw_Me(view);
+        staticaiplayers.Draw(view);
         //				Fancy_Text_Print(txt, d_aiplayers_x +
         // d_aiplayers_w + 2 *2, d_aiplayers_y, scheme, BLACK,
         // kTpfText);
@@ -2051,7 +2051,7 @@ static int Net_Join_Dialog() {
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx));
         }
-        name_edt.Flag_To_Redraw();
+        name_edt.FlagToRedraw();
 
         TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
                                                      PCOLOR_DIALOG_BLUE
@@ -2104,8 +2104,8 @@ static int Net_Join_Dialog() {
               lastclick_idx > 0) {
             gamelist.Set_Selected_Index(lastclick_idx);
             game_index = lastclick_idx;
-            name_edt.Clear_Focus();
-            name_edt.Flag_To_Redraw();
+            name_edt.ClearFocus();
+            name_edt.FlagToRedraw();
             base::SafeCopy(TheSession().Handle, namebuf);
 #ifndef OLDWAY
             TheSession().House = static_cast<HousesType>(
@@ -2191,8 +2191,8 @@ static int Net_Join_Dialog() {
       // confirmation mode.
       //..................................................................
       case engine::window::ButtonKey(kButtonJoin):
-        name_edt.Clear_Focus();
-        name_edt.Flag_To_Redraw();
+        name_edt.ClearFocus();
+        name_edt.FlagToRedraw();
         base::SafeCopy(TheSession().Handle, namebuf);
 #ifndef OLDWAY
         TheSession().House = static_cast<HousesType>(
@@ -2314,8 +2314,8 @@ static int Net_Join_Dialog() {
             housebtn.Current_Index() + static_cast<int>(HOUSE_USSR));
 #endif
 
-        name_edt.Clear_Focus();
-        name_edt.Flag_To_Redraw();
+        name_edt.ClearFocus();
+        name_edt.FlagToRedraw();
 
         rc = 1;
         process = false;
@@ -2693,7 +2693,7 @@ static int Net_Join_Dialog() {
       optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
       optionlist.Check_Item(3, TheSpecialFlags().capture_the_flag);
       optionlist.Check_Item(4, TheSpecialFlags().shadow_grows);
-      optionlist.Flag_To_Redraw();
+      optionlist.FlagToRedraw();
 
       PlaySoundEffect(VOC_OPTIONS_CHANGED);
 
@@ -2737,7 +2737,7 @@ static int Net_Join_Dialog() {
         join_index--;
         gamelist.Set_Selected_Index(join_index);
       } else {
-        gamelist.Flag_To_Redraw();
+        gamelist.FlagToRedraw();
         Clear_Listbox(&playerlist);
         TheSession().Players.Clear();
         game_index = gamelist.Current_Index();
@@ -2765,7 +2765,7 @@ static int Net_Join_Dialog() {
 
           gamelist.Remove_Item(i);
 
-          gamelist.Flag_To_Redraw();
+          gamelist.FlagToRedraw();
 
           if (i <= game_index) {
             if (joinstate == JOIN_CONFIRMED) {
@@ -2773,7 +2773,7 @@ static int Net_Join_Dialog() {
               join_index--;
               gamelist.Set_Selected_Index(join_index);
             } else {
-              gamelist.Flag_To_Redraw();
+              gamelist.FlagToRedraw();
               Clear_Listbox(&playerlist);
               TheSession().Players.Clear();
               game_index = gamelist.Current_Index();
@@ -2834,11 +2834,11 @@ static int Net_Join_Dialog() {
         if (!TheSession().WWChat) {
           while (TheSession().Chat.Count() > playerlist.Count()) {
             playerlist.Add_Item("");
-            playerlist.Flag_To_Redraw();
+            playerlist.FlagToRedraw();
           }
           while (playerlist.Count() > TheSession().Chat.Count()) {
             playerlist.Remove_Item(0);
-            playerlist.Flag_To_Redraw();
+            playerlist.FlagToRedraw();
           }
           for (i = 0; i < TheSession().Chat.Count(); i++) {
             if (!absl::EqualsIgnoreCase(TheSession().Chat.at(i)->Name,
@@ -2856,7 +2856,7 @@ static int Net_Join_Dialog() {
                     &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE);
               }
               playerlist.Set_Item(i, TheSession().Chat.at(i)->Name);
-              playerlist.Flag_To_Redraw();
+              playerlist.FlagToRedraw();
             }
           }
         } else {
@@ -2868,7 +2868,7 @@ static int Net_Join_Dialog() {
             base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
                 TheSession().Chat.at(0)->Color);
             playerlist.Set_Item(0, TheSession().Chat.at(0)->Name);
-            playerlist.Flag_To_Redraw();
+            playerlist.FlagToRedraw();
           }
           if (Update_WWChat()) {
             display = REDRAW_MESSAGE;
@@ -3193,7 +3193,7 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //------------------------------------------------------------------------
   if (playerlist->Count()) {
     playerlist->Remove_Item(0);
-    playerlist->Flag_To_Redraw();
+    playerlist->FlagToRedraw();
   }
 
   if (TheSession().Players.Count() > 0) {
@@ -3471,7 +3471,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
               TheSession()
                   .GPacket.data<GlobalPacketType::GameInfoData>()
                   .IsOpen;
-          gamelist->Flag_To_Redraw();
+          gamelist->FlagToRedraw();
 
           //............................................................
           //	If this game has gone from closed to open, copy the
@@ -3742,7 +3742,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // remove myself from the player list
       //..................................................................
       playerlist->Remove_Item(0);
-      playerlist->Flag_To_Redraw();
+      playerlist->FlagToRedraw();
 
       TheSession().Players.Delete(0);
 
@@ -3914,7 +3914,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         TheSession().Games.Delete(i);
         gamelist->Remove_Item(i);
-        gamelist->Flag_To_Redraw();
+        gamelist->FlagToRedraw();
       }
     }
 
@@ -3930,7 +3930,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
         TheSession().Players.Delete(i);
 
-        playerlist->Flag_To_Redraw();
+        playerlist->FlagToRedraw();
 
         //...............................................................
         // If this player has left our game, play a special sound.
@@ -4608,7 +4608,7 @@ static int Net_New_Dialog() {
       if (display >= REDRAW_PARMS) {
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticunit.Set_Text(txt);
-        staticunit.Draw_Me(view);
+        staticunit.Draw(view);
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2*2, d_count_y, scheme, BLACK, kTpfText);
 
@@ -4618,19 +4618,19 @@ static int Net_New_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
-        staticlevel.Draw_Me(view);
+        staticlevel.Draw(view);
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2*2, d_level_y, scheme, BLACK, kTpfText);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
-        staticcredits.Draw_Me(view);
+        staticcredits.Draw(view);
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2*2, d_credits_y, scheme, BLACK, kTpfText);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
-        staticaiplayers.Draw_Me(view);
+        staticaiplayers.Draw(view);
         //				Fancy_Text_Print(txt, d_aiplayers_x +
         // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
         // kTpfText);
@@ -5646,7 +5646,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //	Remove from the list box
         //...............................................................
         playerlist->Remove_Item(i);
-        playerlist->Flag_To_Redraw();
+        playerlist->FlagToRedraw();
 
         //...............................................................
         //	Mark his color as available

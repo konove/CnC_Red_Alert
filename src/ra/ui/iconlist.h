@@ -161,12 +161,12 @@ class IconListClass : public ListClass {
   //		virtual int Count() const {return List.Count();};
   //		virtual int Current_Index() const;
   //		virtual char const * Current_Item() const;
-  //		virtual bool Draw_Me(int forced);
+  //		virtual bool Draw(int forced);
   //		virtual char const * Get_Item(int index) const;
   //		virtual int Step_Selected_Index(int forward);
-  //		virtual void Flag_To_Redraw();
+  //		virtual void FlagToRedraw();
 
-  //		virtual void Peer_To_Peer(unsigned flags, KeyNumber & key,
+  //		virtual void OnPeerAction(unsigned flags, KeyNumber & key,
   // ControlClass & whom);
   void Remove_Item(const char* text) override;
   void Remove_Item(int /*index*/ /*unused*/) override;
@@ -176,7 +176,7 @@ class IconListClass : public ListClass {
   //		virtual void Set_Tabs(int const * tabs);
   //		virtual int  Set_View_Index(int index);
   //		virtual void Step(bool up);
-  //		virtual void Set_Position(int x, int y);
+  //		virtual void SetPosition(int x, int y);
 
   /*
   ** These overloaded list routines handle adding/removing the scroll bar

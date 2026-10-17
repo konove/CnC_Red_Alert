@@ -121,12 +121,12 @@ TEST_F(DropListClassTest, ClearingTheGadgetListClosesTheDroppedList) {
 TEST_F(DropListClassTest, LeavingAGadgetListDropsTheKeyboardFocus) {
   game::GadgetList gadgets;
   gadgets.Add(drop_);
-  drop_.Set_Focus();
-  ASSERT_TRUE(drop_.Has_Focus());
+  drop_.SetFocus();
+  ASSERT_TRUE(drop_.HasFocus());
   drop_.Expand();
 
   gadgets.Remove(drop_);
-  EXPECT_FALSE(drop_.Has_Focus());
+  EXPECT_FALSE(drop_.HasFocus());
   EXPECT_FALSE(drop_.IsDropped);
 }
 
@@ -137,12 +137,12 @@ TEST_F(DropListClassTest, LeavingAGadgetListDropsATypedListsKeyboardFocus) {
       {}, {}};
   game::GadgetList gadgets;
   gadgets.Add(typed);
-  typed.Set_Focus();
-  ASSERT_TRUE(typed.Has_Focus());
+  typed.SetFocus();
+  ASSERT_TRUE(typed.HasFocus());
   typed.Expand();
 
   gadgets.Remove(typed);
-  EXPECT_FALSE(typed.Has_Focus());
+  EXPECT_FALSE(typed.HasFocus());
   EXPECT_FALSE(typed.IsDropped);
 }
 

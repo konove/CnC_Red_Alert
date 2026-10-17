@@ -80,7 +80,7 @@ class ControlClass : public GadgetClass {
   /*
   **	Render support function.
   */
-  bool Draw_Me(PixelView& view, bool forced = false) override;
+  bool Draw(PixelView& view, bool forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to
@@ -88,7 +88,7 @@ class ControlClass : public GadgetClass {
   */
   unsigned ID;
 
-  [[nodiscard]] unsigned Get_ID() const override;
+  [[nodiscard]] unsigned id() const override;
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

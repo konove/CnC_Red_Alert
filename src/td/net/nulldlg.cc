@@ -1176,24 +1176,24 @@ GameType Select_Serial_Dialog() {
 
       case KN_UP:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = kNumOfButtons - 1;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton++;
         if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RETURN:
@@ -1210,11 +1210,11 @@ GameType Select_Serial_Dialog() {
       // to make sure the selection is correct in case they used the mouse
       //
       base::At(buttons, curbutton)->Turn_Off();
-      base::At(buttons, curbutton)->Flag_To_Redraw();
+      base::At(buttons, curbutton)->FlagToRedraw();
       curbutton = selection - kButtonDial;
       base::At(buttons, curbutton)->Turn_On();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(view, true);
+      base::At(buttons, curbutton)->Draw(view, true);
 
       switch (selection) {
         case kButtonDial:
@@ -1274,7 +1274,7 @@ GameType Select_Serial_Dialog() {
 
           if (process) {
             base::At(buttons, curbutton)->IsPressed = false;
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
           }
 
           display = REDRAW_ALL;
@@ -1312,7 +1312,7 @@ GameType Select_Serial_Dialog() {
 
           if (process) {
             base::At(buttons, curbutton)->IsPressed = false;
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
           }
 
           display = REDRAW_ALL;
@@ -1366,7 +1366,7 @@ GameType Select_Serial_Dialog() {
 
           if (process) {
             base::At(buttons, curbutton)->IsPressed = false;
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
           }
 
           display = REDRAW_ALL;
@@ -1388,7 +1388,7 @@ GameType Select_Serial_Dialog() {
           }
 
           base::At(buttons, curbutton)->IsPressed = false;
-          base::At(buttons, curbutton)->Flag_To_Redraw();
+          base::At(buttons, curbutton)->FlagToRedraw();
           display = REDRAW_ALL;
           break;
 
@@ -1580,9 +1580,9 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        compressionbutton.Flag_To_Redraw();
-        errorcorrectionbutton.Flag_To_Redraw();
-        hardwareflowcontrolbutton.Flag_To_Redraw();
+        compressionbutton.FlagToRedraw();
+        errorcorrectionbutton.FlagToRedraw();
+        hardwareflowcontrolbutton.FlagToRedraw();
       }
 
       game::TheMouse().Show();
@@ -2396,26 +2396,26 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        cancelbtn.Flag_To_Redraw();
-        port_edt.Flag_To_Redraw();
-        portlist.Flag_To_Redraw();
+        cancelbtn.FlagToRedraw();
+        port_edt.FlagToRedraw();
+        portlist.FlagToRedraw();
 #ifdef EDIT_IRQ
-        irq_edt.Flag_To_Redraw();
-        irqlist.Flag_To_Redraw();
+        irq_edt.FlagToRedraw();
+        irqlist.FlagToRedraw();
 #endif  // EDIT_IRQ
-        baud_edt.Flag_To_Redraw();
-        baudlist.Flag_To_Redraw();
-        // inittypebutton.Flag_To_Redraw();
-        advancedbutton.Flag_To_Redraw();
-        initstr_edt.Flag_To_Redraw();
-        initstrlist.Flag_To_Redraw();
-        addbtn.Flag_To_Redraw();
-        deletebtn.Flag_To_Redraw();
-        cwaitstr_edt.Flag_To_Redraw();
-        cwaitstrlist.Flag_To_Redraw();
-        tonebtn.Flag_To_Redraw();
-        pulsebtn.Flag_To_Redraw();
-        savebtn.Flag_To_Redraw();
+        baud_edt.FlagToRedraw();
+        baudlist.FlagToRedraw();
+        // inittypebutton.FlagToRedraw();
+        advancedbutton.FlagToRedraw();
+        initstr_edt.FlagToRedraw();
+        initstrlist.FlagToRedraw();
+        addbtn.FlagToRedraw();
+        deletebtn.FlagToRedraw();
+        cwaitstr_edt.FlagToRedraw();
+        cwaitstrlist.FlagToRedraw();
+        tonebtn.FlagToRedraw();
+        pulsebtn.FlagToRedraw();
+        savebtn.FlagToRedraw();
       }
 
       game::TheMouse().Show();
@@ -2428,8 +2428,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     input = commands.Input(view).key;
 
     if (firsttime) {
-      port_edt.Set_Focus();
-      port_edt.Flag_To_Redraw();
+      port_edt.SetFocus();
+      port_edt.FlagToRedraw();
       input = commands.Input(view).key;
       firsttime = 0;
     }
@@ -2456,10 +2456,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             base::At(portbuf, pos) = 0;
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
-          port_edt.Flag_To_Redraw();
+          port_edt.FlagToRedraw();
 #ifdef EDIT_IRQ
-          irq_edt.Set_Focus();
-          irq_edt.Flag_To_Redraw();
+          irq_edt.SetFocus();
+          irq_edt.FlagToRedraw();
 #endif  // EDIT_IRQ
         } else {
           std::ranges::transform(base::MutableCString(portbuf), portbuf,
@@ -2522,7 +2522,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   break;
                 }
                 CCMessageBox().Process(TXT_INVALID_PORT_ADDRESS);
-                port_edt.Set_Focus();
+                port_edt.SetFocus();
                 display = REDRAW_ALL;
                 break;
             }
@@ -2544,8 +2544,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
 #ifdef EDIT_IRQ
           if (display == REDRAW_BUTTONS) {
-            irq_edt.Set_Focus();
-            irq_edt.Flag_To_Redraw();
+            irq_edt.SetFocus();
+            irq_edt.FlagToRedraw();
           }
 #endif  // EDIT_IRQ
         }
@@ -2565,7 +2565,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                                           0, base::ToSize(pos)));
               base::At(portbuf, pos) = 0;
             }
-            port_edt.Clear_Focus();
+            port_edt.ClearFocus();
 
             // auto select the irq for port
 
@@ -2581,7 +2581,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               base::SafeCopy(irqbuf, irq_item.substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
-            irq_edt.Clear_Focus();
+            irq_edt.ClearFocus();
 #endif  // EDIT_IRQ
           } else {
             if (port_index == port_custom_index) {
@@ -2598,7 +2598,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                                               base::ToSize(pos)));
                 }
               }
-              port_edt.Set_Focus();
+              port_edt.SetFocus();
             } else {
               /*
               ** Must be a modem name entry so just copy iy
@@ -2610,9 +2610,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           display = REDRAW_BUTTONS;
         } else {
           if (port_index < port_custom_index) {
-            port_edt.Clear_Focus();
+            port_edt.ClearFocus();
           } else {
-            port_edt.Set_Focus();
+            port_edt.SetFocus();
           }
           display = REDRAW_BUTTONS;
         }
@@ -2631,7 +2631,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             irqbuf[pos] = 0;
           }
           irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
-          irq_edt.Flag_To_Redraw();
+          irq_edt.FlagToRedraw();
         } else {
           temp = irq_item.find('-');
           if (temp != std::string_view::npos) {
@@ -2643,8 +2643,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             display = REDRAW_BUTTONS;
           }
         }
-        baud_edt.Set_Focus();
-        baud_edt.Flag_To_Redraw();
+        baud_edt.SetFocus();
+        baud_edt.FlagToRedraw();
         break;
       }
 
@@ -2661,7 +2661,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               base::SafeCopy(irqbuf, irq_item.substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
-            irq_edt.Clear_Focus();
+            irq_edt.ClearFocus();
           } else {
             temp = irq_item.find('-');
             if (temp != std::string_view::npos) {
@@ -2672,14 +2672,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 base::SafeCopy(irqbuf, irq_item.substr(base::ToSize(pos)));
               }
             }
-            irq_edt.Set_Focus();
+            irq_edt.SetFocus();
           }
           irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
         } else {
           if (irq_index < 4) {
-            irq_edt.Clear_Focus();
+            irq_edt.ClearFocus();
           } else {
-            irq_edt.Set_Focus();
+            irq_edt.SetFocus();
           }
         }
         display = REDRAW_BUTTONS;
@@ -2689,8 +2689,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case engine::window::ButtonKey(kButtonBaud):
         base::SafeCopy(baudbuf, baudlist.Current_Item());
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
-        initstr_edt.Set_Focus();
-        initstr_edt.Flag_To_Redraw();
+        initstr_edt.SetFocus();
+        initstr_edt.FlagToRedraw();
         display = REDRAW_BUTTONS;
         break;
 
@@ -2699,7 +2699,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           baud_index = baudlist.Current_Index();
           base::SafeCopy(baudbuf, baudlist.Current_Item());
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
-          baud_edt.Clear_Focus();
+          baud_edt.ClearFocus();
           display = REDRAW_BUTTONS;
         }
         break;
@@ -2710,8 +2710,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           base::SafeCopy(initstrbuf, initstrlist.Current_Item());
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
-        initstr_edt.Set_Focus();
-        initstr_edt.Flag_To_Redraw();
+        initstr_edt.SetFocus();
+        initstr_edt.FlagToRedraw();
         display = REDRAW_BUTTONS;
         break;
 
@@ -2750,8 +2750,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             initstrlist.Set_Selected_Index(initstr_index);
           }
         }
-        initstr_edt.Set_Focus();
-        initstr_edt.Flag_To_Redraw();
+        initstr_edt.SetFocus();
+        initstr_edt.FlagToRedraw();
         display = REDRAW_BUTTONS;
         break;
 
@@ -2790,7 +2790,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           const char* const current = cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
             base::SafeCopy(cwaitstrbuf, current);
-            cwaitstr_edt.Clear_Focus();
+            cwaitstr_edt.ClearFocus();
           } else {
             const auto sep = std::string_view(current).find('-');
             if (sep != std::string_view::npos) {
@@ -2798,14 +2798,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               base::SafeCopy(cwaitstrbuf, std::string_view(current).substr(
                                               base::ToSize(pos)));
             }
-            cwaitstr_edt.Set_Focus();
+            cwaitstr_edt.SetFocus();
           }
           cwaitstr_edt.Set_Text(cwaitstrbuf, CWAITSTRBUF_MAX);
         } else {
           if (cwaitstr_index < 3) {
-            cwaitstr_edt.Clear_Focus();
+            cwaitstr_edt.ClearFocus();
           } else {
-            cwaitstr_edt.Set_Focus();
+            cwaitstr_edt.SetFocus();
           }
         }
         display = REDRAW_BUTTONS;
@@ -3006,7 +3006,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   for (int i = 0; i < std::ssize(TheNetwork().init_strings()); i++) {
     list->Add_Item(TheNetwork().init_strings().at(base::ToSize(i)).get());
   }
-  list->Flag_To_Redraw();
+  list->FlagToRedraw();
 
   /*........................................................................
   Init the current phone book index
@@ -3680,7 +3680,7 @@ int Com_Scenario_Dialog() {
 
       name_edt.Set_Color(
           base::At(TheSession().text_colors(), TheSession().color_index()));
-      name_edt.Flag_To_Redraw();
+      name_edt.FlagToRedraw();
       TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
       base::SafeCopy(TheSession().player_name(), namebuf);
       transmit = 1;
@@ -3693,8 +3693,8 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonName):
         if (!ready_to_go) {
-          credit_edt.Clear_Focus();
-          credit_edt.Flag_To_Redraw();
+          credit_edt.ClearFocus();
+          credit_edt.FlagToRedraw();
           TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
           base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
@@ -3732,8 +3732,8 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonCredits):
         if (!ready_to_go) {
-          name_edt.Clear_Focus();
-          name_edt.Flag_To_Redraw();
+          name_edt.ClearFocus();
+          name_edt.FlagToRedraw();
           TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
           base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
@@ -3986,10 +3986,10 @@ int Com_Scenario_Dialog() {
                 txt, d_message_w - (70 * factor));
             display = std::max(display, REDRAW_MESSAGE);
 
-            credit_edt.Clear_Focus();
-            credit_edt.Flag_To_Redraw();
-            name_edt.Clear_Focus();
-            name_edt.Flag_To_Redraw();
+            credit_edt.ClearFocus();
+            credit_edt.FlagToRedraw();
+            name_edt.ClearFocus();
+            name_edt.FlagToRedraw();
 
             break;
           }
@@ -5087,7 +5087,7 @@ int Com_Show_Scenario_Dialog() {
 
         name_edt.Set_Color(
             base::At(TheSession().text_colors(), TheSession().color_index()));
-        name_edt.Flag_To_Redraw();
+        name_edt.FlagToRedraw();
         display = REDRAW_COLORS;
         base::SafeCopy(TheSession().player_name(), namebuf);
         transmit = 1;
@@ -5171,8 +5171,8 @@ int Com_Show_Scenario_Dialog() {
                   txt, d_message_w - (70 * factor));
               display = REDRAW_MESSAGE;
 
-              name_edt.Clear_Focus();
-              name_edt.Flag_To_Redraw();
+              name_edt.ClearFocus();
+              name_edt.FlagToRedraw();
 
               break;
             }
@@ -5446,7 +5446,7 @@ int Com_Show_Scenario_Dialog() {
               }
               name_edt.Set_Color(base::At(TheSession().text_colors(),
                                           TheSession().color_index()));
-              name_edt.Flag_To_Redraw();
+              name_edt.FlagToRedraw();
               display = REDRAW_COLORS;
             }
 
@@ -5951,13 +5951,13 @@ static int Phone_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        phonelist.Flag_To_Redraw();
-        addbtn.Flag_To_Redraw();
-        editbtn.Flag_To_Redraw();
-        deletebtn.Flag_To_Redraw();
-        dialbtn.Flag_To_Redraw();
-        cancelbtn.Flag_To_Redraw();
-        numedit.Flag_To_Redraw();
+        phonelist.FlagToRedraw();
+        addbtn.FlagToRedraw();
+        editbtn.FlagToRedraw();
+        deletebtn.FlagToRedraw();
+        dialbtn.FlagToRedraw();
+        cancelbtn.FlagToRedraw();
+        numedit.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -5969,8 +5969,8 @@ static int Phone_Dialog() {
     engine::window::KeyNumber input = commands.Input(view).key;
 
     if (firsttime) {
-      numedit.Set_Focus();
-      numedit.Flag_To_Redraw();
+      numedit.SetFocus();
+      numedit.FlagToRedraw();
       input = commands.Input(view).key;
       firsttime = 0;
     }
@@ -6131,7 +6131,7 @@ static int Phone_Dialog() {
       ------------------------------------------------------------------*/
       case KN_RETURN:
         dialbtn.IsPressed = true;
-        dialbtn.Draw_Me(view, true);
+        dialbtn.Draw(view, true);
         [[fallthrough]];
 
       case engine::window::ButtonKey(kButtonDial):
@@ -6151,7 +6151,7 @@ static int Phone_Dialog() {
                     ->Number) != phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = false;
-            dialbtn.Flag_To_Redraw();
+            dialbtn.FlagToRedraw();
             break;
           }
 
@@ -6306,7 +6306,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
     }
     list->Add_Item(item);
   }
-  list->Flag_To_Redraw();
+  list->FlagToRedraw();
 
   /*........................................................................
   Init the current phone book index
@@ -6574,8 +6574,8 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     engine::window::KeyNumber input = commands.Input(view).key;
 
     if (firsttime) {
-      nameedit.Set_Focus();
-      nameedit.Flag_To_Redraw();
+      nameedit.SetFocus();
+      nameedit.FlagToRedraw();
       input = commands.Input(view).key;
       firsttime = 0;
     }
@@ -6585,13 +6585,13 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     */
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kButtonName):
-        numedit.Set_Focus();
-        numedit.Flag_To_Redraw();
+        numedit.SetFocus();
+        numedit.FlagToRedraw();
         break;
 
         //			case (BUTTON_NUMBER | KN_BUTTON):
-        //				nameedit.Clear_Focus();
-        //				nameedit.Flag_To_Redraw();
+        //				nameedit.ClearFocus();
+        //				nameedit.FlagToRedraw();
         //				break;
 
       /*------------------------------------------------------------------

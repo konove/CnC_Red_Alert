@@ -528,7 +528,7 @@ bool Do_The_Internet_Menu_Thang() {
       .................... Rebuild the button list ....................
       */
       // buttons->Draw_All();
-      cancelbtn.Draw_Me(view, true);
+      cancelbtn.Draw(view, true);
 
       game::TheMouse().Show();
       display = false;

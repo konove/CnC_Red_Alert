@@ -313,24 +313,24 @@ GameType Select_MPlayer_Game() {
 
       case KN_UP:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = number_of_buttons - 1;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         curbutton++;
         if (curbutton > number_of_buttons - 1) {
           curbutton = 0;
         }
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RETURN:
@@ -349,7 +349,7 @@ GameType Select_MPlayer_Game() {
       // to make sure the selection is correct in case they used the mouse
       //
       base::At(buttons, curbutton)->Turn_Off();
-      base::At(buttons, curbutton)->Flag_To_Redraw();
+      base::At(buttons, curbutton)->FlagToRedraw();
       for (int index = 0; index < number_of_buttons; index++) {
         if (std::cmp_equal(base::At(buttons, index)->ID, selection)) {
           curbutton = index;
@@ -359,7 +359,7 @@ GameType Select_MPlayer_Game() {
       base::At(buttons, curbutton)->Turn_On();
       //			buttons[curbutton]->Flag_To_Redraw();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(view, true);
+      base::At(buttons, curbutton)->Draw(view, true);
 
       switch (selection) {
         case kButtonModemserial:

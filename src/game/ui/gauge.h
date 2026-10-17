@@ -68,8 +68,8 @@ class GaugeClass : public ControlClass {
     // Set_Thumb_Size, which does the recalc.
   }
 
-  bool Draw_Me(PixelView& view, bool forced = false) override {
-    if (!ControlClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced = false) override {
+    if (!ControlClass::Draw(view, forced)) {
       return false;
     }
     Skin::Draw_Gauge_Box(view, X, Y, Width, Height, false);
@@ -102,7 +102,7 @@ class GaugeClass : public ControlClass {
   virtual bool Set_Maximum(int value) {
     if (value != MaxValue) {
       MaxValue = value;
-      Flag_To_Redraw();
+      FlagToRedraw();
       return true;
     }
     return false;
@@ -112,7 +112,7 @@ class GaugeClass : public ControlClass {
     value = Bound(value, 0, MaxValue);
     if (value != CurValue) {
       CurValue = value;
-      Flag_To_Redraw();
+      FlagToRedraw();
       return true;
     }
     return false;
@@ -173,7 +173,7 @@ class GaugeClass : public ControlClass {
 
     // We might end up clearing the event bits. Make sure that the sticky
     // process is properly updated anyway.
-    Sticky_Process(flags);
+    UpdateMouseCapture(flags);
 
     // If the thumb is currently being "dragged around", then update the
     // slider position according to the mouse position. In all other cases,
@@ -275,11 +275,11 @@ class TriColorGaugeClass : public GaugeClass<Skin> {
   TriColorGaugeClass(unsigned id, int x, int y, int w, int h)
       : Base(id, x, y, w, h) {}
 
-  bool Draw_Me(PixelView& view, bool forced) override {
+  bool Draw(PixelView& view, bool forced) override {
     // The tri-colour body below replaces GaugeClass's single-colour one, so
     // this takes only the repaint-flag and peer handling from ControlClass.
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (!ControlClass::Draw_Me(view, forced)) {
+    if (!ControlClass::Draw(view, forced)) {
       return false;
     }
     const int x = this->X;
@@ -348,7 +348,7 @@ class TriColorGaugeClass : public GaugeClass<Skin> {
   virtual bool Set_Red_Limit(int value) {
     if (value >= 0 && value < this->MaxValue) {
       RedLimit = value;
-      this->Flag_To_Redraw();
+      this->FlagToRedraw();
       return true;
     }
     return false;
@@ -357,7 +357,7 @@ class TriColorGaugeClass : public GaugeClass<Skin> {
   virtual bool Set_Yellow_Limit(int value) {
     if (value >= 0 && value < this->MaxValue) {
       YellowLimit = value;
-      this->Flag_To_Redraw();
+      this->FlagToRedraw();
       return true;
     }
     return false;

@@ -80,7 +80,7 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes StuckOn this dial
   // from the press to the release.
-  Sticky_Process(flags);
+  UpdateMouseCapture(flags);
 
   // Follow the mouse on a press, or while the button is held after a press on
   // the dial (StuckOn); a drag that starts elsewhere must not turn it.
@@ -111,9 +111,9 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   return game::ControlClass::Action(0, key, x, y);
 }
 
-bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
+bool DirectionDial::Draw(PixelView& view, const bool forced) {
   // Redraw only if the parent says a redraw is needed.
-  if (!game::ControlClass::Draw_Me(view, forced)) {
+  if (!game::ControlClass::Draw(view, forced)) {
     return false;
   }
   const RemapControlType* scheme = Get_Color_Scheme();
@@ -148,7 +148,7 @@ game::Direction DirectionDial::direction() const { return direction_; }
 void DirectionDial::set_direction(const game::Direction direction) {
   direction_ = direction;
   facing_ = game::NearestFacing(direction_);
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 }  // namespace ra

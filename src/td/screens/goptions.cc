@@ -384,7 +384,7 @@ void GameOptionsClass::Process() {
 
       case KN_UP:
         base::At(buttonsel, curbutton - 1)->Turn_Off();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         curbutton--;
         if (TheSession().type() == GAME_NORMAL) {
           if (curbutton < kButtonLoad) {
@@ -398,12 +398,12 @@ void GameOptionsClass::Process() {
           }
         }
         base::At(buttonsel, curbutton - 1)->Turn_On();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttonsel, curbutton - 1)->Turn_Off();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         curbutton++;
         if (TheSession().type() == GAME_NORMAL) {
           if (curbutton >= kButtonCount) {
@@ -415,12 +415,12 @@ void GameOptionsClass::Process() {
           }
         }
         base::At(buttonsel, curbutton - 1)->Turn_On();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         break;
 
       case KN_RETURN:
         base::At(buttonsel, curbutton - 1)->IsPressed = true;
-        base::At(buttonsel, curbutton - 1)->Draw_Me(view, true);
+        base::At(buttonsel, curbutton - 1)->Draw(view, true);
         selection = curbutton;
         pressed = true;
         break;
@@ -431,10 +431,10 @@ void GameOptionsClass::Process() {
 
     if (pressed) {
       base::At(buttonsel, curbutton - 1)->Turn_Off();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
       curbutton = selection;
       base::At(buttonsel, curbutton - 1)->Turn_On();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
 
       switch (selection) {
         case kButtonRestate:
@@ -545,7 +545,7 @@ void GameOptionsClass::Process() {
       base::At(buttonsel, curbutton - 1)->IsPressed = false;
       // buttonsel[curbutton-1]->Turn_Off();
       base::At(buttonsel, curbutton - 1)->Turn_On();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
     }
   }
 
@@ -553,10 +553,10 @@ void GameOptionsClass::Process() {
   **	Clean up and re-enter the game.
   */
   for (const auto& button : text_buttons) {
-    button->Clear_Focus();
+    button->ClearFocus();
   }
   for (const auto& gadget : gadgets) {
-    gadget->Clear_Focus();
+    gadget->ClearFocus();
   }
   text_buttons.clear();
   gadgets.clear();

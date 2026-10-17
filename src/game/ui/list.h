@@ -104,7 +104,7 @@ class ListClass : public ControlClass {
   virtual int Add_Item(const char* text) {
     if (text) {
       List.emplace_back(text);
-      Flag_To_Redraw();
+      FlagToRedraw();
 
       // Add scroll gadget if the list gets too large to display all of the
       // items at the same time.
@@ -135,7 +135,7 @@ class ListClass : public ControlClass {
 
     // Flag the list box to be redrawn because it now must be made narrower
     // to accomodate the new slider gadgets.
-    Flag_To_Redraw();
+    FlagToRedraw();
     Width -= ScrollGadget.Width;
 
     // Tell the newly created gadgets that they should inform this list box
@@ -151,9 +151,9 @@ class ListClass : public ControlClass {
     }
 
     // Make sure these added gadgets get redrawn at the next opportunity.
-    UpGadget.Flag_To_Redraw();
-    DownGadget.Flag_To_Redraw();
-    ScrollGadget.Flag_To_Redraw();
+    UpGadget.FlagToRedraw();
+    DownGadget.FlagToRedraw();
+    ScrollGadget.FlagToRedraw();
 
     // Inform the slider of the size of the window and the current view
     // position.
@@ -166,7 +166,7 @@ class ListClass : public ControlClass {
   virtual void Bump(bool up) {
     if (IsScrollActive && ScrollGadget.Step(up)) {
       CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
+      FlagToRedraw();
     }
   }
   [[nodiscard]] virtual int Count() const {
@@ -182,13 +182,13 @@ class ListClass : public ControlClass {
     return List.at(base::ToSize(SelectedIndex)).c_str();
   }
 
-  bool Draw_Me(PixelView& view, bool forced) override {
-    // ControlClass::Draw_Me redraws the peer gadget. A list's peer is the
+  bool Draw(PixelView& view, bool forced) override {
+    // ControlClass::Draw redraws the peer gadget. A list's peer is the
     // drop list that owns it, so going through ControlClass would have the
     // list ask its owner to redraw in the middle of its own draw. Events
     // still reach the peer through ControlClass::Action.
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (!GadgetClass::Draw_Me(view, forced)) {
+    if (!GadgetClass::Draw(view, forced)) {
       return false;
     }
     Skin::Draw_List_Box(view, X, Y, Width, Height);
@@ -224,16 +224,16 @@ class ListClass : public ControlClass {
     return old;
   }
 
-  void Flag_To_Redraw() final {
+  void FlagToRedraw() final {
     if (IsScrollActive) {
-      UpGadget.Flag_To_Redraw();
-      DownGadget.Flag_To_Redraw();
-      ScrollGadget.Flag_To_Redraw();
+      UpGadget.FlagToRedraw();
+      DownGadget.FlagToRedraw();
+      ScrollGadget.FlagToRedraw();
     }
-    ControlClass::Flag_To_Redraw();
+    ControlClass::FlagToRedraw();
   }
 
-  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*unused*/,
+  void OnPeerAction(unsigned flags, engine::window::KeyNumber& /*unused*/,
                     ControlClass& whom) override {
     if (flags & kLeftRelease) {
       if (&whom == &UpGadget) {
@@ -300,14 +300,14 @@ class ListClass : public ControlClass {
     while (Count() > 0) {
       Remove_Item(0);
     }
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
   // Replaces the text of the item at `index`; out-of-range indices are
   // ignored.
   void Set_Item(int index, std::string_view text) {
     if (index >= 0 && index < Count()) {
       List.at(base::ToSize(index)).assign(text);
-      Flag_To_Redraw();
+      FlagToRedraw();
     }
   }
 
@@ -320,7 +320,7 @@ class ListClass : public ControlClass {
     if (this->list() != nullptr) {
       RemoveScrollGadgets(*this->list());
     }
-    Flag_To_Redraw();
+    FlagToRedraw();
     return true;
   }
 
@@ -330,7 +330,7 @@ class ListClass : public ControlClass {
   virtual void Set_Selected_Index(int index) {
     if (index >= 0 && index < Count()) {
       SelectedIndex = index;
-      Flag_To_Redraw();
+      FlagToRedraw();
       if (SelectedIndex < CurrentTopIndex) {
         Set_View_Index(SelectedIndex);
       }
@@ -359,7 +359,7 @@ class ListClass : public ControlClass {
     index = std::clamp(index, 0, std::max(0, Count() - LineCount));
     if (index != CurrentTopIndex) {
       CurrentTopIndex = index;
-      Flag_To_Redraw();
+      FlagToRedraw();
       if (IsScrollActive) {
         ScrollGadget.Set_Value(CurrentTopIndex);
       }
@@ -371,11 +371,11 @@ class ListClass : public ControlClass {
   virtual void Step(bool up) {
     if (IsScrollActive && ScrollGadget.Step(up)) {
       CurrentTopIndex = ScrollGadget.Get_Value();
-      Flag_To_Redraw();
+      FlagToRedraw();
     }
   }
 
-  void Set_Position(int x, int y) override {
+  void SetPosition(int x, int y) override {
     UpGadget.X = x + Width - UpGadget.Width;
     UpGadget.Y = y;
     DownGadget.X = x + Width - DownGadget.Width;

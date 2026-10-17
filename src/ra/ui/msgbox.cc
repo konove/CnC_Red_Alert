@@ -323,7 +323,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         case KN_LEFT:
           if (numbuttons > 1) {
             base::At(buttons, curbutton)->Turn_Off();
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
 
             curbutton--;
             if (curbutton < 0) {
@@ -331,14 +331,14 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
             }
 
             base::At(buttons, curbutton)->Turn_On();
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
           }
           break;
 
         case KN_RIGHT:
           if (numbuttons > 1) {
             base::At(buttons, curbutton)->Turn_Off();
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
 
             curbutton++;
             if (curbutton > numbuttons - 1) {
@@ -346,7 +346,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
             }
 
             base::At(buttons, curbutton)->Turn_On();
-            base::At(buttons, curbutton)->Flag_To_Redraw();
+            base::At(buttons, curbutton)->FlagToRedraw();
           }
           break;
 

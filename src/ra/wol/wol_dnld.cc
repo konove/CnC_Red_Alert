@@ -189,7 +189,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(view, true);
+        progress_meter.Draw(view, true);
       }
 
       display = REDRAW_NONE;

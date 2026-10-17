@@ -74,17 +74,17 @@ class DropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
-  void Peer_To_Peer(unsigned flags,
+  void OnPeerAction(unsigned flags,
                     engine::window::KeyNumber& /*key*/ /*unused*/,
                     game::ControlClass& whom) override;
-  void Clear_Focus() override;
+  void ClearFocus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
   [[nodiscard]] virtual const char* Get_Item(int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return List.Get_Item(index);
   }
 
-  void Flag_To_Redraw() override;
+  void FlagToRedraw() override;
 
   // Opens the list under the field, in the gadget list the field is in. Does
   // nothing when it is open already or the field is in no gadget list.
@@ -92,7 +92,7 @@ class DropListClass : public EditClass {
   // Closes the list and takes it out of its gadget list.
   void Collapse();
 
-  void Set_Position(int x, int y) override;
+  void SetPosition(int x, int y) override;
 
  protected:
   // The drop button follows the edit field into a list and out of it, and
@@ -154,9 +154,9 @@ class TDropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T text);
-  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*key*/,
+  void OnPeerAction(unsigned flags, engine::window::KeyNumber& /*key*/,
                     game::ControlClass& whom) override;
-  void Clear_Focus() override;
+  void ClearFocus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
   [[nodiscard]] virtual T Get_Item(int index) const {
     return List.Get_Item(index);
@@ -168,7 +168,7 @@ class TDropListClass : public EditClass {
   // Closes the list and takes it out of its gadget list.
   void Collapse();
 
-  void Set_Position(int x, int y) override;
+  void SetPosition(int x, int y) override;
 
  protected:
   // The drop button follows the edit field into a list and out of it, and
@@ -219,7 +219,7 @@ TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
 template <class T>
 int TDropListClass<T>::Add_Item(T item) {
   base::SafeCopy(String.first(base::ToSize(MaxLength)), item->Description());
-  Flag_To_Redraw();
+  FlagToRedraw();
   return List.Add_Item(item);
 }
 
@@ -245,13 +245,13 @@ void TDropListClass<T>::Set_Selected_Index(int index) {
 }
 
 template <class T>
-void TDropListClass<T>::Clear_Focus() {
+void TDropListClass<T>::ClearFocus() {
   Collapse();
-  EditClass::Clear_Focus();
+  EditClass::ClearFocus();
 }
 
 template <class T>
-void TDropListClass<T>::Peer_To_Peer(unsigned flags,
+void TDropListClass<T>::OnPeerAction(unsigned flags,
                                      engine::window::KeyNumber& key,
                                      game::ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
@@ -266,7 +266,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags,
   if (&whom == &List) {
     base::SafeCopy(String.first(base::ToSize(MaxLength)),
                    List.Current_Item()->Description());
-    Flag_To_Redraw();
+    FlagToRedraw();
     key = engine::window::ButtonKey(static_cast<int>(ID));
   }
 }
@@ -285,7 +285,7 @@ void TDropListClass<T>::Expand() {
   // Second in the list: ahead of what it covers, whatever was added first
   // aside.
   list()->AddAfter(List, *list()->gadgets().front());
-  List.Flag_To_Redraw();
+  List.FlagToRedraw();
   IsDropped = true;
 }
 
@@ -311,11 +311,11 @@ void TDropListClass<T>::Collapse() {
 }
 
 template <class T>
-void TDropListClass<T>::Set_Position(int x, int y) {
-  EditClass::Set_Position(x, y);
-  List.Set_Position(
+void TDropListClass<T>::SetPosition(int x, int y) {
+  EditClass::SetPosition(x, y);
+  List.SetPosition(
       x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.Set_Position(x + Width, y);
+  DropButton.SetPosition(x + Width, y);
 }
 
 template <class T>

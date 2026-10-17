@@ -59,19 +59,19 @@ class TListClass final : public game::ControlClass {
   [[nodiscard]] int Count() const { return static_cast<int>(std::ssize(List)); }
   [[nodiscard]] int Current_Index() const;
   [[nodiscard]] T Current_Item() const;
-  bool Draw_Me(PixelView& view, bool forced) override;
+  bool Draw(PixelView& view, bool forced) override;
   int Step_Selected_Index(int step);
-  void Flag_To_Redraw() override;
+  void FlagToRedraw() override;
   [[nodiscard]] T Get_Item(int index) const { return base::At(List, index); }
   // Orders the entries by `less`; equal entries keep the order they were
   // added in.
   template <class Compare>
   void Sort(Compare less) {
     std::ranges::stable_sort(List, less);
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
 
-  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
+  void OnPeerAction(unsigned flags, engine::window::KeyNumber& key,
                     game::ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
@@ -81,7 +81,7 @@ class TListClass final : public game::ControlClass {
   void Set_Tabs(std::span<const int> tabs);
   bool Set_View_Index(int index);
   void Step(bool up);
-  void Set_Position(int x, int y) override;
+  void SetPosition(int x, int y) override;
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
@@ -188,7 +188,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
 }
 
 template <class T>
-void TListClass<T>::Set_Position(int x, int y) {
+void TListClass<T>::SetPosition(int x, int y) {
   UpGadget.X = x + Width - UpGadget.Width;
   UpGadget.Y = y;
   DownGadget.X = x + Width - DownGadget.Width;
@@ -217,7 +217,7 @@ template <class T>
 int TListClass<T>::Add_Item(T text) {
   //	if (text) {
   List.push_back(text);
-  Flag_To_Redraw();
+  FlagToRedraw();
 
   /*
   **	Add scroll gadget if the list gets too large to display all of the items
@@ -321,11 +321,11 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
 }
 
 template <class T>
-bool TListClass<T>::Draw_Me(PixelView& view, bool forced) {
-  // As in ListClass::Draw_Me: skipping ControlClass avoids asking the peer
+bool TListClass<T>::Draw(PixelView& view, bool forced) {
+  // As in ListClass::Draw: skipping ControlClass avoids asking the peer
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (game::GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw(view, forced)) {
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
@@ -361,7 +361,7 @@ template <class T>
 void TListClass<T>::Bump(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
 }
 
@@ -369,7 +369,7 @@ template <class T>
 void TListClass<T>::Step(bool up) {
   if (IsScrollActive && ScrollGadget.Step(up)) {
     CurrentTopIndex = ScrollGadget.Get_Value();
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
 }
 
@@ -388,7 +388,7 @@ int TListClass<T>::Current_Index() const {
 }
 
 template <class T>
-void TListClass<T>::Peer_To_Peer(unsigned flags,
+void TListClass<T>::OnPeerAction(unsigned flags,
                                  engine::window::KeyNumber& /*unused*/,
                                  game::ControlClass& whom) {
   if (flags & kLeftRelease) {
@@ -415,7 +415,7 @@ bool TListClass<T>::Set_View_Index(int index) {
       std::clamp<int>(index, 0, static_cast<int>(std::ssize(List)) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
-    Flag_To_Redraw();
+    FlagToRedraw();
     if (IsScrollActive) {
       ScrollGadget.Set_Value(CurrentTopIndex);
     }
@@ -434,7 +434,7 @@ bool TListClass<T>::Add_Scroll_Bar() {
     **	redrawn because it now must be made narrower to accomodate the new
     **	slider gadgets.
     */
-    Flag_To_Redraw();
+    FlagToRedraw();
     Width -= ScrollGadget.Width;
 
     /*
@@ -457,9 +457,9 @@ bool TListClass<T>::Add_Scroll_Bar() {
     /*
     **	Make sure these added gadgets get redrawn at the next opportunity.
     */
-    UpGadget.Flag_To_Redraw();
-    DownGadget.Flag_To_Redraw();
-    ScrollGadget.Flag_To_Redraw();
+    UpGadget.FlagToRedraw();
+    DownGadget.FlagToRedraw();
+    ScrollGadget.FlagToRedraw();
 
     /*
     **	Inform the slider of the size of the window and the current view
@@ -485,7 +485,7 @@ bool TListClass<T>::Remove_Scroll_Bar() {
     if (list() != nullptr) {
       RemoveScrollGadgets(*list());
     }
-    Flag_To_Redraw();
+    FlagToRedraw();
     return true;
   }
   return false;
@@ -500,7 +500,7 @@ template <class T>
 void TListClass<T>::Set_Selected_Index(int index) {
   if (index >= 0 && index < std::ssize(List)) {
     SelectedIndex = index;
-    Flag_To_Redraw();
+    FlagToRedraw();
     if (SelectedIndex < CurrentTopIndex) {
       Set_View_Index(SelectedIndex);
     }
@@ -519,13 +519,13 @@ int TListClass<T>::Step_Selected_Index(int step) {
 }
 
 template <class T>
-void TListClass<T>::Flag_To_Redraw() {
+void TListClass<T>::FlagToRedraw() {
   if (IsScrollActive) {
-    UpGadget.Flag_To_Redraw();
-    DownGadget.Flag_To_Redraw();
-    ScrollGadget.Flag_To_Redraw();
+    UpGadget.FlagToRedraw();
+    DownGadget.FlagToRedraw();
+    ScrollGadget.FlagToRedraw();
   }
-  game::ControlClass::Flag_To_Redraw();
+  game::ControlClass::FlagToRedraw();
 }
 
 template <class T>

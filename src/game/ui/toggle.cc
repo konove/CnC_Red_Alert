@@ -88,7 +88,7 @@ ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
  *=============================================================================================*/
 void ToggleClass::Turn_On() {
   IsOn = true;
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 /***********************************************************************************************
@@ -107,7 +107,7 @@ void ToggleClass::Turn_On() {
  *=============================================================================================*/
 void ToggleClass::Turn_Off() {
   IsOn = false;
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 /***********************************************************************************************
@@ -146,12 +146,12 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     if (overbutton) {
       if (!IsPressed) {
         IsPressed = true;
-        Flag_To_Redraw();
+        FlagToRedraw();
       }
     } else {
       if (IsPressed) {
         IsPressed = false;
-        Flag_To_Redraw();
+        FlagToRedraw();
       }
     }
   }
@@ -161,7 +161,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	because the event flags might be cleared before the action function
   **	is called.
   */
-  Sticky_Process(flags);
+  UpdateMouseCapture(flags);
 
   /*
   **	Flag the button to show the pressed down imagery if this mouse button
@@ -169,7 +169,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   */
   if (flags & kLeftPress) {
     IsPressed = true;
-    Flag_To_Redraw();
+    FlagToRedraw();
     flags &= ~unsigned{kLeftPress};
     ControlClass::Action(flags, key, x, y);
     key = engine::window::KN_NONE;  // erase the event
@@ -182,7 +182,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
         IsOn = !static_cast<bool>(IsOn);
       }
       IsPressed = false;
-      Flag_To_Redraw();
+      FlagToRedraw();
     } else {
       flags &= ~unsigned{kLeftRelease};
     }

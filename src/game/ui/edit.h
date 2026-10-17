@@ -93,7 +93,7 @@ class EditClass : public ControlClass {
         Color(Skin::Edit_Default_Color()) {
     PrepareEditBuffer(String, max_len);
     Length = static_cast<int>(std::string_view(String.data()).size());
-    GadgetClass::Flag_To_Redraw();
+    GadgetClass::FlagToRedraw();
 
     if (w == -1 || h == -1) {
       const FontStyle font_style = Skin::FontStyleFor(TextFont, TextFlags);
@@ -114,8 +114,8 @@ class EditClass : public ControlClass {
     }
   }
   ~EditClass() override {
-    if (GadgetClass::Has_Focus()) {
-      GadgetClass::Clear_Focus();
+    if (GadgetClass::HasFocus()) {
+      GadgetClass::ClearFocus();
     }
   }
   EditClass(const EditClass&) = delete;
@@ -123,16 +123,16 @@ class EditClass : public ControlClass {
   EditClass(EditClass&&) = delete;
   EditClass& operator=(EditClass&&) = delete;
 
-  void Set_Focus() override {
+  void SetFocus() override {
     Length = 0;
     if (!String.empty()) {
       Length = static_cast<int>(std::string_view(String.data()).size());
     }
-    ControlClass::Set_Focus();
+    ControlClass::SetFocus();
   }
 
-  bool Draw_Me(PixelView& view, bool forced) override {
-    if (ControlClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced) override {
+    if (ControlClass::Draw(view, forced)) {
       Draw_Background(view);
       Draw_Text(view, String.data());
       return true;
@@ -147,7 +147,7 @@ class EditClass : public ControlClass {
     PrepareEditBuffer(String, max_len);
     MaxLength = static_cast<int>(String.size()) - 1;
     Length = static_cast<int>(std::string_view(String.data()).size());
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
   std::span<char> Get_Text_Buffer() { return String; }
   virtual char* Get_Text() { return String.data(); }
@@ -184,14 +184,14 @@ class EditClass : public ControlClass {
     // returned.
     if (flags & kLeftPress) {
       flags &= ~kLeftPress;
-      Set_Focus();
-      Flag_To_Redraw();
+      SetFocus();
+      FlagToRedraw();
     }
 
-    if (flags & kKeyboard && Has_Focus()) {
+    if (flags & kKeyboard && HasFocus()) {
       // ESC clears focus without returning the gadget ID.
       if (key == KN_ESC) {
-        Clear_Focus();
+        ClearFocus();
         flags = 0;
       } else {
         const auto ascii = TheKeyboard().TypedCharacter(key);
@@ -222,7 +222,7 @@ class EditClass : public ControlClass {
   // the mouse hidden.
   virtual void Draw_Text(PixelView& view, const char* text) {
     Skin::Draw_Edit_Text(view, text, X, Y, Width, Color, TextFont, TextFlags,
-                         Has_Focus(), MaxLength);
+                         HasFocus(), MaxLength);
   }
 
   // Processes a single keyboard character. Returns false if the RETURN key
@@ -235,14 +235,14 @@ class EditClass : public ControlClass {
 
       // Return false so the gadget ID propagates to the caller.
       case '\r':
-        Clear_Focus();
+        ClearFocus();
         return false;
 
       case '\b':
         if (Length) {
           Length--;
           base::At(String, base::ToSize(Length)) = '\0';
-          Flag_To_Redraw();
+          FlagToRedraw();
         }
         break;
 
@@ -282,7 +282,7 @@ class EditClass : public ControlClass {
         // the gadget ID from being returned on every keystroke.
         base::At(String, base::ToSize(Length++)) = ascii;
         base::At(String, base::ToSize(Length)) = '\0';
-        Flag_To_Redraw();
+        FlagToRedraw();
         break;
       }
     }

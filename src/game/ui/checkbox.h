@@ -56,8 +56,8 @@ class CheckBoxClass : public ToggleClass {
  public:
   CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
 
-  bool Draw_Me(PixelView& view, bool forced = false) override {
-    if (!ToggleClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced = false) override {
+    if (!ToggleClass::Draw(view, forced)) {
       return false;
     }
     TheMouse().Hide();

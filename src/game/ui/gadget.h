@@ -55,7 +55,7 @@ class ControlClass;
 class GadgetList;
 
 // A rectangle of the screen that reacts to input. Derived classes override
-// Action() to do their job and Draw_Me() to draw themselves; a GadgetList
+// Action() to do their job and Draw() to draw themselves; a GadgetList
 // calls both from its Input().
 //
 // Keyboard focus and the mouse capture ("sticky" processing) are global: one
@@ -67,7 +67,7 @@ class GadgetList;
 //   if (buttons.Input(view).key == engine::window::ButtonKey(kOk)) ...
 class GadgetClass {
  public:
-  // Input events a gadget listens for, stored OR'd in Flags. A press or
+  // Input events a gadget listens for, stored OR'd in event_mask_. A press or
   // release is reported once, when it happens; held and up describe the
   // button's state on each Input() call that has no event to report.
   static constexpr uint32_t kLeftPress = 0x0001;  // Left mouse button press.
@@ -87,10 +87,10 @@ class GadgetClass {
   static constexpr uint32_t kKeyboard =
       0x0100;  // A key that came from the keyboard, not a mouse button.
 
-  // Owns the region at (`x`, `y`), `w` by `h` screen pixels, and acts on the
-  // events in `flags`. A `sticky` gadget also listens for left presses and
-  // releases, which it needs to capture the mouse.
-  GadgetClass(int x, int y, int w, int h, uint32_t flags,
+  // Owns the region at (`x`, `y`), `width` by `height` screen pixels, and acts
+  // on the events in `flags`. A `sticky` gadget also listens for left presses
+  // and releases, which it needs to capture the mouse.
+  GadgetClass(int x, int y, int width, int height, uint32_t flags,
               bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
@@ -112,38 +112,38 @@ class GadgetClass {
   virtual void Enable();
   // Returns the ID GadgetList::Input() reports for this gadget; 0 for a gadget
   // without one (only a ControlClass has one).
-  [[nodiscard]] virtual unsigned Get_ID() const { return 0; }
-  // Has Draw_Me() draw the gadget the next time its list's Input() runs.
-  virtual void Flag_To_Redraw();
+  [[nodiscard]] virtual unsigned id() const { return 0; }
+  // Has Draw() draw the gadget the next time its list's Input() runs.
+  virtual void FlagToRedraw();
   // Called by a ControlClass this gadget is the peer of, after it was
   // actioned with `flags` and `key`; the peer may replace `key`. Does nothing
   // here.
-  virtual void Peer_To_Peer(uint32_t /*unused*/,
-                            engine::window::KeyNumber& /*unused*/,
-                            ControlClass& /*unused*/) {}
+  virtual void OnPeerAction(uint32_t /*flags*/,
+                            engine::window::KeyNumber& /*key*/,
+                            ControlClass& /*peer*/) {}
   // Routes every keyboard event to this gadget, taking the focus from the
   // gadget that had it (which is redrawn).
-  virtual void Set_Focus();
+  virtual void SetFocus();
   // Gives up the keyboard focus if this gadget has it; otherwise does nothing.
   // A derived class overrides it to react to losing the focus.
-  virtual void Clear_Focus();
+  virtual void ClearFocus();
   // Returns whether keyboard events are routed to this gadget.
-  virtual bool Has_Focus();
+  virtual bool HasFocus();
   // Returns whether the gadget waits to be drawn.
-  virtual bool Is_To_Redraw() { return IsToRepaint; }
+  virtual bool IsToRedraw() { return IsToRepaint; }
   // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
-  virtual void Set_Position(int x, int y);
+  virtual void SetPosition(int x, int y);
 
   // Returns whether the gadget is to be drawn now, which it is when `forced`
   // or flagged, and clears the flag. Draws nothing itself: an override calls
   // it and draws when it returns true.
-  virtual bool Draw_Me(PixelView& view, bool forced = false);
+  virtual bool Draw(PixelView& view, bool forced = false);
 
   // Sets the function GadgetList::Input() hands every key it reads, before any
   // gadget sees it (the games save a screenshot on K this way). Null, the
   // default, does nothing.
-  static void Set_Key_Hook(void (*hook)(engine::window::KeyNumber key)) {
-    KeyHook = hook;
+  static void SetKeyHook(void (*hook)(engine::window::KeyNumber key)) {
+    key_hook_ = hook;
   }
 
   // The gadget's region, in screen pixels.
@@ -157,7 +157,7 @@ class GadgetClass {
   // releases it on a left release. The base Action() calls it; an override
   // that clears the press bits before calling the base Action() calls it
   // first itself.
-  virtual void Sticky_Process(uint32_t flags);
+  virtual void UpdateMouseCapture(uint32_t flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
   // its job. `x` and `y` are where it happened: a click's position for a
@@ -179,7 +179,7 @@ class GadgetClass {
   // nullptr when no gadget has the focus.
   static GadgetClass* Focused;
 
-  // Set when the gadget's look has changed and Draw_Me() has to draw it; the
+  // Set when the gadget's look has changed and Draw() has to draw it; the
   // base Action() sets it whenever it acts.
   bool IsToRepaint : 1 = false;
 
@@ -204,7 +204,7 @@ class GadgetClass {
   // The k... events Action() is called for: kLeftPress alone calls it only
   // for a left press over the region. kKeyboard is added while the gadget
   // has the focus.
-  uint32_t Flags = 0;
+  uint32_t event_mask_ = 0;
 
  private:
   // GadgetList::Input() runs the steps below over its gadgets.
@@ -232,8 +232,8 @@ class GadgetClass {
   // Returns the event as GadgetList::Input() reports it.
   static engine::window::InputEvent FinishInput(const PendingInput& input);
 
-  // See Set_Key_Hook(); nullptr when none is set.
-  static void (*KeyHook)(engine::window::KeyNumber key);
+  // See SetKeyHook(); nullptr when none is set.
+  static void (*key_hook_)(engine::window::KeyNumber key);
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;
@@ -242,8 +242,8 @@ class GadgetClass {
   // they concern it: always for the gadget holding the mouse and for a key,
   // otherwise only for mouse events inside its region. Returns what Action()
   // returned, or false when it was not called.
-  virtual bool Clicked_On(engine::window::KeyNumber& key, uint32_t flags, int x,
-                          int y);
+  virtual bool ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
+                                 int x, int y);
 };
 
 }  // namespace game

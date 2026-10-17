@@ -78,8 +78,8 @@ class TextButtonClass final : public ToggleClass {
     Size_To_Text(w, h);
   }
 
-  bool Draw_Me(PixelView& view, bool forced = false) override {
-    if (ControlClass::Draw_Me(view, forced)) {
+  bool Draw(PixelView& view, bool forced = false) override {
+    if (ControlClass::Draw(view, forced)) {
       Draw_Background(view);
       Draw_Text(view, String);
       return true;
@@ -90,7 +90,7 @@ class TextButtonClass final : public ToggleClass {
   // Shows `text`, resizing the button to it when `resize`.
   void Set_Text(const char* text, bool resize = false) {
     String = text;
-    Flag_To_Redraw();
+    FlagToRedraw();
     if (resize && String) {
       Width = Skin::Text_Width(TextFont, PrintFlags, String) + 8;
       Height = Skin::Text_Height(TextFont, PrintFlags) + 2;

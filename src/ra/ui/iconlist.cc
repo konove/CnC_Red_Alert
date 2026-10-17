@@ -343,7 +343,7 @@ void IconListClass::Remove_Item(int index) {
 /***********************************************************************************************
  * IconListClass::Draw_Entry -- Calls ListClass::Draw_Entry, then adds icon. *
  *                                                                                             *
- *    This routine is called by the Draw_Me function when it desired to redraw a
+ *    This routine is called by the Draw function when it desired to redraw a
  *particular    * text line in the list box. *
  *                                                                                             *
  * INPUT:   index    -- The index of the list entry to draw. This index is based
@@ -519,7 +519,7 @@ bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
 void IconListClass::Show_Last_Item() {
   const base::ssize iItemLast = Count() - 1;
   if (iItemLast - LineCount + 1 != CurrentTopIndex) {
-    Flag_To_Redraw();
+    FlagToRedraw();
     Set_View_Index(static_cast<int>(iItemLast - LineCount + 1));
   }
 }
@@ -602,7 +602,7 @@ void IconListClass::Clear() {
   List.clear();
   Remove_Scroll_Bar();
   CurrentTopIndex = 0;
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 //***********************************************************************************************
@@ -685,7 +685,7 @@ void IconListClass::Resize(int x, int y, int w, int h) {
   Width = w;
   Height = h;
 
-  Set_Position(x, y);
+  SetPosition(x, y);
 
   LineCount = (h - 1) / LineHeight;
 
@@ -693,7 +693,7 @@ void IconListClass::Resize(int x, int y, int w, int h) {
     Add_Scroll_Bar();
   }
 
-  Flag_To_Redraw();
+  FlagToRedraw();
 }
 
 //***********************************************************************************************

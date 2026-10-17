@@ -92,7 +92,7 @@ void CheckListClass::Check_Item(int index, bool checked) {
   if (index >= 0 && index < Count() &&
       Checked.at(base::ToSize(index)) != checked) {
     Checked.at(base::ToSize(index)) = checked;
-    Flag_To_Redraw();
+    FlagToRedraw();
   }
 }
 

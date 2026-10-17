@@ -393,7 +393,7 @@ void GameOptionsClass::Process() {
 
       case KN_UP:
         base::At(buttonsel, curbutton - 1)->Turn_Off();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         do {
           curbutton--;
           if (curbutton < 1) {
@@ -402,12 +402,12 @@ void GameOptionsClass::Process() {
         } while (!base::At(buttonsel, curbutton - 1));
 
         base::At(buttonsel, curbutton - 1)->Turn_On();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         break;
 
       case KN_DOWN:
         base::At(buttonsel, curbutton - 1)->Turn_Off();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         do {
           curbutton++;
           if (curbutton > num_buttons) {
@@ -416,12 +416,12 @@ void GameOptionsClass::Process() {
         } while (!base::At(buttonsel, curbutton - 1));
 
         base::At(buttonsel, curbutton - 1)->Turn_On();
-        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->FlagToRedraw();
         break;
 
       case KN_RETURN:
         base::At(buttonsel, curbutton - 1)->IsPressed = true;
-        base::At(buttonsel, curbutton - 1)->Draw_Me(view, true);
+        base::At(buttonsel, curbutton - 1)->Draw(view, true);
         selection = curbutton;
         pressed = true;
         game::TheKeyboard().Clear();
@@ -433,10 +433,10 @@ void GameOptionsClass::Process() {
 
     if (pressed) {
       base::At(buttonsel, curbutton - 1)->Turn_Off();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
       curbutton = selection;
       base::At(buttonsel, curbutton - 1)->Turn_On();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
 
       switch (selection) {
         case kButtonRestate:
@@ -566,7 +566,7 @@ void GameOptionsClass::Process() {
       pressed = false;
       base::At(buttonsel, curbutton - 1)->IsPressed = false;
       base::At(buttonsel, curbutton - 1)->Turn_Off();
-      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->FlagToRedraw();
     }
   }
 
@@ -574,7 +574,7 @@ void GameOptionsClass::Process() {
   **	Clean up and re-enter the game.
   */
   for (const auto& button : owned_buttons) {
-    button->Clear_Focus();
+    button->ClearFocus();
   }
   owned_buttons.clear();
 

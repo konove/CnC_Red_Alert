@@ -210,7 +210,7 @@ bool ConfirmationClass::Process(const char* string) {
 
       case KN_LEFT:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
 
         curbutton--;
         if (curbutton < 0) {
@@ -218,12 +218,12 @@ bool ConfirmationClass::Process(const char* string) {
         }
 
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RIGHT:
         base::At(buttons, curbutton)->Turn_Off();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
 
         curbutton++;
         if (curbutton > kNumOfButtons - 1) {
@@ -231,7 +231,7 @@ bool ConfirmationClass::Process(const char* string) {
         }
 
         base::At(buttons, curbutton)->Turn_On();
-        base::At(buttons, curbutton)->Flag_To_Redraw();
+        base::At(buttons, curbutton)->FlagToRedraw();
         break;
 
       case KN_RETURN:

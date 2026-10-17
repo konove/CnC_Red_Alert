@@ -150,7 +150,7 @@ bool Get_Broadcast_Addresses() {
       }
     } while (found);
   }
-  ip_address_list.Flag_To_Redraw();
+  ip_address_list.FlagToRedraw();
 
   //------------------------------------------------------------------------
   //	Processing loop

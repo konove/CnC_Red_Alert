@@ -81,7 +81,7 @@ class SliderClass final : public GaugeClass<Skin> {
   void Set_Thumb_Size(int value) {
     Thumb = std::min(value, this->MaxValue);
     Thumb = std::max(Thumb, 1);
-    this->Flag_To_Redraw();
+    this->FlagToRedraw();
     Recalc_Thumb();
   }
 
@@ -112,18 +112,18 @@ class SliderClass final : public GaugeClass<Skin> {
     return Set_Value(up ? this->CurValue - 1 : this->CurValue + 1);
   }
 
-  bool Draw_Me(PixelView& view, bool forced) override {
+  bool Draw(PixelView& view, bool forced) override {
     // A sunken bar draws a thumb instead of a gauge body; the gauge style
     // still goes through GaugeClass below.
     const bool sunken = style_ == SliderStyle::kSunkenBar;
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (sunken && ControlClass::Draw_Me(view, forced)) {
+    if (sunken && ControlClass::Draw(view, forced)) {
       Skin::Draw_Gauge_Box(view, this->X, this->Y, this->Width, this->Height,
                            false);
       Draw_Thumb(view);
       return true;
     }
-    return Base::Draw_Me(view, forced);
+    return Base::Draw(view, forced);
   }
 
   int Thumb_Pixels() override { return ThumbSize; }

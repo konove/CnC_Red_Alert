@@ -1330,7 +1330,7 @@ static int Net_Join_Dialog() {
 
       name_edt.Set_Color(
           base::At(TheSession().text_colors(), TheSession().color_index()));
-      name_edt.Flag_To_Redraw();
+      name_edt.FlagToRedraw();
 
       display = REDRAW_COLORS;
     }
@@ -1375,8 +1375,8 @@ static int Net_Join_Dialog() {
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonJoin):
-        name_edt.Clear_Focus();
-        name_edt.Flag_To_Redraw();
+        name_edt.ClearFocus();
+        name_edt.FlagToRedraw();
 
         join_index = gamelist.Current_Index();
         parms_received = 0;
@@ -1418,7 +1418,7 @@ static int Net_Join_Dialog() {
           //
           if (playerlist.Count()) {  // added: BRR 6/14/96
             playerlist.Remove_Item(0);
-            playerlist.Flag_To_Redraw();
+            playerlist.FlagToRedraw();
           }
 
           //
@@ -1505,8 +1505,8 @@ static int Net_Join_Dialog() {
         base::SafeCopy(TheSession().player_name(), namebuf);
         base::SafeCopy(TheSession().game_name(), namebuf);
 
-        name_edt.Clear_Focus();
-        name_edt.Flag_To_Redraw();
+        name_edt.ClearFocus();
+        name_edt.FlagToRedraw();
 
         rc = 1;
         process = false;
@@ -1534,8 +1534,8 @@ static int Net_Join_Dialog() {
                 txt, d_message_w - (70 * factor));
 
             if (joinstate <= JOIN_NOTHING) {
-              name_edt.Clear_Focus();
-              name_edt.Flag_To_Redraw();
+              name_edt.ClearFocus();
+              name_edt.FlagToRedraw();
             }
 
             display = REDRAW_MESSAGE;
@@ -1752,7 +1752,7 @@ static int Net_Join_Dialog() {
             //
             if (playerlist.Count()) {  // added: BRR 6/14/96
               playerlist.Remove_Item(0);
-              playerlist.Flag_To_Redraw();
+              playerlist.FlagToRedraw();
             }
 
             //
@@ -1800,7 +1800,7 @@ static int Net_Join_Dialog() {
         join_index--;
         gamelist.Set_Selected_Index(join_index);
       } else {
-        gamelist.Flag_To_Redraw();
+        gamelist.FlagToRedraw();
         Clear_Player_List(&playerlist);
         game_index = gamelist.Current_Index();
         Send_Join_Queries(game_index, 0, 1);
@@ -1825,7 +1825,7 @@ static int Net_Join_Dialog() {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
         if (i <= game_index) {
-          gamelist.Flag_To_Redraw();
+          gamelist.FlagToRedraw();
           Clear_Player_List(&playerlist);
           game_index = gamelist.Current_Index();
           Send_Join_Queries(game_index, 0, 1);
@@ -1856,7 +1856,7 @@ static int Net_Join_Dialog() {
       //
       if (playerlist.Count()) {  // added: BRR 6/14/96
         playerlist.Remove_Item(0);
-        playerlist.Flag_To_Redraw();
+        playerlist.FlagToRedraw();
       }
 
       //
@@ -2399,7 +2399,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                   .global_packet()
                   .data<GlobalPacketType::GameInfoData>()
                   .IsOpen;
-          gamelist->Flag_To_Redraw();
+          gamelist->FlagToRedraw();
           /*............................................................
           If this game has gone from closed to open, copy the responder's
           address into our Game slot, since the guy responding to this
@@ -2741,7 +2741,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         */
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist->Remove_Item(i);
-        gamelist->Flag_To_Redraw();
+        gamelist->FlagToRedraw();
       }
     }
     /*.....................................................................
@@ -2755,7 +2755,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           TheNetwork().global_address()) {
         playerlist->Remove_Item(i);
         TheNetwork().players().erase(TheNetwork().players().begin() + i);
-        playerlist->Flag_To_Redraw();
+        playerlist->FlagToRedraw();
 
         if (retcode == EV_NONE) {
           retcode = EV_PLAYER_SIGNOFF;
@@ -3500,7 +3500,7 @@ static int Net_New_Dialog() {
             TheSession().unit_count() -
             base::At(TheSession().unit_count_min(), TheSession().bases()));
         transmit = 1;
-        countgauge.Flag_To_Redraw();
+        countgauge.FlagToRedraw();
         display = REDRAW_UNIT_COUNT;
         break;
 
@@ -3690,8 +3690,8 @@ static int Net_New_Dialog() {
                 FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 txt, d_message_w - (70 * factor));
 
-            credit_edt.Clear_Focus();
-            credit_edt.Flag_To_Redraw();
+            credit_edt.ClearFocus();
+            credit_edt.FlagToRedraw();
             display = std::max(display, REDRAW_MESSAGE);
 
             break;
@@ -4255,7 +4255,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         Remove from the list box
         ...............................................................*/
         playerlist->Remove_Item(i + 1);
-        playerlist->Flag_To_Redraw();
+        playerlist->FlagToRedraw();
         /*...............................................................
         Mark his color as available
         ...............................................................*/
@@ -5318,7 +5318,7 @@ static int Net_Fake_Join_Dialog() {
           // Remove myself from the player list box
           //
           playerlist.Remove_Item(0);
-          playerlist.Flag_To_Redraw();
+          playerlist.FlagToRedraw();
 
           //
           // Remove myself from the Players list
@@ -5444,7 +5444,7 @@ static int Net_Fake_Join_Dialog() {
             // Remove myself from the player list box
             //
             playerlist.Remove_Item(0);
-            playerlist.Flag_To_Redraw();
+            playerlist.FlagToRedraw();
 
             //
             // Remove myself from the Players list
@@ -5483,7 +5483,7 @@ static int Net_Fake_Join_Dialog() {
         join_index--;
         gamelist.Set_Selected_Index(join_index);
       } else {
-        gamelist.Flag_To_Redraw();
+        gamelist.FlagToRedraw();
         Clear_Player_List(&playerlist);
         game_index = gamelist.Current_Index();
         Send_Join_Queries(game_index, 0, 1);
@@ -5508,7 +5508,7 @@ static int Net_Fake_Join_Dialog() {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
         if (i <= game_index) {
-          gamelist.Flag_To_Redraw();
+          gamelist.FlagToRedraw();
           Clear_Player_List(&playerlist);
           game_index = gamelist.Current_Index();
           Send_Join_Queries(game_index, 0, 1);
@@ -5551,7 +5551,7 @@ static int Net_Fake_Join_Dialog() {
       // Remove myself from the player list box
       //
       playerlist.Remove_Item(0);
-      playerlist.Flag_To_Redraw();
+      playerlist.FlagToRedraw();
 
       //
       // Remove myself from the Players list

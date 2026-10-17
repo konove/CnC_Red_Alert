@@ -1989,7 +1989,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   commands.Add(button);
   commands.Add(cancelbtn);
   commands.Add(editbtn);
-  editbtn.Set_Focus();
+  editbtn.SetFocus();
 
   /*
   **	Main Processing Loop.
@@ -2042,8 +2042,8 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     */
     if (firsttime) {
       firsttime = false;
-      editbtn.Set_Focus();
-      editbtn.Flag_To_Redraw();
+      editbtn.SetFocus();
+      editbtn.FlagToRedraw();
     }
 
     /*

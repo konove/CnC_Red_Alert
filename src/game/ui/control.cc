@@ -37,8 +37,8 @@
  *objects.                         * ControlClass::ControlClass -- Constructor
  *for control class objects.                      * ControlClass::ControlClass
  *-- Copy constructor for control gadget.                        *
- *   ControlClass::Draw_Me -- Draw logic for the control class object. *
- *   ControlClass::Get_ID -- Gets the ID number for this gadget. *
+ *   ControlClass::Draw -- Draw logic for the control class object. *
+ *   ControlClass::id -- Gets the ID number for this gadget. *
  *   ControlClass::Make_Peer -- Assigns a peer gadget to this gadget. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -121,7 +121,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	action call.
   */
   if (Peer) {
-    Peer->Peer_To_Peer(flags, key, *this);
+    Peer->OnPeerAction(flags, key, *this);
   }
 
   return GadgetClass::Action(flags, key, x, y);
@@ -148,7 +148,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
 void ControlClass::Make_Peer(GadgetClass& gadget) { Peer = &gadget; }
 
 /***********************************************************************************************
- * ControlClass::Get_ID -- Gets the ID number for this gadget. *
+ * ControlClass::id -- Gets the ID number for this gadget. *
  *                                                                                             *
  *    This function will query and return with the ID number for this gadget. It
  *is primarily  * used by GadgetList::Extract(). *
@@ -164,19 +164,19 @@ void ControlClass::Make_Peer(GadgetClass& gadget) { Peer = &gadget; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned ControlClass::Get_ID() const { return ID; }
+unsigned ControlClass::id() const { return ID; }
 
 /***********************************************************************************************
- * ControlClass::Draw_Me -- Draw logic for the control class object. *
+ * ControlClass::Draw -- Draw logic for the control class object. *
  *                                                                                             *
  *    This is called when the control object might need to be redrawn or when
  *redrawing is     * necessary. Since at this level of the class hierarchy, no
  *actual drawing occurs, this    * routine doesn't perform any rendering. It
- *does, however, inform any peer attached        * object that a Draw_Me
+ *does, however, inform any peer attached        * object that a Draw
  *function has been called. Presumably, the attached peer gadget     * might
  *very well need to be redrawn as a result of some action by this gadget. Since
  *this * gadget might, more than likely, be of the "sticky" variety, a normal
- *call to Draw_Me     * for the other gadget will not occur. It must rely on the
+ *call to Draw     * for the other gadget will not occur. It must rely on the
  *call by this routine in order   * to update correctly. A typical example of
  *this would be a slider that is attached to     * a list box. As the slider is
  *being drug around, the attached list box must be redrawn.   *
@@ -190,11 +190,11 @@ unsigned ControlClass::Get_ID() const { return ID; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Draw_Me(PixelView& view, bool forced) {
+bool ControlClass::Draw(PixelView& view, bool forced) {
   if (Peer) {
-    Peer->Draw_Me(view);
+    Peer->Draw(view);
   }
-  return GadgetClass::Draw_Me(view, forced);
+  return GadgetClass::Draw(view, forced);
 }
 
 }  // namespace game

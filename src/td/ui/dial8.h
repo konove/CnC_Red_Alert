@@ -64,7 +64,7 @@ class Dial8Class : public game::ControlClass {
   /*
   ** Overloaded draw routine
   */
-  bool Draw_Me(PixelView& view, bool forced = false) override;
+  bool Draw(PixelView& view, bool forced = false) override;
 
  protected:
   /*

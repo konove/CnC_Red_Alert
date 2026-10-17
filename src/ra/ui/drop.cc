@@ -74,7 +74,7 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
 
 int DropListClass::Add_Item(const char* text) {
   base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), text);
-  Flag_To_Redraw();
+  FlagToRedraw();
   return List.Add_Item(text);
 }
 
@@ -92,12 +92,12 @@ void DropListClass::Set_Selected_Index(int index) {
   }
 }
 
-void DropListClass::Clear_Focus() {
+void DropListClass::ClearFocus() {
   Collapse();
-  EditClass::Clear_Focus();
+  EditClass::ClearFocus();
 }
 
-void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
+void DropListClass::OnPeerAction(unsigned flags, engine::window::KeyNumber& key,
                                  game::ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {
@@ -111,7 +111,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
   if (&whom == &List) {
     base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
                    List.Current_Item());
-    Flag_To_Redraw();
+    FlagToRedraw();
     key = engine::window::ButtonKey(static_cast<int>(ID));
   }
 }
@@ -129,7 +129,7 @@ void DropListClass::Expand() {
   // Second in the list: ahead of what it covers, whatever was added first
   // aside.
   list()->AddAfter(List, *list()->gadgets().front());
-  List.Flag_To_Redraw();
+  List.FlagToRedraw();
   IsDropped = true;
 }
 
@@ -151,11 +151,11 @@ void DropListClass::Collapse() {
   }
 }
 
-void DropListClass::Set_Position(int x, int y) {
-  EditClass::Set_Position(x, y);
-  List.Set_Position(
+void DropListClass::SetPosition(int x, int y) {
+  EditClass::SetPosition(x, y);
+  List.SetPosition(
       x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.Set_Position(x + Width, y);
+  DropButton.SetPosition(x + Width, y);
 }
 
 void DropListClass::Set_Selected_Index(const char* text) {
@@ -169,11 +169,11 @@ void DropListClass::Set_Selected_Index(const char* text) {
   }
 }
 
-void DropListClass::Flag_To_Redraw() {
+void DropListClass::FlagToRedraw() {
   if (IsDropped) {
-    List.Flag_To_Redraw();
+    List.FlagToRedraw();
   }
-  EditClass::Flag_To_Redraw();
+  EditClass::FlagToRedraw();
 }
 
 }  // namespace ra

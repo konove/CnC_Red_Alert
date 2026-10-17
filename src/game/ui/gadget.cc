@@ -34,30 +34,30 @@ GadgetClass* GadgetClass::StuckOn = nullptr;
 
 GadgetClass* GadgetClass::Focused = nullptr;
 
-void (*GadgetClass::KeyHook)(engine::window::KeyNumber key) = nullptr;
+void (*GadgetClass::key_hook_)(engine::window::KeyNumber key) = nullptr;
 
-GadgetClass::GadgetClass(int x, int y, int w, int h, uint32_t flags,
+GadgetClass::GadgetClass(int x, int y, int width, int height, uint32_t flags,
                          bool sticky) noexcept
     : X(x),
       Y(y),
-      Width(w),
-      Height(h),
+      Width(width),
+      Height(height),
 
       IsSticky(sticky),
 
-      Flags(flags) {
+      event_mask_(flags) {
   if (IsSticky) {
-    Flags |= kLeftPress | kLeftRelease;
+    event_mask_ |= kLeftPress | kLeftRelease;
   }
 }
 
 GadgetClass::~GadgetClass() {
-  // Drop the keyboard focus directly. Clear_Focus is virtual -- DropListClass
+  // Drop the keyboard focus directly. ClearFocus is virtual -- DropListClass
   // collapses its drop-down in its override -- and a destructor cannot reach
   // that override; a derived class that needs more does it in its own
   // destructor, while the object is still of that type.
   if (Focused == this) {
-    Flags &= ~kKeyboard;
+    event_mask_ &= ~kKeyboard;
     Focused = nullptr;
   }
 
@@ -76,11 +76,11 @@ GadgetClass::~GadgetClass() {
   }
 }
 
-bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, uint32_t flags,
-                             int mousex, int mousey) {
+bool GadgetClass::ActionIfConcerned(engine::window::KeyNumber& key,
+                                    uint32_t flags, int x, int y) {
   // Keep only the events this gadget listens for; none left means a mouse
   // event is not for it.
-  flags &= Flags;
+  flags &= event_mask_;
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
@@ -88,10 +88,9 @@ bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, uint32_t flags,
   // position left of or above the region into a huge value, so one compare
   // per axis checks both edges.
   if (this == StuckOn || flags & kKeyboard ||
-      (flags &&
-       static_cast<unsigned>(mousex - X) < static_cast<unsigned>(Width) &&
-       static_cast<unsigned>(mousey - Y) < static_cast<unsigned>(Height))) {
-    return Action(flags, key, mousex, mousey);
+      (flags && static_cast<unsigned>(x - X) < static_cast<unsigned>(Width) &&
+       static_cast<unsigned>(y - Y) < static_cast<unsigned>(Height))) {
+    return Action(flags, key, x, y);
   }
   return false;
 }
@@ -99,28 +98,28 @@ bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, uint32_t flags,
 void GadgetClass::Enable() {
   IsDisabled = false;
   IsToRepaint = true;
-  Clear_Focus();
+  ClearFocus();
 }
 
 void GadgetClass::Disable() {
   IsDisabled = true;
   IsToRepaint = true;
-  Clear_Focus();
+  ClearFocus();
 }
 
-bool GadgetClass::Action(uint32_t flags, engine::window::KeyNumber& /*unused*/,
+bool GadgetClass::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
                          int /*x*/, int /*y*/) {
-  // Clicked_On() also calls this with no events for the gadget holding the
-  // mouse; that is not an action, and the sweep goes on.
+  // ActionIfConcerned() also calls this with no events for the gadget holding
+  // the mouse; that is not an action, and the sweep goes on.
   if (flags) {
     IsToRepaint = true;
-    Sticky_Process(flags);
+    UpdateMouseCapture(flags);
     return true;
   }
   return false;
 }
 
-bool GadgetClass::Draw_Me(PixelView& /*view*/, bool forced) {
+bool GadgetClass::Draw(PixelView& /*view*/, bool forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
     return true;
@@ -140,8 +139,8 @@ GadgetClass::PendingInput GadgetClass::ReadInput() {
   const engine::window::InputEvent& event = input.event;
   input.key = event.key;
 
-  if (KeyHook != nullptr) {
-    KeyHook(input.key);
+  if (key_hook_ != nullptr) {
+    key_hook_(input.key);
   }
 
   // A click is placed where the mouse was when it happened, not where it is
@@ -154,7 +153,8 @@ GadgetClass::PendingInput GadgetClass::ReadInput() {
     input.y = TheMouse().y();
   }
 
-  // Translate the event into the k... bits each gadget filters by its Flags.
+  // Translate the event into the k... bits each gadget filters by its
+  // event_mask_.
   using engine::window::MouseButton;
   if (event.IsPress(MouseButton::kLeft)) {
     input.flags |= kLeftPress;
@@ -198,15 +198,15 @@ bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   // While a gadget holds the mouse it gets every event and no other gadget
   // is drawn or offered anything.
   if (StuckOn) {
-    StuckOn->Draw_Me(view, false);
-    // A release in Clicked_On() clears StuckOn; the gadget is still redrawn
-    // so it can show itself raised.
-    GadgetClass* oldstuck = StuckOn;
-    StuckOn->Clicked_On(input.key, input.flags, input.x, input.y);
+    StuckOn->Draw(view, false);
+    // A release in ActionIfConcerned() clears StuckOn; the gadget is still
+    // redrawn so it can show itself raised.
+    GadgetClass* captor = StuckOn;
+    StuckOn->ActionIfConcerned(input.key, input.flags, input.x, input.y);
     if (StuckOn) {
-      StuckOn->Draw_Me(view, false);
+      StuckOn->Draw(view, false);
     } else {
-      oldstuck->Draw_Me(view, false);
+      captor->Draw(view, false);
     }
     return true;
   }
@@ -214,10 +214,10 @@ bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   // Keys go only to the focused gadget; its mouse events go through the
   // normal sweep.
   if (Focused && input.flags & kKeyboard) {
-    Focused->Draw_Me(view, false);
-    Focused->Clicked_On(input.key, input.flags, input.x, input.y);
+    Focused->Draw(view, false);
+    Focused->ActionIfConcerned(input.key, input.flags, input.x, input.y);
     if (Focused) {
-      Focused->Draw_Me(view, false);
+      Focused->Draw(view, false);
     }
     return true;
   }
@@ -225,12 +225,13 @@ bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
 }
 
 bool GadgetClass::Offer(PixelView& view, bool forced, PendingInput& input) {
-  Draw_Me(view, forced);
+  Draw(view, forced);
 
   // A gadget that acted has used up the event, so the sweep stops there.
-  if (!IsDisabled && Clicked_On(input.key, input.flags, input.x, input.y)) {
+  if (!IsDisabled &&
+      ActionIfConcerned(input.key, input.flags, input.x, input.y)) {
     // Action() flags a gadget whose look it changed; show the change now.
-    Draw_Me(view, false);
+    Draw(view, false);
     return true;
   }
   return false;
@@ -246,9 +247,9 @@ engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
   return event;
 }
 
-void GadgetClass::Flag_To_Redraw() { IsToRepaint = true; }
+void GadgetClass::FlagToRedraw() { IsToRepaint = true; }
 
-void GadgetClass::Sticky_Process(uint32_t flags) {
+void GadgetClass::UpdateMouseCapture(uint32_t flags) {
   if (IsSticky && flags & kLeftPress) {
     StuckOn = this;
   }
@@ -257,25 +258,25 @@ void GadgetClass::Sticky_Process(uint32_t flags) {
   }
 }
 
-void GadgetClass::Set_Focus() {
+void GadgetClass::SetFocus() {
   if (Focused) {
-    Focused->Flag_To_Redraw();
-    Focused->Clear_Focus();
+    Focused->FlagToRedraw();
+    Focused->ClearFocus();
   }
-  Flags |= kKeyboard;
+  event_mask_ |= kKeyboard;
   Focused = this;
 }
 
-void GadgetClass::Clear_Focus() {
+void GadgetClass::ClearFocus() {
   if (Focused == this) {
-    Flags &= ~kKeyboard;
+    event_mask_ &= ~kKeyboard;
     Focused = nullptr;
   }
 }
 
-bool GadgetClass::Has_Focus() { return this == Focused; }
+bool GadgetClass::HasFocus() { return this == Focused; }
 
-void GadgetClass::Set_Position(int x, int y) {
+void GadgetClass::SetPosition(int x, int y) {
   X = x;
   Y = y;
 }

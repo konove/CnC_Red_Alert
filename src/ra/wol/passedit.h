@@ -31,10 +31,10 @@ class PassEditClass : public WOLEditClass {
       : WOLEditClass(id, text, max_len, font, flags, x, y, w, h, style) {}
 
   // True while the buffer holds a saved password rather than a typed one.
-  // Cleared by the first Set_Focus(), which also empties the buffer.
+  // Cleared by the first SetFocus(), which also empties the buffer.
   bool bClearOnNextSetFocus = false;
 
-  void Set_Focus() override;
+  void SetFocus() override;
 
  protected:
   void Draw_Text(PixelView& view, const char* text) override;

@@ -39,8 +39,8 @@ namespace ra {
 using engine::gfx::ShapeFlags;
 
 //***********************************************************************************************
-bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
-  if (game::ToggleClass::Draw_Me(view, forced)) {
+bool BigCheckBoxClass::Draw(PixelView& view, bool forced) {
+  if (game::ToggleClass::Draw(view, forced)) {
     game::TheMouse().Hide();
 
     if (!IsOn) {

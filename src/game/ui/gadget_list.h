@@ -88,7 +88,7 @@ class GadgetList {
   // Returns whether any gadget is flagged to be redrawn.
   [[nodiscard]] bool IsToRedraw() const;
 
-  // Returns the first gadget whose Get_ID() is `id`, or nullptr when there is
+  // Returns the first gadget whose id() is `id`, or nullptr when there is
   // none, when it is no ControlClass or when `id` is 0, which is no ID.
   [[nodiscard]] ControlClass* Extract(unsigned id) const;
 
