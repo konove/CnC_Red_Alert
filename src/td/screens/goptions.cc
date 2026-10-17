@@ -51,6 +51,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/rect.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
@@ -232,7 +233,8 @@ void GameOptionsClass::Process() {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   buttons.Add(*gadgets.emplace_back(std::make_unique<game::Gadget>(
-      OptionX, OptionY, OptionWidth, OptionHeight, game::Gadget::kLeftPress)));
+      base::Rect{OptionX, OptionY, OptionWidth, OptionHeight},
+      game::Gadget::kLeftPress)));
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog

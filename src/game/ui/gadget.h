@@ -45,6 +45,7 @@
 
 #include <cstdint>
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 
@@ -81,10 +82,10 @@ class Gadget {
   // A key that came from the keyboard, not a mouse button.
   static constexpr uint32_t kKeyboard = 0x0100;
 
-  // Owns the region at (`x`, `y`), `width` by `height` screen pixels, and acts
-  // on the events in `flags`. A `sticky` gadget also listens for left presses
-  // and releases, which it needs to capture the mouse.
-  Gadget(int x, int y, int width, int height, uint32_t flags,
+  // Owns `region`, in screen pixels, and acts on the events in `flags`. A
+  // `sticky` gadget also listens for left presses and releases, which it needs
+  // to capture the mouse.
+  Gadget(const base::Rect& region, uint32_t flags,
          bool sticky = false) noexcept;
   Gadget() noexcept = default;
   // Not copyable or movable: the list it is in points at it.

@@ -20,6 +20,7 @@
 
 #include <cstdint>
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget_list.h"
@@ -30,12 +31,12 @@ Gadget* Gadget::focused_ = nullptr;
 
 Gadget* Gadget::mouse_captor_ = nullptr;
 
-Gadget::Gadget(const int x, const int y, const int width, const int height,
-               const uint32_t flags, const bool sticky) noexcept
-    : x_(x),
-      y_(y),
-      width_(width),
-      height_(height),
+Gadget::Gadget(const base::Rect& region, const uint32_t flags,
+               const bool sticky) noexcept
+    : x_(region.x()),
+      y_(region.y()),
+      width_(region.width()),
+      height_(region.height()),
 
       sticky_(sticky),
 

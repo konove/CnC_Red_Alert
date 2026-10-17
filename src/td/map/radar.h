@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
@@ -170,7 +171,7 @@ class RadarClass : public DisplayClass {
    public:
     TacticalClass() noexcept
         : game::Gadget(
-              0, 0, 0, 0,
+              base::Rect{},
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}
 

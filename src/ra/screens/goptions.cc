@@ -47,6 +47,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -265,7 +266,8 @@ void GameOptionsClass::Process() {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   const auto dialog_area = std::make_unique<game::Gadget>(
-      OptionX, OptionY, OptionWidth, OptionHeight, game::Gadget::kLeftPress);
+      base::Rect{OptionX, OptionY, OptionWidth, OptionHeight},
+      game::Gadget::kLeftPress);
   buttons.Add(*dialog_area);
 
   /*

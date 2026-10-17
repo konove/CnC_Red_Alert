@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -346,7 +347,7 @@ class SidebarClass : public PowerClass {
    public:
     //				SBGadgetClass() : Gadget(SIDE_X+8,
     // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, kLeftUp) {};
-    SBGadgetClass() noexcept : game::Gadget(0, 0, 0, 0, kLeftUp) {}
+    SBGadgetClass() noexcept : game::Gadget(base::Rect{}, kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

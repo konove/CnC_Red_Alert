@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "base/installed.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -211,7 +212,7 @@ TEST_F(GadgetListTest, AListDestroyedFirstReleasesItsGadgets) {
 }
 
 TEST_F(GadgetListTest, ExtractFindsAGadgetByItsId) {
-  Gadget plain(0, 0, 10, 10, 0);
+  Gadget plain(base::Rect{0, 0, 10, 10}, 0);
   list_.Add(plain);
   list_.Add(a_);
   list_.Add(b_);

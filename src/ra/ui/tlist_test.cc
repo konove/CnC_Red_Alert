@@ -4,6 +4,7 @@
 
 #include "base/array.h"
 #include "base/installed.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
@@ -41,7 +42,7 @@ class TListClassTest : public testing::Test {
 
 // The scroll bar is three gadgets of its own, which go where the list box goes.
 TEST_F(TListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
-  game::Gadget button(0, 0, 10, 10, 0);
+  game::Gadget button(base::Rect{0, 0, 10, 10}, 0);
   game::GadgetList gadgets;
   gadgets.Add(list_);
   gadgets.Add(button);

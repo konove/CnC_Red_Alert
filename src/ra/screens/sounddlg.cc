@@ -232,7 +232,7 @@ void SoundControlsClass::Process() {
   **	Causes left mouse clicks inside the dialog area, but not on any
   **	particular button, to be ignored.
   */
-  game::Gadget area(option_x, option_y, option_width, option_height,
+  game::Gadget area(base::Rect{option_x, option_y, option_width, option_height},
                     game::Gadget::kLeftPress);
 
   /*

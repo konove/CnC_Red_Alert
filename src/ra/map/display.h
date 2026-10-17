@@ -27,6 +27,7 @@
 
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -304,7 +305,7 @@ class DisplayClass : public MapClass {
    public:
     TacticalClass() noexcept
         : game::Gadget(
-              0, 0, 0, 0,
+              base::Rect{},
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/installed.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -26,7 +27,7 @@ using engine::window::MouseButton;
 class Probe : public Gadget {
  public:
   explicit Probe(const bool sticky = false)
-      : Gadget(20, 20, 10, 10, kLeftPress, sticky) {}
+      : Gadget(base::Rect{20, 20, 10, 10}, kLeftPress, sticky) {}
 
   bool Draw(PixelView& view, const bool forced) override {
     if (!Gadget::Draw(view, forced)) {
@@ -151,7 +152,7 @@ TEST_F(GadgetTest, AStickyGadgetListensForTheLeftPressAndRelease) {
   // click to capture and release the mouse.
   class Bare : public Gadget {
    public:
-    Bare() : Gadget(20, 20, 10, 10, 0, /*sticky=*/true) {}
+    Bare() : Gadget(base::Rect{20, 20, 10, 10}, 0, /*sticky=*/true) {}
   } bare;
   list_.Add(bare);
   PressAt(25, 25);

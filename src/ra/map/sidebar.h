@@ -45,6 +45,7 @@
 #include <span>
 
 #include "base/enum_array.h"
+#include "base/rect.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -323,8 +324,10 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public game::Gadget {
    public:
     SBGadgetClass() noexcept
-        : game::Gadget((kSideX + 8) * 2, kSideY * 2, ((kSideWidth - 1) * 2) - 1,
-                       (kSideHeight - 1) * 2, kLeftUp) {}
+        : game::Gadget(
+              base::Rect{(kSideX + 8) * 2, kSideY * 2,
+                         ((kSideWidth - 1) * 2) - 1, (kSideHeight - 1) * 2},
+              kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

@@ -44,6 +44,7 @@
 #include <algorithm>
 
 #include "base/array.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -132,7 +133,8 @@ bool ConfirmationClass::Process(const char* string) {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  game::Gadget dialog(x, y, width, height, game::Gadget::kLeftPress);
+  game::Gadget dialog(base::Rect{x, y, width, height},
+                      game::Gadget::kLeftPress);
   gadgets.Add(dialog);
 
   /*

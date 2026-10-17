@@ -89,7 +89,9 @@ namespace ra {
 StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
                                      FontType font, TextPrintType style, int x,
                                      int y, int w, int h)
-    : game::Gadget(x, y, w, h, 0), TextFont(font), PrintFlags(style) {
+    : game::Gadget(base::Rect{x, y, w, h}, 0),
+      TextFont(font),
+      PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
@@ -119,7 +121,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : game::Gadget(0, 0, 0, 0, 0), PrintFlags(TPF_NONE) {}
+    : game::Gadget(base::Rect{}, 0), PrintFlags(TPF_NONE) {}
 
 /***********************************************************************************************
  * StaticButtonClass::Draw -- Draws the text buttons as indicated. *

@@ -45,6 +45,7 @@
 
 #include "game/ui/control.h"
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
@@ -80,7 +81,7 @@ namespace game {
  *=============================================================================================*/
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, bool sticky) noexcept
-    : Gadget(x, y, w, h, flags, sticky), ID(id) {}
+    : Gadget(base::Rect{x, y, w, h}, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
  * ControlClass::Action -- Normal action for control gadget objects. *
