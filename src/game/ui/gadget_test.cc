@@ -141,15 +141,11 @@ TEST_F(GadgetTest, SetRegionMovesAndResizesTheGadget) {
   EXPECT_EQ(probe_.actions, 1);
 }
 
-TEST_F(GadgetTest, EachSetterChangesOneSideOfTheRegion) {
-  probe_.set_x(1);
-  EXPECT_EQ(probe_.region(), (base::Rect{1, 20, 10, 10}));
-  probe_.set_y(2);
-  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 10, 10}));
+TEST_F(GadgetTest, EachSizeSetterChangesOneSideOfTheRegion) {
   probe_.set_width(3);
-  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 3, 10}));
+  EXPECT_EQ(probe_.region(), (base::Rect{20, 20, 3, 10}));
   probe_.set_height(4);
-  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 3, 4}));
+  EXPECT_EQ(probe_.region(), (base::Rect{20, 20, 3, 4}));
 }
 
 TEST_F(GadgetTest, TheBasePeerHookLeavesTheKeyAlone) {

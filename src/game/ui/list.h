@@ -87,12 +87,13 @@ class ListClass : public ControlClass {
     // Set preliminary values for the slider related gadgets. They don't
     // automatically appear at this time, but there are some values that can
     // be pre-filled in.
-    UpGadget.set_x(UpGadget.x() - UpGadget.width());
-    DownGadget.set_x(DownGadget.x() - DownGadget.width());
-    DownGadget.set_y(DownGadget.y() - DownGadget.height());
-    ScrollGadget.set_x(ScrollGadget.x() -
-                       std::max(UpGadget.width(), DownGadget.width()));
-    ScrollGadget.set_y(y + UpGadget.height());
+    UpGadget.SetPosition(
+        base::Point{UpGadget.x() - UpGadget.width(), UpGadget.y()});
+    DownGadget.SetPosition(base::Point{DownGadget.x() - DownGadget.width(),
+                                       DownGadget.y() - DownGadget.height()});
+    ScrollGadget.SetPosition(base::Point{
+        ScrollGadget.x() - std::max(UpGadget.width(), DownGadget.width()),
+        y + UpGadget.height()});
     ScrollGadget.set_height(ScrollGadget.height() -
                             (UpGadget.height() + DownGadget.height()));
     ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
@@ -381,13 +382,14 @@ class ListClass : public ControlClass {
   }
 
   void SetPosition(const base::Point position) override {
-    UpGadget.set_x(position.x() + width() - UpGadget.width());
-    UpGadget.set_y(position.y());
-    DownGadget.set_x(position.x() + width() - DownGadget.width());
-    DownGadget.set_y(position.y() + height() - DownGadget.height());
-    ScrollGadget.set_x(position.x() + width() -
-                       std::max(UpGadget.width(), DownGadget.width()));
-    ScrollGadget.set_y(position.y() + UpGadget.height());
+    UpGadget.SetPosition(
+        base::Point{position.x() + width() - UpGadget.width(), position.y()});
+    DownGadget.SetPosition(
+        base::Point{position.x() + width() - DownGadget.width(),
+                    position.y() + height() - DownGadget.height()});
+    ScrollGadget.SetPosition(base::Point{
+        position.x() + width() - std::max(UpGadget.width(), DownGadget.width()),
+        position.y() + UpGadget.height()});
     ScrollGadget.set_height(height() -
                             (UpGadget.height() + DownGadget.height()));
     ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));

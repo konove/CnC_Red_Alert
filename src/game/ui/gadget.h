@@ -143,20 +143,15 @@ class Gadget {
   // it and draws when it returns true.
   virtual bool Draw(PixelView& view, bool forced = false);
 
-  // The gadget's region, in screen pixels. The setters move or resize only
-  // this gadget; SetPosition() also moves the parts of a composite one.
+  // The gadget's region, in screen pixels. The setters resize, and
+  // set_region() moves, only this gadget; SetPosition() is the way to move it
+  // that also moves the parts of a composite one.
   [[nodiscard]] base::Rect region() const { return region_; }
   void set_region(const base::Rect& region) { region_ = region; }
   [[nodiscard]] int x() const { return region_.x(); }
   [[nodiscard]] int y() const { return region_.y(); }
   [[nodiscard]] int width() const { return region_.width(); }
   [[nodiscard]] int height() const { return region_.height(); }
-  void set_x(const int x) {
-    region_ = base::Rect{x, region_.y(), region_.width(), region_.height()};
-  }
-  void set_y(const int y) {
-    region_ = base::Rect{region_.x(), y, region_.width(), region_.height()};
-  }
   void set_width(const int width) {
     region_ = base::Rect{region_.x(), region_.y(), width, region_.height()};
   }
