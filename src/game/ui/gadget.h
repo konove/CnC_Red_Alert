@@ -45,7 +45,6 @@
 
 #include <cstdint>
 
-#include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 
@@ -128,9 +127,9 @@ class Gadget {
   // A derived class overrides it to react to losing the focus.
   virtual void ClearFocus();
   // Returns whether keyboard events are routed to this gadget.
-  virtual bool HasFocus();
+  [[nodiscard]] bool HasFocus() const;
   // Returns whether the gadget waits to be drawn.
-  virtual bool IsToRedraw() { return IsToRepaint; }
+  [[nodiscard]] bool IsToRedraw() const { return IsToRepaint; }
   // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
   virtual void SetPosition(int x, int y);
 

@@ -70,10 +70,6 @@ Gadget::~Gadget() {
   if (list_ != nullptr) {
     list_->Erase(*this);
   }
-
-  if (this == Focused) {
-    Focused = nullptr;
-  }
 }
 
 bool Gadget::ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
@@ -274,7 +270,7 @@ void Gadget::ClearFocus() {
   }
 }
 
-bool Gadget::HasFocus() { return this == Focused; }
+bool Gadget::HasFocus() const { return this == Focused; }
 
 void Gadget::SetPosition(int x, int y) {
   X = x;
