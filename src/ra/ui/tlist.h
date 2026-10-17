@@ -195,6 +195,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
 
 template <class T>
 void TListClass<T>::SetPosition(const base::Point position) {
+  game::ControlClass::SetPosition(position);
   UpGadget.SetPosition(
       base::Point{position.x() + width() - UpGadget.width(), position.y()});
   DownGadget.SetPosition(

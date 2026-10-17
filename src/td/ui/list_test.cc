@@ -6,6 +6,7 @@
 
 #include "base/array.h"
 #include "base/installed.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
@@ -51,6 +52,23 @@ TEST_F(TdListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
   gadgets.Remove(list_);
   ASSERT_EQ(gadgets.gadgets().size(), 1U);
   EXPECT_EQ(base::At(gadgets.gadgets(), 0), &button);
+}
+
+// Moving the list box moves it and its scroll bar, which stays on its right.
+TEST_F(TdListClassTest, SetPositionMovesTheListBoxAndItsScrollBar) {
+  game::GadgetList gadgets;
+  list_.Add_Scroll_Bar();
+  gadgets.Add(list_);
+  ASSERT_EQ(gadgets.gadgets().size(), 4U);
+
+  list_.SetPosition(base::Point{30, 50});
+
+  EXPECT_EQ(list_.region(), (base::Rect{30, 50, 100, 60}));
+  for (const game::Gadget* const part : gadgets.gadgets()) {
+    EXPECT_EQ(part->region().right(), 130);
+    EXPECT_GE(part->y(), 50);
+    EXPECT_LE(part->region().bottom(), 110);
+  }
 }
 
 TEST_F(TdListClassTest, AScrollBarAddedLaterJoinsTheListBoxesGadgetList) {

@@ -4,6 +4,7 @@
 
 #include "base/array.h"
 #include "base/installed.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/gadget.h"
@@ -63,6 +64,23 @@ TEST_F(TListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
   EXPECT_EQ(other.gadgets().size(), 4U);
   other.Remove(list_);
   EXPECT_TRUE(other.empty());
+}
+
+// Moving the list box moves it and its scroll bar, which stays on its right.
+TEST_F(TListClassTest, SetPositionMovesTheListBoxAndItsScrollBar) {
+  game::GadgetList gadgets;
+  gadgets.Add(list_);
+  list_.Add_Scroll_Bar();
+  ASSERT_EQ(gadgets.gadgets().size(), 4U);
+
+  list_.SetPosition(base::Point{30, 50});
+
+  EXPECT_EQ(list_.region(), (base::Rect{30, 50, 100, 40}));
+  for (const game::Gadget* const part : gadgets.gadgets()) {
+    EXPECT_EQ(part->region().right(), 130);
+    EXPECT_GE(part->y(), 50);
+    EXPECT_LE(part->region().bottom(), 90);
+  }
 }
 
 // The team-type editor's Insert key puts a mission before the selected one.

@@ -382,6 +382,7 @@ class ListClass : public ControlClass {
   }
 
   void SetPosition(const base::Point position) override {
+    ControlClass::SetPosition(position);
     UpGadget.SetPosition(
         base::Point{position.x() + width() - UpGadget.width(), position.y()});
     DownGadget.SetPosition(
