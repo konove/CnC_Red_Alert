@@ -238,10 +238,10 @@ void SidebarClass::One_Time() {
   ButtonHeight = 9 * factor;
   TopHeight = ButtonHeight + (4 * factor);
 
-  Background.X = SideX + (8 * factor);
-  Background.Y = SideY;
-  Background.Width = SideWidth - 1;
-  Background.Height = SideHeight - 1;
+  Background.set_x(SideX + (8 * factor));
+  Background.set_y(SideY);
+  Background.set_width(SideWidth - 1);
+  Background.set_height(SideHeight - 1);
   /*
   **	This sets up the clipping window. This window is used by the shape
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
@@ -331,14 +331,14 @@ void SidebarClass::Init_IO() {
         maxwidth, StringPixelWidth(font, Text_String(TXT_BUTTON_SELL)) + 8);
     maxwidth = std::max<int>(maxwidth,
                              StringPixelWidth(font, Text_String(TXT_MAP)) + 8);
-    Repair.Width = maxwidth;
-    Upgrade.Width = maxwidth;
-    Zoom.Width = maxwidth;
+    Repair.set_width(maxwidth);
+    Upgrade.set_width(maxwidth);
+    Zoom.set_width(maxwidth);
 
-    Repair.IsSticky = true;
+    Repair.set_sticky(true);
     Repair.ID = kButtonRepair;
-    Repair.X = 484;
-    Repair.Y = 160;
+    Repair.set_x(484);
+    Repair.set_y(160);
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
 
@@ -353,10 +353,10 @@ void SidebarClass::Init_IO() {
 #endif
 #endif
 
-    Upgrade.IsSticky = true;
+    Upgrade.set_sticky(true);
     Upgrade.ID = kButtonUpgrade;
-    Upgrade.X = 480 + 57;
-    Upgrade.Y = 160;
+    Upgrade.set_x(480 + 57);
+    Upgrade.set_y(160);
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
 
@@ -371,10 +371,10 @@ void SidebarClass::Init_IO() {
 #endif
 #endif
 
-    Zoom.IsSticky = true;
+    Zoom.set_sticky(true);
     Zoom.ID = kButtonZoom;
-    Zoom.X = 480 + 110;
-    Zoom.Y = 160;
+    Zoom.set_x(480 + 110);
+    Zoom.set_y(160);
     Zoom.IsPressed = false;
 
 #ifdef FRENCH
@@ -1146,29 +1146,29 @@ void SidebarClass::StripClass::Init_Clear() {
 void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
-  base::At(UpButton, ID).IsSticky = true;
+  base::At(UpButton, ID).set_sticky(true);
   base::At(UpButton, ID).ID = static_cast<unsigned>(kButtonUp + id);
-  base::At(UpButton, ID).X = X + ButtonSpacingOffset + 1;
-  base::At(UpButton, ID).Y = Y + (kMaxVisible * ObjectHeight) - 1;
+  base::At(UpButton, ID).set_x(X + ButtonSpacingOffset + 1);
+  base::At(UpButton, ID).set_y(Y + (kMaxVisible * ObjectHeight) - 1);
 
   base::At(UpButton, ID).Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
-  base::At(DownButton, ID).IsSticky = true;
+  base::At(DownButton, ID).set_sticky(true);
   base::At(DownButton, ID).ID = static_cast<unsigned>(kButtonDown + id);
-  base::At(DownButton, ID).X = base::At(UpButton, ID).X +
-                               base::At(UpButton, ID).Width +
-                               ButtonSpacingOffset - 2;
-  base::At(DownButton, ID).Y = Y + (kMaxVisible * ObjectHeight) - 1;
+  base::At(DownButton, ID)
+      .set_x(base::At(UpButton, ID).x() + base::At(UpButton, ID).width() +
+             ButtonSpacingOffset - 2);
+  base::At(DownButton, ID).set_y(Y + (kMaxVisible * ObjectHeight) - 1);
 
   base::At(DownButton, ID).Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
   for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = base::At(base::At(SelectButton, ID), index);
     g.ID = kButtonSelect;
-    g.X = X;
-    g.Y = Y + (ObjectHeight * index);
-    g.Width = ObjectWidth;
-    g.Height = ObjectHeight;
+    g.set_x(X);
+    g.set_y(Y + (ObjectHeight * index));
+    g.set_width(ObjectWidth);
+    g.set_height(ObjectHeight);
     g.Set_Owner(*this, index);
   }
 }
@@ -2006,8 +2006,8 @@ SidebarClass::StripClass::SelectClass::SelectClass() noexcept
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
-  Width = kObjectWidth * scale;
-  Height = kObjectHeight * scale;
+  set_width(kObjectWidth * scale);
+  set_height(kObjectHeight * scale);
 }
 
 /***********************************************************************************************
@@ -2036,8 +2036,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
   Strip = &strip;
   Index = index;
-  X = strip.X;
-  Y = strip.Y + (index * (kObjectHeight * scale));
+  set_x(strip.X);
+  set_y(strip.Y + (index * (kObjectHeight * scale)));
 }
 
 /***********************************************************************************************
@@ -2143,15 +2143,18 @@ bool SidebarClass::StripClass::SelectClass::Action(
     if (flags & kLeftUp) {
       switch (spc) {
         case static_cast<int>(SPC_ION_CANNON):
-          TheMap().Help_Text(TXT_ION_CANNON, X, Y, kCcGreen, true);
+          TheMap().Help_Text(TXT_ION_CANNON, this->x(), this->y(), kCcGreen,
+                             true);
           break;
 
         case static_cast<int>(SPC_NUCLEAR_BOMB):
-          TheMap().Help_Text(TXT_NUKE_STRIKE, X, Y, kCcGreen, true);
+          TheMap().Help_Text(TXT_NUKE_STRIKE, this->x(), this->y(), kCcGreen,
+                             true);
           break;
 
         case static_cast<int>(SPC_AIR_STRIKE):
-          TheMap().Help_Text(TXT_AIR_STRIKE, X, Y, kCcGreen, true);
+          TheMap().Help_Text(TXT_AIR_STRIKE, this->x(), this->y(), kCcGreen,
+                             true);
           break;
         default:
           break;
@@ -2212,8 +2215,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
       **	Display the help text if the mouse is over the button.
       */
       if (flags & kLeftUp) {
-        TheMap().Help_Text(choice->Full_Name(), X, Y, kCcGreen, true,
-                           choice->Cost_Of());
+        TheMap().Help_Text(choice->Full_Name(), this->x(), this->y(), kCcGreen,
+                           true, choice->Cost_Of());
         flags &= ~kLeftUp;
       }
 

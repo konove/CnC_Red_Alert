@@ -140,8 +140,8 @@ void VisualControlsClass::Process() {
   /*
   **	Centers options button.
   */
-  optionsbtn.X = option_x + (option_width - optionsbtn.Width - 34);
-  resetbtn.X = option_x + 34;
+  optionsbtn.set_x(option_x + (option_width - optionsbtn.width() - 34));
+  resetbtn.set_x(option_x + 34);
 
   game::GadgetList gadgets;
   gadgets.Add(optionsbtn);

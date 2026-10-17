@@ -1382,7 +1382,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   TextButtonClass button3(kButton3, b3txt, kButtonFont, kButtonFlags, 0,
                           y + height - (bheight + 5));
-  button3.X = x + ((width - button3.Width) / 2);
+  button3.set_x(x + ((width - button3.width()) / 2));
 
   game::GadgetList buttonlist;
   int curbutton = 0;

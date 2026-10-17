@@ -156,10 +156,13 @@ TEST_F(GadgetListTest, RemoveTakesTheGadgetOutAndDropsItsFocus) {
 }
 
 TEST_F(GadgetListTest, RemoveDropsTheHoldOnTheMouse) {
+  a_.set_sticky(true);
   list_.Add(a_);
-  Gadget::StuckOn = &a_;
+  Press(5);
+  list_.Input(view_);
+  ASSERT_EQ(Gadget::mouse_captor(), &a_);
   list_.Remove(a_);
-  EXPECT_EQ(Gadget::StuckOn, nullptr);
+  EXPECT_EQ(Gadget::mouse_captor(), nullptr);
 }
 
 TEST_F(GadgetListTest, RemoveIgnoresAGadgetOfAnotherList) {

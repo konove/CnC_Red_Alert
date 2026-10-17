@@ -61,7 +61,7 @@ class CheckBoxClass : public ToggleClass {
       return false;
     }
     TheMouse().Hide();
-    Skin::Draw_Check_Box(view, X, Y, Width, Height, IsOn);
+    Skin::Draw_Check_Box(view, x(), y(), width(), height(), IsOn);
     TheMouse().Show();
     return true;
   }

@@ -185,7 +185,7 @@ void RunSpecialOptionsDialog() {
             view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
                    TPF_USE_GRAD_PAL | TPF_NOSHADOW})
             .Print(kOptions.at(base::ToSize(index)).label,
-                   {check_box.X + kLabelOffsetX, check_box.Y});
+                   {check_box.x() + kLabelOffsetX, check_box.y()});
       }
       gadgets.DrawAll(view);
       game::TheMouse().Show();

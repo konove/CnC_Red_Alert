@@ -140,10 +140,10 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
   const TextPrinter label(view, {Get_Color_Scheme(), game::kTransparentBlack,
                                  FontType::k6PointGradient, TPF_DROPSHADOW});
   label.With(TPF_RIGHT).Print(TXT_HARD,
-                              {slider.X + slider.Width, kSliderLabelY});
-  label.Print(TXT_EASY, {slider.X, kSliderLabelY});
+                              {slider.x() + slider.width(), kSliderLabelY});
+  label.Print(TXT_EASY, {slider.x(), kSliderLabelY});
   label.With(TPF_CENTER)
-      .Print(TXT_NORMAL, {slider.X + (slider.Width / 2), kSliderLabelY});
+      .Print(TXT_NORMAL, {slider.x() + (slider.width() / 2), kSliderLabelY});
   gadgets.DrawAll(view);
   game::TheMouse().Show();
 

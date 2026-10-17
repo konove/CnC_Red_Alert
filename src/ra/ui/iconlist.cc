@@ -197,7 +197,7 @@ int IconListClass::Add_Item(
         font.x_spacing = -2;
 
         const int iWidthToClipAt =
-            IsScrollActive ? Width : Width - UpGadget.Width;
+            IsScrollActive ? width() : width() - UpGadget.width();
         //	This call will place '\r's in the string where line breaks
         // should occur.
         Format_Window_String_New(font, text, iWidthToClipAt, iWidthMax, iHeight,
@@ -206,7 +206,7 @@ int IconListClass::Add_Item(
         // Currently never called: every icon list prints in the typewriter
         // font.
         const int iWidthToClipAt =
-            IsScrollActive ? Width : Width - UpGadget.Width;
+            IsScrollActive ? width() : width() - UpGadget.width();
         //	This call will place '\r's in the string where line breaks
         // should occur.
         Format_Window_String_New(TextFontStyle(TextFont, TextFlags), text,
@@ -499,7 +499,7 @@ bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
   //	Overriding of function is for the sake of MultiSelecting only.
   if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
       (!(flags & kKeyboard))) {
-    int index = game::TheMouse().y() - (Y + 1);
+    int index = game::TheMouse().y() - (this->y() + 1);
     index = index / LineHeight;
     base::ssize iSelected = CurrentTopIndex + index;
     iSelected = std::min<base::ssize>(iSelected, Count() - 1);
@@ -671,19 +671,19 @@ bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
 int IconListClass::GetRealWidth()  //	sigh
 {
   if (IsScrollActive) {
-    return Width + ScrollGadget.Width;
+    return width() + ScrollGadget.width();
   }
-  return Width;
+  return width();
 }
 
 //***********************************************************************************************
 void IconListClass::Resize(int x, int y, int w, int h) {
   Remove_Scroll_Bar();  //	If there is one.
 
-  X = x;
-  Y = y;
-  Width = w;
-  Height = h;
+  set_x(x);
+  set_y(y);
+  set_width(w);
+  set_height(h);
 
   SetPosition(x, y);
 
@@ -701,7 +701,7 @@ int IconListClass::IndexUnderMouse() {
   //	Returns index of line that mouse is currently over, or -1 for mouse not
   // hitting valid index. 	Assumes that x position of mouse is already
   // known to be over the iconlist.
-  int index = game::TheMouse().y() - (Y + 1);
+  int index = game::TheMouse().y() - (y() + 1);
   index = (index / LineHeight) + CurrentTopIndex;
   if (index > Count() - 1 || index < 0) {
     return -1;

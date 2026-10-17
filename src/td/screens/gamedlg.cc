@@ -169,7 +169,7 @@ void GameControlsClass::Process() {
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, FontType::k6PointGradient,
                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
                         d_ok_y);
-  okbtn.X = (TheScreen().visible_view().width() - okbtn.Width) / 2;
+  okbtn.set_x((TheScreen().visible_view().width() - okbtn.width()) / 2);
 
   /*
   **	Various Inits.

@@ -1639,8 +1639,8 @@ int MapEditClass::Team_Members(HousesType house) {
   const int msg_y = dlg_y + kMargin + kTxt6H + kMargin + (numrows * kRowH) +
                     kMargin;  // y-coord for object names
 
-  okbtn.Y = dlg_y + dlg_h - kMargin - kOkH;
-  cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH;
+  okbtn.set_y(dlg_y + dlg_h - kMargin - kOkH);
+  cancelbtn.set_y(dlg_y + dlg_h - kMargin - kCancelH);
 
   /*
   **	Draw to SeenBuff.

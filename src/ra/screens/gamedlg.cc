@@ -194,7 +194,7 @@ void GameControlsClass::Process() {
                             d_sound_h);
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kButtonFont, kButtonFlags,
                         d_ok_x, d_ok_y);
-  okbtn.X = (TheScreen().visible_view().width() - okbtn.Width) / 2;
+  okbtn.set_x((TheScreen().visible_view().width() - okbtn.width()) / 2);
 
   TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kButtonFont,
                           kButtonFlags, d_wol_x, d_wol_y, d_wol_w, d_wol_h);

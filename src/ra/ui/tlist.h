@@ -178,25 +178,28 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
   *automatically *	appear at this time, but there are some values that can
   *be pre-filled in.
   */
-  UpGadget.X -= UpGadget.Width;
-  DownGadget.X -= DownGadget.Width;
-  DownGadget.Y -= DownGadget.Height;
-  ScrollGadget.X -= std::max(UpGadget.Width, DownGadget.Width);
-  ScrollGadget.Y = Y + UpGadget.Height;
-  ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
-  ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
+  UpGadget.set_x(UpGadget.x() - UpGadget.width());
+  DownGadget.set_x(DownGadget.x() - DownGadget.width());
+  DownGadget.set_y(DownGadget.y() - DownGadget.height());
+  ScrollGadget.set_x(ScrollGadget.x() -
+                     std::max(UpGadget.width(), DownGadget.width()));
+  ScrollGadget.set_y(this->y() + UpGadget.height());
+  ScrollGadget.set_height(ScrollGadget.height() -
+                          (UpGadget.height() + DownGadget.height()));
+  ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
 }
 
 template <class T>
 void TListClass<T>::SetPosition(int x, int y) {
-  UpGadget.X = x + Width - UpGadget.Width;
-  UpGadget.Y = y;
-  DownGadget.X = x + Width - DownGadget.Width;
-  DownGadget.Y = y + Height - DownGadget.Height;
-  ScrollGadget.X = x + Width - std::max(UpGadget.Width, DownGadget.Width);
-  ScrollGadget.Y = y + UpGadget.Height;
-  ScrollGadget.Height = Height - (UpGadget.Height + DownGadget.Height);
-  ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
+  UpGadget.set_x(x + width() - UpGadget.width());
+  UpGadget.set_y(y);
+  DownGadget.set_x(x + width() - DownGadget.width());
+  DownGadget.set_y(y + height() - DownGadget.height());
+  ScrollGadget.set_x(x + width() -
+                     std::max(UpGadget.width(), DownGadget.width()));
+  ScrollGadget.set_y(y + UpGadget.height());
+  ScrollGadget.set_height(height() - (UpGadget.height() + DownGadget.height()));
+  ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
 }
 
 template <class T>
@@ -311,7 +314,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
     }
 
   } else {
-    int index = game::TheMouse().y() - (Y + 1);
+    int index = game::TheMouse().y() - (this->y() + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex =
@@ -326,7 +329,7 @@ bool TListClass<T>::Draw(PixelView& view, bool forced) {
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (game::Gadget::Draw(view, forced)) {
-    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(view, x(), y(), width(), height(), BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.
@@ -340,8 +343,8 @@ bool TListClass<T>::Draw(PixelView& view, bool forced) {
           **	Prints the text and handles right edge clipping and tabs.
           */
           base::At(List, line)
-              ->Draw_It(view, line, X + 1, Y + (LineHeight * index) + 1,
-                        Width - 2, LineHeight, (line == SelectedIndex),
+              ->Draw_It(view, line, x() + 1, y() + (LineHeight * index) + 1,
+                        width() - 2, LineHeight, (line == SelectedIndex),
                         TextFont, TextFlags);
           //					List[index].Draw_It(line, X+1,
           // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
@@ -435,7 +438,7 @@ bool TListClass<T>::Add_Scroll_Bar() {
     **	slider gadgets.
     */
     FlagToRedraw();
-    Width -= ScrollGadget.Width;
+    set_width(width() - ScrollGadget.width());
 
     /*
     **	Tell the newly created gadgets that they should inform this list box
@@ -481,7 +484,7 @@ template <class T>
 bool TListClass<T>::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
-    Width += ScrollGadget.Width;
+    set_width(width() + ScrollGadget.width());
     if (list() != nullptr) {
       RemoveScrollGadgets(*list());
     }

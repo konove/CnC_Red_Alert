@@ -332,7 +332,7 @@ TextLabelClass* MessageListClass::Add_Message(
     .....................................................................*/
     y = MessageY;
     for (game::Gadget* const gadget : MessageList.gadgets()) {
-      gadget->Y = y;
+      gadget->set_y(y);
       y += Height;
     }
   }
@@ -554,7 +554,7 @@ int MessageListClass::Manage() {
   if (changed) {
     int y = MessageY;
     for (game::Gadget* const gadget : MessageList.gadgets()) {
-      gadget->Y = y;
+      gadget->set_y(y);
       y += Height;
     }
   }

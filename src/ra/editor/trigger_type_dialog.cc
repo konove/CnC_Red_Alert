@@ -875,11 +875,11 @@ bool TriggerType::Edit() {
   // The house that owns the trigger. The list cannot show "no house", so an
   // unset house becomes HOUSE_GOOD, even if the dialog is then cancelled.
   char owner_text[kDescriptionSize] = "";
-  DropListClass owner_list(kOwnerList, owner_text, sizeof(owner_text),
-                           FontType::kEditor, TPF_NOSHADOW,
-                           name_edit.X + name_edit.Width + 20, name_edit.Y, 95,
-                           8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass owner_list(
+      kOwnerList, owner_text, sizeof(owner_text), FontType::kEditor,
+      TPF_NOSHADOW, name_edit.x() + name_edit.width() + 20, name_edit.y(), 95,
+      8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house_type : magic_enum::enum_values<HousesType>()) {
     owner_list.Add_Item(HouseTypeClass::As_Reference(house_type).IniName);
   }
@@ -895,8 +895,8 @@ bool TriggerType::Edit() {
       "Volatile", "Semi-persistent", "Persistent"};
   DropListClass persistence_list(
       kPersistenceList, persistence_text, sizeof(persistence_text),
-      FontType::kEditor, TPF_NOSHADOW, owner_list.X + owner_list.Width + 20,
-      owner_list.Y, 105, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      FontType::kEditor, TPF_NOSHADOW, owner_list.x() + owner_list.width() + 20,
+      owner_list.y(), 105, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const char* const name : kPersistenceNames) {
     persistence_list.Add_Item(name);
@@ -908,14 +908,14 @@ bool TriggerType::Edit() {
   MultiStyle event_style = event_control;
   TextButtonClass event_control_button(
       kEventControlButton, TXT_TRIGGER_JUST_EVENT, kEButtonFont, kEButtonFlags,
-      event1_list.X, event1_list.Y + 11, 100, 9);
+      event1_list.x(), event1_list.y() + 11, 100, 9);
 
   // This button toggles the second action. Linked events always have one, so
   // the button is hidden then and `has_second_action` is not consulted.
   bool has_second_action = action_control != MULTI_ONLY;
   TextButtonClass action_control_button(
       kActionControlButton, TXT_TRIGGER_JUST_ACTION, kEButtonFont,
-      kEButtonFlags, action1_list.X, action1_list.Y + 11, 100, 9);
+      kEButtonFlags, action1_list.x(), action1_list.y() + 11, 100, 9);
 
   // Create the ubiquitous OK and Cancel buttons.
   TextButtonClass ok_button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
@@ -955,29 +955,32 @@ bool TriggerType::Edit() {
       // Draw the captions
       const TextPrinter caption(view, {scheme, game::kTransparentBlack,
                                        FontType::kEditor, TPF_NOSHADOW});
-      caption.Print("Trigger Event:", {event1_list.X, event1_list.Y - 7});
-      caption.Print("Action to Perform:", {action1_list.X, action1_list.Y - 7});
-      caption.Print("House:", {owner_list.X, owner_list.Y - 7});
-      caption.Print("Name:", {name_edit.X, name_edit.Y - 7});
+      caption.Print("Trigger Event:", {event1_list.x(), event1_list.y() - 7});
+      caption.Print("Action to Perform:",
+                    {action1_list.x(), action1_list.y() - 7});
+      caption.Print("House:", {owner_list.x(), owner_list.y() - 7});
+      caption.Print("Name:", {name_edit.x(), name_edit.y() - 7});
       caption.Print("Persistence:",
-                    {persistence_list.X, persistence_list.Y - 7});
+                    {persistence_list.x(), persistence_list.y() - 7});
 
       // For linked events, draw a bracket from each event list to the action
       // list it sets off.
       if (event_style == MULTI_LINKED) {
-        view.DrawLine(event1_list.X - 1, event1_list.Y + 3, event1_list.X - 4,
-                      event1_list.Y + 3, game::kWhite);
-        view.DrawLine(event1_list.X - 4, event1_list.Y + 3, action1_list.X - 4,
-                      action1_list.Y + 3, game::kWhite);
-        view.DrawLine(action1_list.X - 1, action1_list.Y + 3,
-                      action1_list.X - 4, action1_list.Y + 3, game::kWhite);
+        view.DrawLine(event1_list.x() - 1, event1_list.y() + 3,
+                      event1_list.x() - 4, event1_list.y() + 3, game::kWhite);
+        view.DrawLine(event1_list.x() - 4, event1_list.y() + 3,
+                      action1_list.x() - 4, action1_list.y() + 3, game::kWhite);
+        view.DrawLine(action1_list.x() - 1, action1_list.y() + 3,
+                      action1_list.x() - 4, action1_list.y() + 3, game::kWhite);
 
-        view.DrawLine(event2_list.X - 1, event2_list.Y + 3, event2_list.X - 10,
-                      event2_list.Y + 3, game::kWhite);
-        view.DrawLine(event2_list.X - 10, event2_list.Y + 3,
-                      action2_list.X - 10, action2_list.Y + 3, game::kWhite);
-        view.DrawLine(action2_list.X - 1, action2_list.Y + 3,
-                      action2_list.X - 10, action2_list.Y + 3, game::kWhite);
+        view.DrawLine(event2_list.x() - 1, event2_list.y() + 3,
+                      event2_list.x() - 10, event2_list.y() + 3, game::kWhite);
+        view.DrawLine(event2_list.x() - 10, event2_list.y() + 3,
+                      action2_list.x() - 10, action2_list.y() + 3,
+                      game::kWhite);
+        view.DrawLine(action2_list.x() - 1, action2_list.y() + 3,
+                      action2_list.x() - 10, action2_list.y() + 3,
+                      game::kWhite);
       }
 
       // Show the second event list unless there is only one event.

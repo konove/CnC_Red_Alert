@@ -78,8 +78,8 @@ namespace td {
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
     : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
                          kLeftPress | kLeftHeld | kLeftRelease, true),
-      FaceX(X + (Width / 2)),
-      FaceY(Y + (Height / 2)),
+      FaceX(this->x() + (width() / 2)),
+      FaceY(this->y() + (height() / 2)),
       Direction(dir),
       Facing(game::NearestFacing(Direction)),
       OldFacing(Facing) {
@@ -253,7 +253,7 @@ bool Dial8Class::Draw(PixelView& view, bool forced) {
     /*
     **	Draw background & decorations.
     */
-    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Box(view, x(), y(), width(), height(), BOXSTYLE_GREEN_DOWN, true);
     for (const auto& i : FacePoint) {
       Draw_Box(view, base::At(i, 0) - 1, base::At(i, 1) - 1, 3, 3,
                BOXSTYLE_GREEN_RAISED, false);

@@ -50,13 +50,13 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 
   const TextPrinter printer(
       view, {Color, game::kTransparentBlack, TextFont, TextFlags | flags});
-  printer.PrintClipped(text, {X + 1, Y + 1}, Width - 2);
+  printer.PrintClipped(text, {x() + 1, y() + 1}, width() - 2);
 
   const FontStyle font = TextFontStyle(TextFont, TextFlags | flags);
   const int text_width = StringPixelWidth(font, text);
   if (HasFocus() &&  //	strlen(text) < MaxLength &&
-      text_width + StringPixelWidth(font, "_") < Width - 2) {
-    printer.PrintClipped("_", {X + 1 + text_width, Y + 1}, -1);
+      text_width + StringPixelWidth(font, "_") < width() - 2) {
+    printer.PrintClipped("_", {x() + 1 + text_width, y() + 1}, -1);
   }
 }
 

@@ -143,8 +143,8 @@ bool TeamType::Edit() {
   char house_text[25] = "";
   DropListClass house_drop(kButtonHouse, house_text, sizeof(house_text),
                            FontType::kEditor, TPF_NOSHADOW,
-                           name_edit.X + name_edit.Width + kFieldSpacingX,
-                           name_edit.Y, 55, 8 * 5, up_shape, down_shape);
+                           name_edit.x() + name_edit.width() + kFieldSpacingX,
+                           name_edit.y(), 55, 8 * 5, up_shape, down_shape);
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -155,10 +155,10 @@ bool TeamType::Edit() {
 
   // Recruit priority for this team.
   char priority_text[4];
-  EditClass priority_edit(kButtonRecruit, priority_text, sizeof(priority_text),
-                          FontType::kEditor, TPF_NOSHADOW,
-                          house_drop.X + house_drop.Width + 5 + kFieldSpacingX,
-                          house_drop.Y, kEditWidth, 9, EditClass::kNumeric);
+  EditClass priority_edit(
+      kButtonRecruit, priority_text, sizeof(priority_text), FontType::kEditor,
+      TPF_NOSHADOW, house_drop.x() + house_drop.width() + 5 + kFieldSpacingX,
+      house_drop.y(), kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(priority_text, sizeof(priority_text), "%d", recruit_priority_);
   commands.AddAfter(priority_edit, name_edit);
 
@@ -166,8 +166,8 @@ bool TeamType::Edit() {
   char max_text[4];
   EditClass max_edit(kButtonMaxnum, max_text, sizeof(max_text),
                      FontType::kEditor, TPF_NOSHADOW,
-                     priority_edit.X + priority_edit.Width + kFieldSpacingX,
-                     priority_edit.Y, kEditWidth, 9, EditClass::kNumeric);
+                     priority_edit.x() + priority_edit.width() + kFieldSpacingX,
+                     priority_edit.y(), kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(max_text, sizeof(max_text), "%d", max_teams_);
   commands.AddAfter(max_edit, name_edit);
 
@@ -175,25 +175,25 @@ bool TeamType::Edit() {
   char initial_text[4];
   EditClass initial_edit(kButtonInitnum, initial_text, sizeof(initial_text),
                          FontType::kEditor, TPF_NOSHADOW,
-                         max_edit.X + max_edit.Width + kFieldSpacingX,
-                         max_edit.Y, kEditWidth, 9, EditClass::kNumeric);
+                         max_edit.x() + max_edit.width() + kFieldSpacingX,
+                         max_edit.y(), kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(initial_text, sizeof(initial_text), "%d", initial_count_);
   commands.AddAfter(initial_edit, name_edit);
 
   // Waypoint to create or reinforce this team at, as the editor's letters;
   // empty for none.
   char origin_text[4];
-  EditClass origin_edit(kButtonOrigin, origin_text, sizeof(origin_text),
-                        FontType::kEditor, TPF_NOSHADOW,
-                        initial_edit.X + initial_edit.Width + kFieldSpacingX,
-                        initial_edit.Y, 20, 9, EditClass::kAlpha);
+  EditClass origin_edit(
+      kButtonOrigin, origin_text, sizeof(origin_text), FontType::kEditor,
+      TPF_NOSHADOW, initial_edit.x() + initial_edit.width() + kFieldSpacingX,
+      initial_edit.y(), 20, 9, EditClass::kAlpha);
   base::SafeCopy(origin_text, origin_ != -1 ? WaypointLetters(origin_) : "");
   commands.AddAfter(origin_edit, name_edit);
 
   // Button that opens the members dialog.
   TextButtonClass members_button(kButtonMembers, "Members", kEButtonFont,
-                                 kEButtonFlags, name_edit.X, name_edit.Y + 12,
-                                 50);
+                                 kEButtonFlags, name_edit.x(),
+                                 name_edit.y() + 12, 50);
   commands.AddAfter(members_button, name_edit);
 
   // Trigger to assign to each member of this team (when object joins team).
@@ -201,7 +201,7 @@ bool TeamType::Edit() {
   char trigger_text[25] = "";
   DropListClass trigger_drop(kButtonTrigger, trigger_text, sizeof(trigger_text),
                              FontType::kEditor, TPF_NOSHADOW,
-                             kDialogX + kDialogW - 95, members_button.Y, 60,
+                             kDialogX + kDialogW - 95, members_button.y(), 60,
                              8 * 5, up_shape, down_shape);
   trigger_drop.Add_Item("<NONE>");
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
@@ -231,25 +231,25 @@ bool TeamType::Edit() {
 
   // Suicide travel to target attribute.
   CheckBoxClass suicide_check(kButtonSuicide, kCheckX,
-                              roundabout_check.Y + kCheckSpacingY);
+                              roundabout_check.y() + kCheckSpacingY);
   set_check(suicide_check, is_suicide_);
   commands.AddAfter(suicide_check, name_edit);
 
   // Autocreate attribute for this team.
   CheckBoxClass autocreate_check(kButtonAuto, kCheckX,
-                                 suicide_check.Y + kCheckSpacingY);
+                                 suicide_check.y() + kCheckSpacingY);
   set_check(autocreate_check, is_autocreate_);
   commands.AddAfter(autocreate_check, name_edit);
 
   // Prebuild team members attribute for this team.
   CheckBoxClass prebuilt_check(kButtonPrebuilt, kCheckX,
-                               autocreate_check.Y + kCheckSpacingY);
+                               autocreate_check.y() + kCheckSpacingY);
   set_check(prebuilt_check, is_prebuilt_);
   commands.AddAfter(prebuilt_check, name_edit);
 
   // Reinforce this team in progress attribute.
   CheckBoxClass reinforce_check(kButtonReinforce, kCheckX,
-                                prebuilt_check.Y + kCheckSpacingY);
+                                prebuilt_check.y() + kCheckSpacingY);
   set_check(reinforce_check, is_reinforceable_);
   commands.AddAfter(reinforce_check, name_edit);
 
@@ -259,7 +259,7 @@ bool TeamType::Edit() {
   char mission_text[45];
   DropListClass mission_drop(
       kButtonMission1, mission_text, sizeof(mission_text), FontType::kEditor,
-      TPF_NOSHADOW, reinforce_check.X, reinforce_check.Y + 15, 170, 8 * 8,
+      TPF_NOSHADOW, reinforce_check.x(), reinforce_check.y() + 15, 170, 8 * 8,
       up_shape, down_shape);
   for (const TeamMissionType mission :
        magic_enum::enum_values<TeamMissionType>()) {
@@ -275,14 +275,14 @@ bool TeamType::Edit() {
   char argument_text[6] = {};
   EditClass argument_edit(kButtonArg, argument_text, sizeof(argument_text),
                           FontType::kEditor, TPF_NOSHADOW,
-                          mission_drop.X + mission_drop.Width + 15,
-                          mission_drop.Y, 60, -1, EditClass::kAlphanumeric);
+                          mission_drop.x() + mission_drop.width() + 15,
+                          mission_drop.y(), 60, -1, EditClass::kAlphanumeric);
 
   char quarry_text[55];
   DropListClass quarry_drop(kButtonQuarry, quarry_text, sizeof(quarry_text),
                             FontType::kEditor, TPF_NOSHADOW,
-                            mission_drop.X + mission_drop.Width + 15,
-                            mission_drop.Y, 100, 5 * 8, up_shape, down_shape);
+                            mission_drop.x() + mission_drop.width() + 15,
+                            mission_drop.y(), 100, 5 * 8, up_shape, down_shape);
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     quarry_drop.Add_Item(QuarryName.at(q));
   }
@@ -292,8 +292,9 @@ bool TeamType::Edit() {
   char formation_text[55];
   DropListClass formation_drop(
       kButtonFormation, formation_text, sizeof(formation_text),
-      FontType::kEditor, TPF_NOSHADOW, mission_drop.X + mission_drop.Width + 15,
-      mission_drop.Y, 100, 5 * 8, up_shape, down_shape);
+      FontType::kEditor, TPF_NOSHADOW,
+      mission_drop.x() + mission_drop.width() + 15, mission_drop.y(), 100,
+      5 * 8, up_shape, down_shape);
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
     formation_drop.Add_Item(FormationName.at(f));
   }
@@ -303,8 +304,9 @@ bool TeamType::Edit() {
   char unit_mission_text[55];
   DropListClass unit_mission_drop(
       kButtonMission, unit_mission_text, sizeof(unit_mission_text),
-      FontType::kEditor, TPF_NOSHADOW, mission_drop.X + mission_drop.Width + 15,
-      mission_drop.Y, 100, 5 * 8, up_shape, down_shape);
+      FontType::kEditor, TPF_NOSHADOW,
+      mission_drop.x() + mission_drop.width() + 15, mission_drop.y(), 100,
+      5 * 8, up_shape, down_shape);
   for (const MissionType m : magic_enum::enum_values<MissionType>()) {
     unit_mission_drop.Add_Item(MissionClass::Mission_Name(m));
   }
@@ -315,7 +317,7 @@ bool TeamType::Edit() {
   // the ones the dialog adds.
   std::vector<std::unique_ptr<TeamMission>> missions;
   TListClass<TeamMission*> script_list(
-      kButtonMission2, mission_drop.X + 60, mission_drop.Y + 22, 240, 8 * 7,
+      kButtonMission2, mission_drop.x() + 60, mission_drop.y() + 22, 240, 8 * 7,
       FontType::kEditor, TPF_NOSHADOW, up_shape, down_shape);
   for (int index = 0; index < mission_count_; index++) {
     script_list.Add_Item(missions
@@ -326,24 +328,24 @@ bool TeamType::Edit() {
   commands.Add(script_list);
 
   // Mission editing command buttons.
-  TextButtonClass append_button(kButtonAdd, "Append", kEButtonFont,
-                                kEButtonFlags, kNameX,
-                                mission_drop.Y + mission_drop.Height + 1, 50);
+  TextButtonClass append_button(
+      kButtonAdd, "Append", kEButtonFont, kEButtonFlags, kNameX,
+      mission_drop.y() + mission_drop.height() + 1, 50);
   commands.AddAfter(append_button, name_edit);
 
   TextButtonClass insert_button(kButtonInsert, "Insert", kEButtonFont,
-                                kEButtonFlags, append_button.X,
-                                append_button.Y + 10, 50);
+                                kEButtonFlags, append_button.x(),
+                                append_button.y() + 10, 50);
   commands.AddAfter(insert_button, name_edit);
 
   TextButtonClass delete_button(kButtonDelete, "Delete", kEButtonFont,
-                                kEButtonFlags, insert_button.X,
-                                insert_button.Y + 10, 50);
+                                kEButtonFlags, insert_button.x(),
+                                insert_button.y() + 10, 50);
   commands.AddAfter(delete_button, name_edit);
 
   TextButtonClass replace_button(kButtonReplace, "Replace", kEButtonFont,
-                                 kEButtonFlags, delete_button.X,
-                                 delete_button.Y + 10, 50);
+                                 kEButtonFlags, delete_button.x(),
+                                 delete_button.y() + 10, 50);
   commands.AddAfter(replace_button, name_edit);
 
   TextButtonClass ok_button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
@@ -547,34 +549,36 @@ bool TeamType::Edit() {
       Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
 
       // Draw the captions
-      caption.Print("Name:", {name_edit.X, name_edit.Y - 7});
-      caption.Print("House:", {house_drop.X, house_drop.Y - 7});
-      caption.Print("Pri:", {priority_edit.X, priority_edit.Y - 7});
-      caption.Print("Max:", {max_edit.X, max_edit.Y - 7});
-      caption.Print("Num:", {initial_edit.X, initial_edit.Y - 7});
-      caption.Print("Loc:", {origin_edit.X, origin_edit.Y - 7});
-      caption.Print("#  Team Mission", {script_list.X, script_list.Y - 7});
-      caption.With(TPF_RIGHT).Print("Trigger:",
-                                    {trigger_drop.X - 4, trigger_drop.Y + 1});
+      caption.Print("Name:", {name_edit.x(), name_edit.y() - 7});
+      caption.Print("House:", {house_drop.x(), house_drop.y() - 7});
+      caption.Print("Pri:", {priority_edit.x(), priority_edit.y() - 7});
+      caption.Print("Max:", {max_edit.x(), max_edit.y() - 7});
+      caption.Print("Num:", {initial_edit.x(), initial_edit.y() - 7});
+      caption.Print("Loc:", {origin_edit.x(), origin_edit.y() - 7});
+      caption.Print("#  Team Mission", {script_list.x(), script_list.y() - 7});
+      caption.With(TPF_RIGHT).Print(
+          "Trigger:", {trigger_drop.x() - 4, trigger_drop.y() + 1});
 
-      caption.Print(
-          MemberDescription(),
-          {members_button.X + members_button.Width + 3, members_button.Y + 1});
+      caption.Print(MemberDescription(),
+                    {members_button.x() + members_button.width() + 3,
+                     members_button.y() + 1});
 
       // Horizontal spacing for check box description text.
       constexpr int kCheckTextOffsetX = 8;
       caption.Print(
           "Use safest, possibly longer, route to target?",
-          {roundabout_check.X + kCheckTextOffsetX, roundabout_check.Y});
+          {roundabout_check.x() + kCheckTextOffsetX, roundabout_check.y()});
       caption.Print("Charge toward target ignoring distractions?",
-                    {suicide_check.X + kCheckTextOffsetX, suicide_check.Y});
+                    {suicide_check.x() + kCheckTextOffsetX, suicide_check.y()});
       caption.Print(
           "Only 'Autocreate A.I.' uses this team type?",
-          {autocreate_check.X + kCheckTextOffsetX, autocreate_check.Y});
-      caption.Print("Prebuild team members before team is created?",
-                    {prebuilt_check.X + kCheckTextOffsetX, prebuilt_check.Y});
-      caption.Print("Automatically reinforce team whenever possible?",
-                    {reinforce_check.X + kCheckTextOffsetX, reinforce_check.Y});
+          {autocreate_check.x() + kCheckTextOffsetX, autocreate_check.y()});
+      caption.Print(
+          "Prebuild team members before team is created?",
+          {prebuilt_check.x() + kCheckTextOffsetX, prebuilt_check.y()});
+      caption.Print(
+          "Automatically reinforce team whenever possible?",
+          {reinforce_check.x() + kCheckTextOffsetX, reinforce_check.y()});
 
       // Redraw the buttons
       commands.DrawAll(view);

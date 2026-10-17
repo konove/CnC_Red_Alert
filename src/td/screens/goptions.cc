@@ -196,7 +196,7 @@ void GameOptionsClass::Process() {
                 FontType::k6PointGradient, TPF_NOSHADOW, 0, y))
             .get();
 
-    maxwidth = std::max(g->Width, maxwidth);
+    maxwidth = std::max(g->width(), maxwidth);
     buttons.Add(*g);
 
     base::At(buttonsel, index) = g;
@@ -209,21 +209,22 @@ void GameOptionsClass::Process() {
   *button.
   */
   for (game::Gadget* const g : buttons.gadgets()) {
-    g->Width = std::max(maxwidth, 90 * resfactor);
-    g->X = OptionX + ((OptionWidth - g->Width) / 2);
+    g->set_width(std::max(maxwidth, 90 * resfactor));
+    g->set_x(OptionX + ((OptionWidth - g->width()) / 2));
   }
 #ifdef FRENCH
   buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
 #else
-  base::At(buttonsel, kButtonResume - 1)->Width = 90 * resfactor;
+  base::At(buttonsel, kButtonResume - 1)->set_width(90 * resfactor);
 #endif
-  base::At(buttonsel, kButtonResume - 1)->X = OptionX + (5 * resfactor);
+  base::At(buttonsel, kButtonResume - 1)->set_x(OptionX + (5 * resfactor));
 
   if (TheSession().type() == GAME_NORMAL) {
-    base::At(buttonsel, kButtonRestate - 1)->Width = 90 * resfactor;
-    base::At(buttonsel, kButtonRestate - 1)->X =
-        OptionX + OptionWidth -
-        (base::At(buttonsel, kButtonRestate - 1)->Width + (5 * resfactor));
+    base::At(buttonsel, kButtonRestate - 1)->set_width(90 * resfactor);
+    base::At(buttonsel, kButtonRestate - 1)
+        ->set_x(OptionX + OptionWidth -
+                (base::At(buttonsel, kButtonRestate - 1)->width() +
+                 (5 * resfactor)));
   }
 
   /*

@@ -333,28 +333,28 @@ void SidebarClass::Init_IO() {
   ** Add the sidebar's buttons only if we're not in editor mode.
   */
   if (!TheDebugState().map_editor_active()) {
-    Repair.IsSticky = true;
+    Repair.set_sticky(true);
     Repair.ID = kButtonRepair;
-    Repair.X = 0x1f2;
-    Repair.Y = 0x96;
+    Repair.set_x(0x1f2);
+    Repair.set_y(0x96);
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
     Repair.ReflectButtonState = true;
     Repair.Set_Shape(MixArchive::RetrieveData("REPAIR.SHP"));
 
-    Upgrade.IsSticky = true;
+    Upgrade.set_sticky(true);
     Upgrade.ID = kButtonUpgrade;
-    Upgrade.X = 0x21f;
-    Upgrade.Y = 0x96;
+    Upgrade.set_x(0x21f);
+    Upgrade.set_y(0x96);
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
     Upgrade.ReflectButtonState = true;
     Upgrade.Set_Shape(MixArchive::RetrieveData("SELL.SHP"));
 
-    Zoom.IsSticky = true;
+    Zoom.set_sticky(true);
     Zoom.ID = kButtonZoom;
-    Zoom.X = 0x24c;
-    Zoom.Y = 0x96;
+    Zoom.set_x(0x24c);
+    Zoom.set_y(0x96);
     Zoom.IsPressed = false;
     Zoom.Set_Shape(MixArchive::RetrieveData("MAP.SHP"));
 
@@ -1115,33 +1115,33 @@ void SidebarClass::StripClass::Init_Clear() {
 void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
-  base::At(UpButton, ID).IsSticky = true;
+  base::At(UpButton, ID).set_sticky(true);
   base::At(UpButton, ID).ID = static_cast<unsigned>(kButtonUp + id);
-  base::At(UpButton, ID).X = X + (kUpXOffset * 2);
-  base::At(UpButton, ID).Y = Y + (kUpYOffset * 2);
+  base::At(UpButton, ID).set_x(X + (kUpXOffset * 2));
+  base::At(UpButton, ID).set_y(Y + (kUpYOffset * 2));
 
   base::At(UpButton, ID).Set_Shape(MixArchive::RetrieveData("STRIPUP.SHP"));
 
-  base::At(DownButton, ID).IsSticky = true;
+  base::At(DownButton, ID).set_sticky(true);
   base::At(DownButton, ID).ID = static_cast<unsigned>(kButtonDown + id);
-  base::At(DownButton, ID).X = X + (kDownXOffset * 2);
-  base::At(DownButton, ID).Y = Y + (kDownYOffset * 2);
+  base::At(DownButton, ID).set_x(X + (kDownXOffset * 2));
+  base::At(DownButton, ID).set_y(Y + (kDownYOffset * 2));
 
   /*
   ** Buttons are in a slightly different position in the new sidebar
   */
-  base::At(UpButton, ID).Y--;
-  base::At(DownButton, ID).Y--;
+  base::At(UpButton, ID).set_y(base::At(UpButton, ID).y() - 1);
+  base::At(DownButton, ID).set_y(base::At(DownButton, ID).y() - 1);
 
   base::At(DownButton, ID).Set_Shape(MixArchive::RetrieveData("STRIPDN.SHP"));
 
   for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = base::At(base::At(SelectButton, ID), index);
     g.ID = kButtonSelect;
-    g.X = X;
-    g.Y = Y + (kObjectHeight * index * 2);
-    g.Width = kObjectWidth * 2;
-    g.Height = kObjectHeight * 2;
+    g.set_x(X);
+    g.set_y(Y + (kObjectHeight * index * 2));
+    g.set_width(kObjectWidth * 2);
+    g.set_height(kObjectHeight * 2);
     g.Set_Owner(*this, index);
   }
 }
@@ -1897,8 +1897,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
   Strip = &strip;
   Index = index;
-  X = strip.X;
-  Y = strip.Y + (index * kObjectHeight * 2);
+  set_x(strip.X);
+  set_y(strip.Y + (index * kObjectHeight * 2));
 }
 
 /***********************************************************************************************
@@ -1961,7 +1961,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
     **	Display the help text if the mouse is over the button.
     */
     if (flags & kLeftUp) {
-      TheMap().Help_Text(SpecialWeaponHelp.at(spc), X, Y, scheme->Color, true);
+      TheMap().Help_Text(SpecialWeaponHelp.at(spc), this->x(), this->y(),
+                         scheme->Color, true);
       flags &= ~kLeftUp;
     }
 
@@ -1999,7 +2000,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
       **	Display the help text if the mouse is over the button.
       */
       if (flags & kLeftUp) {
-        TheMap().Help_Text(choice->Full_Name(), X, Y, scheme->Color, true);
+        TheMap().Help_Text(choice->Full_Name(), this->x(), this->y(),
+                           scheme->Color, true);
         TheMap().Set_Cost(choice->Cost_Of() * ThePlayer()->CostBias);
         flags &= ~kLeftUp;
       }

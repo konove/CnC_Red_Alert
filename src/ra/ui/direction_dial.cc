@@ -56,8 +56,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
                              const game::Direction initial_direction)
     : game::ControlClass(static_cast<unsigned>(id), x, y, width, height,
                          kLeftPress | kLeftHeld | kLeftRelease, true),
-      center_x_(X + (Width / 2)),
-      center_y_(Y + (Height / 2)),
+      center_x_(this->x() + (this->width() / 2)),
+      center_y_(this->y() + (this->height() / 2)),
       direction_(initial_direction),
       facing_(game::NearestFacing(direction_)) {
   // The decorations sit at 8/10 of the radius and the hand reaches 6/10 of
@@ -84,7 +84,7 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
 
   // Follow the mouse on a press, or while the button is held after a press on
   // the dial (StuckOn); a drag that starts elsewhere must not turn it.
-  if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
+  if (flags & kLeftPress || (flags & kLeftHeld && mouse_captor() == this)) {
     const game::Facing old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
     direction_ = game::Direction8Toward(
@@ -126,7 +126,7 @@ bool DirectionDial::Draw(PixelView& view, const bool forced) {
   }
 
   // Draw the background and the eight decorations.
-  Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, true);
+  Draw_Box(view, x(), y(), width(), height(), BOXSTYLE_DOWN, true);
   for (const auto& point : decoration_points_) {
     Draw_Box(view, point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
   }

@@ -84,13 +84,15 @@ class ListClass : public ControlClass {
     // Set preliminary values for the slider related gadgets. They don't
     // automatically appear at this time, but there are some values that can
     // be pre-filled in.
-    UpGadget.X -= UpGadget.Width;
-    DownGadget.X -= DownGadget.Width;
-    DownGadget.Y -= DownGadget.Height;
-    ScrollGadget.X -= std::max(UpGadget.Width, DownGadget.Width);
-    ScrollGadget.Y = Y + UpGadget.Height;
-    ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
-    ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
+    UpGadget.set_x(UpGadget.x() - UpGadget.width());
+    DownGadget.set_x(DownGadget.x() - DownGadget.width());
+    DownGadget.set_y(DownGadget.y() - DownGadget.height());
+    ScrollGadget.set_x(ScrollGadget.x() -
+                       std::max(UpGadget.width(), DownGadget.width()));
+    ScrollGadget.set_y(this->y() + UpGadget.height());
+    ScrollGadget.set_height(ScrollGadget.height() -
+                            (UpGadget.height() + DownGadget.height()));
+    ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
   }
   // Not copyable -- see Gadget.
   ListClass(const ListClass&) = delete;
@@ -136,7 +138,7 @@ class ListClass : public ControlClass {
     // Flag the list box to be redrawn because it now must be made narrower
     // to accomodate the new slider gadgets.
     FlagToRedraw();
-    Width -= ScrollGadget.Width;
+    set_width(width() - ScrollGadget.width());
 
     // Tell the newly created gadgets that they should inform this list box
     // whenever they get touched. In this way, the list box will
@@ -191,15 +193,15 @@ class ListClass : public ControlClass {
     if (!Gadget::Draw(view, forced)) {
       return false;
     }
-    Skin::Draw_List_Box(view, X, Y, Width, Height);
+    Skin::Draw_List_Box(view, x(), y(), width(), height());
 
     if (Count() > 0) {
       for (int index = 0; index < LineCount; index++) {
         const int line = CurrentTopIndex + index;
         if (Count() > line) {
           // Prints the text and handles right edge clipping and tabs.
-          Draw_Entry(view, line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
-                     line == SelectedIndex);
+          Draw_Entry(view, line, x() + 1, y() + (LineHeight * index) + 1,
+                     width() - 2, line == SelectedIndex);
         }
       }
     }
@@ -316,7 +318,7 @@ class ListClass : public ControlClass {
       return false;
     }
     IsScrollActive = false;
-    Width += ScrollGadget.Width;
+    set_width(width() + ScrollGadget.width());
     if (this->list() != nullptr) {
       RemoveScrollGadgets(*this->list());
     }
@@ -376,14 +378,16 @@ class ListClass : public ControlClass {
   }
 
   void SetPosition(int x, int y) override {
-    UpGadget.X = x + Width - UpGadget.Width;
-    UpGadget.Y = y;
-    DownGadget.X = x + Width - DownGadget.Width;
-    DownGadget.Y = y + Height - DownGadget.Height;
-    ScrollGadget.X = x + Width - std::max(UpGadget.Width, DownGadget.Width);
-    ScrollGadget.Y = y + UpGadget.Height;
-    ScrollGadget.Height = Height - (UpGadget.Height + DownGadget.Height);
-    ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
+    UpGadget.set_x(x + width() - UpGadget.width());
+    UpGadget.set_y(y);
+    DownGadget.set_x(x + width() - DownGadget.width());
+    DownGadget.set_y(y + height() - DownGadget.height());
+    ScrollGadget.set_x(x + width() -
+                       std::max(UpGadget.width(), DownGadget.width()));
+    ScrollGadget.set_y(y + UpGadget.height());
+    ScrollGadget.set_height(height() -
+                            (UpGadget.height() + DownGadget.height()));
+    ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
   }
 
  protected:
@@ -413,7 +417,7 @@ class ListClass : public ControlClass {
         flags &= ~kKeyboard;
       }
     } else {
-      int index = TheMouse().y() - (Y + 1);
+      int index = TheMouse().y() - (this->y() + 1);
       index = index / LineHeight;
       SelectedIndex = CurrentTopIndex + index;
       SelectedIndex = std::min(SelectedIndex, Count() - 1);

@@ -146,10 +146,10 @@ void PowerClass::Init_Clear() {
  *=============================================================================================*/
 void PowerClass::One_Time() {
   RadarClass::One_Time();
-  PowerButton.X = kPowerX * 2;
-  PowerButton.Y = kPowerY * 2;
-  PowerButton.Width = (kPowerWidth * 2) - 1;
-  PowerButton.Height = kPowerHeight * 2;
+  PowerButton.set_x(kPowerX * 2);
+  PowerButton.set_y(kPowerY * 2);
+  PowerButton.set_width((kPowerWidth * 2) - 1);
+  PowerButton.set_height(kPowerHeight * 2);
   PowerShape = MixArchive::RetrieveData("POWER.SHP");
   PowerBarShape = MixArchive::RetrieveData("POWERBAR.SHP");
 }

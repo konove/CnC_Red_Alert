@@ -98,17 +98,17 @@ class EditClass : public ControlClass {
     if (w == -1 || h == -1) {
       const FontStyle font_style = Skin::FontStyleFor(TextFont, TextFlags);
       if (h == -1) {
-        Height = FontMaxHeight(font_style) + Skin::kEditHeightPad;
+        set_height(FontMaxHeight(font_style) + Skin::kEditHeightPad);
       }
       if (w == -1) {
         if (!std::string_view(String.data()).empty()) {
-          Width = StringPixelWidth(font_style, String.data()) + 6;
+          set_width(StringPixelWidth(font_style, String.data()) + 6);
         } else {
           // CharPixelWidth() already includes the spacing, so it is counted
           // twice here, as it always was.
-          Width = ((CharPixelWidth(font_style, 'X') + font_style.x_spacing) *
-                   (MaxLength + 1)) +
-                  2;
+          set_width(((CharPixelWidth(font_style, 'X') + font_style.x_spacing) *
+                     (MaxLength + 1)) +
+                    2);
         }
       }
     }
@@ -215,14 +215,14 @@ class EditClass : public ControlClass {
 
   // Draws the gadget background. Called with the mouse hidden.
   virtual void Draw_Background(PixelView& view) {
-    Skin::Draw_Edit_Box(view, X, Y, Width, Height);
+    Skin::Draw_Edit_Box(view, x(), y(), width(), height());
   }
 
   // Draws the text content and cursor. Called after Draw_Background with
   // the mouse hidden.
   virtual void Draw_Text(PixelView& view, const char* text) {
-    Skin::Draw_Edit_Text(view, text, X, Y, Width, Color, TextFont, TextFlags,
-                         HasFocus(), MaxLength);
+    Skin::Draw_Edit_Text(view, text, x(), y(), width(), Color, TextFont,
+                         TextFlags, HasFocus(), MaxLength);
   }
 
   // Processes a single keyboard character. Returns false if the RETURN key
@@ -250,7 +250,7 @@ class EditClass : public ControlClass {
         const FontStyle font = Skin::FontStyleFor(TextFont, TextFlags);
         if (StringPixelWidth(font, String.data()) +
                 CharPixelWidth(font, ascii) >=
-            Width - 2) {
+            width() - 2) {
           break;
         }
         if (Length >= MaxLength) {

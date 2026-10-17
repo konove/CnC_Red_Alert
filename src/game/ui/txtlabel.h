@@ -72,9 +72,10 @@ class TextLabelClass : public Gadget {
       return false;
     }
     if (PixWidth == -1) {
-      Skin::Print_Label(view, Text, X, Y, Color, TextFont, Style);
+      Skin::Print_Label(view, Text, x(), y(), Color, TextFont, Style);
     } else {
-      Skin::Print_Clipped(view, Text, X, Y, Color, TextFont, Style, PixWidth);
+      Skin::Print_Clipped(view, Text, x(), y(), Color, TextFont, Style,
+                          PixWidth);
     }
     return true;
   }

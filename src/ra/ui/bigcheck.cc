@@ -44,20 +44,20 @@ bool BigCheckBoxClass::Draw(PixelView& view, bool forced) {
     game::TheMouse().Hide();
 
     if (!IsOn) {
-      if (!IsDisabled) {
-        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 0, X, Y,
-                      WINDOW_MAIN, ShapeFlags::kNone);
+      if (!disabled()) {
+        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 0, x(),
+                      y(), WINDOW_MAIN, ShapeFlags::kNone);
       } else {
-        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 2, X, Y,
-                      WINDOW_MAIN, ShapeFlags::kNone);
+        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 2, x(),
+                      y(), WINDOW_MAIN, ShapeFlags::kNone);
       }
     } else {
-      if (!IsDisabled) {
-        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 1, X, Y,
-                      WINDOW_MAIN, ShapeFlags::kNone);
+      if (!disabled()) {
+        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 1, x(),
+                      y(), WINDOW_MAIN, ShapeFlags::kNone);
       } else {
-        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 3, X, Y,
-                      WINDOW_MAIN, ShapeFlags::kNone);
+        CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 3, x(),
+                      y(), WINDOW_MAIN, ShapeFlags::kNone);
       }
     }
 
@@ -73,7 +73,8 @@ bool BigCheckBoxClass::Draw(PixelView& view, bool forced) {
 
     TextPrinter(view, {pScheme, game::kTransparentBlack, TextFont, flags})
         .PrintClipped(szCaption.c_str(),
-                      {X + BIGCHECK_OFFSETX, Y + BIGCHECK_OFFSETY}, Width, {});
+                      {x() + BIGCHECK_OFFSETX, y() + BIGCHECK_OFFSETY}, width(),
+                      {});
 
     game::TheMouse().Show();
     return true;

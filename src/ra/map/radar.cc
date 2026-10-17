@@ -193,10 +193,10 @@ void RadarClass::One_Time() {
   RadIHeight = 128 + 2;  //************
 
   DisplayClass::One_Time();
-  RadarButton.X = RadX;
-  RadarButton.Y = RadY;
-  RadarButton.Width = RadWidth;
-  RadarButton.Height = RadHeight;
+  RadarButton.set_x(RadX);
+  RadarButton.set_y(RadY);
+  RadarButton.set_width(RadWidth);
+  RadarButton.set_height(RadHeight);
 }
 
 /***********************************************************************************************

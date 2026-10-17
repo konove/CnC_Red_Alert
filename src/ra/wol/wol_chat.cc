@@ -344,15 +344,17 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   pToolTip->next = pWO->pTTipHelp.get();
   pToolTip = pToolTip->next;
   ToolTipClass TTipChanExpand(&ExpandChanBtn, TXT_WOL_TTIP_EXPANDLIST,
-                              ExpandChanBtn.X + 8, ExpandChanBtn.Y - 9, true);
+                              ExpandChanBtn.x() + 8, ExpandChanBtn.y() - 9,
+                              true);
   pToolTip->next = &TTipChanExpand;
   pToolTip = pToolTip->next;
   ToolTipClass TTipUserExpand(&ExpandUserBtn, TXT_WOL_TTIP_EXPANDLIST,
-                              ExpandUserBtn.X + 8, ExpandUserBtn.Y - 9, true);
+                              ExpandUserBtn.x() + 8, ExpandUserBtn.y() - 9,
+                              true);
   pToolTip->next = &TTipUserExpand;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipChanList(&chanlist, nullptr, chanlist.X + 1, chanlist.Y + 1,
-                            true, true);
+  ToolTipClass TTipChanList(&chanlist, nullptr, chanlist.x() + 1,
+                            chanlist.y() + 1, true, true);
   pToolTip->next = &TTipChanList;
   pToolTip = pToolTip->next;
   ToolTipClass TTipJoin(&JoinBtn, TXT_WOL_TTIP_JOIN, d_join_x + (d_join_w / 2),
@@ -371,12 +373,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                           d_action_x + (d_action_w / 2), d_action_y - 6, true);
   pToolTip->next = &TTipAction;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipRankRA(&RankRABtn, TXT_WOL_TTIP_RANKRA, RankRABtn.X + 8,
-                          RankRABtn.Y - 9, true);
+  ToolTipClass TTipRankRA(&RankRABtn, TXT_WOL_TTIP_RANKRA, RankRABtn.x() + 8,
+                          RankRABtn.y() - 9, true);
   pToolTip->next = &TTipRankRA;
   pToolTip = pToolTip->next;
-  ToolTipClass TTipRankAM(&RankAMBtn, TXT_WOL_TTIP_RANKAM, RankAMBtn.X + 8,
-                          RankAMBtn.Y - 9, true);
+  ToolTipClass TTipRankAM(&RankAMBtn, TXT_WOL_TTIP_RANKAM, RankAMBtn.x() + 8,
+                          RankAMBtn.y() - 9, true);
   pToolTip->next = &TTipRankAM;
   pToolTip = pToolTip->next;
   pToolTip->next = nullptr;
@@ -756,11 +758,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(chanlist, ExpandChanBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.SetPosition(ExpandUserBtn.X,
-                                    chanlist.Y + chanlist.Height);
-          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-          userlistTitle.SetPosition(userlistTitle.X,
-                                    chanlist.Y + chanlist.Height + 2);
+          ExpandUserBtn.SetPosition(ExpandUserBtn.x(),
+                                    chanlist.y() + chanlist.height());
+          TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
+                              ExpandUserBtn.y() - 16);
+          userlistTitle.SetPosition(userlistTitle.x(),
+                                    chanlist.y() + chanlist.height() + 2);
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpUnexpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
@@ -770,18 +773,19 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(userlist, ExpandUserBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.SetPosition(ExpandUserBtn.X, userlist.Y - 14);
-          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-          userlistTitle.SetPosition(userlistTitle.X, userlist.Y - 16 + 4);
+          ExpandUserBtn.SetPosition(ExpandUserBtn.x(), userlist.y() - 14);
+          TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
+                              ExpandUserBtn.y() - 16);
+          userlistTitle.SetPosition(userlistTitle.x(), userlist.y() - 16 + 4);
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move rank buttons.
-        RankRABtn.SetPosition(RankRABtn.X, ExpandUserBtn.Y);
-        RankAMBtn.SetPosition(RankAMBtn.X, ExpandUserBtn.Y);
-        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
-        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        RankRABtn.SetPosition(RankRABtn.x(), ExpandUserBtn.y());
+        RankAMBtn.SetPosition(RankAMBtn.x(), ExpandUserBtn.y());
+        TTipRankRA.Move(view, RankRABtn.x() + 8, RankRABtn.y() - 16);
+        TTipRankAM.Move(view, RankAMBtn.x() + 8, RankAMBtn.y() - 16);
         display = REDRAW_ALL;
         break;
 
@@ -806,14 +810,15 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move userlist expand button.
-        ExpandUserBtn.SetPosition(ExpandUserBtn.X, userlist.Y - 14);
-        TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
-        userlistTitle.SetPosition(userlistTitle.X, userlist.Y - 16 + 4);
+        ExpandUserBtn.SetPosition(ExpandUserBtn.x(), userlist.y() - 14);
+        TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
+                            ExpandUserBtn.y() - 16);
+        userlistTitle.SetPosition(userlistTitle.x(), userlist.y() - 16 + 4);
         //	Move rank buttons.
-        RankRABtn.SetPosition(RankRABtn.X, ExpandUserBtn.Y);
-        RankAMBtn.SetPosition(RankAMBtn.X, ExpandUserBtn.Y);
-        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
-        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        RankRABtn.SetPosition(RankRABtn.x(), ExpandUserBtn.y());
+        RankAMBtn.SetPosition(RankAMBtn.x(), ExpandUserBtn.y());
+        TTipRankRA.Move(view, RankRABtn.x() + 8, RankRABtn.y() - 16);
+        TTipRankAM.Move(view, RankAMBtn.x() + 8, RankAMBtn.y() - 16);
         display = REDRAW_ALL;
         break;
 

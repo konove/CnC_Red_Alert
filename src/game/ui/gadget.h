@@ -58,7 +58,7 @@ class GadgetList;
 // calls both from its Input().
 //
 // Keyboard focus and the mouse capture ("sticky" processing) are global: one
-// gadget at a time holds each, in Focused and StuckOn.
+// gadget at a time holds each, in focused_ and mouse_captor_.
 //
 // Example:
 //   GadgetList buttons;
@@ -124,7 +124,7 @@ class Gadget {
   // Returns whether keyboard events are routed to this gadget.
   [[nodiscard]] bool HasFocus() const;
   // Returns whether the gadget waits to be drawn.
-  [[nodiscard]] bool IsToRedraw() const { return IsToRepaint; }
+  [[nodiscard]] bool IsToRedraw() const { return to_redraw_; }
   // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
   virtual void SetPosition(int x, int y);
 
@@ -133,11 +133,26 @@ class Gadget {
   // it and draws when it returns true.
   virtual bool Draw(PixelView& view, bool forced = false);
 
-  // The gadget's region, in screen pixels.
-  int X = 0;
-  int Y = 0;
-  int Width = 0;
-  int Height = 0;
+  // The gadget's region, in screen pixels. The setters move or resize only
+  // this gadget; SetPosition() also moves the parts of a composite one.
+  [[nodiscard]] int x() const { return x_; }
+  [[nodiscard]] int y() const { return y_; }
+  [[nodiscard]] int width() const { return width_; }
+  [[nodiscard]] int height() const { return height_; }
+  void set_x(int x) { x_ = x; }
+  void set_y(int y) { y_ = y; }
+  void set_width(int width) { width_ = width; }
+  void set_height(int height) { height_ = height; }
+
+  // A sticky gadget captures the mouse: pressed over it, it alone gets the
+  // input until the left button is released, as a Windows button does. The
+  // sidebar's buttons are static and are made sticky after they are
+  // constructed.
+  void set_sticky(bool sticky) { sticky_ = sticky; }
+
+  // The sticky gadget that holds the mouse while the left button is down;
+  // nullptr when none does.
+  [[nodiscard]] static Gadget* mouse_captor() { return mouse_captor_; }
 
  protected:
   // Captures the mouse for a sticky gadget on a left press in `flags`, and
@@ -162,35 +177,8 @@ class Gadget {
   virtual void OnAdded(GadgetList& /*list*/) {}
   virtual void OnRemoved(GadgetList& /*list*/) {}
 
-  // The gadget every keyboard event goes to, to the exclusion of all others;
-  // nullptr when no gadget has the focus.
-  static Gadget* Focused;
-
-  // Set when the gadget's look has changed and Draw() has to draw it; the
-  // base Action() sets it whenever it acts.
-  bool IsToRepaint : 1 = false;
-
- public:
-  // A sticky gadget captures the mouse: pressed over it, it alone gets the
-  // input until the left button is released, as a Windows button does.
-  // Public because the sidebar's buttons are static and set it after they
-  // are constructed.
-  bool IsSticky : 1 = false;
-
-  // The sticky gadget that holds the mouse while the left button is down;
-  // nullptr when none does. Public since 7/30/98 (ajw) so a game's gadget can
-  // ask whether it holds the mouse.
-  static Gadget* StuckOn;
-
- protected:
-  // Set by Disable(): the list's sweep draws the gadget but does not offer it
-  // input.
-  bool IsDisabled : 1 = false;
-
-  // The k... events Action() is called for: kLeftPress alone calls it only
-  // for a left press over the region. kKeyboard is added while the gadget
-  // has the focus.
-  uint32_t event_mask_ = 0;
+  // Whether Disable() is in effect.
+  [[nodiscard]] bool disabled() const { return disabled_; }
 
  private:
   // GadgetList::Input() runs the steps below over its gadgets.
@@ -210,6 +198,34 @@ class Gadget {
   // `input`, as a step of GadgetList::Input(). Returns whether it acted, which
   // ends the sweep.
   bool Offer(PixelView& view, bool forced, PendingInput& input);
+
+  int x_ = 0;
+  int y_ = 0;
+  int width_ = 0;
+  int height_ = 0;
+
+  // The gadget every keyboard event goes to, to the exclusion of all others;
+  // nullptr when no gadget has the focus.
+  static Gadget* focused_;
+
+  // Set when the gadget's look has changed and Draw() has to draw it; the
+  // base Action() sets it whenever it acts.
+  bool to_redraw_ : 1 = false;
+
+  // See set_sticky().
+  bool sticky_ : 1 = false;
+
+  // See mouse_captor().
+  static Gadget* mouse_captor_;
+
+  // Set by Disable(): the list's sweep draws the gadget but does not offer it
+  // input.
+  bool disabled_ : 1 = false;
+
+  // The k... events Action() is called for: kLeftPress alone calls it only
+  // for a left press over the region. kKeyboard is added while the gadget
+  // has the focus.
+  uint32_t event_mask_ = 0;
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;

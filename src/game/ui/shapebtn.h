@@ -69,14 +69,14 @@ class ShapeButtonClass final : public ToggleClass {
       return false;
     }
     int shapenum = 0;
-    if (IsDisabled) {
+    if (disabled()) {
       shapenum = kDisabledShape;
     } else if (!ReflectButtonState) {
       shapenum = IsPressed ? kDownShape : kUpShape;
     } else {
       shapenum = IsOn;
     }
-    Skin::Draw_Shape(view, ShapeData, shapenum, X, Y);
+    Skin::Draw_Shape(view, ShapeData, shapenum, x(), y());
     return true;
   }
 
@@ -84,8 +84,8 @@ class ShapeButtonClass final : public ToggleClass {
   void Set_Shape(std::span<const std::byte> data) {
     ShapeData = data;
     if (!ShapeData.empty()) {
-      Width = engine::gfx::KeyframeWidth(ShapeData);
-      Height = engine::gfx::KeyframeHeight(ShapeData);
+      set_width(engine::gfx::KeyframeWidth(ShapeData));
+      set_height(engine::gfx::KeyframeHeight(ShapeData));
     }
   }
   std::span<const std::byte> Get_Shape_Data() { return ShapeData; }

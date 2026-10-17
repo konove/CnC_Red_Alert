@@ -108,8 +108,8 @@ bool ToolTipClass::bGadgetHit() const {
   // bound.
   const int x = game::TheMouse().x();
   const int y = game::TheMouse().y();
-  return x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
-         y < pGadget->Y + pGadget->Height;
+  return x > pGadget->x() && x < pGadget->x() + pGadget->width() &&
+         y > pGadget->y() && y < pGadget->y() + pGadget->height();
 }
 
 //***********************************************************************************************

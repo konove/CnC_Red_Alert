@@ -26,21 +26,21 @@
 
 namespace game {
 
-Gadget* Gadget::StuckOn = nullptr;
+Gadget* Gadget::mouse_captor_ = nullptr;
 
-Gadget* Gadget::Focused = nullptr;
+Gadget* Gadget::focused_ = nullptr;
 
 Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
                bool sticky) noexcept
-    : X(x),
-      Y(y),
-      Width(width),
-      Height(height),
+    : x_(x),
+      y_(y),
+      width_(width),
+      height_(height),
 
-      IsSticky(sticky),
+      sticky_(sticky),
 
       event_mask_(flags) {
-  if (IsSticky) {
+  if (sticky_) {
     event_mask_ |= kLeftPress | kLeftRelease;
   }
 }
@@ -51,8 +51,8 @@ Gadget::~Gadget() {
   // it in its own destructor, while the object is still of that type.
   Gadget::ClearFocus();
 
-  if (this == StuckOn) {
-    StuckOn = nullptr;
+  if (this == mouse_captor_) {
+    mouse_captor_ = nullptr;
   }
 
   // Not through Remove(): its hook is a virtual call this destructor cannot
@@ -73,24 +73,24 @@ bool Gadget::ActionIfConcerned(PendingInput& input) {
   // mouse events must fall inside the region. The unsigned casts turn a
   // position left of or above the region into a huge value, so one compare
   // per axis checks both edges.
-  if (this == StuckOn || flags & kKeyboard ||
+  if (this == mouse_captor_ || flags & kKeyboard ||
       (flags &&
-       static_cast<unsigned>(input.x - X) < static_cast<unsigned>(Width) &&
-       static_cast<unsigned>(input.y - Y) < static_cast<unsigned>(Height))) {
+       static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
+       static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {
     return Action(flags, input.key, input.x, input.y);
   }
   return false;
 }
 
 void Gadget::Enable() {
-  IsDisabled = false;
-  IsToRepaint = true;
+  disabled_ = false;
+  to_redraw_ = true;
   ClearFocus();
 }
 
 void Gadget::Disable() {
-  IsDisabled = true;
-  IsToRepaint = true;
+  disabled_ = true;
+  to_redraw_ = true;
   ClearFocus();
 }
 
@@ -99,7 +99,7 @@ bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
   // ActionIfConcerned() also calls this with no events for the gadget holding
   // the mouse; that is not an action, and the sweep goes on.
   if (flags) {
-    IsToRepaint = true;
+    to_redraw_ = true;
     UpdateMouseCapture(flags);
     return true;
   }
@@ -107,8 +107,8 @@ bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
 }
 
 bool Gadget::Draw(PixelView& /*view*/, bool forced) {
-  if (forced || IsToRepaint) {
-    IsToRepaint = false;
+  if (forced || to_redraw_) {
+    to_redraw_ = false;
     return true;
   }
   return false;
@@ -120,7 +120,7 @@ bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   Draw(view, forced);
 
   // A gadget that acted has used up the event, so the sweep stops there.
-  if (!IsDisabled && ActionIfConcerned(input)) {
+  if (!disabled_ && ActionIfConcerned(input)) {
     // Action() flags a gadget whose look it changed; show the change now.
     Draw(view, false);
     return true;
@@ -128,39 +128,38 @@ bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   return false;
 }
 
-
-void Gadget::FlagToRedraw() { IsToRepaint = true; }
+void Gadget::FlagToRedraw() { to_redraw_ = true; }
 
 void Gadget::UpdateMouseCapture(uint32_t flags) {
-  if (IsSticky && flags & kLeftPress) {
-    StuckOn = this;
+  if (sticky_ && flags & kLeftPress) {
+    mouse_captor_ = this;
   }
-  if (StuckOn == this && flags & kLeftRelease) {
-    StuckOn = nullptr;
+  if (mouse_captor_ == this && flags & kLeftRelease) {
+    mouse_captor_ = nullptr;
   }
 }
 
 void Gadget::SetFocus() {
-  if (Focused) {
-    Focused->FlagToRedraw();
-    Focused->ClearFocus();
+  if (focused_) {
+    focused_->FlagToRedraw();
+    focused_->ClearFocus();
   }
   event_mask_ |= kKeyboard;
-  Focused = this;
+  focused_ = this;
 }
 
 void Gadget::ClearFocus() {
-  if (Focused == this) {
+  if (focused_ == this) {
     event_mask_ &= ~kKeyboard;
-    Focused = nullptr;
+    focused_ = nullptr;
   }
 }
 
-bool Gadget::HasFocus() const { return this == Focused; }
+bool Gadget::HasFocus() const { return this == focused_; }
 
 void Gadget::SetPosition(int x, int y) {
-  X = x;
-  Y = y;
+  x_ = x;
+  y_ = y;
 }
 
 }  // namespace game

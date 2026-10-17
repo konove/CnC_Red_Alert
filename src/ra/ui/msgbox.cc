@@ -194,7 +194,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   TextButtonClass button3(BUTTON_3, b3txt, kButtonFont, kButtonFlags, 0,
                           y + height - (bheight + 30));
-  button3.X = x + ((width - button3.Width) / 2);
+  button3.set_x(x + ((width - button3.width()) / 2));
 
   game::GadgetList buttonlist;
   int curbutton = 0;

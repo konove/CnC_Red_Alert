@@ -2844,7 +2844,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   SliderClass difficulty(
       kButtonDifficulty, d_name_x,
-      optionlist.Y + optionlist.Height + d_margin1 + d_margin1,
+      optionlist.y() + optionlist.height() + d_margin1 + d_margin1,
       d_dialog_w - ((d_name_x - d_dialog_x) * 2), 16,
       game::SliderStyle::kSunkenBar);
   if (TheRules().IsFineDifficulty) {
@@ -2880,7 +2880,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   commands.Add(cancelbtn);
   if (!skirmish && GameFileExists("SAVEGAME.NET")) {
   } else {
-    cancelbtn.X = loadbtn.X;
+    cancelbtn.set_x(loadbtn.x());
   }
 #ifdef OLDWAY
   commands.Add(gdibtn);
@@ -3167,11 +3167,12 @@ int Com_Scenario_Dialog(bool skirmish) {
             heading.Print(TXT_PLAYERS, {d_playerlist_x + (d_playerlist_w / 2),
                                         d_playerlist_y - d_txt6_h});
           } else {
-            label.Print(TXT_EASY, {difficulty.X, difficulty.Y - 16});
-            right_label.Print(
-                TXT_HARD, {difficulty.X + difficulty.Width, difficulty.Y - 16});
-            heading.Print(TXT_NORMAL, {difficulty.X + (difficulty.Width / 2),
-                                       difficulty.Y - 16});
+            label.Print(TXT_EASY, {difficulty.x(), difficulty.y() - 16});
+            right_label.Print(TXT_HARD, {difficulty.x() + difficulty.width(),
+                                         difficulty.y() - 16});
+            heading.Print(TXT_NORMAL,
+                          {difficulty.x() + (difficulty.width() / 2),
+                           difficulty.y() - 16});
           }
           heading.Print(TXT_SCENARIOS,
                         {d_scenariolist_x + (d_scenariolist_w / 2),

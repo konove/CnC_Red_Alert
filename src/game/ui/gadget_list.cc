@@ -53,8 +53,8 @@ void GadgetList::Remove(Gadget& gadget) {
     return;
   }
   gadget.ClearFocus();
-  if (Gadget::StuckOn == &gadget) {
-    Gadget::StuckOn = nullptr;
+  if (Gadget::mouse_captor_ == &gadget) {
+    Gadget::mouse_captor_ = nullptr;
   }
   Detach(gadget);
 }
@@ -76,8 +76,8 @@ engine::window::InputEvent GadgetList::Input(PixelView& view) {
   if (last_input_ != this) {
     last_input_ = this;
     forced = true;
-    Gadget::StuckOn = nullptr;
-    Gadget::Focused = nullptr;
+    Gadget::mouse_captor_ = nullptr;
+    Gadget::focused_ = nullptr;
   }
 
   Gadget::PendingInput input = ReadInput();
@@ -107,7 +107,7 @@ void GadgetList::FlagToRedraw() {
 
 bool GadgetList::IsToRedraw() const {
   return std::ranges::any_of(
-      gadgets_, [](const Gadget* gadget) { return gadget->IsToRepaint; });
+      gadgets_, [](const Gadget* gadget) { return gadget->IsToRedraw(); });
 }
 
 ControlClass* GadgetList::Extract(unsigned id) const {
@@ -205,14 +205,14 @@ bool GadgetList::OfferToStuckOrFocused(PixelView& view,
                                        Gadget::PendingInput& input) {
   // While a gadget holds the mouse it gets every event and no other gadget
   // is drawn or offered anything.
-  if (Gadget::StuckOn) {
-    Gadget::StuckOn->Draw(view, false);
-    // A release in ActionIfConcerned() clears Gadget::StuckOn; the gadget is
-    // still redrawn so it can show itself raised.
-    Gadget* captor = Gadget::StuckOn;
-    Gadget::StuckOn->ActionIfConcerned(input);
-    if (Gadget::StuckOn) {
-      Gadget::StuckOn->Draw(view, false);
+  if (Gadget::mouse_captor_) {
+    Gadget::mouse_captor_->Draw(view, false);
+    // A release in ActionIfConcerned() clears Gadget::mouse_captor_; the gadget
+    // is still redrawn so it can show itself raised.
+    Gadget* captor = Gadget::mouse_captor_;
+    Gadget::mouse_captor_->ActionIfConcerned(input);
+    if (Gadget::mouse_captor_) {
+      Gadget::mouse_captor_->Draw(view, false);
     } else {
       captor->Draw(view, false);
     }
@@ -221,11 +221,11 @@ bool GadgetList::OfferToStuckOrFocused(PixelView& view,
 
   // Keys go only to the focused gadget; its mouse events go through the
   // normal sweep.
-  if (Gadget::Focused && input.flags & Gadget::kKeyboard) {
-    Gadget::Focused->Draw(view, false);
-    Gadget::Focused->ActionIfConcerned(input);
-    if (Gadget::Focused) {
-      Gadget::Focused->Draw(view, false);
+  if (Gadget::focused_ && input.flags & Gadget::kKeyboard) {
+    Gadget::focused_->Draw(view, false);
+    Gadget::focused_->ActionIfConcerned(input);
+    if (Gadget::focused_) {
+      Gadget::focused_->Draw(view, false);
     }
     return true;
   }

@@ -4349,7 +4349,7 @@ static int Net_New_Dialog() {
   if (GameFileExists("SAVEGAME.NET")) {
     // loadbtn.AppendTo(*commands);
   } else {
-    cancelbtn.X = loadbtn.X;
+    cancelbtn.set_x(loadbtn.x());
   }
   playerlist.Set_Tabs(tabs);
 

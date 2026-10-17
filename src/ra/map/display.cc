@@ -649,10 +649,10 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
 
-  TacButton.X = TacPixelX;
-  TacButton.Y = TacPixelY;
-  TacButton.Width = Lepton_To_Pixel(TacLeptonWidth);
-  TacButton.Height = Lepton_To_Pixel(TacLeptonHeight);
+  TacButton.set_x(TacPixelX);
+  TacButton.set_y(TacPixelY);
+  TacButton.set_width(Lepton_To_Pixel(TacLeptonWidth));
+  TacButton.set_height(Lepton_To_Pixel(TacLeptonHeight));
 }
 
 /***********************************************************************************************

@@ -67,7 +67,7 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
       DropButton(0, down, x + w, y),
       List(0, x, y + engine::gfx::KeyframeHeight(down),
            w + engine::gfx::KeyframeWidth(down), h, font, flags, up, down) {
-  Height = FontMaxHeight(TextFontStyle(font, flags)) + 1;
+  set_height(FontMaxHeight(TextFontStyle(font, flags)) + 1);
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }
@@ -122,10 +122,10 @@ void DropListClass::Expand() {
   if (IsDropped || list() == nullptr) {
     return;
   }
-  List.X = X;
-  List.Y = Y + 18;
-  List.Width = Width;
-  List.Height = ListHeight;
+  List.set_x(x());
+  List.set_y(y() + 18);
+  List.set_width(width());
+  List.set_height(ListHeight);
   // Second in the list: ahead of what it covers, whatever was added first
   // aside.
   list()->AddAfter(List, *list()->gadgets().front());
@@ -155,7 +155,7 @@ void DropListClass::SetPosition(int x, int y) {
   EditClass::SetPosition(x, y);
   List.SetPosition(
       x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.SetPosition(x + Width, y);
+  DropButton.SetPosition(x + width(), y);
 }
 
 void DropListClass::Set_Selected_Index(const char* text) {

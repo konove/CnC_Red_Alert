@@ -633,8 +633,8 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
            msg_y)
       << "the member pictures run into the name line";
 
-  okbtn.Y = dlg_y + dlg_h - kMargin - kOkH - 15;
-  cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH - 15;
+  okbtn.set_y(dlg_y + dlg_h - kMargin - kOkH - 15);
+  cancelbtn.set_y(dlg_y + dlg_h - kMargin - kCancelH - 15);
 
   /*
   **	Draw to visible_view.

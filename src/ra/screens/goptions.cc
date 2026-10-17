@@ -227,7 +227,7 @@ void GameOptionsClass::Process() {
               .get();
     }
 
-    maxwidth = std::max(g->Width, maxwidth);
+    maxwidth = std::max(g->width(), maxwidth);
     buttons.Add(*g);
 
     base::At(buttonsel, index) = g;
@@ -248,16 +248,16 @@ void GameOptionsClass::Process() {
   *button.
   */
   for (game::Gadget* const g : buttons.gadgets()) {
-    g->Width = std::max(maxwidth, 180);
-    g->X = OptionX + ((OptionWidth - g->Width) / 2);
+    g->set_width(std::max(maxwidth, 180));
+    g->set_x(OptionX + ((OptionWidth - g->width()) / 2));
   }
-  buttonsel[kButtonResume - 1]->Width = 180;
-  buttonsel[kButtonResume - 1]->X = OptionX + 34;
+  buttonsel[kButtonResume - 1]->set_width(180);
+  buttonsel[kButtonResume - 1]->set_x(OptionX + 34);
 
   if (TheSession().Type == GAME_NORMAL) {
-    buttonsel[kButtonRestate - 1]->Width = 180;
-    buttonsel[kButtonRestate - 1]->X =
-        OptionX + OptionWidth - (buttonsel[kButtonRestate - 1]->Width + 34);
+    buttonsel[kButtonRestate - 1]->set_width(180);
+    buttonsel[kButtonRestate - 1]->set_x(
+        OptionX + OptionWidth - (buttonsel[kButtonRestate - 1]->width() + 34));
   }
 
   /*

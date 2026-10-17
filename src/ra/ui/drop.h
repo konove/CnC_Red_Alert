@@ -278,10 +278,10 @@ void TDropListClass<T>::Expand() {
   if (IsDropped || list() == nullptr) {
     return;
   }
-  List.X = X;
-  List.Y = Y + 9;
-  List.Width = Width;
-  List.Height = ListHeight;
+  List.set_x(x());
+  List.set_y(y() + 9);
+  List.set_width(width());
+  List.set_height(ListHeight);
   // Second in the list: ahead of what it covers, whatever was added first
   // aside.
   list()->AddAfter(List, *list()->gadgets().front());
@@ -315,7 +315,7 @@ void TDropListClass<T>::SetPosition(int x, int y) {
   EditClass::SetPosition(x, y);
   List.SetPosition(
       x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.SetPosition(x + Width, y);
+  DropButton.SetPosition(x + width(), y);
 }
 
 template <class T>

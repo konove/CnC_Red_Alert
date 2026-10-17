@@ -1119,11 +1119,11 @@ void MessageListClass::Draw(PixelView& view) {
       txt[0] = CursorChar;
       TextPrinter(view, {EditLabel->Color, game::kTransparentBlack,
                          EditLabel->TextFont, EditLabel->Style})
-          .Print(txt, {EditLabel->X +
+          .Print(txt, {EditLabel->x() +
                            StringPixelWidth(TextFontStyle(EditLabel->TextFont,
                                                           EditLabel->Style),
                                             EditLabel->Text),
-                       EditLabel->Y});
+                       EditLabel->y()});
     }
 
     if (TheScreen().IsVisible(&view)) {
@@ -1320,7 +1320,7 @@ void MessageListClass::Compute_Y() {
     y = MessageY;
   }
   for (game::Gadget* const gadg : MessageList.gadgets()) {
-    gadg->Y = y;
+    gadg->set_y(y);
     y += Height;
   }
 

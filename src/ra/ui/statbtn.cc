@@ -98,10 +98,10 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   if (w == -1 || h == -1) {
     const FontStyle font_style = TextFontStyle(TextFont, PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(font_style, String.c_str());
+      set_width(StringPixelWidth(font_style, String.c_str()));
     }
     if (h == -1) {
-      Height = static_cast<unsigned char>(FontMaxHeight(font_style));
+      set_height(static_cast<unsigned char>(FontMaxHeight(font_style)));
     }
   }
 }
@@ -193,10 +193,10 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   **	If the background hasn't been recorded from the buffer, then
   **	allocate and record the background image now.
   */
-  if (Background.empty() && Width > 0 && Height > 0) {
-    Background.resize(base::ToSize(Width) * base::ToSize(Height));
+  if (Background.empty() && width() > 0 && height() > 0) {
+    Background.resize(base::ToSize(width()) * base::ToSize(height()));
     if (!Background.empty()) {
-      view.CopyToBuffer(base::Rect{X, Y, Width, Height}, Background);
+      view.CopyToBuffer(base::Rect{x(), y(), width(), height()}, Background);
     }
   }
 
@@ -205,7 +205,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   *now.
   */
   if (!Background.empty()) {
-    view.CopyFromBuffer(base::Rect{X, Y, Width, Height}, Background);
+    view.CopyFromBuffer(base::Rect{x(), y(), width(), height()}, Background);
   }
 }
 
@@ -230,18 +230,18 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
   **	Display the text.
   */
   if (!String.empty()) {
-    int x = X;
+    int x = this->x();
 
     if (base::Any(PrintFlags & TPF_CENTER)) {
-      x += Width / 2;
+      x += width() / 2;
     }
     if (base::Any(PrintFlags & TPF_RIGHT)) {
-      x += Width - 1;
+      x += width() - 1;
     }
 
     TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, TextFont,
                        PrintFlags})
-        .Print(text, {x, Y});
+        .Print(text, {x, y()});
   }
 }
 

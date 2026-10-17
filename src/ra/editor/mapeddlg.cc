@@ -1740,15 +1740,16 @@ int MapEditClass::Load_Scenario() {
     base::SafeCopy(description, TheScenario().Description);
     EditClass desc(kButtonDescription, description, sizeof(description),
                    FontType::kEditor, TPF_NOSHADOW,
-                   theaterbtn.X + theaterbtn.Width + 15, theaterbtn.Y, 160);
+                   theaterbtn.x() + theaterbtn.width() + 15, theaterbtn.y(),
+                   160);
 
     /*
     **	Button that tells if this scenario should inherit buildings from the
     *previous.
     */
     CheckBoxClass inherit(kButtonInherit,
-                          theaterbtn.X + theaterbtn.Width + 15 + 250,
-                          theaterbtn.Y);
+                          theaterbtn.x() + theaterbtn.width() + 15 + 250,
+                          theaterbtn.y());
     if (TheScenario().IsToInherit) {
       inherit.Turn_On();
     } else {
@@ -1758,7 +1759,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Records scenario disposition into holding slot.
     */
-    CheckBoxClass record(kButtonRecord, inherit.X, inherit.Y + 8);
+    CheckBoxClass record(kButtonRecord, inherit.x(), inherit.y() + 8);
     if (TheScenario().IsToCarryOver) {
       record.Turn_On();
     } else {
@@ -1768,7 +1769,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Should Tanya/civilian be automatically evacuated?
     */
-    CheckBoxClass tanya(kButtonEvac, record.X, record.Y + 8);
+    CheckBoxClass tanya(kButtonEvac, record.x(), record.y() + 8);
     if (TheScenario().IsTanyaEvac) {
       tanya.Turn_On();
     } else {
@@ -1778,7 +1779,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	End of game with with scenario?
     */
-    CheckBoxClass endofgame(kButtonEndofgame, tanya.X, tanya.Y + 8);
+    CheckBoxClass endofgame(kButtonEndofgame, tanya.x(), tanya.y() + 8);
     if (TheScenario().IsEndOfGame) {
       endofgame.Turn_On();
     } else {
@@ -1788,7 +1789,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Timer inherit logic.
     */
-    CheckBoxClass timercarry(kButtonTimer, endofgame.X, endofgame.Y + 8);
+    CheckBoxClass timercarry(kButtonTimer, endofgame.x(), endofgame.y() + 8);
     if (TheScenario().IsInheritTimer) {
       timercarry.Turn_On();
     } else {
@@ -1798,7 +1799,8 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Disable spy plane option?
     */
-    CheckBoxClass nospyplane(kButtonNospyplane, timercarry.X, timercarry.Y + 8);
+    CheckBoxClass nospyplane(kButtonNospyplane, timercarry.x(),
+                             timercarry.y() + 8);
     if (TheScenario().IsNoSpyPlane) {
       nospyplane.Turn_On();
     } else {
@@ -1808,7 +1810,8 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Skip the score screen?
     */
-    CheckBoxClass skipscore(kButtonSkipscore, nospyplane.X, nospyplane.Y + 8);
+    CheckBoxClass skipscore(kButtonSkipscore, nospyplane.x(),
+                            nospyplane.y() + 8);
     if (TheScenario().IsSkipScore) {
       skipscore.Turn_On();
     } else {
@@ -1819,7 +1822,7 @@ int MapEditClass::Load_Scenario() {
     **	Skip the map selection screen for next mission. Presume goes to
     **	variation "B"?
     */
-    CheckBoxClass nomapsel(kButtonNomapsel, skipscore.X, skipscore.Y + 8);
+    CheckBoxClass nomapsel(kButtonNomapsel, skipscore.x(), skipscore.y() + 8);
     if (TheScenario().IsNoMapSel) {
       nomapsel.Turn_On();
     } else {
@@ -1829,7 +1832,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Return to main menu after mission completes?
     */
-    CheckBoxClass onetime(kButtonOnetime, nomapsel.X, nomapsel.Y + 8);
+    CheckBoxClass onetime(kButtonOnetime, nomapsel.x(), nomapsel.y() + 8);
     if (TheScenario().IsOneTimeOnly) {
       onetime.Turn_On();
     } else {
@@ -1839,7 +1842,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Trucks carry a wood crate?
     */
-    CheckBoxClass truckcrate(kButtonTruckcrate, onetime.X, onetime.Y + 8);
+    CheckBoxClass truckcrate(kButtonTruckcrate, onetime.x(), onetime.y() + 8);
     if (TheScenario().IsTruckCrate) {
       truckcrate.Turn_On();
     } else {
@@ -1849,7 +1852,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Transfer credits into tiberium storage at scenario start?
     */
-    CheckBoxClass moneytib(kButtonMoneytib, truckcrate.X, truckcrate.Y + 8);
+    CheckBoxClass moneytib(kButtonMoneytib, truckcrate.x(), truckcrate.y() + 8);
     if (TheScenario().IsMoneyTiberium) {
       moneytib.Turn_On();
     } else {
@@ -1861,8 +1864,8 @@ int MapEditClass::Load_Scenario() {
     */
     char introtext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass intro(kButtonIntro, introtext, sizeof(introtext),
-                        FontType::kEditor, TPF_NOSHADOW, theaterbtn.X,
-                        theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
+                        FontType::kEditor, TPF_NOSHADOW, theaterbtn.x(),
+                        theaterbtn.y() + theaterbtn.height() + 24, 50, 7 * 10,
                         MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
@@ -1877,8 +1880,8 @@ int MapEditClass::Load_Scenario() {
     char brieftext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass briefing(kButtonBriefing, brieftext, sizeof(brieftext),
                            FontType::kEditor, TPF_NOSHADOW,
-                           intro.X + intro.Width + 10, intro.Y, 50, 7 * 10,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           intro.x() + intro.width() + 10, intro.y(), 50,
+                           7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
@@ -1889,7 +1892,7 @@ int MapEditClass::Load_Scenario() {
     char actiontext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
                          FontType::kEditor, TPF_NOSHADOW,
-                         briefing.X + briefing.Width + 10, briefing.Y, 50,
+                         briefing.x() + briefing.width() + 10, briefing.y(), 50,
                          7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                          MixArchive::RetrieveData("EBTN-DN.SHP"));
     action.Add_Item("<none>");
@@ -1900,8 +1903,9 @@ int MapEditClass::Load_Scenario() {
 
     char wintext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass win(kButtonWin, wintext, sizeof(wintext), FontType::kEditor,
-                      TPF_NOSHADOW, action.X + action.Width + 10, action.Y, 50,
-                      7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                      TPF_NOSHADOW, action.x() + action.width() + 10,
+                      action.y(), 50, 7 * 10,
+                      MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
     win.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
@@ -1911,8 +1915,8 @@ int MapEditClass::Load_Scenario() {
 
     char losetext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
-                       FontType::kEditor, TPF_NOSHADOW, win.X + win.Width + 10,
-                       win.Y, 50, 7 * 10,
+                       FontType::kEditor, TPF_NOSHADOW,
+                       win.x() + win.width() + 10, win.y(), 50, 7 * 10,
                        MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
@@ -1955,7 +1959,7 @@ int MapEditClass::Load_Scenario() {
     char themetext[65];
     DropListClass themebtn(kButtonTheme, themetext, sizeof(themetext),
                            FontType::kEditor, TPF_NOSHADOW,
-                           basebtn.X + basebtn.Width + 30, basebtn.Y, 85,
+                           basebtn.x() + basebtn.width() + 30, basebtn.y(), 85,
                            7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
@@ -1972,44 +1976,45 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Build level (technology).
     */
-    SliderClass techlevel(kButtonTech, housebtn.X + housebtn.Width + 15,
-                          housebtn.Y, 100, 8, game::SliderStyle::kGauge);
+    SliderClass techlevel(kButtonTech, housebtn.x() + housebtn.width() + 15,
+                          housebtn.y(), 100, 8, game::SliderStyle::kGauge);
     techlevel.Set_Maximum(16);
 
     char statictechbuff[15];
     StaticButtonClass techstatic(0, "999", FontType::kEditor, TPF_NOSHADOW,
-                                 techlevel.X + techlevel.Width - 20,
-                                 techlevel.Y - 7);
+                                 techlevel.x() + techlevel.width() - 20,
+                                 techlevel.y() - 7);
 
     /*
     **	Starting credits.
     */
-    SliderClass creditbtn(kButtonCredits, housebtn.X + housebtn.Width + 15,
-                          techlevel.Y + 20, 100, 8, game::SliderStyle::kGauge);
+    SliderClass creditbtn(kButtonCredits, housebtn.x() + housebtn.width() + 15,
+                          techlevel.y() + 20, 100, 8,
+                          game::SliderStyle::kGauge);
     creditbtn.Set_Maximum(201);
 
     char staticcreditbuff[15];
     StaticButtonClass creditstatic(
         0, "999999999", FontType::kEditor, TPF_NOSHADOW,
-        creditbtn.X + creditbtn.Width - 50, creditbtn.Y - 7);
+        creditbtn.x() + creditbtn.width() - 50, creditbtn.y() - 7);
 
     /*
     **	Maximum unit/infantry slider.
     */
-    SliderClass maxunit(kButtonMaxunit, housebtn.X + housebtn.Width + 15,
-                        creditbtn.Y + 20, 100, 8, game::SliderStyle::kGauge);
+    SliderClass maxunit(kButtonMaxunit, housebtn.x() + housebtn.width() + 15,
+                        creditbtn.y() + 20, 100, 8, game::SliderStyle::kGauge);
     maxunit.Set_Maximum(501);
 
     char staticmaxunitbuff[15];
     StaticButtonClass maxunitstatic(
         0, "999999", FontType::kEditor, TPF_NOSHADOW,
-        maxunit.X + maxunit.Width - 30, maxunit.Y - 7);
+        maxunit.x() + maxunit.width() - 30, maxunit.y() - 7);
 
     /*
     **	Source of ground delivery reinforcements.
     */
-    ListClass sourcebtn(kButtonSource, housebtn.X + housebtn.Width + 15,
-                        maxunit.Y + 20, 100, 7 * 4, FontType::kEditor,
+    ListClass sourcebtn(kButtonSource, housebtn.x() + housebtn.width() + 15,
+                        maxunit.y() + 20, 100, 7 * 4, FontType::kEditor,
                         TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
@@ -2022,21 +2027,21 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Smartness lider.
     */
-    SliderClass smarties(kButtonSmarties, sourcebtn.X,
-                         sourcebtn.Y + sourcebtn.Height + 15, 35, 8,
+    SliderClass smarties(kButtonSmarties, sourcebtn.x(),
+                         sourcebtn.y() + sourcebtn.height() + 15, 35, 8,
                          game::SliderStyle::kGauge);
     smarties.Set_Maximum(TheRules().MaxIQ + 1);
 
     char staticsmartiesbuff[15];
     StaticButtonClass smartiesstatic(0, "9999", FontType::kEditor, TPF_NOSHADOW,
-                                     smarties.X + smarties.Width - 20,
-                                     smarties.Y - 7);
+                                     smarties.x() + smarties.width() - 20,
+                                     smarties.y() - 7);
 
     /*
     **	List box of who is allied with whom.
     */
-    CheckListClass allies(kButtonAllies, techlevel.X + techlevel.Width + 5,
-                          housebtn.Y, 65, 7 * 10, FontType::kEditor,
+    CheckListClass allies(kButtonAllies, techlevel.x() + techlevel.width() + 5,
+                          housebtn.y(), 65, 7 * 10, FontType::kEditor,
                           TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2050,8 +2055,8 @@ int MapEditClass::Load_Scenario() {
     /*
     **	List box of who the player can control.
     */
-    CheckListClass control(kButtonControl, allies.X + allies.Width + 10,
-                           housebtn.Y, 65, 7 * 10, FontType::kEditor,
+    CheckListClass control(kButtonControl, allies.x() + allies.width() + 10,
+                           housebtn.y(), 65, 7 * 10, FontType::kEditor,
                            TPF_NOSHADOW,
                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -2167,39 +2172,44 @@ int MapEditClass::Load_Scenario() {
         const TextPrinter label(view,
                                 {Get_Color_Scheme(), game::kTransparentBlack,
                                  FontType::kEditor, TPF_NOSHADOW});
-        label.Print("Tech Level =", {techlevel.X, techlevel.Y - 7});
-        label.Print("Credits =", {creditbtn.X, creditbtn.Y - 7});
-        label.Print("Unit Max =", {maxunit.X, maxunit.Y - 7});
-        label.Print("IQ =", {smarties.X, smarties.Y - 7});
-        label.Print("Prebuild Base:", {basebtn.X, basebtn.Y - 7});
-        label.Print("Theater:", {theaterbtn.X, theaterbtn.Y - 7});
-        label.Print("Scenario Name:", {desc.X, desc.Y - 7});
-        label.Print("Country:", {housebtn.X, housebtn.Y - 7});
-        label.Print("Home Edge:", {sourcebtn.X, sourcebtn.Y - 7});
-        label.Print("Allies:", {allies.X, allies.Y - 7});
-        label.Print("Plyr Control:", {control.X, control.Y - 7});
-        label.Print("Theme:", {themebtn.X, themebtn.Y - 7});
-        label.Print("Intro:", {intro.X, intro.Y - 7});
-        label.Print("Briefing:", {briefing.X, briefing.Y - 7});
-        label.Print("Action:", {action.X, action.Y - 7});
-        label.Print("Win:", {win.X, win.Y - 7});
-        label.Print("Lose:", {lose.X, lose.Y - 7});
-        label.Print("Store scenario?", {record.X + 10, record.Y});
-        label.Print("Inherit stored scenario?", {inherit.X + 10, inherit.Y});
-        label.Print("Auto evac. Tanya (civilian)?", {tanya.X + 10, tanya.Y});
-        label.Print("Last mission of game?", {endofgame.X + 10, endofgame.Y});
+        label.Print("Tech Level =", {techlevel.x(), techlevel.y() - 7});
+        label.Print("Credits =", {creditbtn.x(), creditbtn.y() - 7});
+        label.Print("Unit Max =", {maxunit.x(), maxunit.y() - 7});
+        label.Print("IQ =", {smarties.x(), smarties.y() - 7});
+        label.Print("Prebuild Base:", {basebtn.x(), basebtn.y() - 7});
+        label.Print("Theater:", {theaterbtn.x(), theaterbtn.y() - 7});
+        label.Print("Scenario Name:", {desc.x(), desc.y() - 7});
+        label.Print("Country:", {housebtn.x(), housebtn.y() - 7});
+        label.Print("Home Edge:", {sourcebtn.x(), sourcebtn.y() - 7});
+        label.Print("Allies:", {allies.x(), allies.y() - 7});
+        label.Print("Plyr Control:", {control.x(), control.y() - 7});
+        label.Print("Theme:", {themebtn.x(), themebtn.y() - 7});
+        label.Print("Intro:", {intro.x(), intro.y() - 7});
+        label.Print("Briefing:", {briefing.x(), briefing.y() - 7});
+        label.Print("Action:", {action.x(), action.y() - 7});
+        label.Print("Win:", {win.x(), win.y() - 7});
+        label.Print("Lose:", {lose.x(), lose.y() - 7});
+        label.Print("Store scenario?", {record.x() + 10, record.y()});
+        label.Print("Inherit stored scenario?",
+                    {inherit.x() + 10, inherit.y()});
+        label.Print("Auto evac. Tanya (civilian)?",
+                    {tanya.x() + 10, tanya.y()});
+        label.Print("Last mission of game?",
+                    {endofgame.x() + 10, endofgame.y()});
         label.Print("Inherit mission timer from last scenario?",
-                    {timercarry.X + 10, timercarry.Y});
-        label.Print("Disable spy plane?", {nospyplane.X + 10, nospyplane.Y});
-        label.Print("Skip the score screen?", {skipscore.X + 10, skipscore.Y});
+                    {timercarry.x() + 10, timercarry.y()});
+        label.Print("Disable spy plane?",
+                    {nospyplane.x() + 10, nospyplane.y()});
+        label.Print("Skip the score screen?",
+                    {skipscore.x() + 10, skipscore.y()});
         label.Print("No map selection (force var 'B')?",
-                    {nomapsel.X + 10, nomapsel.Y});
+                    {nomapsel.x() + 10, nomapsel.y()});
         label.Print("Return to main menu after scenario finishes?",
-                    {onetime.X + 10, onetime.Y});
+                    {onetime.x() + 10, onetime.y()});
         label.Print("Truck carries wood crate?",
-                    {truckcrate.X + 10, truckcrate.Y});
+                    {truckcrate.x() + 10, truckcrate.y()});
         label.Print("Initial money is transferred to silos?",
-                    {moneytib.X + 10, moneytib.Y});
+                    {moneytib.x() + 10, moneytib.y()});
 
         theaterbtn.Collapse();
         themebtn.Collapse();

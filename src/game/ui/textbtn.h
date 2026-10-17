@@ -92,8 +92,8 @@ class TextButtonClass final : public ToggleClass {
     String = text;
     FlagToRedraw();
     if (resize && String) {
-      Width = Skin::Text_Width(TextFont, PrintFlags, String) + 8;
-      Height = Skin::Text_Height(TextFont, PrintFlags) + 2;
+      set_width(Skin::Text_Width(TextFont, PrintFlags, String) + 8);
+      set_height(Skin::Text_Height(TextFont, PrintFlags) + 2);
     }
   }
   // Shows text number `text`; the game's "no text" number changes nothing.
@@ -109,13 +109,14 @@ class TextButtonClass final : public ToggleClass {
 
  protected:
   void Draw_Background(PixelView& view) {
-    Skin::Draw_Button_Box(view, X, Y, Width, Height, TextFont, PrintFlags,
-                          IsDisabled, IsPressed);
+    Skin::Draw_Button_Box(view, x(), y(), width(), height(), TextFont,
+                          PrintFlags, disabled(), IsPressed);
   }
   void Draw_Text(PixelView& view, const char* text) {
     if (String) {
-      Skin::Print_Button_Text(view, text, X + (Width / 2) - 1, Y + 1, TextFont,
-                              PrintFlags, IsDisabled, IsPressed, IsOn);
+      Skin::Print_Button_Text(view, text, x() + (width() / 2) - 1, y() + 1,
+                              TextFont, PrintFlags, disabled(), IsPressed,
+                              IsOn);
     }
   }
 
@@ -132,10 +133,10 @@ class TextButtonClass final : public ToggleClass {
   // Applies the -1 ("fit the text") width and height of a constructor.
   void Size_To_Text(int w, int h) {
     if (w == -1) {
-      Width = Skin::Text_Width(TextFont, PrintFlags, String) + 8;
+      set_width(Skin::Text_Width(TextFont, PrintFlags, String) + 8);
     }
     if (h == -1) {
-      Height = Skin::Text_Height(TextFont, PrintFlags) + 2;
+      set_height(Skin::Text_Height(TextFont, PrintFlags) + 2);
     }
   }
 };

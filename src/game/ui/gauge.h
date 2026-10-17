@@ -72,23 +72,23 @@ class GaugeClass : public ControlClass {
     if (!ControlClass::Draw(view, forced)) {
       return false;
     }
-    Skin::Draw_Gauge_Box(view, X, Y, Width, Height, false);
+    Skin::Draw_Gauge_Box(view, x(), y(), width(), height(), false);
 
     // Colourize the inside of the gauge if indicated.
     if (IsColorized) {
       const int middle = Value_To_Pixel(CurValue);
       const engine::gfx::PaletteIndex color = Skin::Gauge_Fill_Color();
       if (IsHorizontal) {
-        if (middle >= X + 1) {
-          view.FillRect(
-              base::Rect::FromCorners(X + 1, Y + 1, middle, Y + Height - 2),
-              color);
+        if (middle >= x() + 1) {
+          view.FillRect(base::Rect::FromCorners(x() + 1, y() + 1, middle,
+                                                y() + height() - 2),
+                        color);
         }
       } else {
-        if (middle >= Y + 1) {
-          view.FillRect(
-              base::Rect::FromCorners(X + 1, Y + 1, X + Width - 2, middle),
-              color);
+        if (middle >= y() + 1) {
+          view.FillRect(base::Rect::FromCorners(x() + 1, y() + 1,
+                                                x() + width() - 2, middle),
+                        color);
         }
       }
     }
@@ -152,15 +152,15 @@ class GaugeClass : public ControlClass {
   int ClickDiff{0};
 
   virtual void Draw_Thumb(PixelView& view) {
-    int x = Value_To_Pixel(CurValue);
-    if (x + 4 > Value_To_Pixel(MaxValue)) {
-      x = Value_To_Pixel(MaxValue) - 2;
+    int thumb = Value_To_Pixel(CurValue);
+    if (thumb + 4 > Value_To_Pixel(MaxValue)) {
+      thumb = Value_To_Pixel(MaxValue) - 2;
     }
-    x = x < X ? X : x;
+    thumb = thumb < x() ? x() : thumb;
     if (IsHorizontal) {
-      Skin::Draw_Gauge_Box(view, x, Y, 4, Height, true);
+      Skin::Draw_Gauge_Box(view, thumb, y(), 4, height(), true);
     } else {
-      Skin::Draw_Gauge_Box(view, X, x, Width, 4, true);
+      Skin::Draw_Gauge_Box(view, x(), thumb, width(), 4, true);
     }
   }
 
@@ -178,7 +178,7 @@ class GaugeClass : public ControlClass {
     // If the thumb is currently being "dragged around", then update the
     // slider position according to the mouse position. In all other cases,
     // ignore the button being held down.
-    if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
+    if (flags & kLeftPress || (flags & kLeftHeld && mouse_captor() == this)) {
       // Compute the difference between where we clicked, and the edge of the
       // thumb (only if we clicked on the thumb.)
       if (flags & kLeftPress) {
@@ -227,11 +227,11 @@ class GaugeClass : public ControlClass {
   virtual int Pixel_To_Value(int pixel) {
     int maximum = 0;
     if (IsHorizontal) {
-      pixel -= X + 1;
-      maximum = Width;
+      pixel -= x() + 1;
+      maximum = width();
     } else {
-      pixel -= Y + 1;
-      maximum = Height;
+      pixel -= y() + 1;
+      maximum = height();
     }
     maximum -= 2;
     pixel = Bound(pixel, 0, maximum);
@@ -242,11 +242,11 @@ class GaugeClass : public ControlClass {
     int maximum = 0;
     int start = 0;
     if (IsHorizontal) {
-      maximum = Width;
-      start = X;
+      maximum = width();
+      start = x();
     } else {
-      maximum = Height;
-      start = Y;
+      maximum = height();
+      start = y();
     }
     maximum -= 2;
     return start + Skin::Scale(maximum, value, MaxValue);
@@ -282,11 +282,11 @@ class TriColorGaugeClass : public GaugeClass<Skin> {
     if (!ControlClass::Draw(view, forced)) {
       return false;
     }
-    const int x = this->X;
-    const int y = this->Y;
-    const int width = this->Width;
-    const int height = this->Height;
-    Skin::Draw_Gauge_Box(view, x, y, width, height, this->IsDisabled);
+    const int x = this->x();
+    const int y = this->y();
+    const int width = this->width();
+    const int height = this->height();
+    Skin::Draw_Gauge_Box(view, x, y, width, height, this->disabled());
 
     const int red = this->Value_To_Pixel(RedLimit);
     const int yellow = this->Value_To_Pixel(YellowLimit);

@@ -118,8 +118,8 @@ class SliderClass final : public GaugeClass<Skin> {
     const bool sunken = style_ == SliderStyle::kSunkenBar;
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
     if (sunken && ControlClass::Draw(view, forced)) {
-      Skin::Draw_Gauge_Box(view, this->X, this->Y, this->Width, this->Height,
-                           false);
+      Skin::Draw_Gauge_Box(view, this->x(), this->y(), this->width(),
+                           this->height(), false);
       Draw_Thumb(view);
       return true;
     }
@@ -154,10 +154,10 @@ class SliderClass final : public GaugeClass<Skin> {
       int edge = 0;   // Edge of slider.
       if (this->IsHorizontal) {
         mouse = TheMouse().x();
-        edge = this->X;
+        edge = this->x();
       } else {
         mouse = TheMouse().y();
-        edge = this->Y;
+        edge = this->y();
       }
       edge += 1;
 
@@ -185,11 +185,11 @@ class SliderClass final : public GaugeClass<Skin> {
 
   void Draw_Thumb(PixelView& view) override {
     if (this->IsHorizontal) {
-      Skin::Draw_Gauge_Box(view, this->X + ThumbStart, this->Y, ThumbSize,
-                           this->Height, true);
+      Skin::Draw_Gauge_Box(view, this->x() + ThumbStart, this->y(), ThumbSize,
+                           this->height(), true);
     } else {
-      Skin::Draw_Gauge_Box(view, this->X, this->Y + ThumbStart, this->Width,
-                           ThumbSize, true);
+      Skin::Draw_Gauge_Box(view, this->x(), this->y() + ThumbStart,
+                           this->width(), ThumbSize, true);
     }
   }
 
@@ -197,7 +197,7 @@ class SliderClass final : public GaugeClass<Skin> {
   SliderStyle style_;
 
   void Recalc_Thumb() {
-    const int length = this->IsHorizontal ? this->Width : this->Height;
+    const int length = this->IsHorizontal ? this->width() : this->height();
     const int size = Skin::Scale(length, Thumb, this->MaxValue);
     ThumbSize = std::max(size, 4);
     const int start = Skin::Scale(length, this->CurValue, this->MaxValue);
