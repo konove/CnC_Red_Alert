@@ -72,6 +72,7 @@
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/format.h"
 #include "base/strings/number_parse.h"
@@ -2880,7 +2881,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   commands.Add(cancelbtn);
   if (!skirmish && GameFileExists("SAVEGAME.NET")) {
   } else {
-    cancelbtn.set_x(loadbtn.x());
+    cancelbtn.SetPosition(base::Point{loadbtn.x(), cancelbtn.y()});
   }
 #ifdef OLDWAY
   commands.Add(gdibtn);

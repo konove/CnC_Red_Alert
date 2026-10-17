@@ -147,6 +147,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/random.h"
 #include "base/rect.h"
 #include "base/strings/format.h"
@@ -4349,7 +4350,7 @@ static int Net_New_Dialog() {
   if (GameFileExists("SAVEGAME.NET")) {
     // loadbtn.AppendTo(*commands);
   } else {
-    cancelbtn.set_x(loadbtn.x());
+    cancelbtn.SetPosition(base::Point{loadbtn.x(), cancelbtn.y()});
   }
   playerlist.Set_Tabs(tabs);
 

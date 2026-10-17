@@ -47,6 +47,7 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/point.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"
@@ -633,8 +634,10 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
            msg_y)
       << "the member pictures run into the name line";
 
-  okbtn.set_y(dlg_y + dlg_h - kMargin - kOkH - 15);
-  cancelbtn.set_y(dlg_y + dlg_h - kMargin - kCancelH - 15);
+  okbtn.SetPosition(
+      base::Point{okbtn.x(), dlg_y + dlg_h - kMargin - kOkH - 15});
+  cancelbtn.SetPosition(
+      base::Point{cancelbtn.x(), dlg_y + dlg_h - kMargin - kCancelH - 15});
 
   /*
   **	Draw to visible_view.

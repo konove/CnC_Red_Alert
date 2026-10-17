@@ -106,6 +106,7 @@
 #include "base/fixed.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -336,8 +337,7 @@ void SidebarClass::Init_IO() {
   if (!TheDebugState().map_editor_active()) {
     Repair.set_sticky(true);
     Repair.ID = kButtonRepair;
-    Repair.set_x(0x1f2);
-    Repair.set_y(0x96);
+    Repair.SetPosition(base::Point{0x1f2, 0x96});
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
     Repair.ReflectButtonState = true;
@@ -345,8 +345,7 @@ void SidebarClass::Init_IO() {
 
     Upgrade.set_sticky(true);
     Upgrade.ID = kButtonUpgrade;
-    Upgrade.set_x(0x21f);
-    Upgrade.set_y(0x96);
+    Upgrade.SetPosition(base::Point{0x21f, 0x96});
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
     Upgrade.ReflectButtonState = true;
@@ -354,8 +353,7 @@ void SidebarClass::Init_IO() {
 
     Zoom.set_sticky(true);
     Zoom.ID = kButtonZoom;
-    Zoom.set_x(0x24c);
-    Zoom.set_y(0x96);
+    Zoom.SetPosition(base::Point{0x24c, 0x96});
     Zoom.IsPressed = false;
     Zoom.Set_Shape(MixArchive::RetrieveData("MAP.SHP"));
 
@@ -1118,21 +1116,17 @@ void SidebarClass::StripClass::Init_IO(int id) {
 
   base::At(UpButton, ID).set_sticky(true);
   base::At(UpButton, ID).ID = static_cast<unsigned>(kButtonUp + id);
-  base::At(UpButton, ID).set_x(X + (kUpXOffset * 2));
-  base::At(UpButton, ID).set_y(Y + (kUpYOffset * 2));
+  // Up and down sit a pixel higher in the new sidebar than the offsets say.
+  base::At(UpButton, ID)
+      .SetPosition(base::Point{X + (kUpXOffset * 2), Y + (kUpYOffset * 2) - 1});
 
   base::At(UpButton, ID).Set_Shape(MixArchive::RetrieveData("STRIPUP.SHP"));
 
   base::At(DownButton, ID).set_sticky(true);
   base::At(DownButton, ID).ID = static_cast<unsigned>(kButtonDown + id);
-  base::At(DownButton, ID).set_x(X + (kDownXOffset * 2));
-  base::At(DownButton, ID).set_y(Y + (kDownYOffset * 2));
-
-  /*
-  ** Buttons are in a slightly different position in the new sidebar
-  */
-  base::At(UpButton, ID).set_y(base::At(UpButton, ID).y() - 1);
-  base::At(DownButton, ID).set_y(base::At(DownButton, ID).y() - 1);
+  base::At(DownButton, ID)
+      .SetPosition(
+          base::Point{X + (kDownXOffset * 2), Y + (kDownYOffset * 2) - 1});
 
   base::At(DownButton, ID).Set_Shape(MixArchive::RetrieveData("STRIPDN.SHP"));
 
@@ -1897,8 +1891,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
   Strip = &strip;
   Index = index;
-  set_x(strip.X);
-  set_y(strip.Y + (index * kObjectHeight * 2));
+  SetPosition(base::Point{strip.X, strip.Y + (index * kObjectHeight * 2)});
 }
 
 /***********************************************************************************************

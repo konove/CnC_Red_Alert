@@ -85,6 +85,7 @@
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
@@ -1382,7 +1383,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   TextButtonClass button3(kButton3, b3txt, kButtonFont, kButtonFlags, 0,
                           y + height - (bheight + 5));
-  button3.set_x(x + ((width - button3.width()) / 2));
+  button3.SetPosition(
+      base::Point{x + ((width - button3.width()) / 2), button3.y()});
 
   game::GadgetList buttonlist;
   int curbutton = 0;

@@ -41,6 +41,7 @@
 #include "ra/screens/gamedlg.h"
 
 #include "base/array.h"
+#include "base/point.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -194,7 +195,8 @@ void GameControlsClass::Process() {
                             d_sound_h);
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kButtonFont, kButtonFlags,
                         d_ok_x, d_ok_y);
-  okbtn.set_x((TheScreen().visible_view().width() - okbtn.width()) / 2);
+  okbtn.SetPosition(base::Point{
+      (TheScreen().visible_view().width() - okbtn.width()) / 2, okbtn.y()});
 
   TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kButtonFont,
                           kButtonFlags, d_wol_x, d_wol_y, d_wol_w, d_wol_h);

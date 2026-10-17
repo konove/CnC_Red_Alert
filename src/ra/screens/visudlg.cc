@@ -46,6 +46,7 @@
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -142,8 +143,9 @@ void VisualControlsClass::Process() {
   /*
   **	Centers options button.
   */
-  optionsbtn.set_x(option_x + (option_width - optionsbtn.width() - 34));
-  resetbtn.set_x(option_x + 34);
+  optionsbtn.SetPosition(base::Point{
+      option_x + (option_width - optionsbtn.width() - 34), optionsbtn.y()});
+  resetbtn.SetPosition(base::Point{option_x + 34, resetbtn.y()});
 
   game::GadgetList gadgets;
   gadgets.Add(optionsbtn);

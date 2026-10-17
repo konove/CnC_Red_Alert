@@ -48,6 +48,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -251,15 +252,18 @@ void GameOptionsClass::Process() {
   */
   for (game::Gadget* const g : buttons.gadgets()) {
     g->set_width(std::max(maxwidth, 180));
-    g->set_x(OptionX + ((OptionWidth - g->width()) / 2));
+    g->SetPosition(
+        base::Point{OptionX + ((OptionWidth - g->width()) / 2), g->y()});
   }
-  buttonsel[kButtonResume - 1]->set_width(180);
-  buttonsel[kButtonResume - 1]->set_x(OptionX + 34);
+  TextButtonClass* const resume = buttonsel[kButtonResume - 1];
+  resume->set_width(180);
+  resume->SetPosition(base::Point{OptionX + 34, resume->y()});
 
   if (TheSession().Type == GAME_NORMAL) {
-    buttonsel[kButtonRestate - 1]->set_width(180);
-    buttonsel[kButtonRestate - 1]->set_x(
-        OptionX + OptionWidth - (buttonsel[kButtonRestate - 1]->width() + 34));
+    TextButtonClass* const restate = buttonsel[kButtonRestate - 1];
+    restate->set_width(180);
+    restate->SetPosition(base::Point{
+        OptionX + OptionWidth - (restate->width() + 34), restate->y()});
   }
 
   /*

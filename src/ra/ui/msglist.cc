@@ -70,6 +70,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1320,7 +1321,7 @@ void MessageListClass::Compute_Y() {
     y = MessageY;
   }
   for (game::Gadget* const gadg : MessageList.gadgets()) {
-    gadg->set_y(y);
+    gadg->SetPosition(base::Point{gadg->x(), y});
     y += Height;
   }
 
