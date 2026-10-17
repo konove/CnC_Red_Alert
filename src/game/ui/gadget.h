@@ -66,7 +66,7 @@ class GadgetList;
 //   if (buttons.Input(view).key == engine::window::ButtonKey(kOk)) ...
 class Gadget {
  public:
-  // Input events a gadget listens for, stored OR'd in event_mask_. A press or
+  // Input events a gadget listens for, combined in event_mask_. A press or
   // release is reported once, when it happens; held (the button is down) and
   // up (it is not) describe the button's state on each Input() call that has
   // no event to report.
@@ -139,16 +139,16 @@ class Gadget {
   [[nodiscard]] int y() const { return y_; }
   [[nodiscard]] int width() const { return width_; }
   [[nodiscard]] int height() const { return height_; }
-  void set_x(int x) { x_ = x; }
-  void set_y(int y) { y_ = y; }
-  void set_width(int width) { width_ = width; }
-  void set_height(int height) { height_ = height; }
+  void set_x(const int x) { x_ = x; }
+  void set_y(const int y) { y_ = y; }
+  void set_width(const int width) { width_ = width; }
+  void set_height(const int height) { height_ = height; }
 
   // A sticky gadget captures the mouse: pressed over it, it alone gets the
   // input until the left button is released, as a Windows button does. The
   // sidebar's buttons are static and are made sticky after they are
   // constructed.
-  void set_sticky(bool sticky) { sticky_ = sticky; }
+  void set_sticky(const bool sticky) { sticky_ = sticky; }
 
   // The sticky gadget that holds the mouse while the left button is down;
   // nullptr when none does.

@@ -30,8 +30,8 @@ Gadget* Gadget::focused_ = nullptr;
 
 Gadget* Gadget::mouse_captor_ = nullptr;
 
-Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
-               bool sticky) noexcept
+Gadget::Gadget(const int x, const int y, const int width, const int height,
+               const uint32_t flags, const bool sticky) noexcept
     : x_(x),
       y_(y),
       width_(width),
@@ -94,12 +94,12 @@ void Gadget::ClearFocus() {
 
 bool Gadget::HasFocus() const { return this == focused_; }
 
-void Gadget::SetPosition(int x, int y) {
+void Gadget::SetPosition(const int x, const int y) {
   x_ = x;
   y_ = y;
 }
 
-bool Gadget::Draw(PixelView& /*view*/, bool forced) {
+bool Gadget::Draw(PixelView& /*view*/, const bool forced) {
   if (forced || to_redraw_) {
     to_redraw_ = false;
     return true;
@@ -107,7 +107,7 @@ bool Gadget::Draw(PixelView& /*view*/, bool forced) {
   return false;
 }
 
-void Gadget::UpdateMouseCapture(uint32_t flags) {
+void Gadget::UpdateMouseCapture(const uint32_t flags) {
   if (sticky_ && flags & kLeftPress) {
     mouse_captor_ = this;
   }
@@ -116,7 +116,7 @@ void Gadget::UpdateMouseCapture(uint32_t flags) {
   }
 }
 
-bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
+bool Gadget::Action(const uint32_t flags, engine::window::KeyNumber& /*key*/,
                     int /*x*/, int /*y*/) {
   // ActionIfConcerned() also calls this with no events for the gadget holding
   // the mouse; that is not an action, and the sweep goes on.
@@ -128,7 +128,7 @@ bool Gadget::Action(uint32_t flags, engine::window::KeyNumber& /*key*/,
   return false;
 }
 
-bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
+bool Gadget::Offer(PixelView& view, const bool forced, PendingInput& input) {
   Draw(view, forced);
 
   // A gadget that acted has used up the event, so the sweep stops there.

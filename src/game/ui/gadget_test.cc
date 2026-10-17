@@ -25,10 +25,10 @@ using engine::window::MouseButton;
 // its actions and draws.
 class Probe : public Gadget {
  public:
-  explicit Probe(bool sticky = false)
+  explicit Probe(const bool sticky = false)
       : Gadget(20, 20, 10, 10, kLeftPress, sticky) {}
 
-  bool Draw(PixelView& view, bool forced) override {
+  bool Draw(PixelView& view, const bool forced) override {
     if (!Gadget::Draw(view, forced)) {
       return false;
     }
@@ -42,7 +42,8 @@ class Probe : public Gadget {
   int draws = 0;
 
  protected:
-  bool Action(uint32_t flags, KeyNumber& key, int x, int y) override {
+  bool Action(const uint32_t flags, KeyNumber& key, const int x,
+              const int y) override {
     ++actions;
     return Gadget::Action(flags, key, x, y);
   }
@@ -51,7 +52,7 @@ class Probe : public Gadget {
 class GadgetTest : public testing::Test {
  protected:
   // Queues a left press at (`x`, `y`) and runs the list over it.
-  engine::window::InputEvent PressAt(int x, int y) {
+  engine::window::InputEvent PressAt(const int x, const int y) {
     EXPECT_TRUE(input_.keyboard().PutClick(MouseButton::kLeft, false, x, y));
     return list_.Input(view_);
   }
