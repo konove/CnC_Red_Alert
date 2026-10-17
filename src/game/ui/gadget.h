@@ -133,13 +133,6 @@ class Gadget {
   // it and draws when it returns true.
   virtual bool Draw(PixelView& view, bool forced = false);
 
-  // Sets the function GadgetList::Input() hands every key it reads, before any
-  // gadget sees it (the games save a screenshot on K this way). Null, the
-  // default, does nothing.
-  static void SetKeyHook(void (*hook)(engine::window::KeyNumber key)) {
-    key_hook_ = hook;
-  }
-
   // The gadget's region, in screen pixels.
   int X = 0;
   int Y = 0;
@@ -213,20 +206,10 @@ class Gadget {
     int y = 0;
   };
 
-  // The steps of GadgetList::Input(). ReadInput() takes one event, if any, from
-  // the keyboard and describes it.
-  static PendingInput ReadInput();
-  // Gives `input` to the gadget holding the mouse or, for a key, the one with
-  // the focus. Returns whether there was one, which leaves the others out.
-  static bool OfferToStuckOrFocused(PixelView& view, PendingInput& input);
   // Draws this gadget if it has to be (always when `forced`) and offers it
-  // `input`. Returns whether it acted, which ends the sweep.
+  // `input`, as a step of GadgetList::Input(). Returns whether it acted, which
+  // ends the sweep.
   bool Offer(PixelView& view, bool forced, PendingInput& input);
-  // Returns the event as GadgetList::Input() reports it.
-  static engine::window::InputEvent FinishInput(const PendingInput& input);
-
-  // See SetKeyHook(); nullptr when none is set.
-  static void (*key_hook_)(engine::window::KeyNumber key);
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;

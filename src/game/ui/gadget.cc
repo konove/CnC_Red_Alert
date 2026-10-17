@@ -21,18 +21,14 @@
 #include <cstdint>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget_list.h"
-#include "game/ui/input.h"
 
 namespace game {
 
 Gadget* Gadget::StuckOn = nullptr;
 
 Gadget* Gadget::Focused = nullptr;
-
-void (*Gadget::key_hook_)(engine::window::KeyNumber key) = nullptr;
 
 Gadget::Gadget(int x, int y, int width, int height, uint32_t flags,
                bool sticky) noexcept
@@ -118,94 +114,7 @@ bool Gadget::Draw(PixelView& /*view*/, bool forced) {
   return false;
 }
 
-Gadget::PendingInput Gadget::ReadInput() {
-  PendingInput input;
 
-  // The keyboard queue holds the mouse clicks as well as the keys. With
-  // nothing queued the event stays empty and only the held/up state below is
-  // reported.
-  if (TheKeyboard().Peek()) {
-    input.event = TheKeyboard().Read();
-  }
-  const engine::window::InputEvent& event = input.event;
-  input.key = event.key;
-
-  if (key_hook_ != nullptr) {
-    key_hook_(input.key);
-  }
-
-  // A click is placed where the mouse was when it happened, not where it is
-  // by the time this runs.
-  if (event.IsClick()) {
-    input.x = event.x;
-    input.y = event.y;
-  } else {
-    input.x = TheMouse().x();
-    input.y = TheMouse().y();
-  }
-
-  // Translate the event into the k... bits each gadget filters by its
-  // event_mask_.
-  using engine::window::MouseButton;
-  if (event.IsPress(MouseButton::kLeft)) {
-    input.flags |= kLeftPress;
-  }
-  if (event.IsPress(MouseButton::kRight)) {
-    input.flags |= kRightPress;
-  }
-  if (event.IsRelease(MouseButton::kLeft)) {
-    input.flags |= kLeftRelease;
-  }
-  if (event.IsRelease(MouseButton::kRight)) {
-    input.flags |= kRightRelease;
-  }
-
-  // An event with a key but no mouse bits came from the keyboard.
-  if (input.key && !input.flags) {
-    input.flags |= kKeyboard;
-  }
-
-  // Held and up are reported only when there is no event. Otherwise a gadget
-  // listening for kLeftUp under the mouse would act on, and swallow, every
-  // key and click.
-  if (!event) {
-    // The event queue reports only changes, so the held state comes from the
-    // buttons themselves.
-    input.flags |= engine::window::IsLeftButtonDown() ? kLeftHeld : kLeftUp;
-    input.flags |= engine::window::IsRightButtonDown() ? kRightHeld : kRightUp;
-  }
-  return input;
-}
-
-bool Gadget::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
-  // While a gadget holds the mouse it gets every event and no other gadget
-  // is drawn or offered anything.
-  if (StuckOn) {
-    StuckOn->Draw(view, false);
-    // A release in ActionIfConcerned() clears StuckOn; the gadget is still
-    // redrawn so it can show itself raised.
-    Gadget* captor = StuckOn;
-    StuckOn->ActionIfConcerned(input);
-    if (StuckOn) {
-      StuckOn->Draw(view, false);
-    } else {
-      captor->Draw(view, false);
-    }
-    return true;
-  }
-
-  // Keys go only to the focused gadget; its mouse events go through the
-  // normal sweep.
-  if (Focused && input.flags & kKeyboard) {
-    Focused->Draw(view, false);
-    Focused->ActionIfConcerned(input);
-    if (Focused) {
-      Focused->Draw(view, false);
-    }
-    return true;
-  }
-  return false;
-}
 
 bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   Draw(view, forced);
@@ -219,15 +128,6 @@ bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   return false;
 }
 
-engine::window::InputEvent Gadget::FinishInput(const PendingInput& input) {
-  engine::window::InputEvent event = input.event;
-  // A gadget that acted replaced the key, and used up the click with it.
-  if (input.key != event.key) {
-    event.key = input.key;
-    event.button = engine::window::MouseButton::kNone;
-  }
-  return event;
-}
 
 void Gadget::FlagToRedraw() { IsToRepaint = true; }
 

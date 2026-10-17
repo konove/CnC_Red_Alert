@@ -8,7 +8,7 @@
 
 namespace td {
 
-// For game::Gadget::SetKeyHook(): on K, in a build with the scenario
+// For game::GadgetList::SetKeyHook(): on K, in a build with the scenario
 // editor, saves the visible page as the first free scrshtNN.pcx.
 void Screenshot_Key(engine::window::KeyNumber key);
 

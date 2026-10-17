@@ -10,7 +10,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
 #include "game/core/game_clock.h"
-#include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
@@ -56,7 +56,7 @@ class Game {
   explicit Game(const engine::window::DisplayKind display_kind =
                     engine::window::DisplayKind::kWindow)
       : display_(engine::window::MakeDisplay(display_kind, window_events_)) {
-    game::Gadget::SetKeyHook(&Screenshot_Key);
+    game::GadgetList::SetKeyHook(&Screenshot_Key);
   }
   // Stops the IPX manager listening first: that goes through TheNetwork(),
   // which no longer resolves by the time network_ is destroyed.

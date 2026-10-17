@@ -10,11 +10,11 @@
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 
 namespace game {
 
 class ControlClass;
-class Gadget;
 
 // The gadgets of one dialog, in the order they are offered input and drawn.
 // The list does not own them: a gadget is usually a local next to the list, and
@@ -76,6 +76,12 @@ class GadgetList {
   // The first call after another list had its turn draws every gadget and
   // drops the focus and the hold on the mouse, which belonged to that list.
   engine::window::InputEvent Input(PixelView& view);
+  // Sets the function Input() hands every key it reads, before any
+  // gadget sees it (the games save a screenshot on K this way). Null, the
+  // default, does nothing.
+  static void SetKeyHook(void (*hook)(engine::window::KeyNumber key)) {
+    key_hook_ = hook;
+  }
 
   // Draws every gadget on `view`; with `forced` false only those flagged to
   // be redrawn.
@@ -111,6 +117,20 @@ class GadgetList {
 
   // Puts `gadget`, which is in no list, at `index` and tells it so.
   void InsertAt(base::ssize index, Gadget& gadget);
+
+  // The steps of Input(). ReadInput() takes one event, if any, from the
+  // keyboard and describes it.
+  static Gadget::PendingInput ReadInput();
+  // Gives `input` to the gadget holding the mouse or, for a key, the one with
+  // the focus. Returns whether there was one, which leaves the others out.
+  static bool OfferToStuckOrFocused(PixelView& view,
+                                    Gadget::PendingInput& input);
+  // Returns the event as Input() reports it.
+  static engine::window::InputEvent FinishInput(
+      const Gadget::PendingInput& input);
+
+  // See SetKeyHook(); nullptr when none is set.
+  static void (*key_hook_)(engine::window::KeyNumber key);
 
   // The list Input() ran on last; nullptr when the next call is to draw
   // everything.
