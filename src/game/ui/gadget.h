@@ -144,14 +144,24 @@ class Gadget {
 
   // The gadget's region, in screen pixels. The setters move or resize only
   // this gadget; SetPosition() also moves the parts of a composite one.
-  [[nodiscard]] int x() const { return x_; }
-  [[nodiscard]] int y() const { return y_; }
-  [[nodiscard]] int width() const { return width_; }
-  [[nodiscard]] int height() const { return height_; }
-  void set_x(const int x) { x_ = x; }
-  void set_y(const int y) { y_ = y; }
-  void set_width(const int width) { width_ = width; }
-  void set_height(const int height) { height_ = height; }
+  [[nodiscard]] base::Rect region() const { return region_; }
+  void set_region(const base::Rect& region) { region_ = region; }
+  [[nodiscard]] int x() const { return region_.x(); }
+  [[nodiscard]] int y() const { return region_.y(); }
+  [[nodiscard]] int width() const { return region_.width(); }
+  [[nodiscard]] int height() const { return region_.height(); }
+  void set_x(const int x) {
+    region_ = base::Rect{x, region_.y(), region_.width(), region_.height()};
+  }
+  void set_y(const int y) {
+    region_ = base::Rect{region_.x(), y, region_.width(), region_.height()};
+  }
+  void set_width(const int width) {
+    region_ = base::Rect{region_.x(), region_.y(), width, region_.height()};
+  }
+  void set_height(const int height) {
+    region_ = base::Rect{region_.x(), region_.y(), region_.width(), height};
+  }
 
   // A sticky gadget captures the mouse: pressed over it, it alone gets the
   // input until the left button is released, as a Windows button does. The
@@ -219,10 +229,8 @@ class Gadget {
   // called.
   bool ActionIfConcerned(PendingInput& input);
 
-  int x_ = 0;
-  int y_ = 0;
-  int width_ = 0;
-  int height_ = 0;
+  // See region().
+  base::Rect region_;
 
   // Set when the gadget's look has changed and Draw() has to draw it; the
   // base Action() sets it whenever it acts.

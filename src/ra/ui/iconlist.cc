@@ -680,10 +680,7 @@ int IconListClass::GetRealWidth()  //	sigh
 void IconListClass::Resize(int x, int y, int w, int h) {
   Remove_Scroll_Bar();  //	If there is one.
 
-  set_x(x);
-  set_y(y);
-  set_width(w);
-  set_height(h);
+  set_region(base::Rect{x, y, w, h});
 
   SetPosition(x, y);
 

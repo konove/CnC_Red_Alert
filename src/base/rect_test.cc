@@ -28,6 +28,23 @@ TEST(RectTest, RightAndBottomAreOnePastTheLastPixel) {
   EXPECT_EQ(rect.bottom(), 23);
 }
 
+TEST(RectTest, ContainsTheTopLeftCornerButNotRightOrBottom) {
+  constexpr base::Rect rect{2, 3, 10, 20};
+
+  EXPECT_TRUE(rect.Contains(2, 3));
+  EXPECT_TRUE(rect.Contains(11, 22));
+  EXPECT_FALSE(rect.Contains(1, 3));
+  EXPECT_FALSE(rect.Contains(2, 2));
+  EXPECT_FALSE(rect.Contains(12, 3));
+  EXPECT_FALSE(rect.Contains(2, 23));
+}
+
+TEST(RectTest, AnEmptyRectContainsNothing) {
+  EXPECT_FALSE((base::Rect{}).Contains(0, 0));
+  EXPECT_FALSE((base::Rect{5, 5, -3, 4}).Contains(4, 6));
+  EXPECT_FALSE((base::Rect{5, 5, -3, 4}).Contains(5, 6));
+}
+
 TEST(RectTest, FromCornersIncludesBothCorners) {
   EXPECT_EQ(base::Rect::FromCorners(2, 3, 5, 7), (base::Rect{2, 3, 4, 5}));
   EXPECT_EQ(base::Rect::FromCorners(4, 4, 4, 4), (base::Rect{4, 4, 1, 1}));

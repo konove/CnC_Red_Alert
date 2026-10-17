@@ -198,7 +198,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   if (Background.empty() && width() > 0 && height() > 0) {
     Background.resize(base::ToSize(width()) * base::ToSize(height()));
     if (!Background.empty()) {
-      view.CopyToBuffer(base::Rect{x(), y(), width(), height()}, Background);
+      view.CopyToBuffer(region(), Background);
     }
   }
 
@@ -207,7 +207,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   *now.
   */
   if (!Background.empty()) {
-    view.CopyFromBuffer(base::Rect{x(), y(), width(), height()}, Background);
+    view.CopyFromBuffer(region(), Background);
   }
 }
 

@@ -146,10 +146,8 @@ void PowerClass::Init_Clear() {
  *=============================================================================================*/
 void PowerClass::One_Time() {
   RadarClass::One_Time();
-  PowerButton.set_x(kPowerX * 2);
-  PowerButton.set_y(kPowerY * 2);
-  PowerButton.set_width((kPowerWidth * 2) - 1);
-  PowerButton.set_height(kPowerHeight * 2);
+  PowerButton.set_region(base::Rect{kPowerX * 2, kPowerY * 2,
+                                    (kPowerWidth * 2) - 1, kPowerHeight * 2});
   PowerShape = MixArchive::RetrieveData("POWER.SHP");
   PowerBarShape = MixArchive::RetrieveData("POWERBAR.SHP");
 }

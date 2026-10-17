@@ -28,10 +28,7 @@ namespace game {
 
 Gadget::Gadget(const base::Rect& region, const InputFlags flags,
                const bool sticky) noexcept
-    : x_(region.x()),
-      y_(region.y()),
-      width_(region.width()),
-      height_(region.height()),
+    : region_(region),
 
       sticky_(sticky),
 
@@ -80,8 +77,7 @@ void Gadget::SetFocus() {
 void Gadget::ClearFocus() { has_focus_ = false; }
 
 void Gadget::SetPosition(const int x, const int y) {
-  x_ = x;
-  y_ = y;
+  region_ = base::Rect{x, y, region_.width(), region_.height()};
 }
 
 bool Gadget::Draw(PixelView& /*view*/, const bool forced) {
@@ -140,13 +136,9 @@ bool Gadget::ActionIfConcerned(PendingInput& input) {
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
-  // mouse events must fall inside the region. The unsigned casts turn a
-  // position left of or above the region into a huge value, so one compare
-  // per axis checks both edges.
+  // mouse events must fall inside the region.
   if (holds_mouse_ || base::Any(flags & InputFlags::kKeyboard) ||
-      (base::Any(flags) &&
-       static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
-       static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {
+      (base::Any(flags) && region_.Contains(input.x, input.y))) {
     return Action(flags, input.key, input.x, input.y);
   }
   return false;

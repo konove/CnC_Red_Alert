@@ -49,6 +49,12 @@ class Rect {
   [[nodiscard]] constexpr int right() const { return x_ + width_; }
   [[nodiscard]] constexpr int bottom() const { return y_ + height_; }
 
+  // Whether the pixel at (`x`, `y`) is inside the rectangle. An empty one,
+  // or one with a negative size, contains none.
+  [[nodiscard]] constexpr bool Contains(const int x, const int y) const {
+    return x >= x_ && x < right() && y >= y_ && y < bottom();
+  }
+
   friend constexpr bool operator==(const Rect&, const Rect&) = default;
 
  private:

@@ -129,6 +129,28 @@ TEST_F(GadgetTest, SetPositionMovesTheRegion) {
   EXPECT_EQ(probe_.actions, 1);
 }
 
+TEST_F(GadgetTest, SetRegionMovesAndResizesTheGadget) {
+  list_.Add(probe_);
+  probe_.set_region(base::Rect{0, 0, 40, 4});
+  EXPECT_EQ(probe_.region(), (base::Rect{0, 0, 40, 4}));
+
+  PressAt(25, 25);
+  EXPECT_EQ(probe_.actions, 0);
+  PressAt(39, 3);
+  EXPECT_EQ(probe_.actions, 1);
+}
+
+TEST_F(GadgetTest, EachSetterChangesOneSideOfTheRegion) {
+  probe_.set_x(1);
+  EXPECT_EQ(probe_.region(), (base::Rect{1, 20, 10, 10}));
+  probe_.set_y(2);
+  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 10, 10}));
+  probe_.set_width(3);
+  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 3, 10}));
+  probe_.set_height(4);
+  EXPECT_EQ(probe_.region(), (base::Rect{1, 2, 3, 4}));
+}
+
 TEST_F(GadgetTest, TheBasePeerHookLeavesTheKeyAlone) {
   ControlClass peer(7, 0, 0, 1, 1);
   KeyNumber key = engine::window::ButtonKey(7);

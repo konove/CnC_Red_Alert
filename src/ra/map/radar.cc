@@ -194,10 +194,7 @@ void RadarClass::One_Time() {
   RadIHeight = 128 + 2;  //************
 
   DisplayClass::One_Time();
-  RadarButton.set_x(RadX);
-  RadarButton.set_y(RadY);
-  RadarButton.set_width(RadWidth);
-  RadarButton.set_height(RadHeight);
+  RadarButton.set_region(base::Rect{RadX, RadY, RadWidth, RadHeight});
 }
 
 /***********************************************************************************************

@@ -124,10 +124,7 @@ void DropListClass::Expand() {
   if (IsDropped || list() == nullptr) {
     return;
   }
-  List.set_x(x());
-  List.set_y(y() + 18);
-  List.set_width(width());
-  List.set_height(ListHeight);
+  List.set_region(base::Rect{x(), y() + 18, width(), ListHeight});
   // Second in the list: ahead of what it covers, whatever was added first
   // aside.
   list()->AddAfter(List, *list()->gadgets().front());

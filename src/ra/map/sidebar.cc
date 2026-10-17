@@ -1139,10 +1139,8 @@ void SidebarClass::StripClass::Init_IO(int id) {
   for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = base::At(base::At(SelectButton, ID), index);
     g.ID = kButtonSelect;
-    g.set_x(X);
-    g.set_y(Y + (kObjectHeight * index * 2));
-    g.set_width(kObjectWidth * 2);
-    g.set_height(kObjectHeight * 2);
+    g.set_region(base::Rect{X, Y + (kObjectHeight * index * 2),
+                            kObjectWidth * 2, kObjectHeight * 2});
     g.Set_Owner(*this, index);
   }
 }

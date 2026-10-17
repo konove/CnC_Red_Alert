@@ -239,10 +239,8 @@ void SidebarClass::One_Time() {
   ButtonHeight = 9 * factor;
   TopHeight = ButtonHeight + (4 * factor);
 
-  Background.set_x(SideX + (8 * factor));
-  Background.set_y(SideY);
-  Background.set_width(SideWidth - 1);
-  Background.set_height(SideHeight - 1);
+  Background.set_region(
+      base::Rect{SideX + (8 * factor), SideY, SideWidth - 1, SideHeight - 1});
   /*
   **	This sets up the clipping window. This window is used by the shape
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
@@ -1166,10 +1164,8 @@ void SidebarClass::StripClass::Init_IO(int id) {
   for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = base::At(base::At(SelectButton, ID), index);
     g.ID = kButtonSelect;
-    g.set_x(X);
-    g.set_y(Y + (ObjectHeight * index));
-    g.set_width(ObjectWidth);
-    g.set_height(ObjectHeight);
+    g.set_region(
+        base::Rect{X, Y + (ObjectHeight * index), ObjectWidth, ObjectHeight});
     g.Set_Owner(*this, index);
   }
 }

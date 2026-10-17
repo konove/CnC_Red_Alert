@@ -153,10 +153,7 @@ void PowerClass::One_Time() {
   PowLineSpace = 5 * scale;
   PowLineWidth = PowWidth - 4;
 
-  PowerButton.set_x(PowX);
-  PowerButton.set_y(PowY);
-  PowerButton.set_width(PowWidth - 1);
-  PowerButton.set_height(PowHeight);
+  PowerButton.set_region(base::Rect{PowX, PowY, PowWidth - 1, PowHeight});
 
   PowerShape = MixArchive::RetrieveData(factor ? "HPOWER.SHP" : "POWER.SHP");
   PowerBarShape = Hires_Retrieve("PWRBAR.SHP");
