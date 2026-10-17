@@ -12,3 +12,6 @@ find_package(SDL2 REQUIRED)
 add_executable(vqaplay vqaplay.cc)
 target_link_libraries(vqaplay PRIVATE tool_game_data engine_video base
                       absl::str_format absl::strings SDL2::SDL2)
+# Keeps vqaplay's own main(): on Windows <SDL.h> otherwise renames it SDL_main
+# and expects the SDL2main library to supply the entry point.
+target_compile_definitions(vqaplay PRIVATE SDL_MAIN_HANDLED)

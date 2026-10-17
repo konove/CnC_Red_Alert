@@ -19,6 +19,7 @@
 #include <SDL_error.h>
 #include <SDL_events.h>
 #include <SDL_keycode.h>
+#include <SDL_main.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_timer.h>
@@ -354,6 +355,8 @@ int main(int argc, char** argv) {
     return 2;
   }
 
+  // SDL_MAIN_HANDLED (CMakeLists.txt) skips SDL_main, which would say this.
+  SDL_SetMainReady();
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     absl::FPrintF(stderr, "SDL_Init: %s\n", SDL_GetError());
     return 1;
