@@ -47,7 +47,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <memory>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -58,13 +58,11 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/strings/safe_string.h"
-#include "base/types.h"
 #include "engine/file/ini_file.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"  // IWYU pragma: keep
-#include "game/sim/type_tally.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/core/special_flags.h"
@@ -173,28 +171,28 @@ namespace {
 
 constexpr auto kEveryObject = [](const auto& /*object*/) { return true; };
 
-// Returns how many of the objects in `heap` that `player` owns are of each of
-// the `type_count` types, leaving out those `counted` rejects.
-template <typename Heap, typename Filter = decltype(kEveryObject)>
-game::TypeTally CountOwned(const Heap& heap, const HouseClass* player,
-                           const base::ssize type_count,
-                           const Filter counted = kEveryObject) {
-  game::TypeTally owned(type_count);
+// Returns how many of the objects in `heap` that `player` owns are of each
+// type `E`, leaving out those `counted` rejects.
+template <typename E, typename Heap, typename Filter = decltype(kEveryObject)>
+base::EnumArray<E, int32_t> CountOwned(const Heap& heap,
+                                       const HouseClass* player,
+                                       const Filter counted = kEveryObject) {
+  base::EnumArray<E, int32_t> owned{};
   for (int index = 0; index < heap.Count(); index++) {
     const auto* object = heap.ActiveAt(index);
     if (object->House == player && counted(*object)) {
-      owned.Increment(static_cast<int>(object->Class->Type));
+      ++owned.at(object->Class->Type);
     }
   }
   return owned;
 }
 
-// Adds `tally` to `stats` as the field named `prefix` followed by the player's
-// number: house 0 is player 1.
-void AddPlayerTally(PacketClass& stats, const std::string_view prefix,
-                    const int house, const game::TypeTally& tally) {
+// Adds `counts` to `stats` as the field named `prefix` followed by the
+// player's number: house 0 is player 1.
+void AddPlayerCounts(PacketClass& stats, const std::string_view prefix,
+                     const int house, const std::span<const int32_t> counts) {
   const std::string field = absl::StrCat(prefix, house + 1);
-  stats.Add_Field(field.c_str(), tally.counts());
+  stats.Add_Field(field.c_str(), counts);
 }
 
 }  // namespace
@@ -464,45 +462,45 @@ void Send_Statistics_Packet() {
         ** Number of units remaining to player. They are counted afresh, so
         ** the house's tallies keep what it bought.
         */
-        const game::TypeTally units_left =
-            CountOwned(TheObjectHeaps().unit(), player, kUnitCount);
-        const game::TypeTally infantry_left =
-            CountOwned(TheObjectHeaps().infantry(), player, kInfantryCount,
-                       [](const InfantryClass& infantry) {
-                         return !infantry.Class->IsCivilian;
-                       });
-        const game::TypeTally aircraft_left =
-            CountOwned(TheObjectHeaps().aircraft(), player, kAircraftCount,
-                       [](const AircraftClass& aircraft) {
-                         return aircraft.Class->Type != AIRCRAFT_CARGO;
-                       });
-        const game::TypeTally buildings_left =
-            CountOwned(TheObjectHeaps().building(), player, kStructCount);
+        const auto units_left =
+            CountOwned<UnitType>(TheObjectHeaps().unit(), player);
+        const auto infantry_left =
+            CountOwned<InfantryType>(TheObjectHeaps().infantry(), player,
+                                     [](const InfantryClass& infantry) {
+                                       return !infantry.Class->IsCivilian;
+                                     });
+        const auto aircraft_left = CountOwned<AircraftType>(
+            TheObjectHeaps().aircraft(), player,
+            [](const AircraftClass& aircraft) {
+              return aircraft.Class->Type != AIRCRAFT_CARGO;
+            });
+        const auto buildings_left =
+            CountOwned<StructType>(TheObjectHeaps().building(), player);
 
         /*
         ** Number of each unit/building type built, remaining to the player
         ** and destroyed, enemy buildings captured and crates found by
         ** contents.
         */
-        const auto tallies =
-            std::to_array<std::pair<std::string_view, const game::TypeTally*>>({
-                {"INB", player->InfantryTotals.get()},
-                {"UNB", player->UnitTotals.get()},
-                {"PLB", player->AircraftTotals.get()},
-                {"BLB", player->BuildingTotals.get()},
-                {"INL", &infantry_left},
-                {"UNL", &units_left},
-                {"PLL", &aircraft_left},
-                {"BLL", &buildings_left},
-                {"INK", player->DestroyedInfantry.get()},
-                {"UNK", player->DestroyedUnits.get()},
-                {"PLK", player->DestroyedAircraft.get()},
-                {"BLK", player->DestroyedBuildings.get()},
-                {"BLC", player->CapturedBuildings.get()},
-                {"CRA", player->TotalCrates.get()},
-            });
-        for (const auto& [prefix, tally] : tallies) {
-          AddPlayerTally(stats, prefix, house, *tally);
+        const auto counts = std::to_array<
+            std::pair<std::string_view, std::span<const int32_t>>>({
+            {"INB", player->InfantryTotals},
+            {"UNB", player->UnitTotals},
+            {"PLB", player->AircraftTotals},
+            {"BLB", player->BuildingTotals},
+            {"INL", infantry_left},
+            {"UNL", units_left},
+            {"PLL", aircraft_left},
+            {"BLL", buildings_left},
+            {"INK", player->DestroyedInfantry},
+            {"UNK", player->DestroyedUnits},
+            {"PLK", player->DestroyedAircraft},
+            {"BLK", player->DestroyedBuildings},
+            {"BLC", player->CapturedBuildings},
+            {"CRA", player->TotalCrates},
+        });
+        for (const auto& [prefix, type_counts] : counts) {
+          AddPlayerCounts(stats, prefix, house, type_counts);
         }
 
         /*

@@ -131,7 +131,6 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
-#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -157,7 +156,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
@@ -468,27 +466,7 @@ HouseClass::HouseClass(HousesType house)
   UnitFactory = -1;
   UScan = 0;
   RegionThreat.fill(0);
-
-  Init_Trackers();
 }
-
-void HouseClass::Init_Trackers() {
-  AircraftTotals = std::make_unique<game::TypeTally>(kAircraftCount);
-  InfantryTotals = std::make_unique<game::TypeTally>(kInfantryCount);
-  UnitTotals = std::make_unique<game::TypeTally>(kUnitCount);
-  BuildingTotals = std::make_unique<game::TypeTally>(kStructCount);
-
-  DestroyedAircraft = std::make_unique<game::TypeTally>(kAircraftCount);
-  DestroyedInfantry = std::make_unique<game::TypeTally>(kInfantryCount);
-  DestroyedUnits = std::make_unique<game::TypeTally>(kUnitCount);
-  DestroyedBuildings = std::make_unique<game::TypeTally>(kStructCount);
-
-  CapturedBuildings = std::make_unique<game::TypeTally>(kStructCount);
-  TotalCrates =
-      std::make_unique<game::TypeTally>(TOTAL_CRATE_TYPES);  // 15 crate types
-}
-
-HouseClass::~HouseClass() = default;
 
 /***********************************************************************************************
  * HouseClass::Can_Build -- General purpose build legality checker. *

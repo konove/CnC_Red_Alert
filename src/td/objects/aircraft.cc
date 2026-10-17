@@ -131,7 +131,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/mph.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"
@@ -304,7 +303,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   ** automatically, not bought.
   */
   if (classid != AIRCRAFT_CARGO && TheSession().type() == GAME_INTERNET) {
-    House->AircraftTotals->Increment(static_cast<int>(classid));
+    ++House->AircraftTotals.at(classid);
   }
 }
 

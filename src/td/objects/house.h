@@ -44,7 +44,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <span>
 #include <string>
 
@@ -53,7 +52,6 @@
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/sim/type_tally.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/objects/object.h"
@@ -306,28 +304,28 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  std::unique_ptr<game::TypeTally> AircraftTotals;
-  std::unique_ptr<game::TypeTally> InfantryTotals;
-  std::unique_ptr<game::TypeTally> UnitTotals;
-  std::unique_ptr<game::TypeTally> BuildingTotals;
+  base::EnumArray<AircraftType, int32_t> AircraftTotals{};
+  base::EnumArray<InfantryType, int32_t> InfantryTotals{};
+  base::EnumArray<UnitType, int32_t> UnitTotals{};
+  base::EnumArray<StructType, int32_t> BuildingTotals{};
 
   /*
   ** Total number of units destroyed by this house
   */
-  std::unique_ptr<game::TypeTally> DestroyedAircraft;
-  std::unique_ptr<game::TypeTally> DestroyedInfantry;
-  std::unique_ptr<game::TypeTally> DestroyedUnits;
-  std::unique_ptr<game::TypeTally> DestroyedBuildings;
+  base::EnumArray<AircraftType, int32_t> DestroyedAircraft{};
+  base::EnumArray<InfantryType, int32_t> DestroyedInfantry{};
+  base::EnumArray<UnitType, int32_t> DestroyedUnits{};
+  base::EnumArray<StructType, int32_t> DestroyedBuildings{};
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  std::unique_ptr<game::TypeTally> CapturedBuildings;
+  base::EnumArray<StructType, int32_t> CapturedBuildings{};
 
   /*
   ** Total number of crates found by this house
   */
-  std::unique_ptr<game::TypeTally> TotalCrates;
+  std::array<int32_t, kCrateKindCount> TotalCrates{};
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
@@ -413,10 +411,10 @@ class HouseClass {
     return ptr;
   }
   void operator delete(void* ptr);
-  // Load shell: allocate runtime trackers without touching scenario state.
-  HouseClass() { Init_Trackers(); }
+  // Load shell: leaves scenario state to Serialize().
+  HouseClass() = default;
   explicit HouseClass(HousesType house);
-  ~HouseClass();
+  ~HouseClass() = default;
   HouseClass(const HouseClass&) = delete;
   HouseClass& operator=(const HouseClass&) = delete;
   HouseClass(HouseClass&&) = delete;
@@ -597,8 +595,6 @@ class HouseClass {
   void MPlayer_Defeated();
 
  private:
-  // Recreate the runtime-only network statistics counters.
-  void Init_Trackers();
   void Silo_Redraw_Check(int64_t oldtib, int64_t oldcap);
 
   /*

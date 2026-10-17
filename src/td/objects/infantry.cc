@@ -135,7 +135,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/occupy_flags.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -292,7 +291,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   ** Keep count of the number of units created. Dont track civilians.
   */
   if (!Class->IsCivilian && TheSession().type() == GAME_INTERNET) {
-    House->InfantryTotals->Increment(static_cast<int>(classid));
+    ++House->InfantryTotals.at(classid);
   }
 }
 

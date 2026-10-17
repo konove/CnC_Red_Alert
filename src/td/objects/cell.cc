@@ -104,7 +104,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/occupy_flags.h"
-#include "game/sim/type_tally.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/trigger.h"
@@ -2082,7 +2081,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       ** Keep track of the number of each type of crate found
       */
       if (TheSession().type() == GAME_INTERNET) {
-        object->House->TotalCrates->Increment(what);
+        base::At(object->House->TotalCrates, what)++;
       }
 
       /*

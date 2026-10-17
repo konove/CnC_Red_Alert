@@ -2512,7 +2512,8 @@ enum class OptionControlType {
 using enum OptionControlType;
 inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 
-#define TOTAL_CRATE_TYPES 15
+// The kinds of crate CellClass::Goodie_Check() hands out, numbered there.
+inline constexpr int kCrateKindCount = 15;
 
 }  // namespace td
 

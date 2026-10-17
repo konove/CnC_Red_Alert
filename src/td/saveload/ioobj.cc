@@ -314,8 +314,7 @@ void HouseClass::Serialize(Archive& ar) {
       }
     }
     RemapTable = base::At(tables, remap_id);
-    // The ten runtime-only TypeTally counters are recreated by the shell
-    // ctor.
+    // The per-type statistics tallies are runtime-only and start at zero.
   }
 }
 template void HouseClass::Serialize(ArchiveWriter&);

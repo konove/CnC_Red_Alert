@@ -161,7 +161,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
@@ -2113,7 +2112,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   }
 
   if (TheSession().type() == GAME_INTERNET) {
-    House->BuildingTotals->Increment(static_cast<int>(type));
+    ++House->BuildingTotals.at(type);
   }
 }
 
@@ -3799,7 +3798,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     *internet stats purposes
     */
     if (TheSession().type() == GAME_INTERNET) {
-      newowner->CapturedBuildings->Increment(static_cast<int>(Class->Type));
+      ++newowner->CapturedBuildings.at(Class->Type);
     }
 
     House->Adjust_Power(-Power_Output());
