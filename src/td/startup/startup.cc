@@ -91,6 +91,7 @@
 #include <array>
 
 #include "absl/strings/str_split.h"
+#include "td/net/internet.h"
 #include "td/startup/ccdde.h"
 #endif
 
