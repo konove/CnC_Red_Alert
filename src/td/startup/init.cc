@@ -601,7 +601,7 @@ void Uninit_Game() {
   TheObjectHeaps().team_type().Reset(0);
   TheObjectHeaps().team().Reset(0);
   // Reset() drops the objects without destroying them, and the houses own
-  // their unit trackers.
+  // their type tallies.
   TheObjectHeaps().house().DestroyAll();
   TheObjectHeaps().house().Reset(0);
 }

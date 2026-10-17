@@ -314,7 +314,7 @@ void HouseClass::Serialize(Archive& ar) {
       }
     }
     RemapTable = base::At(tables, remap_id);
-    // The ten runtime-only UnitTracker counters are recreated by the shell
+    // The ten runtime-only TypeTally counters are recreated by the shell
     // ctor.
   }
 }
