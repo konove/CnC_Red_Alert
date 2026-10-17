@@ -48,6 +48,7 @@
 #include "base/array.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -682,7 +683,7 @@ void IconListClass::Resize(int x, int y, int w, int h) {
 
   set_region(base::Rect{x, y, w, h});
 
-  SetPosition(x, y);
+  SetPosition(base::Point{x, y});
 
   LineCount = (h - 1) / LineHeight;
 

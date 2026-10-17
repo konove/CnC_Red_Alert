@@ -25,6 +25,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -758,12 +759,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(chanlist, ExpandChanBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.SetPosition(ExpandUserBtn.x(),
-                                    chanlist.y() + chanlist.height());
+          ExpandUserBtn.SetPosition(
+              base::Point{ExpandUserBtn.x(), chanlist.y() + chanlist.height()});
           TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
                               ExpandUserBtn.y() - 16);
-          userlistTitle.SetPosition(userlistTitle.x(),
-                                    chanlist.y() + chanlist.height() + 2);
+          userlistTitle.SetPosition(base::Point{
+              userlistTitle.x(), chanlist.y() + chanlist.height() + 2});
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpUnexpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
@@ -773,17 +774,19 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             commands.AddAfter(userlist, ExpandUserBtn);
           }
           //	Move userlist expand button.
-          ExpandUserBtn.SetPosition(ExpandUserBtn.x(), userlist.y() - 14);
+          ExpandUserBtn.SetPosition(
+              base::Point{ExpandUserBtn.x(), userlist.y() - 14});
           TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
                               ExpandUserBtn.y() - 16);
-          userlistTitle.SetPosition(userlistTitle.x(), userlist.y() - 16 + 4);
+          userlistTitle.SetPosition(
+              base::Point{userlistTitle.x(), userlist.y() - 16 + 4});
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move rank buttons.
-        RankRABtn.SetPosition(RankRABtn.x(), ExpandUserBtn.y());
-        RankAMBtn.SetPosition(RankAMBtn.x(), ExpandUserBtn.y());
+        RankRABtn.SetPosition(base::Point{RankRABtn.x(), ExpandUserBtn.y()});
+        RankAMBtn.SetPosition(base::Point{RankAMBtn.x(), ExpandUserBtn.y()});
         TTipRankRA.Move(view, RankRABtn.x() + 8, RankRABtn.y() - 16);
         TTipRankAM.Move(view, RankAMBtn.x() + 8, RankAMBtn.y() - 16);
         display = REDRAW_ALL;
@@ -810,13 +813,15 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         }
         //	Move userlist expand button.
-        ExpandUserBtn.SetPosition(ExpandUserBtn.x(), userlist.y() - 14);
+        ExpandUserBtn.SetPosition(
+            base::Point{ExpandUserBtn.x(), userlist.y() - 14});
         TTipUserExpand.Move(view, ExpandUserBtn.x() + 8,
                             ExpandUserBtn.y() - 16);
-        userlistTitle.SetPosition(userlistTitle.x(), userlist.y() - 16 + 4);
+        userlistTitle.SetPosition(
+            base::Point{userlistTitle.x(), userlist.y() - 16 + 4});
         //	Move rank buttons.
-        RankRABtn.SetPosition(RankRABtn.x(), ExpandUserBtn.y());
-        RankAMBtn.SetPosition(RankAMBtn.x(), ExpandUserBtn.y());
+        RankRABtn.SetPosition(base::Point{RankRABtn.x(), ExpandUserBtn.y()});
+        RankAMBtn.SetPosition(base::Point{RankAMBtn.x(), ExpandUserBtn.y()});
         TTipRankRA.Move(view, RankRABtn.x() + 8, RankRABtn.y() - 16);
         TTipRankAM.Move(view, RankAMBtn.x() + 8, RankAMBtn.y() - 16);
         display = REDRAW_ALL;

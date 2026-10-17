@@ -46,6 +46,7 @@
 #include "base/array.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/keyframe.h"
@@ -150,11 +151,12 @@ void DropListClass::Collapse() {
   }
 }
 
-void DropListClass::SetPosition(int x, int y) {
-  EditClass::SetPosition(x, y);
-  List.SetPosition(
-      x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.SetPosition(x + width(), y);
+void DropListClass::SetPosition(const base::Point position) {
+  EditClass::SetPosition(position);
+  List.SetPosition(base::Point{
+      position.x(),
+      position.y() + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data())});
+  DropButton.SetPosition(base::Point{position.x() + width(), position.y()});
 }
 
 void DropListClass::Set_Selected_Index(const char* text) {

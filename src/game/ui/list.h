@@ -51,6 +51,7 @@
 #include "absl/strings/match.h"
 #include "base/algorithm.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -379,14 +380,14 @@ class ListClass : public ControlClass {
     }
   }
 
-  void SetPosition(int x, int y) override {
-    UpGadget.set_x(x + width() - UpGadget.width());
-    UpGadget.set_y(y);
-    DownGadget.set_x(x + width() - DownGadget.width());
-    DownGadget.set_y(y + height() - DownGadget.height());
-    ScrollGadget.set_x(x + width() -
+  void SetPosition(const base::Point position) override {
+    UpGadget.set_x(position.x() + width() - UpGadget.width());
+    UpGadget.set_y(position.y());
+    DownGadget.set_x(position.x() + width() - DownGadget.width());
+    DownGadget.set_y(position.y() + height() - DownGadget.height());
+    ScrollGadget.set_x(position.x() + width() -
                        std::max(UpGadget.width(), DownGadget.width()));
-    ScrollGadget.set_y(y + UpGadget.height());
+    ScrollGadget.set_y(position.y() + UpGadget.height());
     ScrollGadget.set_height(height() -
                             (UpGadget.height() + DownGadget.height()));
     ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));

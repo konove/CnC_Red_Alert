@@ -176,7 +176,7 @@ class IconListClass : public ListClass {
   //		virtual void Set_Tabs(int const * tabs);
   //		virtual int  Set_View_Index(int index);
   //		virtual void Step(bool up);
-  //		virtual void SetPosition(int x, int y);
+  //		virtual void SetPosition(base::Point position);
 
   /*
   ** These overloaded list routines handle adding/removing the scroll bar

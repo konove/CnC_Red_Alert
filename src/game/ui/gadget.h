@@ -47,6 +47,7 @@
 
 #include "base/attributes.h"
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -134,8 +135,8 @@ class Gadget {
   [[nodiscard]] bool HasFocus() const { return has_focus_; }
   // Returns whether the gadget waits to be drawn.
   [[nodiscard]] bool IsToRedraw() const { return to_redraw_; }
-  // Moves the gadget's top left corner to (`x`, `y`), in screen pixels.
-  virtual void SetPosition(int x, int y);
+  // Moves the gadget's top left corner to `position`, in screen pixels.
+  virtual void SetPosition(base::Point position);
 
   // Returns whether the gadget is to be drawn now, which it is when `forced`
   // or flagged, and clears the flag. Draws nothing itself: an override calls

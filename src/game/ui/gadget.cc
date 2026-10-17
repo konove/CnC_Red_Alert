@@ -19,6 +19,7 @@
 #include "game/ui/gadget.h"
 
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -72,8 +73,9 @@ void Gadget::SetFocus() {
 
 void Gadget::ClearFocus() { has_focus_ = false; }
 
-void Gadget::SetPosition(const int x, const int y) {
-  region_ = base::Rect{x, y, region_.width(), region_.height()};
+void Gadget::SetPosition(const base::Point position) {
+  region_ =
+      base::Rect{position.x(), position.y(), region_.width(), region_.height()};
 }
 
 bool Gadget::Draw(PixelView& /*view*/, const bool forced) {

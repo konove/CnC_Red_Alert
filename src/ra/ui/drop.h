@@ -47,6 +47,7 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
@@ -92,7 +93,7 @@ class DropListClass : public EditClass {
   // Closes the list and takes it out of its gadget list.
   void Collapse();
 
-  void SetPosition(int x, int y) override;
+  void SetPosition(base::Point position) override;
 
  protected:
   // The drop button follows the edit field into a list and out of it, and
@@ -168,7 +169,7 @@ class TDropListClass : public EditClass {
   // Closes the list and takes it out of its gadget list.
   void Collapse();
 
-  void SetPosition(int x, int y) override;
+  void SetPosition(base::Point position) override;
 
  protected:
   // The drop button follows the edit field into a list and out of it, and
@@ -308,11 +309,12 @@ void TDropListClass<T>::Collapse() {
 }
 
 template <class T>
-void TDropListClass<T>::SetPosition(int x, int y) {
-  EditClass::SetPosition(x, y);
-  List.SetPosition(
-      x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
-  DropButton.SetPosition(x + width(), y);
+void TDropListClass<T>::SetPosition(const base::Point position) {
+  EditClass::SetPosition(position);
+  List.SetPosition(base::Point{
+      position.x(),
+      position.y() + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data())});
+  DropButton.SetPosition(base::Point{position.x() + width(), position.y()});
 }
 
 template <class T>

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/installed.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -117,7 +118,7 @@ TEST_F(GadgetTest, DisablingAndEnablingDropTheKeyboardFocus) {
 
 TEST_F(GadgetTest, SetPositionMovesTheRegion) {
   list_.Add(probe_);
-  probe_.SetPosition(0, 5);
+  probe_.SetPosition(base::Point{0, 5});
   EXPECT_EQ(probe_.x(), 0);
   EXPECT_EQ(probe_.y(), 5);
   EXPECT_EQ(probe_.width(), 10);

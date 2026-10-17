@@ -15,6 +15,7 @@
 #include "absl/base/attributes.h"
 #include "base/algorithm.h"
 #include "base/array.h"
+#include "base/point.h"
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -81,7 +82,7 @@ class TListClass final : public game::ControlClass {
   void Set_Tabs(std::span<const int> tabs);
   bool Set_View_Index(int index);
   void Step(bool up);
-  void SetPosition(int x, int y) override;
+  void SetPosition(base::Point position) override;
 
  protected:
   bool Action(InputFlags flags, engine::window::KeyNumber& key, int event_x,
@@ -192,14 +193,14 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
 }
 
 template <class T>
-void TListClass<T>::SetPosition(int x, int y) {
-  UpGadget.set_x(x + width() - UpGadget.width());
-  UpGadget.set_y(y);
-  DownGadget.set_x(x + width() - DownGadget.width());
-  DownGadget.set_y(y + height() - DownGadget.height());
-  ScrollGadget.set_x(x + width() -
+void TListClass<T>::SetPosition(const base::Point position) {
+  UpGadget.set_x(position.x() + width() - UpGadget.width());
+  UpGadget.set_y(position.y());
+  DownGadget.set_x(position.x() + width() - DownGadget.width());
+  DownGadget.set_y(position.y() + height() - DownGadget.height());
+  ScrollGadget.set_x(position.x() + width() -
                      std::max(UpGadget.width(), DownGadget.width()));
-  ScrollGadget.set_y(y + UpGadget.height());
+  ScrollGadget.set_y(position.y() + UpGadget.height());
   ScrollGadget.set_height(height() - (UpGadget.height() + DownGadget.height()));
   ScrollGadget.set_width(std::max(UpGadget.width(), DownGadget.width()));
 }
