@@ -1821,22 +1821,25 @@ bool Main_Loop() {
                 << " navcom " << infantry->NavCom.packed();
     }
     // Compare every serialized field of migrated objects in smoke runs.
+    // Streams directly to hex so growing field lists cannot be truncated.
+    // Declared outside the generic lambda below: a class with a virtual
+    // override inside one crashes MSVC 19.51 (C1001).
+    class HexSink : public ByteSink {
+     public:
+      std::string fields;
+      bool Write(std::span<const std::byte> bytes) override {
+        constexpr char hex[] = "0123456789abcdef";
+        for (const std::byte byte : bytes) {
+          const auto value = std::to_integer<uint8_t>(byte);
+          fields += base::At(hex, value >> 4);
+          fields += base::At(hex, value & 15);
+        }
+        return true;
+      }
+    };
     const auto log_heap = [](auto& heap, const char* kind) {
       for (int index = 0; index < heap.Count(); ++index) {
-        // Stream directly to hex so growing field lists cannot be truncated.
-        class HexSink : public ByteSink {
-         public:
-          std::string fields;
-          bool Write(std::span<const std::byte> bytes) override {
-            constexpr char hex[] = "0123456789abcdef";
-            for (const std::byte byte : bytes) {
-              const auto value = std::to_integer<uint8_t>(byte);
-              fields += base::At(hex, value >> 4);
-              fields += base::At(hex, value & 15);
-            }
-            return true;
-          }
-        } sink;
+        HexSink sink;
         ArchiveWriter writer(sink);
         heap.ActiveAt(index)->Serialize(writer);
         LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
