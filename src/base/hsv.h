@@ -112,8 +112,10 @@ constexpr Hsv8 Rgb8ToHsv(const int red, const int green, const int blue) {
 
   // A gun's distance below the brightest, as a fraction of the spread scaled
   // to 0..kMaxComponent. The dimmest gun's is kMaxComponent, the brightest's 0.
-  const auto shortfall = [value, spread](const int gun) {
-    return DivideWithRound((value - gun) * kMaxComponent, spread);
+  // The init-capture copies the binding: clang 20 and older cannot read a
+  // captured structured binding in a constant expression.
+  const auto shortfall = [brightest = value, spread](const int gun) {
+    return DivideWithRound((brightest - gun) * kMaxComponent, spread);
   };
 
   // Which gun is brightest and which dimmest picks the sextant of the color
