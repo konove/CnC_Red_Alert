@@ -18,9 +18,10 @@ Steps:
 
 1. Look for an item that already covers it: `todo_list` with `compact: true` (one line per item; a
    plain list returns every item's details) and `text` set to the function or file name, or `path`
-   set to the file or folder, or `tags` set to the kind. `todo_get` the likely ones. If one covers
-   it, add the new case with `todo_comment`, or `todo_update` its title or details when they are now
-   wrong, instead of adding a second item.
+   set to the file or folder, or `tags` set to the kind. `todo_get` the likely ones (all the parts
+   of a parent: one `todo_list` with `parent` and without `compact`). If one covers it, add the new
+   case with `todo_comment`, or `todo_update` its title or details when they are now wrong, instead
+   of adding a second item.
 2. Write the item:
    - **title**: one imperative line that says what to do ("Fix X", "Decide whether Y"), without
      backticks and without file paths.
@@ -86,13 +87,17 @@ Changing items:
   resolution. `wont_fix` takes the reason in `resolution`; a duplicate is `wont_fix` with
   `duplicateOf`.
 - Put everything one item needs in one call: status, tags, resolution and anchor together. A second
-  `todo_update` on the same item right after the first is a call wasted.
+  `todo_update` on the same item right after the first is a call wasted. A fix that edited or moved
+  the anchored lines has lost the anchor: pass the new `path`/`startLine` (or `places`) with
+  `status: fixed`, not after the reply says `lost`.
 - The write tools answer with one compact line per item (id, title, priority, effort, status, tags,
   anchors, and `changed` for an update): that is the check that the change landed. Pass `full: true`
   only when the whole item is needed, and do not `todo_get` an item just written.
-- After moving or rewriting anchored code, `todo_list` with `lost: true` and re-attach what it
-  returns with `todo_update` (`path`, `startLine`), or several in one `todo_batch`. Anchors follow
-  edits only while CLion has the project open; an agent's `git mv` or rewrite outside it is what
-  loses them.
+- After moving or rewriting anchored code, `todo_list` with `lost: true`, `compact: true` and
+  `status: "open in_progress"`, and re-attach what it returns with `todo_update` (`path`,
+  `startLine`), or several in one `todo_batch`. Leave the anchors of closed items alone: most lost
+  anchors belong to them, an unfiltered list ran past the tool's output limit, and re-anchoring a
+  fixed item after every later commit is churn. Anchors follow edits only while CLion has the
+  project open; an agent's `git mv` or rewrite outside it is what loses them.
 - An item filed in `inbox` (no repository) that turns out to belong here: `todo_move` with
   `to: cnc_red_alert`, then re-attach it, since a move drops the anchors.

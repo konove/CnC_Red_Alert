@@ -28,7 +28,9 @@ Run `git status --short` and read `git diff` (and the untracked files) before st
   reads that commit from git as the one that fixed the item. Close the item in one
   `mcp__notmytodo-store__todo_update` with `status: fixed` and `resolution`, before or after the
   commit; add `fixedIn: "HEAD"` only, right after the commit, for an item the message does not name.
-  Nothing about the list is committed: the store lives outside the repository.
+  Name an id only in the commit that fixes it: the store takes the newest commit that mentions it
+  anywhere in the message, so a later "the bug fixed in T-479" steals the fix; refer to an earlier
+  fix by its hash. Nothing about the list is committed: the store lives outside the repository.
 - If the user named a scope ("commit the mapsel.cc change", "commit stage 1"), commit only that and
   leave the rest in the tree.
 - Changes you cannot account for and that are clearly unrelated stay uncommitted; say so in the
