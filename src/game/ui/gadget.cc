@@ -18,6 +18,8 @@
 
 #include "game/ui/gadget.h"
 
+#include <cstdint>
+
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -34,7 +36,7 @@ GadgetClass* GadgetClass::Focused = nullptr;
 
 void (*GadgetClass::KeyHook)(engine::window::KeyNumber key) = nullptr;
 
-GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
+GadgetClass::GadgetClass(int x, int y, int w, int h, uint32_t flags,
                          bool sticky) noexcept
     : X(x),
       Y(y),
@@ -74,7 +76,7 @@ GadgetClass::~GadgetClass() {
   }
 }
 
-bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, unsigned flags,
+bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, uint32_t flags,
                              int mousex, int mousey) {
   // Keep only the events this gadget listens for; none left means a mouse
   // event is not for it.
@@ -106,7 +108,7 @@ void GadgetClass::Disable() {
   Clear_Focus();
 }
 
-bool GadgetClass::Action(unsigned flags, engine::window::KeyNumber& /*unused*/,
+bool GadgetClass::Action(uint32_t flags, engine::window::KeyNumber& /*unused*/,
                          int /*x*/, int /*y*/) {
   // Clicked_On() also calls this with no events for the gadget holding the
   // mouse; that is not an action, and the sweep goes on.
@@ -246,7 +248,7 @@ engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
 
 void GadgetClass::Flag_To_Redraw() { IsToRepaint = true; }
 
-void GadgetClass::Sticky_Process(unsigned flags) {
+void GadgetClass::Sticky_Process(uint32_t flags) {
   if (IsSticky && flags & kLeftPress) {
     StuckOn = this;
   }

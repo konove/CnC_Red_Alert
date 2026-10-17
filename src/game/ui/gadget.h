@@ -43,6 +43,8 @@
 #ifndef CNC_RED_ALERT_GAME_UI_GADGET_H_
 #define CNC_RED_ALERT_GAME_UI_GADGET_H_
 
+#include <cstdint>
+
 #include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -68,27 +70,27 @@ class GadgetClass {
   // Input events a gadget listens for, stored OR'd in Flags. A press or
   // release is reported once, when it happens; held and up describe the
   // button's state on each Input() call that has no event to report.
-  static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.
-  static constexpr unsigned kLeftHeld =
+  static constexpr uint32_t kLeftPress = 0x0001;  // Left mouse button press.
+  static constexpr uint32_t kLeftHeld =
       0x0002;  // Left mouse button is being held down.
-  static constexpr unsigned kLeftRelease =
+  static constexpr uint32_t kLeftRelease =
       0x0004;  // Left mouse button released.
-  static constexpr unsigned kLeftUp =
+  static constexpr uint32_t kLeftUp =
       0x0008;  // Left mouse button is being held up.
-  static constexpr unsigned kRightPress = 0x0010;  // Right mouse button press.
-  static constexpr unsigned kRightHeld =
+  static constexpr uint32_t kRightPress = 0x0010;  // Right mouse button press.
+  static constexpr uint32_t kRightHeld =
       0x0020;  // Right mouse button is being held down.
-  static constexpr unsigned kRightRelease =
+  static constexpr uint32_t kRightRelease =
       0x0040;  // Right mouse button released.
-  static constexpr unsigned kRightUp =
+  static constexpr uint32_t kRightUp =
       0x0080;  // Right mouse button is being held up.
-  static constexpr unsigned kKeyboard =
+  static constexpr uint32_t kKeyboard =
       0x0100;  // A key that came from the keyboard, not a mouse button.
 
   // Owns the region at (`x`, `y`), `w` by `h` screen pixels, and acts on the
   // events in `flags`. A `sticky` gadget also listens for left presses and
   // releases, which it needs to capture the mouse.
-  GadgetClass(int x, int y, int w, int h, unsigned flags,
+  GadgetClass(int x, int y, int w, int h, uint32_t flags,
               bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
@@ -116,7 +118,7 @@ class GadgetClass {
   // Called by a ControlClass this gadget is the peer of, after it was
   // actioned with `flags` and `key`; the peer may replace `key`. Does nothing
   // here.
-  virtual void Peer_To_Peer(unsigned /*unused*/,
+  virtual void Peer_To_Peer(uint32_t /*unused*/,
                             engine::window::KeyNumber& /*unused*/,
                             ControlClass& /*unused*/) {}
   // Routes every keyboard event to this gadget, taking the focus from the
@@ -155,7 +157,7 @@ class GadgetClass {
   // releases it on a left release. The base Action() calls it; an override
   // that clears the press bits before calling the base Action() calls it
   // first itself.
-  virtual void Sticky_Process(unsigned flags);
+  virtual void Sticky_Process(uint32_t flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
   // its job. `x` and `y` are where it happened: a click's position for a
@@ -163,7 +165,7 @@ class GadgetClass {
   // key replaces `key` with its ButtonKey(). Returns whether it acted, which
   // ends the list's sweep. The base flags a redraw and handles the mouse
   // capture when `flags` holds anything.
-  virtual bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  virtual bool Action(uint32_t flags, engine::window::KeyNumber& key, int x,
                       int y);
 
   // Called by a GadgetList after it added this gadget or took it out. A gadget
@@ -202,7 +204,7 @@ class GadgetClass {
   // The k... events Action() is called for: kLeftPress alone calls it only
   // for a left press over the region. kKeyboard is added while the gadget
   // has the focus.
-  unsigned Flags = 0;
+  uint32_t Flags = 0;
 
  private:
   // GadgetList::Input() runs the steps below over its gadgets.
@@ -213,7 +215,7 @@ class GadgetClass {
     engine::window::InputEvent event;
     // Starts as the event's key; a gadget that acts replaces it.
     engine::window::KeyNumber key = engine::window::KeyNumber::KN_NONE;
-    unsigned flags = 0;  // The k... event bits above.
+    uint32_t flags = 0;  // The k... event bits above.
     int x = 0;
     int y = 0;
   };
@@ -240,7 +242,7 @@ class GadgetClass {
   // they concern it: always for the gadget holding the mouse and for a key,
   // otherwise only for mouse events inside its region. Returns what Action()
   // returned, or false when it was not called.
-  virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
+  virtual bool Clicked_On(engine::window::KeyNumber& key, uint32_t flags, int x,
                           int y);
 };
 
