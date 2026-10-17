@@ -67,6 +67,7 @@
 #include <cstddef>
 #include <span>
 
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
@@ -141,7 +142,7 @@ bool CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key,
+bool CheckListClass::Action(InputFlags flags, engine::window::KeyNumber& key,
                             int x, int y) {
   /*
   ** If this is a read-only list, it's a display-only device
@@ -159,7 +160,7 @@ bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key,
   **	Now, if this event was a left-press, toggle the checked state of the
   **	current item.
   */
-  if (flags & kLeftPress) {
+  if (base::Any(flags & InputFlags::kLeftPress)) {
     if (Is_Checked(SelectedIndex)) {
       Check_Item(SelectedIndex, 0);
     } else {

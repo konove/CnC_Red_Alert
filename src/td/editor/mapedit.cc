@@ -74,6 +74,7 @@
 #include "base/array.h"
 #include "base/bit.h"
 #include "base/cardinal.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"
@@ -186,11 +187,13 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The map: a single large "button"
   ........................................................................*/
-  // MapArea = new ControlClass(kMapArea,0,8,312,192, Gadget::kLeftPress |
-  // Gadget::kLeftRelease, false);
+  // MapArea = new ControlClass(kMapArea,0,8,312,192,
+  // Gadget::InputFlags::kLeftPress | Gadget::InputFlags::kLeftRelease, false);
   MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 16, 624, 384,
-      game::Gadget::kLeftPress | game::Gadget::kLeftRelease, false);
+      game::Gadget::InputFlags::kLeftPress |
+          game::Gadget::InputFlags::kLeftRelease,
+      false);
 
   /*........................................................................
   House buttons

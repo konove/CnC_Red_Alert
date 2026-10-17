@@ -67,12 +67,12 @@ class CheckBoxClass : public ToggleClass {
   }
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     // Only a release that ends a press on the box toggles it: that is the
     // release ToggleClass reports as the box's ID, so whoever reads IsOn when
     // the ID comes back sees the state drawn.
-    if (flags & kLeftRelease && IsPressed) {
+    if (base::Any(flags & InputFlags::kLeftRelease) && IsPressed) {
       if (IsOn) {
         Turn_Off();
       } else {

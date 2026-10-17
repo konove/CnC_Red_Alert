@@ -51,6 +51,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
@@ -234,7 +235,7 @@ void GameOptionsClass::Process() {
   */
   buttons.Add(*gadgets.emplace_back(std::make_unique<game::Gadget>(
       base::Rect{OptionX, OptionY, OptionWidth, OptionHeight},
-      game::Gadget::kLeftPress)));
+      game::Gadget::InputFlags::kLeftPress)));
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
@@ -243,7 +244,8 @@ void GameOptionsClass::Process() {
   buttons.Add(*gadgets.emplace_back(std::make_unique<game::ControlClass>(
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      game::Gadget::kLeftPress | game::Gadget::kRightPress)));
+      game::Gadget::InputFlags::kLeftPress |
+          game::Gadget::InputFlags::kRightPress)));
 
   game::TheKeyboard().Clear();
 

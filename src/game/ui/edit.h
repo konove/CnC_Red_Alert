@@ -84,7 +84,8 @@ class EditClass : public ControlClass {
   EditClass(int id, std::span<char> text ABSL_ATTRIBUTE_LIFETIME_BOUND,
             int max_len, Skin::Font font, Skin::PrintFlags flags, int x, int y,
             int w = -1, int h = -1, EditStyle style = kAlphanumeric)
-      : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
+      : ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                     InputFlags::kLeftPress),
         TextFont(font),
         TextFlags(Skin::Edit_Flags(flags)),
         EditFlags(style),
@@ -166,7 +167,7 @@ class EditClass : public ControlClass {
   // Processes mouse and keyboard events. Sets focus on left-click; inserts
   // characters on keypress. Returns the gadget ID on RETURN, clears focus
   // on ESC.
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     using engine::window::KN_BACKSPACE;
     using engine::window::KN_ESC;
@@ -178,29 +179,30 @@ class EditClass : public ControlClass {
 
     // Claim focus on left-click. Clear the press flag so no button ID is
     // returned.
-    if (flags & kLeftPress) {
-      flags &= ~kLeftPress;
+    if (base::Any(flags & InputFlags::kLeftPress)) {
+      flags &= ~InputFlags::kLeftPress;
       SetFocus();
       FlagToRedraw();
     }
 
-    if (flags & kKeyboard && HasFocus()) {
+    if (base::Any(flags & InputFlags::kKeyboard) && HasFocus()) {
       // ESC clears focus without returning the gadget ID.
       if (key == KN_ESC) {
         ClearFocus();
-        flags = 0;
+        flags = InputFlags::kNone;
       } else {
         const auto ascii = TheKeyboard().TypedCharacter(key);
 
         // Filter out all special keys except return and backspace.
         if (ascii >= ' ' || key == KN_RETURN || key == KN_BACKSPACE) {
-          if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
+          if ((!base::Any(flags & InputFlags::kLeftRelease) &&
+               !base::Any(flags & InputFlags::kRightRelease)) &&
               Handle_Key(ascii)) {
-            flags &= ~kKeyboard;
+            flags &= ~InputFlags::kKeyboard;
             key = KN_NONE;
           }
         } else {
-          flags &= ~kKeyboard;
+          flags &= ~InputFlags::kKeyboard;
           key = KN_NONE;
         }
       }

@@ -45,6 +45,7 @@
 
 #include "base/array.h"
 #include "base/fixed.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -192,17 +193,18 @@ void VisualControlsClass::Process() {
   */
   game::Gadget dialog(
       base::Rect{option_x, option_y, option_width, option_height},
-      game::Gadget::kLeftPress);
+      game::Gadget::InputFlags::kLeftPress);
   gadgets.Add(dialog);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  game::ControlClass background(
-      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
-      TheScreen().visible_view().height(),
-      game::Gadget::kLeftPress | game::Gadget::kRightPress);
+  game::ControlClass background(kButtonOptions, 0, 0,
+                                TheScreen().visible_view().width(),
+                                TheScreen().visible_view().height(),
+                                game::Gadget::InputFlags::kLeftPress |
+                                    game::Gadget::InputFlags::kRightPress);
   gadgets.Add(background);
 
   int curbutton = 0;

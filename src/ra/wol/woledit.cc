@@ -25,6 +25,7 @@
 
 #include "ra/wol/woledit.h"
 
+#include "base/flags.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -66,8 +67,8 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 // key.) 	Again, I'm not about to change the base class directly, as I'm
 // trying to have as minimal an affect as possible on 	the current game code.
 // -ajw
-bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
-                          int y) {
+bool WOLEditClass::Action(InputFlags flags, engine::window::KeyNumber& key,
+                          int x, int y) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
      can't do the following. For this reason, don't make a WOLEditClass edit box
@@ -88,8 +89,8 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   // to 	this gadget. The event flag is cleared so that no button ID
   // number is returned.
   //
-  if ((flags & kLeftPress)) {
-    flags &= ~kLeftPress;
+  if (base::Any(flags & InputFlags::kLeftPress)) {
+    flags &= ~InputFlags::kLeftPress;
     SetFocus();
     FlagToRedraw();  // force to draw cursor
   }
@@ -99,14 +100,14 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   // but if the 	RETURN key is pressed, then the button ID number is
   // returned from the Input() 	function.
   //
-  if ((flags & kKeyboard) && HasFocus()) {
+  if (base::Any(flags & InputFlags::kKeyboard) && HasFocus()) {
     //
     //	Process the keyboard character. If indicated, consume this keyboard
     // event 	so that the edit gadget ID number is not returned.
     //
     if (key == KN_ESC) {
       ClearFocus();
-      flags = 0;
+      flags = InputFlags::kNone;
 
     } else {
       const auto ascii = game::TheKeyboard().TypedCharacter(key);
@@ -115,9 +116,10 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       // Filter out all special keys except return and backspace
       //
       if (ascii >= ' ' || key == KN_RETURN || key == KN_BACKSPACE) {
-        if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
+        if (((!base::Any(flags & InputFlags::kLeftRelease)) &&
+             (!base::Any(flags & InputFlags::kRightRelease))) &&
             Handle_Key(ascii)) {
-          flags &= ~kKeyboard;
+          flags &= ~InputFlags::kKeyboard;
           key = KN_NONE;
         }
 
@@ -125,7 +127,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
         if (key == KN_TAB) {
           TheGameState().tab_key_pressed() = true;
         }
-        flags &= ~kKeyboard;
+        flags &= ~InputFlags::kKeyboard;
         key = KN_NONE;
       }
     }
@@ -136,7 +138,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     //)
     //		{
     // ClearFocus();
-    flags = 0;
+    flags = InputFlags::kNone;
     key = KN_NONE;
     //		}
   }

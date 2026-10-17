@@ -44,6 +44,7 @@
 #include <algorithm>
 
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
@@ -134,17 +135,18 @@ bool ConfirmationClass::Process(const char* string) {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   game::Gadget dialog(base::Rect{x, y, width, height},
-                      game::Gadget::kLeftPress);
+                      game::Gadget::InputFlags::kLeftPress);
   gadgets.Add(dialog);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  game::ControlClass background(
-      kButtonNo, 0, 0, TheScreen().visible_view().width(),
-      TheScreen().visible_view().height(),
-      game::Gadget::kLeftPress | game::Gadget::kRightPress);
+  game::ControlClass background(kButtonNo, 0, 0,
+                                TheScreen().visible_view().width(),
+                                TheScreen().visible_view().height(),
+                                game::Gadget::InputFlags::kLeftPress |
+                                    game::Gadget::InputFlags::kRightPress);
   gadgets.Add(background);
 
   /*

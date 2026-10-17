@@ -109,6 +109,7 @@
 #include "base/buffer.h"
 #include "base/clip.h"
 #include "base/enum_array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/point.h"
 #include "base/rect.h"
@@ -2511,7 +2512,7 @@ void DisplayClass::Refresh_Band() {
  *                                                                                             *
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
-bool DisplayClass::TacticalClass::Action(unsigned flags,
+bool DisplayClass::TacticalClass::Action(InputFlags flags,
                                          engine::window::KeyNumber& key, int x,
                                          int y) {
   ObjectClass* object = nullptr;
@@ -2520,7 +2521,9 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
 
   // Only a hovering mouse, not a click, is at the screen's edge.
   bool edge = false;
-  if (!(flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease))) {
+  if (!base::Any(flags &
+                 (InputFlags::kLeftPress | InputFlags::kLeftRelease |
+                  InputFlags::kRightPress | InputFlags::kRightRelease))) {
     edge = x == 0 || y == 199 || x == 319;
   }
   const Coordinate coord = TheMap().Pixel_To_Coord(x, y);
@@ -2634,7 +2637,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     /*
     **	A right mouse button press cancels the current action or selection.
     */
-    if (flags & kRightPress) {
+    if (base::Any(flags & InputFlags::kRightPress)) {
       TheMap().Mouse_Right_Press();
     }
 
@@ -2643,8 +2646,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     *know about it, *	then it must be informed. Do this by faking a mouse
     *release event.
     */
-    if (flags & kLeftUp && TheMap().IsRubberBand) {
-      flags |= kLeftRelease;
+    if (base::Any(flags & InputFlags::kLeftUp) && TheMap().IsRubberBand) {
+      flags |= InputFlags::kLeftRelease;
     }
 
     /*
@@ -2652,7 +2655,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     *processed. *	The shape changes depending on what object the mouse is
     *currently over and what *	object is currently selected.
     */
-    if ((!edge) && (flags & kLeftUp)) {
+    if ((!edge) && base::Any(flags & InputFlags::kLeftUp)) {
       TheMap().Mouse_Left_Up(shadow, object, action);
     }
 
@@ -2660,7 +2663,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     **	Normal actions occur when the mouse button is released. The press event
     *is *	intercepted and possible rubber-band mode is flagged.
     */
-    if (flags & kLeftRelease) {
+    if (base::Any(flags & InputFlags::kLeftRelease)) {
       TheMap().Mouse_Left_Release(cell, x, y, object, action);
     }
 
@@ -2670,7 +2673,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     **	mode can be made. Rubber band mode starts when the mouse is
     **	held down and moved a certain minimum distance.
     */
-    if (!edge && flags & kLeftPress) {
+    if (!edge && base::Any(flags & InputFlags::kLeftPress)) {
       TheMap().Mouse_Left_Press(x, y);
     }
 
@@ -2679,12 +2682,12 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     **	start. If rubber band mode is already active, then update the size
     **	and flag the map to redraw it.
     */
-    if (flags & kLeftHeld) {
+    if (base::Any(flags & InputFlags::kLeftHeld)) {
       TheMap().Mouse_Left_Held(x, y);
     }
   }
 
-  return game::Gadget::Action(0, key, x, y);
+  return game::Gadget::Action(InputFlags::kNone, key, x, y);
 }
 
 /***********************************************************************************************

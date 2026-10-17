@@ -143,13 +143,13 @@ class SliderClass final : public GaugeClass<Skin> {
   int ThumbSize = 0;
   int ThumbStart = 0;  // x or y position for the thumb
 
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(Gadget::InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     // Handle the mouse click in a special way. If the click was not on the
     // thumb, then jump the thumb position one "step" in the appropriate
     // direction. Otherwise, let normal processing take place -- the slider
     // then "sticks" and the thumb moves according to mouse position.
-    if (flags & Gadget::kLeftPress) {
+    if (base::Any(flags & Gadget::InputFlags::kLeftPress)) {
       int mouse = 0;  // Mouse pixel position.
       int edge = 0;   // Edge of slider.
       if (this->IsHorizontal) {
@@ -166,13 +166,13 @@ class SliderClass final : public GaugeClass<Skin> {
       // button.
       if (mouse < edge + ThumbStart) {
         Bump(true);
-        Base::Action(0, key, x, y);
+        Base::Action(Gadget::InputFlags::kNone, key, x, y);
         key = engine::window::KN_NONE;
         return true;
       }
       if (mouse > edge + ThumbStart + ThumbSize) {
         Bump(false);
-        Base::Action(0, key, x, y);
+        Base::Action(Gadget::InputFlags::kNone, key, x, y);
         key = engine::window::KN_NONE;
         return true;
       }

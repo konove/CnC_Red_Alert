@@ -166,7 +166,7 @@ class IconListClass : public ListClass {
   //		virtual int Step_Selected_Index(int forward);
   //		virtual void FlagToRedraw();
 
-  //		virtual void OnPeerAction(unsigned flags, KeyNumber & key,
+  //		virtual void OnPeerAction(InputFlags flags, KeyNumber & key,
   // ControlClass & whom);
   void Remove_Item(const char* text) override;
   void Remove_Item(int /*index*/ /*unused*/) override;
@@ -234,7 +234,7 @@ class IconListClass : public ListClass {
   }
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                   bool selected) override;

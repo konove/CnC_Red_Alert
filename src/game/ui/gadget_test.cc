@@ -3,7 +3,6 @@
 
 #include "game/ui/gadget.h"
 
-#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -27,7 +26,7 @@ using engine::window::MouseButton;
 class Probe : public Gadget {
  public:
   explicit Probe(const bool sticky = false)
-      : Gadget(base::Rect{20, 20, 10, 10}, kLeftPress, sticky) {}
+      : Gadget(base::Rect{20, 20, 10, 10}, InputFlags::kLeftPress, sticky) {}
 
   bool Draw(PixelView& view, const bool forced) override {
     if (!Gadget::Draw(view, forced)) {
@@ -43,7 +42,7 @@ class Probe : public Gadget {
   int draws = 0;
 
  protected:
-  bool Action(const uint32_t flags, KeyNumber& key, const int x,
+  bool Action(const InputFlags flags, KeyNumber& key, const int x,
               const int y) override {
     ++actions;
     return Gadget::Action(flags, key, x, y);
@@ -133,7 +132,7 @@ TEST_F(GadgetTest, SetPositionMovesTheRegion) {
 TEST_F(GadgetTest, TheBasePeerHookLeavesTheKeyAlone) {
   ControlClass peer(7, 0, 0, 1, 1);
   KeyNumber key = engine::window::ButtonKey(7);
-  probe_.OnPeerAction(Gadget::kLeftPress, key, peer);
+  probe_.OnPeerAction(Gadget::InputFlags::kLeftPress, key, peer);
   EXPECT_EQ(key, engine::window::ButtonKey(7));
 }
 
@@ -154,7 +153,9 @@ TEST_F(GadgetTest, AStickyGadgetListensForTheLeftPressAndRelease) {
   // click to capture and release the mouse.
   class Bare : public Gadget {
    public:
-    Bare() : Gadget(base::Rect{20, 20, 10, 10}, 0, /*sticky=*/true) {}
+    Bare()
+        : Gadget(base::Rect{20, 20, 10, 10}, InputFlags::kNone,
+                 /*sticky=*/true) {}
   } bare;
   list_.Add(bare);
   PressAt(25, 25);

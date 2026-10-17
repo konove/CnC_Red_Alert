@@ -45,6 +45,7 @@
 
 #include "game/ui/control.h"
 
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -80,7 +81,7 @@ namespace game {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
-                           unsigned flags, bool sticky) noexcept
+                           InputFlags flags, bool sticky) noexcept
     : Gadget(base::Rect{x, y, w, h}, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
@@ -103,13 +104,13 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
-                          int y) {
+bool ControlClass::Action(InputFlags flags, engine::window::KeyNumber& key,
+                          int x, int y) {
   /*
   **	Only if the flags indicate that a recognized action has occurred, do the
   **	normal processing of this gadget and set return value to the gadget ID.
   */
-  if (flags) {
+  if (base::Any(flags)) {
     if (ID) {
       key = engine::window::ButtonKey(static_cast<int>(ID));
     } else {

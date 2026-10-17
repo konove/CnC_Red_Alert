@@ -18,8 +18,7 @@
 
 #include "game/ui/gadget.h"
 
-#include <cstdint>
-
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -27,7 +26,7 @@
 
 namespace game {
 
-Gadget::Gadget(const base::Rect& region, const uint32_t flags,
+Gadget::Gadget(const base::Rect& region, const InputFlags flags,
                const bool sticky) noexcept
     : x_(region.x()),
       y_(region.y()),
@@ -38,7 +37,7 @@ Gadget::Gadget(const base::Rect& region, const uint32_t flags,
 
       event_mask_(flags) {
   if (sticky_) {
-    event_mask_ |= kLeftPress | kLeftRelease;
+    event_mask_ |= InputFlags::kLeftPress | InputFlags::kLeftRelease;
   }
 }
 
@@ -93,20 +92,20 @@ bool Gadget::Draw(PixelView& /*view*/, const bool forced) {
   return false;
 }
 
-void Gadget::UpdateMouseCapture(const uint32_t flags) {
-  if (sticky_ && flags & kLeftPress) {
+void Gadget::UpdateMouseCapture(const InputFlags flags) {
+  if (sticky_ && base::Any(flags & InputFlags::kLeftPress)) {
     holds_mouse_ = true;
   }
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     holds_mouse_ = false;
   }
 }
 
-bool Gadget::Action(const uint32_t flags, engine::window::KeyNumber& /*key*/,
+bool Gadget::Action(const InputFlags flags, engine::window::KeyNumber& /*key*/,
                     int /*x*/, int /*y*/) {
   // ActionIfConcerned() also calls this with no events for the gadget holding
   // the mouse; that is not an action, and the sweep goes on.
-  if (flags) {
+  if (base::Any(flags)) {
     to_redraw_ = true;
     UpdateMouseCapture(flags);
     return true;
@@ -135,16 +134,17 @@ bool Gadget::ActionIfConcerned(PendingInput& input) {
   // Keep only the events this gadget listens for; none left means a mouse
   // event is not for it. The sweep offers `input` to the next gadget too, so
   // its flags stay as they are.
-  const uint32_t mask = has_focus_ ? event_mask_ | kKeyboard : event_mask_;
-  const uint32_t flags = input.flags & mask;
+  const InputFlags mask =
+      has_focus_ ? event_mask_ | InputFlags::kKeyboard : event_mask_;
+  const InputFlags flags = input.flags & mask;
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
   // mouse events must fall inside the region. The unsigned casts turn a
   // position left of or above the region into a huge value, so one compare
   // per axis checks both edges.
-  if (holds_mouse_ || flags & kKeyboard ||
-      (flags &&
+  if (holds_mouse_ || base::Any(flags & InputFlags::kKeyboard) ||
+      (base::Any(flags) &&
        static_cast<unsigned>(input.x - x_) < static_cast<unsigned>(width_) &&
        static_cast<unsigned>(input.y - y_) < static_cast<unsigned>(height_))) {
     return Action(flags, input.key, input.x, input.y);

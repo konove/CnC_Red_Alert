@@ -58,7 +58,9 @@ template <WidgetSkin Skin>
 class GaugeClass : public ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h)
-      : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease,
+      : ControlClass(id, x, y, w, h,
+                     InputFlags::kLeftHeld | InputFlags::kLeftPress |
+                         InputFlags::kLeftRelease,
                      true),
         IsHorizontal(w > h) {
     // Set the range directly. Set_Maximum and Set_Value are virtual --
@@ -164,7 +166,7 @@ class GaugeClass : public ControlClass {
     }
   }
 
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     // If there's no thumb on this gauge, it's a display-only device.
     if (!HasThumb) {
@@ -178,10 +180,11 @@ class GaugeClass : public ControlClass {
     // If the thumb is currently being "dragged around", then update the
     // slider position according to the mouse position. In all other cases,
     // ignore the button being held down.
-    if (flags & kLeftPress || (flags & kLeftHeld && HoldsMouse())) {
+    if (base::Any(flags & InputFlags::kLeftPress) ||
+        (base::Any(flags & InputFlags::kLeftHeld) && HoldsMouse())) {
       // Compute the difference between where we clicked, and the edge of the
       // thumb (only if we clicked on the thumb.)
-      if (flags & kLeftPress) {
+      if (base::Any(flags & InputFlags::kLeftPress)) {
         const int curpix = Value_To_Pixel(CurValue);
         const int clickpix = IsHorizontal ? TheMouse().x() : TheMouse().y();
 
@@ -210,16 +213,16 @@ class GaugeClass : public ControlClass {
       if (!Set_Value(Pixel_To_Value(IsHorizontal
                                         ? TheMouse().x() - ClickDiff
                                         : TheMouse().y() - ClickDiff))) {
-        ControlClass::Action(0, key, x, y);
+        ControlClass::Action(InputFlags::kNone, key, x, y);
         key = engine::window::KN_NONE;
         return true;
       }
     } else {
       // Ignore the left mouse button being held down if this gauge is not
       // currently in "sticky" mode. This allows processing of the
-      // kLeftPress by any derived classes such that this gauge can be more
-      // closely controlled.
-      flags &= ~kLeftHeld;
+      // InputFlags::kLeftPress by any derived classes such that this gauge can
+      // be more closely controlled.
+      flags &= ~InputFlags::kLeftHeld;
     }
     return ControlClass::Action(flags, key, x, y);
   }

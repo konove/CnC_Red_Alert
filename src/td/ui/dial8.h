@@ -70,7 +70,7 @@ class Dial8Class : public game::ControlClass {
   /*
   ** Overloaded event processing routine
   */
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
  private:

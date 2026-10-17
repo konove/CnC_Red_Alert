@@ -76,6 +76,7 @@
 #include "base/array.h"
 #include "base/bit.h"
 #include "base/fixed.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/ini_file.h"
@@ -195,7 +196,9 @@ void MapEditClass::One_Time() {
   */
   MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 8, 640 - 8, 400 - 8,
-      game::Gadget::kLeftPress | game::Gadget::kLeftRelease, false);
+      game::Gadget::InputFlags::kLeftPress |
+          game::Gadget::InputFlags::kLeftRelease,
+      false);
 
   /*
   **	House buttons

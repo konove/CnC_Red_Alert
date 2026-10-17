@@ -252,7 +252,7 @@ void SoundControlsClass::Process() {
   **	particular button, to be ignored.
   */
   game::Gadget area(base::Rect{Option_X, Option_Y, Option_Width, Option_Height},
-                    game::Gadget::kLeftPress);
+                    game::Gadget::InputFlags::kLeftPress);
 
   /*
   **	Causes right clicks anywhere or left clicks outside of the dialog
@@ -261,7 +261,8 @@ void SoundControlsClass::Process() {
   game::ControlClass ctrl(kButtonOptions, 0, 0,
                           TheScreen().visible_view().width(),
                           TheScreen().visible_view().height(),
-                          game::Gadget::kRightPress | game::Gadget::kLeftPress);
+                          game::Gadget::InputFlags::kRightPress |
+                              game::Gadget::InputFlags::kLeftPress);
 
   /*
   **	The repeat and shuffle buttons are of the toggle type. They toggle

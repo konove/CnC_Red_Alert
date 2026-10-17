@@ -62,6 +62,7 @@
 #include "td/ui/dial8.h"
 
 #include "base/array.h"
+#include "base/flags.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -77,7 +78,9 @@ namespace td {
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
     : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                         kLeftPress | kLeftHeld | kLeftRelease, true),
+                         InputFlags::kLeftPress | InputFlags::kLeftHeld |
+                             InputFlags::kLeftRelease,
+                         true),
       FaceX(this->x() + (width() / 2)),
       FaceY(this->y() + (height() / 2)),
       Direction(dir),
@@ -162,7 +165,7 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+bool Dial8Class::Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                         int y) {
   static int is_sel = 0;
 
@@ -172,7 +175,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   */
   UpdateMouseCapture(flags);
 
-  if (flags & kLeftPress) {
+  if (base::Any(flags & InputFlags::kLeftPress)) {
     is_sel = 1;
   }
 
@@ -184,7 +187,8 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *substitues *	  'key' with the button ID if any flags are set, or 0 if no
   *flags are set
   */
-  if (flags & kLeftPress || (flags & kLeftHeld && is_sel)) {
+  if (base::Any(flags & InputFlags::kLeftPress) ||
+      (base::Any(flags & InputFlags::kLeftHeld) && is_sel)) {
     /*
     **	Get new dial position (0-255)
     */
@@ -208,18 +212,18 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
      **	Dial hasn't moved; kill the event & return
      */
     key = engine::window::KN_NONE;
-    game::ControlClass::Action(0, key, x, y);
+    game::ControlClass::Action(InputFlags::kNone, key, x, y);
     return true;
   }
   /*
    **	Otherwise, no events have occurred; kill the event if it's a
-   *kLeftRelease, *	and return
+   *InputFlags::kLeftRelease, *	and return
    */
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     key = engine::window::KN_NONE;
     is_sel = 0;
   }
-  return game::ControlClass::Action(0, key, x, y);
+  return game::ControlClass::Action(InputFlags::kNone, key, x, y);
 }
 
 /***************************************************************************

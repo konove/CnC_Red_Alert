@@ -128,7 +128,7 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+      bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                   int y) override;
     };
 
@@ -327,10 +327,10 @@ class SidebarClass : public PowerClass {
         : game::Gadget(
               base::Rect{(kSideX + 8) * 2, kSideY * 2,
                          ((kSideWidth - 1) * 2) - 1, (kSideHeight - 1) * 2},
-              kLeftUp) {}
+              InputFlags::kLeftUp) {}
 
    protected:
-    bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+    bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                 int y) override;
   };
 

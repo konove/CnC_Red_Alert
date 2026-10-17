@@ -71,7 +71,7 @@ class TListClass final : public game::ControlClass {
     FlagToRedraw();
   }
 
-  void OnPeerAction(unsigned flags, engine::window::KeyNumber& key,
+  void OnPeerAction(InputFlags flags, engine::window::KeyNumber& key,
                     game::ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
@@ -84,7 +84,7 @@ class TListClass final : public game::ControlClass {
   void SetPosition(int x, int y) override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
   // The scroll bar follows the list box into a list and out of it.
@@ -165,7 +165,9 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
                           TextPrintType flags, std::span<const std::byte> up,
                           std::span<const std::byte> down)
     : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                         kLeftPress | kLeftRelease | kKeyboard, false),
+                         InputFlags::kLeftPress | InputFlags::kLeftRelease |
+                             InputFlags::kKeyboard,
+                         false),
       TextFont(font),
       TextFlags(flags),
       LineHeight(FontLineHeight(TextFontStyle(font, flags)) - 1),
@@ -287,18 +289,18 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
+bool TListClass<T>::Action(InputFlags flags, engine::window::KeyNumber& key,
                            int x, int y) {
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     key = engine::window::KN_NONE;
-    flags &= (~kLeftRelease);
+    flags &= (~InputFlags::kLeftRelease);
     game::ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*
    ** Handle keyboard events here.
    */
-  if (flags & kKeyboard) {
+  if (base::Any(flags & InputFlags::kKeyboard)) {
     /*
     **	Process the keyboard character. If indicated, consume this
     *keyboard event *	so that the edit gadget ID number is not returned.
@@ -310,7 +312,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
       Step_Selected_Index(1);
       key = engine::window::KN_NONE;
     } else {
-      flags &= ~kKeyboard;
+      flags &= ~InputFlags::kKeyboard;
     }
 
   } else {
@@ -391,10 +393,10 @@ int TListClass<T>::Current_Index() const {
 }
 
 template <class T>
-void TListClass<T>::OnPeerAction(unsigned flags,
+void TListClass<T>::OnPeerAction(InputFlags flags,
                                  engine::window::KeyNumber& /*unused*/,
                                  game::ControlClass& whom) {
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     if (&whom == &UpGadget) {
       Step(true);
     }

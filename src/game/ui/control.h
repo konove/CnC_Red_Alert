@@ -66,7 +66,8 @@ namespace game {
 class ControlClass : public Gadget {
  public:
   ControlClass(unsigned id, int x, int y, int w, int h,
-               unsigned flags = kLeftPress | kRightPress,
+               InputFlags flags = InputFlags::kLeftPress |
+                                  InputFlags::kRightPress,
                bool sticky = false) noexcept;
 
   ~ControlClass() override = default;
@@ -91,7 +92,7 @@ class ControlClass : public Gadget {
   [[nodiscard]] unsigned id() const override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
   /*

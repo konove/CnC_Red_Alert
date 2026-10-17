@@ -494,11 +494,11 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 }
 
 //***********************************************************************************************
-bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
+bool IconListClass::Action(InputFlags flags, engine::window::KeyNumber& key,
                            int x, int y) {
   //	Overriding of function is for the sake of MultiSelecting only.
-  if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
-      (!(flags & kKeyboard))) {
+  if ((iSelectType == 2) && (!base::Any(flags & InputFlags::kLeftRelease)) &&
+      (!base::Any(flags & InputFlags::kKeyboard))) {
     int index = game::TheMouse().y() - (this->y() + 1);
     index = index / LineHeight;
     base::ssize iSelected = CurrentTopIndex + index;

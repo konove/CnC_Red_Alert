@@ -47,6 +47,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -267,7 +268,7 @@ void GameOptionsClass::Process() {
   */
   const auto dialog_area = std::make_unique<game::Gadget>(
       base::Rect{OptionX, OptionY, OptionWidth, OptionHeight},
-      game::Gadget::kLeftPress);
+      game::Gadget::InputFlags::kLeftPress);
   buttons.Add(*dialog_area);
 
   /*
@@ -277,7 +278,8 @@ void GameOptionsClass::Process() {
   const auto outside_click = std::make_unique<game::ControlClass>(
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      game::Gadget::kLeftPress | game::Gadget::kRightPress);
+      game::Gadget::InputFlags::kLeftPress |
+          game::Gadget::InputFlags::kRightPress);
   buttons.Add(*outside_click);
 
   game::TheKeyboard().Clear();

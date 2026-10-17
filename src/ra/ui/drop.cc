@@ -44,6 +44,7 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
@@ -97,9 +98,10 @@ void DropListClass::ClearFocus() {
   EditClass::ClearFocus();
 }
 
-void DropListClass::OnPeerAction(unsigned flags, engine::window::KeyNumber& key,
+void DropListClass::OnPeerAction(InputFlags flags,
+                                 engine::window::KeyNumber& key,
                                  game::ControlClass& whom) {
-  if ((&whom == &DropButton) && (flags & kLeftRelease)) {
+  if ((&whom == &DropButton) && base::Any(flags & InputFlags::kLeftRelease)) {
     if (IsDropped) {
       Collapse();
       key = engine::window::ButtonKey(static_cast<int>(ID));

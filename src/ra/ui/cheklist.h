@@ -93,7 +93,7 @@ class CheckListClass : public ListClass {
   static constexpr int kUncheckChar = ' ';
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                   bool selected) override;

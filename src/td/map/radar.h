@@ -170,13 +170,14 @@ class RadarClass : public DisplayClass {
   class TacticalClass : public game::Gadget {
    public:
     TacticalClass() noexcept
-        : game::Gadget(
-              base::Rect{},
-              kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
-              true) {}
+        : game::Gadget(base::Rect{},
+                       InputFlags::kLeftPress | InputFlags::kLeftRelease |
+                           InputFlags::kLeftHeld | InputFlags::kLeftUp |
+                           InputFlags::kRightPress,
+                       true) {}
 
    protected:
-    bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+    bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                 int y) override;
     friend class RadarClass;
   };

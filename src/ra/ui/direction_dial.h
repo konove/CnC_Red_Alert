@@ -58,8 +58,8 @@ class DirectionDial : public game::ControlClass {
   // Turns the dial to follow the mouse while the left button is held after a
   // press on it. Reports a change in facing to the owner through `key`;
   // presses that leave the facing unchanged, and the release, are swallowed.
-  // `flags` are the gadget event bits (kLeftPress, ...).
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  // `flags` are the gadget event bits (InputFlags::kLeftPress, ...).
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
  private:

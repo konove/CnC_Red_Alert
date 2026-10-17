@@ -73,7 +73,9 @@ class ListClass : public ControlClass {
             Skin::PrintFlags flags, std::span<const std::byte> up,
             std::span<const std::byte> down)
       : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                     kLeftPress | kLeftRelease | kKeyboard, false),
+                     InputFlags::kLeftPress | InputFlags::kLeftRelease |
+                         InputFlags::kKeyboard,
+                     false),
         TextFont(font),
         TextFlags(flags),
         LineHeight(Skin::Text_Height(font, flags) - 1),
@@ -235,9 +237,9 @@ class ListClass : public ControlClass {
     ControlClass::FlagToRedraw();
   }
 
-  void OnPeerAction(unsigned flags, engine::window::KeyNumber& /*unused*/,
+  void OnPeerAction(InputFlags flags, engine::window::KeyNumber& /*unused*/,
                     ControlClass& whom) override {
-    if (flags & kLeftRelease) {
+    if (base::Any(flags & InputFlags::kLeftRelease)) {
       if (&whom == &UpGadget) {
         Step(true);
       }
@@ -391,20 +393,20 @@ class ListClass : public ControlClass {
   }
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     using engine::window::KN_DOWN;
     using engine::window::KN_NONE;
     using engine::window::KN_UP;
-    if (flags & kLeftRelease) {
+    if (base::Any(flags & InputFlags::kLeftRelease)) {
       key = KN_NONE;
-      flags &= ~kLeftRelease;
+      flags &= ~InputFlags::kLeftRelease;
       ControlClass::Action(flags, key, x, y);
       return true;
     }
 
     // Handle keyboard events here.
-    if (flags & kKeyboard) {
+    if (base::Any(flags & InputFlags::kKeyboard)) {
       // Process the keyboard character. If indicated, consume this keyboard
       // event so that the edit gadget ID number is not returned.
       if (key == KN_UP) {
@@ -414,7 +416,7 @@ class ListClass : public ControlClass {
         Step_Selected_Index(1);
         key = KN_NONE;
       } else {
-        flags &= ~kKeyboard;
+        flags &= ~InputFlags::kKeyboard;
       }
     } else {
       int index = TheMouse().y() - (this->y() + 1);

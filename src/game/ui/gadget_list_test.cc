@@ -25,7 +25,7 @@ using testing::IsEmpty;
 class Probe : public ControlClass {
  public:
   explicit Probe(unsigned id = 0, int x = 0)
-      : ControlClass(id, x, 0, 10, 10, kLeftPress) {}
+      : ControlClass(id, x, 0, 10, 10, InputFlags::kLeftPress) {}
 
   bool Draw(PixelView& view, bool forced) override {
     if (!ControlClass::Draw(view, forced)) {
@@ -44,7 +44,7 @@ class Probe : public ControlClass {
   std::function<void()> on_action;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override {
     ++actions;
     if (on_action) {
@@ -217,7 +217,7 @@ TEST_F(GadgetListTest, AListDestroyedFirstReleasesItsGadgets) {
 }
 
 TEST_F(GadgetListTest, ExtractFindsAGadgetByItsId) {
-  Gadget plain(base::Rect{0, 0, 10, 10}, 0);
+  Gadget plain(base::Rect{0, 0, 10, 10}, Gadget::InputFlags::kNone);
   list_.Add(plain);
   list_.Add(a_);
   list_.Add(b_);
@@ -388,7 +388,7 @@ TEST_F(GadgetListTest, AGadgetFocusedOutsideTheClearedListMayBeDestroyed) {
 }
 
 TEST_F(GadgetListTest, AGadgetListeningForKeysKeepsThemWithoutTheFocus) {
-  ControlClass keys(5, 0, 0, 10, 10, Gadget::kKeyboard);
+  ControlClass keys(5, 0, 0, 10, 10, Gadget::InputFlags::kKeyboard);
   list_.Add(keys);
   list_.Input(view_);
   keys.SetFocus();

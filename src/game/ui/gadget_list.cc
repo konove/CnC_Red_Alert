@@ -8,6 +8,7 @@
 #include "absl/log/check.h"
 #include "base/algorithm.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -195,33 +196,35 @@ Gadget::PendingInput GadgetList::ReadInput() {
   // event_mask_.
   using engine::window::MouseButton;
   if (event.IsPress(MouseButton::kLeft)) {
-    input.flags |= Gadget::kLeftPress;
+    input.flags |= Gadget::InputFlags::kLeftPress;
   }
   if (event.IsPress(MouseButton::kRight)) {
-    input.flags |= Gadget::kRightPress;
+    input.flags |= Gadget::InputFlags::kRightPress;
   }
   if (event.IsRelease(MouseButton::kLeft)) {
-    input.flags |= Gadget::kLeftRelease;
+    input.flags |= Gadget::InputFlags::kLeftRelease;
   }
   if (event.IsRelease(MouseButton::kRight)) {
-    input.flags |= Gadget::kRightRelease;
+    input.flags |= Gadget::InputFlags::kRightRelease;
   }
 
   // An event with a key but no mouse bits came from the keyboard.
-  if (input.key && !input.flags) {
-    input.flags |= Gadget::kKeyboard;
+  if (input.key && !base::Any(input.flags)) {
+    input.flags |= Gadget::InputFlags::kKeyboard;
   }
 
   // Held and up are reported only when there is no event. Otherwise a gadget
-  // listening for Gadget::kLeftUp under the mouse would act on, and swallow,
-  // every key and click.
+  // listening for Gadget::InputFlags::kLeftUp under the mouse would act on, and
+  // swallow, every key and click.
   if (!event) {
     // The event queue reports only changes, so the held state comes from the
     // buttons themselves.
-    input.flags |= engine::window::IsLeftButtonDown() ? Gadget::kLeftHeld
-                                                      : Gadget::kLeftUp;
-    input.flags |= engine::window::IsRightButtonDown() ? Gadget::kRightHeld
-                                                       : Gadget::kRightUp;
+    input.flags |= engine::window::IsLeftButtonDown()
+                       ? Gadget::InputFlags::kLeftHeld
+                       : Gadget::InputFlags::kLeftUp;
+    input.flags |= engine::window::IsRightButtonDown()
+                       ? Gadget::InputFlags::kRightHeld
+                       : Gadget::InputFlags::kRightUp;
   }
   return input;
 }
@@ -242,7 +245,8 @@ bool GadgetList::OfferToStuckOrFocused(PixelView& view,
   // Keys go only to the focused gadget; its mouse events go through the
   // normal sweep.
   if (Gadget* const focused = FocusedGadget();
-      focused != nullptr && input.flags & Gadget::kKeyboard) {
+      focused != nullptr &&
+      base::Any(input.flags & Gadget::InputFlags::kKeyboard)) {
     focused->Draw(view, false);
     focused->ActionIfConcerned(input);
     // The focus may have moved on to another gadget, which shows it now.

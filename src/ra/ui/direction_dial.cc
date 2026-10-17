@@ -27,6 +27,7 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "base/flags.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -55,7 +56,9 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
                              const int width, const int height,
                              const game::Direction initial_direction)
     : game::ControlClass(static_cast<unsigned>(id), x, y, width, height,
-                         kLeftPress | kLeftHeld | kLeftRelease, true),
+                         InputFlags::kLeftPress | InputFlags::kLeftHeld |
+                             InputFlags::kLeftRelease,
+                         true),
       center_x_(this->x() + (this->width() / 2)),
       center_y_(this->y() + (this->height() / 2)),
       direction_(initial_direction),
@@ -75,8 +78,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
   }
 }
 
-bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
-                           int x, int y) {
+bool DirectionDial::Action(const InputFlags flags,
+                           engine::window::KeyNumber& key, int x, int y) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes this dial hold the
   // mouse from the press to the release.
@@ -84,7 +87,8 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
 
   // Follow the mouse on a press, or while the button is held after a press on
   // the dial (HoldsMouse()); a drag that starts elsewhere must not turn it.
-  if (flags & kLeftPress || (flags & kLeftHeld && HoldsMouse())) {
+  if (base::Any(flags & InputFlags::kLeftPress) ||
+      (base::Any(flags & InputFlags::kLeftHeld) && HoldsMouse())) {
     const game::Facing old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
     direction_ = game::Direction8Toward(
@@ -100,15 +104,15 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
       // ControlClass::Action leaves `key` alone when given no flags, so it
       // has to be cleared here.
       key = engine::window::KN_NONE;
-      game::ControlClass::Action(0, key, x, y);
+      game::ControlClass::Action(InputFlags::kNone, key, x, y);
     }
     return true;
   }
   // Otherwise nothing changed. A release ends the drag and is swallowed.
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     key = engine::window::KN_NONE;
   }
-  return game::ControlClass::Action(0, key, x, y);
+  return game::ControlClass::Action(InputFlags::kNone, key, x, y);
 }
 
 bool DirectionDial::Draw(PixelView& view, const bool forced) {

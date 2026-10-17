@@ -61,7 +61,7 @@ class BigCheckBoxClass : public game::ToggleClass {
   }
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+  bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
               int y) override;
   FontType TextFont;
   TextPrintType TextFlags;

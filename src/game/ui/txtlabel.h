@@ -61,7 +61,7 @@ class TextLabelClass : public Gadget {
   // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
                  Skin::TextColor color, Skin::Font font, Skin::PrintFlags style)
-      : Gadget(base::Rect{x, y, 1, 1}, 0, false),
+      : Gadget(base::Rect{x, y, 1, 1}, InputFlags::kNone, false),
         TextFont(font),
         Style(style),
         Text(txt),

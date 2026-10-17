@@ -42,7 +42,8 @@ class TListClassTest : public testing::Test {
 
 // The scroll bar is three gadgets of its own, which go where the list box goes.
 TEST_F(TListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
-  game::Gadget button(base::Rect{0, 0, 10, 10}, 0);
+  game::Gadget button(base::Rect{0, 0, 10, 10},
+                      game::Gadget::InputFlags::kNone);
   game::GadgetList gadgets;
   gadgets.Add(list_);
   gadgets.Add(button);

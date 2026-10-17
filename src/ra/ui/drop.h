@@ -74,7 +74,7 @@ class DropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
-  void OnPeerAction(unsigned flags,
+  void OnPeerAction(InputFlags flags,
                     engine::window::KeyNumber& /*key*/ /*unused*/,
                     game::ControlClass& whom) override;
   void ClearFocus() override;
@@ -154,7 +154,7 @@ class TDropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T text);
-  void OnPeerAction(unsigned flags, engine::window::KeyNumber& /*key*/,
+  void OnPeerAction(InputFlags flags, engine::window::KeyNumber& /*key*/,
                     game::ControlClass& whom) override;
   void ClearFocus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
@@ -251,10 +251,10 @@ void TDropListClass<T>::ClearFocus() {
 }
 
 template <class T>
-void TDropListClass<T>::OnPeerAction(unsigned flags,
+void TDropListClass<T>::OnPeerAction(InputFlags flags,
                                      engine::window::KeyNumber& key,
                                      game::ControlClass& whom) {
-  if ((&whom == &DropButton) && (flags & kLeftRelease)) {
+  if ((&whom == &DropButton) && base::Any(flags & InputFlags::kLeftRelease)) {
     if (IsDropped) {
       Collapse();
       key = engine::window::ButtonKey(static_cast<int>(ID));

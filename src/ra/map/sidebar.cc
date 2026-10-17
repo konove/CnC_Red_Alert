@@ -104,6 +104,7 @@
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
@@ -1871,7 +1872,8 @@ bool SidebarClass::StripClass::Recalc() {
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : game::ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
-                         kLeftPress | kRightPress | kLeftUp) {}
+                         InputFlags::kLeftPress | InputFlags::kRightPress |
+                             InputFlags::kLeftUp) {}
 
 /***********************************************************************************************
  * SidebarClass::StripClass::SelectClass:: -- Assigns special values to a
@@ -1920,7 +1922,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *to regular event type.                             *
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(
-    unsigned flags, engine::window::KeyNumber& key, int x, int y) {
+    InputFlags flags, engine::window::KeyNumber& key, int x, int y) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -1960,25 +1962,26 @@ bool SidebarClass::StripClass::SelectClass::Action(
     /*
     **	Display the help text if the mouse is over the button.
     */
-    if (flags & kLeftUp) {
+    if (base::Any(flags & InputFlags::kLeftUp)) {
       TheMap().Help_Text(SpecialWeaponHelp.at(spc), this->x(), this->y(),
                          scheme->Color, true);
-      flags &= ~kLeftUp;
+      flags &= ~InputFlags::kLeftUp;
     }
 
     /*
     **	A right mouse button signals "cancel".  If we are in targeting
     ** mode then we don't want to be any more.
     */
-    if (flags & kRightPress) {
+    if (base::Any(flags & InputFlags::kRightPress)) {
       TheMap().IsTargettingMode = SPC_NONE;
     }
     /*
     **	A left mouse press signal "activate".  If our weapon type is
     ** available then we should activate it.
     */
-    if ((flags & kLeftPress) && (static_cast<unsigned>(spc) <
-                                 magic_enum::enum_count<SpecialWeaponType>())) {
+    if (base::Any(flags & InputFlags::kLeftPress) &&
+        (static_cast<unsigned>(spc) <
+         magic_enum::enum_count<SpecialWeaponType>())) {
       if (ThePlayer()->SuperWeapon.at(spc).Is_Ready()) {
         if (spc != SPC_SONAR_PULSE) {
           TheMap().IsTargettingMode = spc;
@@ -1999,11 +2002,11 @@ bool SidebarClass::StripClass::SelectClass::Action(
       /*
       **	Display the help text if the mouse is over the button.
       */
-      if (flags & kLeftUp) {
+      if (base::Any(flags & InputFlags::kLeftUp)) {
         TheMap().Help_Text(choice->Full_Name(), this->x(), this->y(),
                            scheme->Color, true);
         TheMap().Set_Cost(choice->Cost_Of() * ThePlayer()->CostBias);
-        flags &= ~kLeftUp;
+        flags &= ~InputFlags::kLeftUp;
       }
 
       /*
@@ -2015,7 +2018,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
       *factory *	manager deleted, and the object under construction is
       *returned to *	the free pool.
       */
-      if ((flags & kRightPress) && (factory != nullptr)) {
+      if (base::Any(flags & InputFlags::kRightPress) && (factory != nullptr)) {
         /*
         **	Cancels placement mode if the sidebar factory is abandoned or
         **	suspended.
@@ -2041,7 +2044,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         }
       }
 
-      if (flags & kLeftPress) {
+      if (base::Any(flags & InputFlags::kLeftPress)) {
         /*
         **	If there is already a factory attached to this strip but the
         *player didn't click *	on the icon that has the attached factory, then
@@ -2140,7 +2143,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         }
       }
     } else {
-      flags = 0;
+      flags = InputFlags::kNone;
     }
   }
 
@@ -2166,7 +2169,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
+bool SidebarClass::SBGadgetClass::Action(InputFlags /*flags*/,
                                          engine::window::KeyNumber& /*key*/,
                                          int /*x*/, int /*y*/) {
   TheMap().Help_Text(TXT_NONE);

@@ -83,9 +83,9 @@ bool BigCheckBoxClass::Draw(PixelView& view, bool forced) {
 }
 
 //***********************************************************************************************
-bool BigCheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
+bool BigCheckBoxClass::Action(InputFlags flags, engine::window::KeyNumber& key,
                               int x, int y) {
-  /*	if( flags & kLeftPress )
+  /*	if( base::Any(flags & InputFlags::kLeftPress) )
           {
                   if (IsOn) {
                           Turn_Off();

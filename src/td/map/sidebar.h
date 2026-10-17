@@ -128,7 +128,7 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+      bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                   int y) override;
     };
 
@@ -346,11 +346,12 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public game::Gadget {
    public:
     //				SBGadgetClass() : Gadget(SIDE_X+8,
-    // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, kLeftUp) {};
-    SBGadgetClass() noexcept : game::Gadget(base::Rect{}, kLeftUp) {}
+    // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, InputFlags::kLeftUp) {};
+    SBGadgetClass() noexcept
+        : game::Gadget(base::Rect{}, InputFlags::kLeftUp) {}
 
    protected:
-    bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+    bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                 int y) override;
   };
 

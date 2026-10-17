@@ -42,6 +42,7 @@
 
 #include "game/ui/toggle.h"
 
+#include "base/flags.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -70,7 +71,8 @@ namespace game {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
-    : ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
+    : ControlClass(id, x, y, w, h,
+                   InputFlags::kLeftPress | InputFlags::kLeftRelease, true) {}
 
 /***********************************************************************************************
  * ToggleClass::Turn_On -- Turns the toggle button to the "ON" state. *
@@ -131,8 +133,8 @@ void ToggleClass::Turn_Off() {
  * HISTORY: * 01/14/1995 JLB : Created. * 02/02/1995 JLB : Left press doesn't
  *get passed to other buttons now                       *
  *=============================================================================================*/
-bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
-                         int y) {
+bool ToggleClass::Action(InputFlags flags, engine::window::KeyNumber& key,
+                         int x, int y) {
   /*
   **	If there are no action flag bits set, then this must be a forced call. A
   *forced call *	must never actually function like a real call, but
@@ -142,7 +144,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
                               static_cast<unsigned>(width()) &&
                           static_cast<unsigned>(TheMouse().y() - this->y()) <
                               static_cast<unsigned>(height());
-  if (!flags) {
+  if (!base::Any(flags)) {
     if (overbutton) {
       if (!IsPressed) {
         IsPressed = true;
@@ -167,16 +169,16 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	Flag the button to show the pressed down imagery if this mouse button
   **	was pressed over this gadget.
   */
-  if (flags & kLeftPress) {
+  if (base::Any(flags & InputFlags::kLeftPress)) {
     IsPressed = true;
     FlagToRedraw();
-    flags &= ~unsigned{kLeftPress};
+    flags &= ~InputFlags::kLeftPress;
     ControlClass::Action(flags, key, x, y);
     key = engine::window::KN_NONE;  // erase the event
     return true;                    // stop processing other buttons now
   }
 
-  if (flags & kLeftRelease) {
+  if (base::Any(flags & InputFlags::kLeftRelease)) {
     if (IsPressed) {
       if (IsToggleType && overbutton) {
         IsOn = !static_cast<bool>(IsOn);
@@ -184,7 +186,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       IsPressed = false;
       FlagToRedraw();
     } else {
-      flags &= ~unsigned{kLeftRelease};
+      flags &= ~InputFlags::kLeftRelease;
     }
   }
 

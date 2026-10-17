@@ -45,6 +45,8 @@
 
 #include <cstdint>
 
+#include "base/attributes.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -71,22 +73,26 @@ class Gadget {
   // Input events a gadget listens for, combined in event_mask_. A press or
   // release is reported once, when it happens; held (the button is down) and
   // up (it is not) describe the button's state on each Input() call that has
-  // no event to report.
-  static constexpr uint32_t kLeftPress = 0x0001;
-  static constexpr uint32_t kLeftHeld = 0x0002;
-  static constexpr uint32_t kLeftRelease = 0x0004;
-  static constexpr uint32_t kLeftUp = 0x0008;
-  static constexpr uint32_t kRightPress = 0x0010;
-  static constexpr uint32_t kRightHeld = 0x0020;
-  static constexpr uint32_t kRightRelease = 0x0040;
-  static constexpr uint32_t kRightUp = 0x0080;
-  // A key that came from the keyboard, not a mouse button.
-  static constexpr uint32_t kKeyboard = 0x0100;
+  // no event to report. Test a bit with
+  // `base::Any(flags & InputFlags::kLeftPress)`.
+  enum class CNC_FLAG_ENUM InputFlags : uint32_t {
+    kNone = 0,
+    kLeftPress = 0x0001,
+    kLeftHeld = 0x0002,
+    kLeftRelease = 0x0004,
+    kLeftUp = 0x0008,
+    kRightPress = 0x0010,
+    kRightHeld = 0x0020,
+    kRightRelease = 0x0040,
+    kRightUp = 0x0080,
+    // A key that came from the keyboard, not a mouse button.
+    kKeyboard = 0x0100,
+  };
 
   // Owns `region`, in screen pixels, and acts on the events in `flags`. A
   // `sticky` gadget also listens for left presses and releases, which it needs
   // to capture the mouse.
-  Gadget(const base::Rect& region, uint32_t flags,
+  Gadget(const base::Rect& region, InputFlags flags,
          bool sticky = false) noexcept;
   Gadget() noexcept = default;
   // Not copyable or movable: the list it is in points at it.
@@ -114,7 +120,7 @@ class Gadget {
   // Called by a ControlClass this gadget is the peer of, after it was
   // actioned with `flags` and `key`; the peer may replace `key`. Does nothing
   // here.
-  virtual void OnPeerAction(uint32_t /*flags*/,
+  virtual void OnPeerAction(InputFlags /*flags*/,
                             engine::window::KeyNumber& /*key*/,
                             ControlClass& /*peer*/) {}
   // Routes every keyboard event its list reads to this gadget, taking the
@@ -162,7 +168,7 @@ class Gadget {
   // releases it on a left release. The base Action() calls it; an override
   // that clears the press bits before calling the base Action() calls it
   // first itself.
-  void UpdateMouseCapture(uint32_t flags);
+  void UpdateMouseCapture(InputFlags flags);
 
   // Acts on the input `flags` and `key` describe, the main way a gadget does
   // its job. `x` and `y` are where it happened: a click's position for a
@@ -170,7 +176,7 @@ class Gadget {
   // key replaces `key` with its ButtonKey(). Returns whether it acted, which
   // ends the list's sweep. The base flags a redraw and handles the mouse
   // capture when `flags` holds anything.
-  virtual bool Action(uint32_t flags, engine::window::KeyNumber& key, int x,
+  virtual bool Action(InputFlags flags, engine::window::KeyNumber& key, int x,
                       int y);
 
   // Called by a GadgetList after it added this gadget or took it out. A gadget
@@ -192,7 +198,7 @@ class Gadget {
     engine::window::InputEvent event;
     // Starts as the event's key; a gadget that acts replaces it.
     engine::window::KeyNumber key = engine::window::KeyNumber::KN_NONE;
-    uint32_t flags = 0;  // The k... event bits above.
+    InputFlags flags = InputFlags::kNone;
     int x = 0;
     int y = 0;
   };
@@ -240,12 +246,15 @@ class Gadget {
   // for a left press over the region. kKeyboard is added while the gadget
   // has the focus, without being stored here: a gadget that listens for keys
   // anyway (a list box) keeps listening when it loses the focus.
-  uint32_t event_mask_ = 0;
+  InputFlags event_mask_ = InputFlags::kNone;
 
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;
 };
 
 }  // namespace game
+
+template <>
+inline constexpr bool base::kIsFlagEnum<game::Gadget::InputFlags> = true;
 
 #endif  // CNC_RED_ALERT_GAME_UI_GADGET_H_

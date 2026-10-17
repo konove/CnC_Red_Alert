@@ -110,9 +110,9 @@ class CheckBoxTest : public testing::Test {
 
 TEST_F(CheckBoxTest, ClickTurnsTheBoxOnAndReportsIt) {
   engine::window::KeyNumber key = engine::window::KN_NONE;
-  box_.Action(Gadget::kLeftPress, key, 12, 12);
+  box_.Action(Gadget::InputFlags::kLeftPress, key, 12, 12);
   key = engine::window::KN_NONE;
-  box_.Action(Gadget::kLeftRelease, key, 12, 12);
+  box_.Action(Gadget::InputFlags::kLeftRelease, key, 12, 12);
   EXPECT_TRUE(box_.IsOn);
   EXPECT_EQ(key, engine::window::ButtonKey(static_cast<int>(kId)));
 }
@@ -122,7 +122,7 @@ TEST_F(CheckBoxTest, ClickTurnsTheBoxOnAndReportsIt) {
 // it, and would apply a setting the box no longer shows.
 TEST_F(CheckBoxTest, ReleaseWithoutAPressLeavesTheBoxAlone) {
   engine::window::KeyNumber key = engine::window::KN_NONE;
-  box_.Action(Gadget::kLeftRelease, key, 12, 12);
+  box_.Action(Gadget::InputFlags::kLeftRelease, key, 12, 12);
   EXPECT_FALSE(box_.IsOn);
   EXPECT_NE(key, engine::window::ButtonKey(static_cast<int>(kId)));
 }

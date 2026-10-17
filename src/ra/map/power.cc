@@ -448,7 +448,7 @@ int PowerClass::Power_Height(int value) {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-bool PowerClass::PowerButtonClass::Action(unsigned flags,
+bool PowerClass::PowerButtonClass::Action(InputFlags flags,
                                           engine::window::KeyNumber& key, int x,
                                           int y) {
   if (!TheMap().IsSidebarActive) {

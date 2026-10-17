@@ -100,7 +100,7 @@ bool CheckListClass::Is_Checked(int index) const {
   return index >= 0 && index < Count() && Checked.at(base::ToSize(index));
 }
 
-bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key,
+bool CheckListClass::Action(InputFlags flags, engine::window::KeyNumber& key,
                             int x, int y) {
   /*
   ** If this is a read-only list, it's a display-only device
@@ -118,7 +118,7 @@ bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key,
   **	Now, if this event was a left-press, toggle the checked state of the
   **	current item.
   */
-  if (flags & kLeftPress) {
+  if (base::Any(flags & InputFlags::kLeftPress)) {
     Check_Item(SelectedIndex, !Is_Checked(SelectedIndex));
   }
 

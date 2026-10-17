@@ -92,6 +92,7 @@
 #include "base/array.h"
 #include "base/bit.h"
 #include "base/clip.h"
+#include "base/flags.h"
 #include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"
@@ -1632,7 +1633,7 @@ void RadarClass::AI(engine::window::InputEvent& event, int x, int y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::RTacticalClass::Action(unsigned flags,
+bool RadarClass::RTacticalClass::Action(InputFlags flags,
                                         engine::window::KeyNumber& key, int x,
                                         int y) {
   ObjectClass* object = nullptr;  // what object is in the cell
@@ -1659,7 +1660,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    game::Gadget::Action(0, key, x, y);
+    game::Gadget::Action(InputFlags::kNone, key, x, y);
     return true;
   }
 
@@ -1771,7 +1772,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
         /*
         **	A right mouse button press toggles the zoom mode.
         */
-        if (flags & kRightPress) {
+        if (base::Any(flags & InputFlags::kRightPress)) {
           TheMap().Mouse_Right_Press();
         }
 
@@ -1780,7 +1781,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
         *shape is processed. *	The shape changes depending on what object the
         *mouse is currently over and what *	object is currently selected.
         */
-        if (flags & kLeftUp) {
+        if (base::Any(flags & InputFlags::kLeftUp)) {
           TheMap().Mouse_Left_Up(Cell::None(), shadow, object, action, true);
         }
 
@@ -1789,14 +1790,14 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
         *press event is *	intercepted and possible rubber-band mode is
         *flagged.
         */
-        if (flags & kLeftPress) {
+        if (base::Any(flags & InputFlags::kLeftPress)) {
           TheMap().Mouse_Left_Release(cell, cellx, celly, object, action, true);
         }
 
       } else {
         TheMap().Set_Default_Mouse(MOUSE_RADAR_CURSOR, !TheMap().IsZoomed);
 
-        if (flags & kLeftPress) {
+        if (base::Any(flags & InputFlags::kLeftPress)) {
           cell = TheMap().RadarClass::Click_Cell_Calc(x, y);
           if (cell != Cell::None()) {
             int cell_x = cell.x();
@@ -1817,7 +1818,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
         /*
         **	A right mouse button press toggles the zoom mode.
         */
-        if (flags & kRightPress) {
+        if (base::Any(flags & InputFlags::kRightPress)) {
           TheMap().Zoom_Mode(cell);
         }
       }
@@ -1826,7 +1827,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  game::Gadget::Action(0, key, x, y);
+  game::Gadget::Action(InputFlags::kNone, key, x, y);
   return true;
 }
 
