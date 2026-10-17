@@ -72,11 +72,13 @@ Gadget::~Gadget() {
   }
 }
 
-bool Gadget::ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
-                               int x, int y) {
+bool Gadget::ActionIfConcerned(PendingInput& input) {
   // Keep only the events this gadget listens for; none left means a mouse
-  // event is not for it.
-  flags &= event_mask_;
+  // event is not for it. The sweep offers `input` to the next gadget too, so
+  // its flags stay as they are.
+  const uint32_t flags = input.flags & event_mask_;
+  const int x = input.x;
+  const int y = input.y;
 
   // A key always reaches Action(), which decides whether it wants it; so does
   // anything while this gadget holds the mouse, even a drag outside it. Other
@@ -86,7 +88,7 @@ bool Gadget::ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
   if (this == StuckOn || flags & kKeyboard ||
       (flags && static_cast<unsigned>(x - X) < static_cast<unsigned>(Width) &&
        static_cast<unsigned>(y - Y) < static_cast<unsigned>(Height))) {
-    return Action(flags, key, x, y);
+    return Action(flags, input.key, x, y);
   }
   return false;
 }
@@ -198,7 +200,7 @@ bool Gadget::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
     // A release in ActionIfConcerned() clears StuckOn; the gadget is still
     // redrawn so it can show itself raised.
     Gadget* captor = StuckOn;
-    StuckOn->ActionIfConcerned(input.key, input.flags, input.x, input.y);
+    StuckOn->ActionIfConcerned(input);
     if (StuckOn) {
       StuckOn->Draw(view, false);
     } else {
@@ -211,7 +213,7 @@ bool Gadget::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   // normal sweep.
   if (Focused && input.flags & kKeyboard) {
     Focused->Draw(view, false);
-    Focused->ActionIfConcerned(input.key, input.flags, input.x, input.y);
+    Focused->ActionIfConcerned(input);
     if (Focused) {
       Focused->Draw(view, false);
     }
@@ -224,8 +226,7 @@ bool Gadget::Offer(PixelView& view, bool forced, PendingInput& input) {
   Draw(view, forced);
 
   // A gadget that acted has used up the event, so the sweep stops there.
-  if (!IsDisabled &&
-      ActionIfConcerned(input.key, input.flags, input.x, input.y)) {
+  if (!IsDisabled && ActionIfConcerned(input)) {
     // Action() flags a gadget whose look it changed; show the change now.
     Draw(view, false);
     return true;

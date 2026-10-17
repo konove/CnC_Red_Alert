@@ -237,12 +237,12 @@ class Gadget {
   // The list this gadget is in; nullptr when in none.
   GadgetList* list_ = nullptr;
 
-  // Calls Action() with the events of `flags` this gadget listens for, when
+  // Calls Action() with the events of `input` this gadget listens for, when
   // they concern it: always for the gadget holding the mouse and for a key,
-  // otherwise only for mouse events inside its region. Returns what Action()
-  // returned, or false when it was not called.
-  virtual bool ActionIfConcerned(engine::window::KeyNumber& key, uint32_t flags,
-                                 int x, int y);
+  // otherwise only for mouse events inside its region. Action() may replace
+  // `input.key`. Returns what Action() returned, or false when it was not
+  // called.
+  bool ActionIfConcerned(PendingInput& input);
 };
 
 }  // namespace game
