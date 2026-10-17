@@ -29,6 +29,15 @@
 // Not self-contained: needs the types from <windows.h> above.
 #include <shellapi.h>
 
+// The form the emulation below declares, so that a caller writes the same
+// call on both platforms: the working directory with a null terminator, its
+// length, or 0 if it does not fit or cannot be read.
+inline DWORD GetCurrentDirectory(std::span<char> buffer) {
+  const DWORD length =
+      ::GetCurrentDirectoryA(static_cast<DWORD>(buffer.size()), buffer.data());
+  return length < buffer.size() ? length : 0;
+}
+
 #else
 
 #include <cstring>
