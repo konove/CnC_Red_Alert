@@ -177,7 +177,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
-#include "game/sim/type_tally.h"
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -4450,8 +4449,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
 
         if (source != nullptr) {
           if (TheSession().Type == GAME_INTERNET) {
-            source->House->DestroyedBuildings->Increment(static_cast<int>(
-                dynamic_cast<BuildingClass*>(this)->Class->Type));
+            ++source->House->DestroyedBuildings.at(
+                dynamic_cast<BuildingClass*>(this)->Class->Type);
           }
           source->House->BuildingsKilled.at(Owner())++;
         }
@@ -4468,32 +4467,32 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     }
     case RTTI_AIRCRAFT:
       if (source != nullptr && TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedAircraft->Increment(
-            static_cast<int>(dynamic_cast<AircraftClass*>(this)->Class->Type));
+        ++source->House->DestroyedAircraft.at(
+            dynamic_cast<AircraftClass*>(this)->Class->Type);
         total_recorded++;
       }
       [[fallthrough]];
     case RTTI_INFANTRY:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedInfantry->Increment(
-            static_cast<int>(dynamic_cast<InfantryClass*>(this)->Class->Type));
+        ++source->House->DestroyedInfantry.at(
+            dynamic_cast<InfantryClass*>(this)->Class->Type);
         total_recorded++;
       }
       [[fallthrough]];
     case RTTI_UNIT:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedUnits->Increment(
-            static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
+        ++source->House->DestroyedUnits.at(
+            dynamic_cast<UnitClass*>(this)->Class->Type);
         total_recorded++;
       }
       [[fallthrough]];
     case RTTI_VESSEL:
       if (source != nullptr && !total_recorded &&
           TheSession().Type == GAME_INTERNET) {
-        source->House->DestroyedVessels->Increment(
-            static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));
+        ++source->House->DestroyedVessels.at(
+            dynamic_cast<VesselClass*>(this)->Class->Type);
       }
 
       House->UnitsLost++;

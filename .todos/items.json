@@ -17388,7 +17388,7 @@
       "anchors": [
         {
           "path": "src/game/sim/type_tally.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17435,7 +17435,7 @@
         },
         {
           "path": "src/game/sim/type_tally.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17503,7 +17503,7 @@
             "      /*",
             "      ** Amount of tiberium turned into credits"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/stats.cc",
@@ -17520,7 +17520,7 @@
             "        /*",
             "        ** Amount of tiberium turned into credits"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17584,7 +17584,7 @@
             "  // Adds one to the count of `type`, which must be below the type count",
             "  // (std::out_of_range otherwise)."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/house.cc",
@@ -17601,12 +17601,12 @@
             "    AircraftTotals = std::make_unique<game::TypeTally>(",
             "        base::ToSigned(magic_enum::enum_count<AircraftType>()));"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/house.cc",
-          "startLine": 474,
-          "endLine": 474,
+          "startLine": 475,
+          "endLine": 475,
           "text": "void HouseClass::Init_Trackers() {",
           "before": [
             "  Init_Trackers();",
@@ -17618,7 +17618,7 @@
             "  InfantryTotals = std::make_unique<game::TypeTally>(kInfantryCount);",
             "  UnitTotals = std::make_unique<game::TypeTally>(kUnitCount);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -17655,7 +17655,7 @@
             "      House->UnitsLost++;",
             "      if (source != nullptr) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

@@ -144,7 +144,6 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
-#include <memory>
 #include <new>
 #include <span>
 #include <string>
@@ -157,7 +156,6 @@
 #include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
@@ -171,7 +169,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/reinforcements.h"
@@ -493,52 +490,6 @@ HouseClass::HouseClass(HousesType house)
   Attack.Set(
       TheRules().AttackDelay *
       static_cast<int>(RandomPick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
-
-  Init_Trackers();
-}
-
-/***********************************************************************************************
- * HouseClass::~HouseClass -- House class destructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/6/96 4:48PM ST : Created *
- *=============================================================================================*/
-void HouseClass::Init_Trackers() {
-  if (TheSession().Type == GAME_INTERNET) {
-    AircraftTotals = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<AircraftType>()));
-    InfantryTotals = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<InfantryType>()));
-    UnitTotals = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<UnitType>()));
-    BuildingTotals = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<StructType>()));
-    VesselTotals = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<VesselType>()));
-
-    DestroyedAircraft = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<AircraftType>()));
-    DestroyedInfantry = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<InfantryType>()));
-    DestroyedUnits = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<UnitType>()));
-    DestroyedBuildings = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<StructType>()));
-    DestroyedVessels = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<VesselType>()));
-
-    CapturedBuildings = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<StructType>()));
-    TotalCrates = std::make_unique<game::TypeTally>(
-        base::ToSigned(magic_enum::enum_count<CrateType>()));
-  }
 }
 
 HouseClass::HouseClass()
@@ -550,9 +501,7 @@ HouseClass::HouseClass()
       IQ(0),
       WhoLastHurtMe(HOUSE_NONE),
 
-      RemapColor(PCOLOR_NONE) {
-  Init_Trackers();
-}
+      RemapColor(PCOLOR_NONE) {}
 
 HouseClass::~HouseClass() { Class = nullptr; }
 
@@ -6252,7 +6201,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       BQuantity.at(building)++;
       BScan |= ScanBit(static_cast<int>(building));
       if (TheSession().Type == GAME_INTERNET) {
-        BuildingTotals->Increment(techno->Class_Of().ID);
+        ++BuildingTotals.at(building);
       }
       break;
 
@@ -6263,7 +6212,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       AQuantity.at(aircraft)++;
       AScan |= ScanBit(static_cast<int>(aircraft));
       if (TheSession().Type == GAME_INTERNET) {
-        AircraftTotals->Increment(techno->Class_Of().ID);
+        ++AircraftTotals.at(aircraft);
       }
       break;
 
@@ -6280,7 +6229,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
         if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
                  .IsCivilian &&
             TheSession().Type == GAME_INTERNET) {
-          InfantryTotals->Increment(techno->Class_Of().ID);
+          ++InfantryTotals.at(infantry);
         }
         IScan |= ScanBit(static_cast<int>(infantry));
       }
@@ -6296,7 +6245,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       base::At(UQuantity, quant)++;
       UScan |= ScanBit(static_cast<int>(unit));
       if (TheSession().Type == GAME_INTERNET) {
-        UnitTotals->Increment(techno->Class_Of().ID);
+        ++UnitTotals.at(unit);
       }
       break;
 
@@ -6310,7 +6259,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       base::At(VQuantity, quant)++;
       VScan |= ScanBit(static_cast<int>(vessel));
       if (TheSession().Type == GAME_INTERNET) {
-        VesselTotals->Increment(techno->Class_Of().ID);
+        ++VesselTotals.at(vessel);
       }
       break;
 

@@ -13,7 +13,6 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "game/sim/enums.h"
-#include "game/sim/type_tally.h"
 #include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
@@ -140,13 +139,7 @@ TEST_F(TechnoTest, ADeathWithNoKillerCreditsNobody) {
 // An Internet game tallies the killer's kills by type for the statistics
 // packet: a vessel under destroyed vessels, a vehicle under destroyed units.
 TEST_F(TechnoTest, AnInternetGameTalliesTheKillByKind) {
-  // Only a house made in an Internet game has the tallies, so both are made
-  // again.
   TheSession().Type = GAME_INTERNET;
-  base::DeletePooled(HouseClass::As_Pointer(HOUSE_GREECE));
-  base::DeletePooled(HouseClass::As_Pointer(HOUSE_USSR));
-  ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
-  ASSERT_NE(base::NewPooled<HouseClass>(HOUSE_USSR), nullptr);
   TechnoClass& killer = MakeUnit(HOUSE_USSR);
   InitVesselTypes();
   TheObjectHeaps().vessel().Reset(1);
@@ -156,16 +149,10 @@ TEST_F(TechnoTest, AnInternetGameTalliesTheKillByKind) {
   vessel->Record_The_Kill(&killer);
   MakeUnit(HOUSE_GREECE).Record_The_Kill(&killer);
 
-  EXPECT_EQ(killer.House->DestroyedVessels->Count(
-                static_cast<int>(VesselType::VESSEL_DD)),
-            1);
-  EXPECT_EQ(killer.House->DestroyedUnits->Count(
-                static_cast<int>(UnitType::UNIT_JEEP)),
-            1);
+  EXPECT_EQ(killer.House->DestroyedVessels.at(VESSEL_DD), 1);
+  EXPECT_EQ(killer.House->DestroyedUnits.at(UNIT_JEEP), 1);
   // VESSEL_DD's number is UNIT_MTANK's.
-  EXPECT_EQ(killer.House->DestroyedUnits->Count(
-                static_cast<int>(UnitType::UNIT_MTANK)),
-            0);
+  EXPECT_EQ(killer.House->DestroyedUnits.at(UNIT_MTANK), 0);
 }
 
 // A ranger standing on the map is a threat to the other house in its

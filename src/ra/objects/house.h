@@ -43,7 +43,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <span>
 
 #include "absl/base/attributes.h"
@@ -54,7 +53,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "game/sim/type_tally.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/objects/object.h"
@@ -469,30 +467,30 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  std::unique_ptr<game::TypeTally> AircraftTotals;
-  std::unique_ptr<game::TypeTally> InfantryTotals;
-  std::unique_ptr<game::TypeTally> UnitTotals;
-  std::unique_ptr<game::TypeTally> BuildingTotals;
-  std::unique_ptr<game::TypeTally> VesselTotals;
+  base::EnumArray<AircraftType, int32_t> AircraftTotals{};
+  base::EnumArray<InfantryType, int32_t> InfantryTotals{};
+  base::EnumArray<UnitType, int32_t> UnitTotals{};
+  base::EnumArray<StructType, int32_t> BuildingTotals{};
+  base::EnumArray<VesselType, int32_t> VesselTotals{};
 
   /*
   ** Total number of units destroyed by this house
   */
-  std::unique_ptr<game::TypeTally> DestroyedAircraft;
-  std::unique_ptr<game::TypeTally> DestroyedInfantry;
-  std::unique_ptr<game::TypeTally> DestroyedUnits;
-  std::unique_ptr<game::TypeTally> DestroyedBuildings;
-  std::unique_ptr<game::TypeTally> DestroyedVessels;
+  base::EnumArray<AircraftType, int32_t> DestroyedAircraft{};
+  base::EnumArray<InfantryType, int32_t> DestroyedInfantry{};
+  base::EnumArray<UnitType, int32_t> DestroyedUnits{};
+  base::EnumArray<StructType, int32_t> DestroyedBuildings{};
+  base::EnumArray<VesselType, int32_t> DestroyedVessels{};
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  std::unique_ptr<game::TypeTally> CapturedBuildings;
+  base::EnumArray<StructType, int32_t> CapturedBuildings{};
 
   /*
   ** Total number of crates found by this house
   */
-  std::unique_ptr<game::TypeTally> TotalCrates;
+  base::EnumArray<CrateType, int32_t> TotalCrates{};
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
@@ -957,10 +955,6 @@ class HouseClass {
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   HouseClass();
   friend class game::ObjectHeap<HouseClass>;
-
-  // Allocates the per-type statistics trackers an Internet game keeps.
-  // Called by both constructors; the trackers are not saved.
-  void Init_Trackers();
 
   /*
   ** These values are for multiplay only.

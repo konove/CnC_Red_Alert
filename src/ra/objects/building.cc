@@ -143,7 +143,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/mph.h"
-#include "game/sim/type_tally.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/trigger.h"
@@ -3738,7 +3737,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     *internet stats purposes.
     */
     if (TheSession().Type == GAME_INTERNET) {
-      newowner->CapturedBuildings->Increment(static_cast<int>(Class->Type));
+      ++newowner->CapturedBuildings.at(Class->Type);
     }
 
     House->Adjust_Power(-Power_Output());
