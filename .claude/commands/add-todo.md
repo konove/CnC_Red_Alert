@@ -1,16 +1,18 @@
 ---
-allowed-tools: Read, Grep, Glob, ToolSearch, mcp__clion__todo_list, mcp__clion__todo_get, mcp__clion__todo_create, mcp__clion__todo_update, mcp__clion__todo_batch, mcp__clion__todo_comment, mcp__clion__todo_decided, mcp__clion__todo_delete
-description: Add a new TODO item to the project's Not My TODO list (the CLion plugin, stored in .todos/items.json), rephrased for clarity, tagged by kind and anchored to the code it is about
+allowed-tools: Read, Grep, Glob, ToolSearch, mcp__notmytodo-store__todo_list, mcp__notmytodo-store__todo_get, mcp__notmytodo-store__todo_create, mcp__notmytodo-store__todo_update, mcp__notmytodo-store__todo_batch, mcp__notmytodo-store__todo_comment, mcp__notmytodo-store__todo_decided, mcp__notmytodo-store__todo_delete, mcp__notmytodo-store__todo_move, mcp__notmytodo-store__todo_projects
+description: Add a new TODO item to the project's Not My TODO list (the machine-wide not-my-todo-store, reached through the notmytodo-store MCP tools), rephrased for clarity, tagged by kind and anchored to the code it is about
 ---
 
 Add a TODO item based on the user's input: $ARGUMENTS
 
-The project's TODO list is kept by CLion's Not My TODO plugin in `.todos/items.json` and is read and
-written only through the IDE's MCP tools. Load them in one call,
-`ToolSearch("select:mcp__clion__todo_list,mcp__clion__todo_get,mcp__clion__todo_create,mcp__clion__todo_update,mcp__clion__todo_batch,mcp__clion__todo_comment,mcp__clion__todo_decided,mcp__clion__todo_delete")`,
-and pass `projectPath: /home/konsto/projects/CnC_Red_Alert` to each. Use the `mcp__clion__` set (the
-`mcp__idea__` one belongs to another IDE). Do not edit, script or grep the JSON: the tools search
-it, keep the anchors and save several changes in one write. There is no `TODO.md` any more.
+The project's TODO list is kept by Not My TODO's machine-wide store, outside the repository, as the
+project `cnc_red_alert`, and is read and written only through the `notmytodo-store` MCP server. Load
+its tools in one call,
+`ToolSearch("select:mcp__notmytodo-store__todo_list,mcp__notmytodo-store__todo_get,mcp__notmytodo-store__todo_create,mcp__notmytodo-store__todo_update,mcp__notmytodo-store__todo_batch,mcp__notmytodo-store__todo_comment,mcp__notmytodo-store__todo_decided,mcp__notmytodo-store__todo_delete,mcp__notmytodo-store__todo_move,mcp__notmytodo-store__todo_projects")`.
+They work on the project of the working directory, so leave `project` out; pass it (a key, `inbox`
+or a folder) only for another project. Do not edit, script or grep the store's JSON files: the tools
+search them, keep the anchors and save several changes in one write. There is no `TODO.md` and no
+`.todos/items.json` any more.
 
 Steps:
 
@@ -67,22 +69,30 @@ Changing items:
 - `todo_update` changes only the fields passed, but `tags` and `details` are replaced whole: pass
   the old tags along with a new one, and add a finding or a progress note with `todo_comment`
   instead of rewriting the details.
-- A `todo_batch` entry with an `id` takes the fields of `todo_update` plus `comment`, but not
-  `path`, `startLine`, `endLine` or `places`: re-anchor with `todo_update`.
+- A `todo_batch` entry with an `id` takes the fields of `todo_update` plus `comment`, re-anchoring
+  (`path`, `startLine`, `endLine`, `places`) included. A new entry can carry a `ref`, and the
+  entries after it name that item as `"$ref"` in `parent`, `blockedBy` and `duplicateOf`, so a
+  parent and its parts go in one batch.
 - Do not fix an item tagged `needs-decision` unless the user picks it. Then ask what it waits for
   with AskUserQuestion, record the answer with `todo_decided` (question, the options offered, the
   answer in the user's words) and only then do the work.
 - If fixing any other item turns out to need a decision that is the user's, do not guess and do not
   change code: `todo_update` it with `toDecide` and leave the status alone.
-- A finished item is not deleted. Commit the fix first, then close the item in one `todo_update`:
-  `status: fixed`, `resolution` (a sentence or two on what was done), `fixedIn` (`"HEAD"` right
-  after the commit; the tool stores the id it names) and the new anchor if the code moved. Not
-  `fixed` before the commit and `fixedIn` after it, and no "Not committed" in the resolution.
-  `wont_fix` takes the reason in `resolution`; a duplicate is `wont_fix` with `duplicateOf`.
+- A finished item is not deleted. Name it in the message of the commit that fixes it
+  (`Fix T-12: ...`); the store reads that commit from git as the one that fixed it. Close it in one
+  `todo_update`: `status: fixed`, `resolution` (a sentence or two on what was done) and the new
+  anchor if the code moved. Pass `fixedIn` (`"HEAD"` right after the commit; the tool stores the id
+  it names) only when the fixing commit's message does not name the item. No "Not committed" in the
+  resolution. `wont_fix` takes the reason in `resolution`; a duplicate is `wont_fix` with
+  `duplicateOf`.
 - Put everything one item needs in one call: status, tags, resolution and anchor together. A second
-  `todo_update` on the same item right after the first is a call wasted, and each one returns the
-  whole item.
-- Never read `.todos/items.json` to see what a call did: the call's result is the item. Before
-  committing the file, `git diff --stat` is enough.
+  `todo_update` on the same item right after the first is a call wasted.
+- The write tools answer with one compact line per item (id, title, priority, effort, status, tags,
+  anchors, and `changed` for an update): that is the check that the change landed. Pass `full: true`
+  only when the whole item is needed, and do not `todo_get` an item just written.
 - After moving or rewriting anchored code, `todo_list` with `lost: true` and re-attach what it
-  returns with `todo_update` (`path`, `startLine`).
+  returns with `todo_update` (`path`, `startLine`), or several in one `todo_batch`. Anchors follow
+  edits only while CLion has the project open; an agent's `git mv` or rewrite outside it is what
+  loses them.
+- An item filed in `inbox` (no repository) that turns out to belong here: `todo_move` with
+  `to: cnc_red_alert`, then re-attach it, since a move drops the anchors.

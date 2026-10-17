@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names (enums and enumerators included), simplification, moving out what belongs in another file, private data members and the Google declaration order, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in the TODO list (Not My TODO, .todos/items.json). Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /restructure-class, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names (enums and enumerators included), simplification, moving out what belongs in another file, private data members and the Google declaration order, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in the TODO list (Not My TODO, the notmytodo-store MCP tools). Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /restructure-class, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -166,25 +166,26 @@ stage 11. If the name and the folder already fit, record why and make no commit.
 
 **11. Leftovers to the TODO list** - every open item from the ledger, however small, as a Not My
 TODO item, following `/add-todo` for the title, details, tags, priority, effort and anchor, and all
-of them in one `mcp__clion__todo_batch` call under one parent item for the run ("Leftovers from the
-<file> modernization", made first with `mcp__clion__todo_create`; the run's commit range is each
-item's `source`): bugs not fixed (behaviour-changing, out of scope, twin not done), **noticed**
-items not acted on, **misplaced** items not moved, **for the user** decisions, design ideas
-`/simplify` raised but did not apply, lines stage 8 left uncovered and what would make them
-testable, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things
-spotted outside the files' scope. One ledger entry is one item, anchored to the lines it means when
-it is about one place; a **for the user** decision is its own item with `toDecide` saying what is to
-be decided (that tags it `needs-decision`), not a bullet inside an item an agent could otherwise
-fix. Give each item what it takes to act without re-reading the run: the files, what is wrong or
-possible, the options with their size. Before adding, look through `mcp__clion__todo_list`
-(`compact: true`, with `path` set to the files' folder or `text` to their names) for an item that
-already covers it (an existing item may only need the new file name or an extra detail: an entry
-with its `id` and a `comment` in the same batch); set items this run finished to `status: fixed`
-with `resolution` and `fixedIn` (a "move X into its namespace" item the namespace stage closed),
-also in that batch, and re-attach whatever `mcp__clion__todo_list` with `lost: true` returns for the
-files the run renamed or moved (`mcp__clion__todo_update`). Commit `.todos/items.json` alone: "Add
-the <file> modernization's leftovers to the TODO list". A run whose ledger ends empty says so in the
-report and makes no commit.
+of them in one `mcp__notmytodo-store__todo_batch` call under one parent item for the run ("Leftovers
+from the <file> modernization": the batch's first entry, with a `ref` the parts name as their
+`parent: "$ref"`; the run's commit range is each item's `source`): bugs not fixed
+(behaviour-changing, out of scope, twin not done), **noticed** items not acted on, **misplaced**
+items not moved, **for the user** decisions, design ideas `/simplify` raised but did not apply,
+lines stage 8 left uncovered and what would make them testable, stages skipped (a CLion timeout
+becomes "Run `/fix-ide-issues` on ..."), and things spotted outside the files' scope. One ledger
+entry is one item, anchored to the lines it means when it is about one place; a **for the user**
+decision is its own item with `toDecide` saying what is to be decided (that tags it
+`needs-decision`), not a bullet inside an item an agent could otherwise fix. Give each item what it
+takes to act without re-reading the run: the files, what is wrong or possible, the options with
+their size. Before adding, look through `mcp__notmytodo-store__todo_list` (`compact: true`, with
+`path` set to the files' folder or `text` to their names) for an item that already covers it (an
+existing item may only need the new file name or an extra detail: an entry with its `id` and a
+`comment` in the same batch); set items this run finished to `status: fixed` with `resolution` and
+`fixedIn` (the commit that finished it, when its message does not name the item: a "move X into its
+namespace" item the namespace stage closed), and re-attach whatever
+`mcp__notmytodo-store__todo_list` with `lost: true` returns for the files the run renamed or moved
+(`path`, `startLine`), all in that same batch. The store is outside the repository, so this stage
+makes no commit. A run whose ledger ends empty says so in the report.
 
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
@@ -261,5 +262,5 @@ and stage 10 names and places the file by it.
 - Coverage of each file before and after stage 8, and the lines still uncovered.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
-- The TODO list commit from stage 11, with its items (`T-<n>` and title) in one line each.
+- The TODO items stage 11 added or changed (`T-<n>` and title), one line each.
 - What is still uncommitted, if anything, and why.

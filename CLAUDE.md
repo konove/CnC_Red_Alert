@@ -508,10 +508,14 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## TODO List
 
-Open work is kept by CLion's Not My TODO plugin in `.todos/items.json`, not in a Markdown file. Read
-and change it only through the IDE's MCP tools, `mcp__clion__todo_*` (deferred: load all eight with
-one `ToolSearch` `select:`; pass `projectPath`). Never edit or script the JSON, and do not grep it
-to search: the tools do both, keep the anchors and save in one write. `/add-todo` has the
+Open work is kept by Not My TODO's machine-wide store (`~/.local/share/not-my-todo-store`, outside
+the repository; this repository is the project `cnc_red_alert`), not in a Markdown file and not in
+the tree. Read and change it only through the `notmytodo-store` MCP server's tools,
+`mcp__notmytodo-store__todo_*`, which Claude Code starts for every session whether or not CLion runs
+(deferred: load all ten with one `ToolSearch` `select:`). They default to the project of the working
+directory, so leave `project` out; `todo_projects` lists the others and `inbox`, and an id written
+`key/T-12` names another project's item. Never edit, script or grep the store's JSON files: the
+tools search them, keep the anchors and save several changes in one write. `/add-todo` has the
 conventions (kind and area tags, `p2` for bugs and `p3` otherwise, effort, anchors).
 
 | To                                   | Call                                                                                                                                                                                                    |
@@ -519,13 +523,17 @@ conventions (kind and area tags, `p2` for bugs and `p3` otherwise, effort, ancho
 | Survey or look for a duplicate       | `todo_list` with `compact: true` and filters (`text`, `anyText`, `path`, `tags`, `withoutTags`, `status`, `priority`, `effort`, `parent`, `blocked`); without `compact` it returns every item's details |
 | Read one item with its anchored code | `todo_get`                                                                                                                                                                                              |
 | Add one item                         | `todo_create`                                                                                                                                                                                           |
-| Add or change two or more items      | one `todo_batch` (entries with an `id` change, entries without create; all or nothing)                                                                                                                  |
+| Add or change two or more items      | one `todo_batch` (entries with an `id` change, re-anchor and `comment`; entries without create, `ref` names them for later entries as `$ref`; all or nothing)                                           |
 | Add a finding or progress note       | `todo_comment` (appends; `todo_update` with `details` replaces the whole text)                                                                                                                          |
 | Make an item wait for the user       | `toDecide` on create/update (it adds the `needs-decision` tag itself)                                                                                                                                   |
 | Record the user's answer             | `todo_decided`, before doing the work; it takes the `needs-decision` tag away                                                                                                                           |
 | Remove a probe or a mistaken item    | `todo_delete` (only an item an agent made, with no parts and no links to it)                                                                                                                            |
-| Finish an item                       | `todo_update` with `status: fixed`, `resolution` and, once committed, `fixedIn`; `wont_fix` with `resolution` to close it unchanged                                                                     |
-| Re-attach after moving code          | `todo_list` with `lost: true`, then `todo_update` with `path`/`startLine`                                                                                                                               |
+| Finish an item                       | `todo_update` with `status: fixed` and `resolution`; `wont_fix` with `resolution` to close it unchanged                                                                                                 |
+| Re-attach after moving code          | `todo_list` with `lost: true`, then `todo_update` (or one `todo_batch`) with `path`/`startLine`                                                                                                         |
+| File an item from `inbox` here       | `todo_move` with `to: cnc_red_alert`, then re-attach it (a move drops the anchors)                                                                                                                      |
+
+The write tools answer with one compact line per item, which is enough to see that the change
+landed; pass `full: true` only when the whole item is needed.
 
 An item tagged `needs-decision` waits for the user: do not fix it unasked; ask with AskUserQuestion
 when it is the task at hand. If a fix turns out to need the user's call, set `toDecide` instead of
@@ -534,14 +542,14 @@ commit or commit range) goes in `source`, not in the details. To pick what to wo
 `status: open`, `blocked: false`, `withoutTags: needs-decision`, highest priority first, least
 effort within it.
 
-**Closing an item costs one call and no commit of its own.** Commit the code first, then make one
-`todo_update` with `status: fixed`, `resolution`, `fixedIn: "HEAD"` (stored as that commit's id)
-and, if the code moved, the new anchor. Do not set `fixed` before the commit and `fixedIn` after it,
-and do not write "Not committed" in a resolution: a missing `fixedIn` already says so. The change
-this leaves in `.todos/items.json` goes into the next commit that is made anyway, not into a "Record
-the commit that fixed T-n" commit. That file also holds what the user did in the IDE meanwhile
-(items set to `done`, new items, shifted anchor lines); it goes along, so `git diff --stat` is
-enough before committing it, not the diff.
+**Closing an item costs one call and no commit.** Name the item in the message of the commit that
+fixes it (`Fix T-479: Tally Red Alert's vessel kills as vessels`): the store reads the commit from
+git and shows it as the one that fixed the item, so there is no `fixedIn` to pass. Then make one
+`todo_update` with `status: fixed`, `resolution` and, if the code moved, the new anchor. Pass
+`fixedIn: "HEAD"` (stored as that commit's id) only when the fixing commit's message does not name
+the item, for example an item a `/modernize-file` stage finished on the way. Do not write "Not
+committed" in a resolution. The store is not in the repository, so nothing about the list is ever
+committed.
 
 **Record what you notice, in every session, not only in `/modernize-file`.** Something seen while
 doing another task and not fixed as part of it (a bug, a suspicious unchecked value, duplicated
