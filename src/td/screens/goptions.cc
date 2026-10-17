@@ -52,6 +52,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/flags.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
@@ -212,21 +213,23 @@ void GameOptionsClass::Process() {
   */
   for (game::Gadget* const g : buttons.gadgets()) {
     g->set_width(std::max(maxwidth, 90 * resfactor));
-    g->set_x(OptionX + ((OptionWidth - g->width()) / 2));
+    g->SetPosition(
+        base::Point{OptionX + ((OptionWidth - g->width()) / 2), g->y()});
   }
 #ifdef FRENCH
   buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
 #else
   base::At(buttonsel, kButtonResume - 1)->set_width(90 * resfactor);
 #endif
-  base::At(buttonsel, kButtonResume - 1)->set_x(OptionX + (5 * resfactor));
+  TextButtonClass* const resume = base::At(buttonsel, kButtonResume - 1);
+  resume->SetPosition(base::Point{OptionX + (5 * resfactor), resume->y()});
 
   if (TheSession().type() == GAME_NORMAL) {
-    base::At(buttonsel, kButtonRestate - 1)->set_width(90 * resfactor);
-    base::At(buttonsel, kButtonRestate - 1)
-        ->set_x(OptionX + OptionWidth -
-                (base::At(buttonsel, kButtonRestate - 1)->width() +
-                 (5 * resfactor)));
+    TextButtonClass* const restate = base::At(buttonsel, kButtonRestate - 1);
+    restate->set_width(90 * resfactor);
+    restate->SetPosition(base::Point{
+        OptionX + OptionWidth - (restate->width() + (5 * resfactor)),
+        restate->y()});
   }
 
   /*

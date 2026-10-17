@@ -103,6 +103,7 @@
 #include "base/buffer.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
@@ -336,8 +337,7 @@ void SidebarClass::Init_IO() {
 
     Repair.set_sticky(true);
     Repair.ID = kButtonRepair;
-    Repair.set_x(484);
-    Repair.set_y(160);
+    Repair.SetPosition(base::Point{484, 160});
     Repair.IsPressed = false;
     Repair.IsToggleType = true;
 
@@ -354,8 +354,7 @@ void SidebarClass::Init_IO() {
 
     Upgrade.set_sticky(true);
     Upgrade.ID = kButtonUpgrade;
-    Upgrade.set_x(480 + 57);
-    Upgrade.set_y(160);
+    Upgrade.SetPosition(base::Point{480 + 57, 160});
     Upgrade.IsPressed = false;
     Upgrade.IsToggleType = true;
 
@@ -372,8 +371,7 @@ void SidebarClass::Init_IO() {
 
     Zoom.set_sticky(true);
     Zoom.ID = kButtonZoom;
-    Zoom.set_x(480 + 110);
-    Zoom.set_y(160);
+    Zoom.SetPosition(base::Point{480 + 110, 160});
     Zoom.IsPressed = false;
 
 #ifdef FRENCH
@@ -1147,17 +1145,19 @@ void SidebarClass::StripClass::Init_IO(int id) {
 
   base::At(UpButton, ID).set_sticky(true);
   base::At(UpButton, ID).ID = static_cast<unsigned>(kButtonUp + id);
-  base::At(UpButton, ID).set_x(X + ButtonSpacingOffset + 1);
-  base::At(UpButton, ID).set_y(Y + (kMaxVisible * ObjectHeight) - 1);
+  base::At(UpButton, ID)
+      .SetPosition(base::Point{X + ButtonSpacingOffset + 1,
+                               Y + (kMaxVisible * ObjectHeight) - 1});
 
   base::At(UpButton, ID).Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
   base::At(DownButton, ID).set_sticky(true);
   base::At(DownButton, ID).ID = static_cast<unsigned>(kButtonDown + id);
   base::At(DownButton, ID)
-      .set_x(base::At(UpButton, ID).x() + base::At(UpButton, ID).width() +
-             ButtonSpacingOffset - 2);
-  base::At(DownButton, ID).set_y(Y + (kMaxVisible * ObjectHeight) - 1);
+      .SetPosition(base::Point{base::At(UpButton, ID).x() +
+                                   base::At(UpButton, ID).width() +
+                                   ButtonSpacingOffset - 2,
+                               Y + (kMaxVisible * ObjectHeight) - 1});
 
   base::At(DownButton, ID).Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
@@ -2035,8 +2035,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
   Strip = &strip;
   Index = index;
-  set_x(strip.X);
-  set_y(strip.Y + (index * (kObjectHeight * scale)));
+  SetPosition(
+      base::Point{strip.X, strip.Y + (index * (kObjectHeight * scale))});
 }
 
 /***********************************************************************************************

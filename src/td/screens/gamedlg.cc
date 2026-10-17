@@ -42,6 +42,7 @@
 #include "td/screens/gamedlg.h"
 
 #include "base/array.h"
+#include "base/point.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -169,7 +170,8 @@ void GameControlsClass::Process() {
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, FontType::k6PointGradient,
                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
                         d_ok_y);
-  okbtn.set_x((TheScreen().visible_view().width() - okbtn.width()) / 2);
+  okbtn.SetPosition(base::Point{
+      (TheScreen().visible_view().width() - okbtn.width()) / 2, okbtn.y()});
 
   /*
   **	Various Inits.

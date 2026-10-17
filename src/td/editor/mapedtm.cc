@@ -58,6 +58,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "base/strings/number_parse.h"
@@ -1639,8 +1640,9 @@ int MapEditClass::Team_Members(HousesType house) {
   const int msg_y = dlg_y + kMargin + kTxt6H + kMargin + (numrows * kRowH) +
                     kMargin;  // y-coord for object names
 
-  okbtn.set_y(dlg_y + dlg_h - kMargin - kOkH);
-  cancelbtn.set_y(dlg_y + dlg_h - kMargin - kCancelH);
+  okbtn.SetPosition(base::Point{okbtn.x(), dlg_y + dlg_h - kMargin - kOkH});
+  cancelbtn.SetPosition(
+      base::Point{cancelbtn.x(), dlg_y + dlg_h - kMargin - kCancelH});
 
   /*
   **	Draw to SeenBuff.

@@ -50,6 +50,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
@@ -203,7 +204,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   TextButtonClass button3(BUTTON_3, b3txt, FontType::k6PointGradient,
                           TPF_USE_GRAD_PAL | TPF_NOSHADOW, 0,
                           y + height - (bheight + (5 * factor)));
-  button3.set_x(x + ((width - button3.width()) / 2));
+  button3.SetPosition(
+      base::Point{x + ((width - button3.width()) / 2), button3.y()});
 
   game::GadgetList buttonlist;
   curbutton = 0;

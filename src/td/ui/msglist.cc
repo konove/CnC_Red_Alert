@@ -60,6 +60,7 @@
 #include "base/bit.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
@@ -332,7 +333,7 @@ TextLabelClass* MessageListClass::Add_Message(
     .....................................................................*/
     y = MessageY;
     for (game::Gadget* const gadget : MessageList.gadgets()) {
-      gadget->set_y(y);
+      gadget->SetPosition(base::Point{gadget->x(), y});
       y += Height;
     }
   }
@@ -554,7 +555,7 @@ int MessageListClass::Manage() {
   if (changed) {
     int y = MessageY;
     for (game::Gadget* const gadget : MessageList.gadgets()) {
-      gadget->set_y(y);
+      gadget->SetPosition(base::Point{gadget->x(), y});
       y += Height;
     }
   }
